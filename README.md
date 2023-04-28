@@ -1,8 +1,7 @@
 # Blue Skies
 ## Debuggers Anonymous - Blue Skies - Project Description
 The project is a client-facing front end for a solar power calculation tool. Users can register and login
-securely, enter their address, and receive an evaluation about the solar potential of their property. This includes s a trained AI model to detect average sunlight within an area and assess how much energy could be generated over time based on the 
-type of solar installation.
+securely, enter their address, and receive an evaluation about the solar potential of their property. This includes a trained AI model to detect average sunlight within an area and assess how much energy could be generated over time based on the type of solar installation.
 
 ## Demo recordings
  <a href="">Debuggers Anonymous - Demo 1</a><br>
