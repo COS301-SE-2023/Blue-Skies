@@ -1,0 +1,26 @@
+# Blue Skies
+## Debuggers Anonymous - Blue Skies - Project Description
+The project is a client-facing front end for a solar power calculation tool. Users can register and login
+securely, enter their address, and receive an evaluation about the solar potential of their property. This includes s a trained AI model to detect average sunlight within an area and assess how much energy could be generated over time based on the 
+type of solar installation.
+
+## Demo recordings
+ <a href="">Debuggers Anonymous - Demo 1</a><br>
+
+
+## System Documentation
+<a href="">Functional Requirements</a>
+
+## Github Project Board
+<a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a>
+
+## Description of each member
+| Picture        | Roles | Description  | Socials |
+| :------------- |:---|:--------------:| :-- |
+| <img src="https://avatars.githubusercontent.com/u/112243059?v=4" width="150"> |<li>Project Manager<li>Data Engineer| <b>Ruan Russouw</b><br><br> Ruan is an accomplished student pursuing<br> a degree in Computer Science. He excels<br> in backend and integration| <a href="https://www.linkedin.com/in/ruan-rossouw-b7a442267/">LinkedIn</a> |
+| <img src="https://avatars.githubusercontent.com/u/52546401?v=4" width="150">  |<li>Tester <li>DevOps| <b>Jesse Naidoo</b><br><br> Jesse is a third year Computer <br>Science student with advanced knowledge<br> of backend systems| <a href="https://www.linkedin.com/in/jesse-naidoo-348574206/">LinkedIn</a> |
+| <img src="https://avatars.githubusercontent.com/u/104772223?v=4" width="150"> |<li>API Engineer<li>Business Analyst| <b>Wilco van Wyk</b><br><br>Wilco pursuing a degree in Computer <br> Science with a strong passion<br> for backend development | <a href="https://www.linkedin.com/in/wilco-van-wyk-5b7130268/">LinkedIn</a> |
+| <img src="https://avatars.githubusercontent.com/u/105843184?v=4" width="150"> |<li>Backend Engineer| <b>Jason Dutton</b><br><br>Jason is an accomplished Computer Science <br> student with a strong background in backend<br> and object oriented programming | <a href="https://www.linkedin.com/in/jason-dutton-578b5a191/">LinkedIn</a> |
+| <img src="https://avatars.githubusercontent.com/u/90509905?v=4" width="150">  |<li>Designer<li>UI Engineer|  <b>Francois Smith</b><br><br>Francois is an Information and Knowledge <br> Systems student specializing in software<br> development with particular expertise in<br> frontend development| <a href="https://www.linkedin.com/in/francois-smith-755a64272">LinkedIn</a> |
+
+Contact us: debuggersanonymous2023@gmail.com
