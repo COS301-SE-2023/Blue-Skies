@@ -4,7 +4,7 @@ The goal of this project is to create a solar power calculation tool.
 
 Users will be able to securely register and login, enter their address, and receive an evaluation of the solar potential of their property. 
 
-The evaluation will incorporate a trained AI model to detect the average sunlight in the area and estimate the amount of energy that could be generated based on the type of solar installation.
+The evaluation will incorporate a trained AI model to detect the average sunlight in the area and estimate the amount of energy that could be generated based on different types of solar installations.
 
 ## Demo recordings
  <a href="">Debuggers Anonymous - Demo 1</a><br>
