@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "prepare": "nx g @nx-dotnet/core:restore",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
+    "prepare": "nx g @nx-dotnet/core:restore"
   },
   "private": true,
   "dependencies": {
@@ -22,7 +21,7 @@
     "@nx/express": "^16.2.1",
     "@nx/jest": "16.2.1",
     "@nx/js": "16.2.1",
-    "@nx/linter": "16.2.1", 
+    "@nx/linter": "16.2.1",
     "@nx/node": "16.2.1",
     "@nx/webpack": "16.2.1",
     "@nx/workspace": "16.2.1",
