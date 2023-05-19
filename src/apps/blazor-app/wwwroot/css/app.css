@@ -553,3 +553,13 @@ video {
   -webkit-padding-start: 0.75rem;
           padding-inline-start: 0.75rem;
 }
+
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.text-slate-900 {
+  --tw-text-opacity: 1;
+  color: rgb(15 23 42 / var(--tw-text-opacity));
+}
