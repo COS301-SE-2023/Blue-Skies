@@ -11,6 +11,5 @@ describe('testHelloWorld', () => {
     };
     testHelloWorld(req, res);
     expect(res.text).toBe('Hello World!');
-    expect(1+1).toBe(3);
   });
 });
