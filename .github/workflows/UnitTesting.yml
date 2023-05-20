@@ -44,4 +44,8 @@ jobs:
           src/package-lock.json
     - run: |
         npm test
+
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v1
+      
     
