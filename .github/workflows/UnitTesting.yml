@@ -24,19 +24,16 @@ jobs:
       matrix:
         node-version: [14.x, 16.x, 18.x]
 
-    steps:
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1
-   
+    steps:   
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+        cache: 'yarn'
     - run: |
-        npm install
-        npm install jest
+        yarn
+        yarn add jest
     - name: run unit tests
       uses: actions/setup-node@v3
       with:
