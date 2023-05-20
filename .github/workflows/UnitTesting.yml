@@ -5,7 +5,9 @@ name: Node.js CI
 
 on:
   push:
-
+defaults:
+  run:
+    working-directory: ./src
 jobs:
   build:
     name: Unit test Services
