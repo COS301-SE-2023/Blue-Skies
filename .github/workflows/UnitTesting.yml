@@ -26,10 +26,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'yarn'
-        cache-dependency-path: |
-          src/yarn.lock
-          src/package-lock.json
+        
     - run: |
         yarn
         yarn add jest
@@ -43,5 +40,8 @@ jobs:
           src/package-lock.json
     - run: |
         npm test
+
+    # - name: Coveralls GitHub Action
+    #   uses: coverallsapp/github-action@v1
       
     
