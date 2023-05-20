@@ -3,14 +3,17 @@
 
 name: Node.js CI
 
+
+
 on:
   push:
+
 defaults:
   run:
-    working-directory: ./src
+    working-directory: src
+
 jobs:
-  build:
-    name: Unit test Services
+  test:
     runs-on: ubuntu-latest
 
     strategy:
