@@ -6,9 +6,9 @@ name: Unit Tests
 on:
   push:
 
-defaults:
-  run:
-    working-directory: src
+# defaults:
+#   run:
+#     working-directory: src
 
 jobs:
   build:
