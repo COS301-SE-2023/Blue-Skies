@@ -1,8 +1,8 @@
 /**
- * Function to mask clouds using the Sentinel-2 QA band
- * @param {ee.Image} image Sentinel-2 image
- * @return {ee.Image} cloud masked Sentinel-2 image
- */
+* Function to mask clouds using the Sentinel-2 QA band
+* @param {ee.Image} image Sentinel-2 image
+* @return {ee.Image} cloud masked Sentinel-2 image
+*/
 // Function to mask clouds using the Sentinel-2 QA band
 function maskS2clouds(image) {
     var qa = image.select('QA60');
@@ -19,14 +19,18 @@ function maskS2clouds(image) {
   }
   
   // Load the South Africa boundary as a region of interest
-  var southAfrica = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
-    .filter(ee.Filter.eq('country_na', 'South Africa'));
+  var southAfrica = ee.ImageCollection('COPERNICUS/S2_HARMONIZED');
+    southAfrica.filter(ee.Filter.eq('country_na', 'South Africa'));
   
   // Map the function over a month of data and take the median.
   // Load Sentinel-2 TOA reflectance data (adjusted for processing changes
   // that occurred after 2022-01-25).
+  
+  var startDate = ee.Date('2019-01-01');
+  var endDate = ee.Date('2019-01-31');
+  var timeRange = ee.DateRange(startDate, endDate);
   var dataset = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
-    .filterDate('2022-06-01', '2022-06-30')
+    .filterDate(timeRange)
     // Pre-filter to get less cloudy granules.
     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
     .map(maskS2clouds);
@@ -40,11 +44,13 @@ function maskS2clouds(image) {
   Map.setCenter(30.0, -28.94, 6);
   Map.addLayer(dataset.median(), rgbVis, 'RGB');
   
-  // Generate random points within South Africa
-  var numPoints = 10; // Adjust the number of points as needed
-  var randomPoints = ee.FeatureCollection.randomPoints(southAfrica.geometry(), numPoints);
+  // // Generate random points within South Africa
+  var numPoints = 0; // Adjust the number of points as needed
+  var images = southAfrica.limit(numPoints);
+  print('imgs', images);
+  var randomPoints = ee.FeatureCollection.randomPoints(images.geometry(), numPoints);
   
-  // Display random points on the map
+  // // Display random points on the map
   Map.addLayer(randomPoints, { color: 'FF0000' }, 'Random Points');
   
   // Take a screenshot of the map
@@ -66,66 +72,67 @@ function maskS2clouds(image) {
   Map.addLayer(mapImage, mapVisParams, 'Map Image');
   
   // Export the map image to your Google Drive
-  Export.image.toDrive({
-    image: mapImage,
-    description: 'map_image',
-    folder: 'GEE_outputs',
-    fileNamePrefix: 'map_image',
-    scale: 10, // Spatial resolution in meters
-    region: mapRegion
-  });
+  // Export.image.toDrive({
+  //   image: mapImage,
+  //   description: 'map_image',
+  //   folder: 'GEE_outputs',
+  //   fileNamePrefix: 'map_image',
+  //   scale: 10, // Spatial resolution in meters
+  //   region: mapRegion
+  // });
   
   // Split the randomPoints feature collection into subsets of 1000 points
-  var subsets = randomPoints.toList(5000).map(function (list) {
-    return ee.FeatureCollection(list);
+  // var subsets = randomPoints.toList(5000).map(function (list) {
+  //   return ee.FeatureCollection(list);
+  // });
+  
+  
+  // var ds = ee.ImageCollection("COPERNICUS/S2_HARMONIZED");
+  
+  
+  // var rp = ee.FeatureCollection.randomPoints(images.geometry(), 50);
+  
+  print('rp',randomPoints);
+  
+  var solarIrradianceB2 = randomPoints.map(function(feature) {
+    var point = ee.Geometry.Point(feature.geometry().coordinates());
+    var image = southAfrica.filterBounds(point).first();
+    var percentage = image.get('SOLAR_IRRADIANCE_B2');
+    return feature.set('solar_irradiance_b2', ee.Number(percentage));
   });
   
-  // Define the number of subsets
-  var numSubsets = Math.ceil(numPoints / 5000);
   
-  // Get data on how much light falls on the random points in the images
-  var pointData = randomPoints.map(function(point) {
-    var lightValue = dataset.map(function(image) {
-      var reduced = image.reduceRegion({
-        reducer: ee.Reducer.mean(),
-        geometry: point.geometry(),
-        scale: 10
-      });
   
-      // Add the image ID and solar irradiance value as properties to the feature
-      return ee.Feature(null, {
-        image_id: image.id(),
-        solar_irradiance: ee.Number(reduced.get('B2'))
-      });
-    });
+  var solarRad = solarIrradianceB2.aggregate_array('solar_irradiance_b2');
+  // print('sa', southAfrica);
+  print(solarIrradianceB2);
+  print('sr', solarRad);
   
-    // Select the first feature from the collection
-    var firstFeature = ee.Feature(lightValue.first());
   
-    // Return the feature with image ID and solar irradiance value
-    return firstFeature;
-  });
+  
+  
+  
   
   // Convert the resulting collection to a list
-  var pointDataList = pointData.toList(pointData.size());
+  // var pointDataList = pointData.toList(pointData.size());
   
   // Print the data for each random point
-  for (var i = 0; i < pointDataList.size().getInfo(); i++) {
-    var feature = ee.Feature(pointDataList.get(i));
-    print(feature);
-    print('Point', i+1, 'Data:', feature.get('image_id'), feature.get('B2'));
-  }
-  
+  // for (var i = 0; i < pointDataList.size().getInfo(); i++) {
+  //   var feature = ee.Feature(pointDataList.get(i));
+  //   print("Feature: ", feature);
+  //   //print('Point', i+1, 'Data:', feature.get('image_id'), feature.get('solar_irradiance'));
+  // }
+  // print("pointData:", pointData);
   
   
   
   
   // Save the solar irradiance data as a CSV file in your Google Drive within the "GEE_outputs" folder
-  Export.table.toDrive({
-    collection: pointData,
-    description: 'solar_irradiance_data',
-    folder: 'GEE_outputs',
-    fileFormat: 'CSV'
-  });
+  // Export.table.toDrive({
+  //   collection: pointData,
+  //   description: 'solar_irradiance_data',
+  //   folder: 'GEE_outputs',
+  //   fileFormat: 'CSV'
+  // });
   
   
