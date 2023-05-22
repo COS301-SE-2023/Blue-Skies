@@ -37,7 +37,7 @@ jobs:
             src/yarn.lock
             src/package-lock.json
       - run: |
-          npm test --coverage
+          npm test
       - name: Codecov
         uses: codecov/codecov-action@v3.1.0
         with:
