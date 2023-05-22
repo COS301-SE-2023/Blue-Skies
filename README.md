@@ -15,7 +15,7 @@ The evaluation will incorporate a trained AI model to detect the average sunligh
 
 
 ## System Documentation
-<a href="">Functional Requirements</a>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a>
 
 ## Github Project Board
 <a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a>
