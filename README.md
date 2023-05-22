@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/github/COS301-SE-2023/Blue-Skies/branch/main/graph/badge.svg?token=DEFDH7DDQO)](https://codecov.io/github/COS301-SE-2023/Blue-Skies)
+
 # Blue Skies
 ## Debuggers Anonymous - Blue Skies - Project Description
 The goal of this project is to create a solar power calculation tool.
