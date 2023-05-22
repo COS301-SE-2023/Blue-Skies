@@ -1,3 +1,19 @@
+const { auth } = require('@google/earthengine');
+const privateKey = require('../../../DO-NOT-COMMIT/blue-skies-387316-76add0413db1.json').private_key;
+auth.authenticate({
+  private_key: privateKey,
+  client_email: 'blue-skies-get-data@blue-skies-387316.iam.gserviceaccount.com',
+}, function (err, token) {
+  if (err) {
+    console.error('Authentication failed:', err);
+  } else {
+    console.log('Authentication succeeded!');
+    // You can now make API requests using the Earth Engine API.
+  }
+});
+
+
+
 /**
 * Function to mask clouds using the Sentinel-2 QA band
 * @param {ee.Image} image Sentinel-2 image
