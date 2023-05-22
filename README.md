@@ -1,4 +1,6 @@
 [![codecov](https://codecov.io/github/COS301-SE-2023/Blue-Skies/branch/main/graph/badge.svg?token=DEFDH7DDQO)](https://codecov.io/github/COS301-SE-2023/Blue-Skies)
+![main](https://github.com/COS301-SE-2023/Blue-Skies/actions/workflows/UnitTesting.yml/badge.svg?branch=main)
+![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2023/Blue-Skies)
 
 # Blue Skies
 ## Debuggers Anonymous - Blue Skies - Project Description
