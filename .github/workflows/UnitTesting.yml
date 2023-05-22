@@ -42,5 +42,6 @@ jobs:
         uses: codecov/codecov-action@v3.1.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: src
     # - name: Coveralls GitHub Action
     #   uses: coverallsapp/github-action@v1
