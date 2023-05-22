@@ -3,7 +3,6 @@
 
 name: Unit Tests
 
-
 on:
   push:
 
@@ -13,35 +12,36 @@ defaults:
 
 jobs:
   build:
-    
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
 
-    steps:   
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-        
-    - run: |
-        yarn
-        yarn add jest
-    - name: run unit tests
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: |
-          src/yarn.lock
-          src/package-lock.json
-    - run: |
-        npm test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
+      - run: |
+          yarn
+          yarn add jest
+      - name: run unit tests
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: |
+            src/yarn.lock
+            src/package-lock.json
+      - run: |
+          npm test --coverage
+      - name: Codecov
+        uses: codecov/codecov-action@v3.1.0
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          working-directory: src/coverage
     # - name: Coveralls GitHub Action
     #   uses: coverallsapp/github-action@v1
-      
-    
