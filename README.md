@@ -11,7 +11,7 @@ Users will be able to securely register and login, enter their address, and rece
 The evaluation will incorporate a trained AI model to detect the average sunlight in the area and estimate the amount of energy that could be generated based on different types of solar installations.
 
 ## Demo recordings
- <a href="">Debuggers Anonymous - Demo 1</a><br>
+ <a href="https://drive.google.com/file/d/1Xgv28BjxR3WmmBX1pDHfHS8kiyigUfJt/view?usp=share_link">Debuggers Anonymous - Demo 1</a><br>
 
 
 ## System Documentation
