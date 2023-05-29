@@ -3,9 +3,12 @@ import { Request, Response } from 'express';
 import IUser from '../../models/user.interface';
 
 export default class UserController {
-  constructor(private connection: tedious.Connection) {}
+  static connection: tedious.Connection;
+  constructor(private connection: tedious.Connection) {
+    this.connection = connection;
+  }
 
-  public getAllUsers = (req: Request, res: Response) => {
+  public static getAllUsers = (req: Request, res: Response) => {
     const query = 'SELECT * FROM [User]';
     const users: IUser[] = [];
 
@@ -43,7 +46,7 @@ export default class UserController {
       }
     });
   };
-  public getUser = (req: Request, res: Response) => {
+  public static getUser = (req: Request, res: Response) => {
     const { userId } = req.params;
     const query = `SELECT * FROM [User] WHERE userId = ${userId}`;
 

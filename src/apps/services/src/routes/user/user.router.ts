@@ -7,3 +7,6 @@ userRouter.use('/', (req, res) => {
     message: 'Welcome to the user router!',
   });
 });
+
+userRouter.get('/all', UserController.getAllUsers);
+userRouter.get('/:userId', UserController.getUser);
