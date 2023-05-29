@@ -5,7 +5,7 @@ import IUser from '../../models/user.interface';
 export default class UserController {
   static connection: tedious.Connection;
   constructor(private connection: tedious.Connection) {
-    this.connection = connection;
+    UserController.connection = connection;
   }
 
   public static getAllUsers = (req: Request, res: Response) => {
