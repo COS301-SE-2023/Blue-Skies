@@ -80,4 +80,28 @@ export default class UserController {
       }
     });
   };
+
+  public static createUser = (req: Request, res: Response) => {
+    const { email, password, userRole } = req.body;
+    const query = `INSERT INTO [User] (email, password, userRole) VALUES ('${email}', '${password}', '${userRole}')`;
+
+    this.connection.on('connect', (err: tedious.ConnectionError) => {
+      if (err) {
+        console.log(err);
+      } else {
+        const request = new tedious.Request(
+          query,
+          (err: tedious.RequestError, rowCount: number) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(rowCount);
+            }
+          }
+        );
+
+        this.connection.execSql(request);
+      }
+    });
+  };
 }
