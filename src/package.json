@@ -13,6 +13,7 @@
     "express": "^4.18.1",
     "superagent": "^8.0.9",
     "supertest": "^6.3.3",
+    "tedious": "^16.1.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
