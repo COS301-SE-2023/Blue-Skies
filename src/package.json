@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "prepare": "nx g @nx-dotnet/core:restore",
-    "test": "nx test services"
+    "test": "nx test services --coverage"
   },
   "private": true,
   "dependencies": {
