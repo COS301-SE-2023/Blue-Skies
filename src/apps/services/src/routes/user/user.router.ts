@@ -1,4 +1,5 @@
 import express from 'express';
+import UserController from '../../controllers/user/user.controller';
 export const userRouter = express.Router();
 
 userRouter.use('/', (req, res) => {
