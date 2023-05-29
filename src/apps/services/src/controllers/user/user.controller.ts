@@ -104,4 +104,28 @@ export default class UserController {
       }
     });
   };
+  public static updateUser = (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const { email, password, userRole } = req.body;
+    const query = `UPDATE [User] SET email = '${email}', password = '${password}', userRole = '${userRole}' WHERE userId = ${userId}`;
+
+    this.connection.on('connect', (err: tedious.ConnectionError) => {
+      if (err) {
+        console.log(err);
+      } else {
+        const request = new tedious.Request(
+          query,
+          (err: tedious.RequestError, rowCount: number) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(rowCount);
+            }
+          }
+        );
+
+        this.connection.execSql(request);
+      }
+    });
+  };
 }
