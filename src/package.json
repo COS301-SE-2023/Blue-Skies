@@ -4,7 +4,11 @@
   "license": "MIT",
   "scripts": {
     "prepare": "nx g @nx-dotnet/core:restore",
-    "test": "nx test services"
+    "test": "nx test services",
+    "start:app": "nx serve blazor-app",
+    "start:api": "nx serve api",
+    "start:express": "nx serve services"
+
   },
   "private": true,
   "dependencies": {
