@@ -1,0 +1,61 @@
+@using BlazorApp.Data
+@inject BlobStorageService blobStorageService
+
+@if (!string.IsNullOrEmpty(ImageData))
+{
+    @if (IsSvgImage)
+    {
+        <div class="@css">
+            @((MarkupString)ImageData)
+        </div>
+    }
+    else
+    {
+        <img class="@css" src="data:image;base64,@ImageData" alt="@alt" />
+    }
+}
+else
+{
+    <p>Loading image...</p>
+}
+
+@code {
+    [Parameter]
+    public string? ImageName { get; set; }
+
+    [Parameter]
+    public string? css { get; set; }
+
+    [Parameter]
+    public string? alt { get; set; }
+
+    private bool IsSvgImage { get; set; }
+    private string? ImageData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (ImageName != null)
+            {
+                var extension = Path.GetExtension(ImageName);
+
+                if (extension.Equals(".svg", StringComparison.OrdinalIgnoreCase))
+                {
+                    IsSvgImage = true;
+                    ImageData = await blobStorageService.GetSvgContent("web-app", ImageName);
+                }
+                else
+                {
+                    IsSvgImage = false;
+                    byte[] imageBytes = await blobStorageService.GetImageBytes("web-app", ImageName);
+                    ImageData = Convert.ToBase64String(imageBytes);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+}
