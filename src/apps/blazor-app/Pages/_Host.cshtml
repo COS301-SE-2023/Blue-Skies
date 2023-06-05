@@ -17,7 +17,9 @@
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
-    <component type="typeof(App)" render-mode="ServerPrerendered" />
+    <div class=" overflow-x-hidden overflow-y-auto">
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </div>
 
     <div id="blazor-error-ui">
         <environment include="Staging,Production">
