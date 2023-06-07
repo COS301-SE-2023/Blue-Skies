@@ -5,13 +5,11 @@
 {
     @if (IsSvgImage)
     {
-        <div class="@css">
-            @((MarkupString)ImageData)
-        </div>
+        <img class="@css" src="@($"data:image/svg+xml;utf8,{Uri.EscapeDataString(ImageData)}")" alt="@alt" />
     }
     else
     {
-        <img class="@css rounded-md shadow" src="data:image;base64,@ImageData" alt="@alt" />
+        <img class="@css rounded-md shadow" src="@($"data:image;base64,{ImageData}")" alt="@alt" />
     }
 }
 else
