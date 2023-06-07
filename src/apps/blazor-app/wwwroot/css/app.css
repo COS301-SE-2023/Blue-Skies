@@ -600,6 +600,10 @@ video {
   margin-right: auto;
 }
 
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
 .mt-10 {
   margin-top: 2.5rem;
 }
@@ -610,10 +614,6 @@ video {
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.mb-5 {
-  margin-bottom: 1.25rem;
 }
 
 .block {
@@ -644,12 +644,36 @@ video {
   height: 4rem;
 }
 
+.h-20 {
+  height: 5rem;
+}
+
 .h-6 {
   height: 1.5rem;
 }
 
 .h-8 {
   height: 2rem;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.h-40 {
+  height: 10rem;
+}
+
+.h-\[100\] {
+  height: 100;
+}
+
+.h-\[100vh\] {
+  height: 100vh;
+}
+
+.w-1\/2 {
+  width: 50%;
 }
 
 .w-6 {
@@ -662,10 +686,6 @@ video {
 
 .w-full {
   width: 100%;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .max-w-2xl {
@@ -741,6 +761,11 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
+}
+
+.object-cover {
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .p-1 {
@@ -873,9 +898,21 @@ video {
   color: rgb(255 255 255 / var(--tw-text-opacity));
 }
 
+.shadow-md {
+  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-sm {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow {
+  --tw-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
@@ -907,36 +944,12 @@ video {
   position: absolute;
 }
 
-.placeholder\:left-10::-moz-placeholder {
-  left: 2.5rem;
-}
-
-.placeholder\:left-10::placeholder {
-  left: 2.5rem;
-}
-
 .placeholder\:left-20::-moz-placeholder {
   left: 5rem;
 }
 
 .placeholder\:left-20::placeholder {
   left: 5rem;
-}
-
-.placeholder\:top-10::-moz-placeholder {
-  top: 2.5rem;
-}
-
-.placeholder\:top-10::placeholder {
-  top: 2.5rem;
-}
-
-.placeholder\:top-4::-moz-placeholder {
-  top: 1rem;
-}
-
-.placeholder\:top-4::placeholder {
-  top: 1rem;
 }
 
 .placeholder\:top-5::-moz-placeholder {

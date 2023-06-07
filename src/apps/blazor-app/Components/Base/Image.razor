@@ -5,13 +5,13 @@
 {
     @if (IsSvgImage)
     {
-        <div class="@css rounded-md shaddow">
+        <div class="@css">
             @((MarkupString)ImageData)
         </div>
     }
     else
     {
-        <img class="@css" src="data:image;base64,@ImageData" alt="@alt" />
+        <img class="@css rounded-md shadow" src="data:image;base64,@ImageData" alt="@alt" />
     }
 }
 else
