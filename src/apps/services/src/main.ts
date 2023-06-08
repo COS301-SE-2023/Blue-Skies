@@ -11,18 +11,13 @@ const app = express();
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-app.use('/api', router);
-app.get('/', (req, res) => {
-  res.send({ message: 'Welcome to services!' });
-});
-
 const port = process.env.PORT || 3333;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
 server.on('error', console.error);
 
-const config = {
+export const config = {
   server: process.env.AZURE_SQL_SERVER,
   authentication: {
     type: 'default',
@@ -38,9 +33,16 @@ const config = {
 };
 
 export const connection = new tedious.Connection(config);
-connection.on('connect', function (err) {
+connection.on('connect', async function (err) {
   if (err) {
     console.log('Error', err);
   } else console.log('Connected');
 });
+
 connection.connect();
+// console.log('🚀 ~ file: main.ts:36 ~ connection:', connection);
+
+app.use('/api', router);
+app.get('/', (req, res) => {
+  res.send({ message: 'Welcome to services!' });
+});
