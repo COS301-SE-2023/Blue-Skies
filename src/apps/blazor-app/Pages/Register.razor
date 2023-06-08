@@ -1,12 +1,12 @@
-@page "/login"
+@page "/register"
 @layout AuthLayout
 @using BlazorApp.Components.Base
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Register</PageTitle>
 
 <div class="w-full h-[100vh]">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
-    <Image ImageName="Banhoek-landscape.jpg" css="w-full h-full object-fit -z-10" alt="background image"/>
+    <Image ImageName="Register-background.webp" css="w-full h-full object-fit -z-10" alt="background image"/>
 
 
     <div class="flex w-full h-full absolute top-0 left-0 justify-start">
@@ -17,20 +17,16 @@
         <Card css="my-auto w-full text-left ml-60">
             <Heading >
                 <Superscript>
-                    <p>Welcome Back</p>
+                    <p>Create your account</p>
                 </Superscript>
                 <Header>
-                    <h1>Log In</h1>    
+                    <h1>Register</h1>    
                 </Header>
             </Heading>
             <form action="/">
-                <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
-                <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
-                <Button css="mt-10 flex justify-center" style="pill">
-                    <content>
-                        <input type="submit" value="Log In" />
-                    </content>
-                </Button>
+                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"/>
+                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"/>
+                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"/>
 
                 <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
                 <div class="flex justify-center mt-8 gap-4">
@@ -49,7 +45,12 @@
                         </content>
                     </Button>
                 </div>
-                <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
+                <Button css="mt-10 flex justify-center" style="pill">
+                    <content>
+                        <input type="submit" value="Register" />
+                    </content>
+                </Button>
+                <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/register" class="text-primary-500 ml-2">Login</a></p>
             </form>
         </Card>
 s
