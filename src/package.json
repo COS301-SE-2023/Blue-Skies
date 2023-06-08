@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "nx g @nx-dotnet/core:restore",
     "test": "nx test services",
-    "start:app": "nx serve blazor-app && npx tailwindcss -i ./apps/blazor-app/Styles/app.css -o ./apps/blazor-app/wwwroot/css/app.css --watch",
+    "start:app": "nx serve blazor-app",
     "start:api": "nx serve api",
     "start:express": "nx serve services"
   },
