@@ -1,5 +1,6 @@
 import express from 'express';
-import AuthController from '../../controllers/user/auth.controller';
+import AuthController from '../../controllers/auth/auth.controller';
+import bodyParser from 'body-parser';
 export const authRouter = express.Router();
 
 authRouter.get('/', (req, res) => {
@@ -9,4 +10,4 @@ authRouter.get('/', (req, res) => {
 });
 
 const authController = new AuthController();
-authRouter.post('/register', authController.registerUser);
+authRouter.post('/register', bodyParser.json(), authController.registerUser);
