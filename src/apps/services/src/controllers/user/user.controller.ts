@@ -37,7 +37,10 @@ export default class UserController {
       });
       conn.execSql(request);
     } catch (error) {
-      res.status(500).send(error);
+      res.status(500).json({
+        error: 'Failed to retrieve users.',
+        details: 'Database connection error.',
+      });
     }
   };
   public getUser = (req: Request, res: Response) => {
