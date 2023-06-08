@@ -14,7 +14,7 @@
     <a href="/" class="absolute top-14 right-72">
         <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
     </a>
-        <Card css="my-auto w-full text-left ml-80">
+        <Card css="my-auto w-full text-left ml-60">
             <Heading >
                 <Superscript>
                     <p>Welcome Back</p>
@@ -23,15 +23,17 @@
                     <h1>Log In</h1>    
                 </Header>
             </Heading>
-            <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
-            <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
-            <Button css="mt-8" style="large">
-                <content>
-                    <p>Log In</p>
-                </content>
-            </Button>
+            <form action="/">
+                <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
+                <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
+                <Button css="mt-8 mx-auto" style="pill">
+                    <content>
+                        <input type="submit" value="Log In" />
+                    </content>
+                </Button>
+            </form>
         </Card>
-
+s
     </div>
 </div>
 
