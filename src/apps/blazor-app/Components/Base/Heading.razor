@@ -1,0 +1,26 @@
+<div class="@css">
+    <div class="uppercase text-sm text-blue-400">
+        @Superscript
+    </div>
+    <div class="text-4xl font-semibold">
+        @Header
+    </div>
+    <div class="text-base text-gray-400">
+        @Subscript
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment? Superscript { get; set; }
+
+    [Parameter]
+    public RenderFragment? Header { get; set; }
+
+    [Parameter]
+    public RenderFragment? Subscript { get; set; }
+
+    [Parameter]
+    public string? css { get; set; }
+}
