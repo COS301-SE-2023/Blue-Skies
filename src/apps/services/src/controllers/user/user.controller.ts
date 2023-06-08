@@ -25,6 +25,7 @@ export default class UserController {
           email: columns[1].value,
           password: columns[2].value,
           userRole: columns[3].value,
+          dataCreate: columns[4].value,
         };
 
         users.push(user);
@@ -34,9 +35,6 @@ export default class UserController {
         res.status(200);
         res.json({ users: users });
       });
-      console.log(
-        '🚀 ~ file: user.controller.ts ~ line 55 ~ UserController ~ getAllUsers ~ request'
-      );
       conn.execSql(request);
     } catch (error) {
       res.status(500).send(error);
@@ -67,6 +65,7 @@ export default class UserController {
             email: columns[1].value,
             password: columns[2].value,
             userRole: columns[3].value,
+            dataCreate: columns[4].value,
           };
 
           res.send(user);
