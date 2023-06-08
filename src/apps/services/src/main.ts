@@ -37,7 +37,7 @@ const config = {
   },
 };
 
-const connection = new tedious.Connection(config);
+export const connection = new tedious.Connection(config);
 connection.on('connect', function (err) {
   if (err) {
     console.log('Error', err);
