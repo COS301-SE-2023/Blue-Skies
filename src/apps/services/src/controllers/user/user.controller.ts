@@ -80,27 +80,34 @@ export default class UserController {
   };
 
   public createUser = (req: Request, res: Response) => {
-    const { email, password, userRole } = req.body;
-    const query = `INSERT INTO [User] (email, password, userRole) VALUES ('${email}', '${password}', '${userRole}')`;
+    try {
+      const { email, password, userRole } = req.body;
+      const query = `INSERT INTO [User] (email, password, userRole) VALUES ('${email}', '${password}', '${userRole}')`;
 
-    conn.on('connect', (err: tedious.ConnectionError) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const request = new tedious.Request(
-          query,
-          (err: tedious.RequestError, rowCount: number) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(rowCount);
+      conn.on('connect', (err: tedious.ConnectionError) => {
+        if (err) {
+          console.log(err);
+        } else {
+          const request = new tedious.Request(
+            query,
+            (err: tedious.RequestError, rowCount: number) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(rowCount);
+              }
             }
-          }
-        );
+          );
 
-        conn.execSql(request);
-      }
-    });
+          conn.execSql(request);
+        }
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error,
+        details: 'Email already exists.',
+      });
+    }
   };
   public updateUser = (req: Request, res: Response) => {
     const { userId } = req.params;
