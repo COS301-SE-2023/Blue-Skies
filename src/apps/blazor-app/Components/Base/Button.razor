@@ -1,0 +1,24 @@
+<div class="@css @GetDynamicClasses()">
+    @content
+</div>
+
+@code {
+    [Parameter]
+    public string? style { get; set; }
+
+    [Parameter]
+    public RenderFragment? content { get; set; }
+
+    [Parameter]
+    public string? css { get; set; }
+
+    private string GetDynamicClasses()
+    {
+        if (style == "outline")
+            return "border-2 border-blue-400 text-white";
+        else if (style == "large")
+            return "bg-red-400 text-white text-xl";
+
+        return string.Empty;
+    }
+}
