@@ -1,4 +1,4 @@
-<div class="@css p-14 max-w-md bg-white rounded-xl overflow-hidden shadow-lg">
+<div class="@css @bg p-14 max-w-lg rounded-xl overflow-hidden shadow-lg">
     @ChildContent
 </div>
 
@@ -9,4 +9,7 @@
 
     [Parameter]
     public string? css { get; set;}
+
+    [Parameter]
+    public string? bg { get; set; } = "bg-white";
 }

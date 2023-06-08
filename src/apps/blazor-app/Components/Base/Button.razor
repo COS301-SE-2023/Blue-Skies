@@ -1,6 +1,8 @@
-<button class="@css @GetDynamicClasses() hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-in-out">
-    @content
-</button>
+<div class="@css">
+    <button class="@GetDynamicClasses() hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        @content
+    </button>
+</div>
 
 @code {
     [Parameter]
