@@ -1,5 +1,6 @@
 import express from 'express';
 import UserController from '../../controllers/user/user.controller';
+import { connection } from '../../main';
 export const userRouter = express.Router();
 
 userRouter.use('/', (req, res) => {
@@ -7,8 +8,8 @@ userRouter.use('/', (req, res) => {
     message: 'Welcome to the user router!',
   });
 });
-
-userRouter.get('/all', UserController.getAllUsers);
-userRouter.get('/:userId', UserController.getUser);
-userRouter.post('/create', UserController.createUser);
-userRouter.put('/update/:userId', UserController.updateUser);
+const userController = new UserController(connection);
+userRouter.get('/all', userController.getAllUsers);
+userRouter.get('/:userId', userController.getUser);
+userRouter.post('/create', userController.createUser);
+userRouter.put('/update/:userId', userController.updateUser);
