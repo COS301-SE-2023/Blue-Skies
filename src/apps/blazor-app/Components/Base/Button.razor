@@ -1,6 +1,6 @@
-<div class="@css @GetDynamicClasses()">
+<button class="@css @GetDynamicClasses() hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-in-out">
     @content
-</div>
+</button>
 
 @code {
     [Parameter]
@@ -14,11 +14,18 @@
 
     private string GetDynamicClasses()
     {
-        if (style == "outline")
-            return "border-2 border-blue-400 text-white";
-        else if (style == "large")
-            return "bg-red-400 text-white text-xl";
+        switch(style) {
+            @*----- Pill button -----*@
+            case "pill":
+                return "bg-gradient-to-br from-primary-400 to-primary-600 hover:bg-gradient-to-br hover:from-primary-500 hover:to-primary-700 text-white font-bold py-3 px-10 rounded-full ";
 
-        return string.Empty;
+            @*----- Outline button -----*@
+            case "outline": 
+                return "border-1 border-primary-500 text-primary-500 font-bold py-3 px-10 rounded-full";
+            
+            @*----- Default button -----*@
+            default:
+                return "bg-gradient-to-br from-primary-400 to-primary-600 hover:bg-gradient-to-br hover:from-primary-500 hover:to-primary-700 text-white font-bold py-3 px-10 rounded-md";
+        }
     }
 }
