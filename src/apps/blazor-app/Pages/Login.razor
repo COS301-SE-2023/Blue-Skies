@@ -1,0 +1,60 @@
+@page "/login"
+@layout AuthLayout
+@using BlazorApp.Components.Base
+
+<PageTitle>Login</PageTitle>
+
+<div class="w-full h-[100vh] bg-primary-900">
+    <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
+    <Image ImageName="Banhoek-landscape.jpg" css="w-full h-full object-fit -z-10" alt="background image"/>
+
+
+    <div class="flex w-full h-full absolute top-0 left-0 justify-start">
+    <div class="absolute top-14 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
+    <a href="/" class="absolute top-14 right-72">
+        <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
+    </a>
+        <Card css="my-auto w-full text-left ml-60">
+            <Heading >
+                <Superscript>
+                    <p>Welcome Back</p>
+                </Superscript>
+                <Header>
+                    <h1>Log In</h1>    
+                </Header>
+            </Heading>
+            <form action="/">
+                <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
+                <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
+                <Button css="mt-10 flex justify-center" style="pill">
+                    <content>
+                        <input type="submit" value="Log In" />
+                    </content>
+                </Button>
+
+                <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
+                <div class="flex justify-center mt-8 gap-4">
+                    <Button css="" style="outline">
+                        <content>
+                            <a href="/" class="">
+                                <Image ImageName="Google.svg" css="h-6" alt="Google"/>
+                            </a>
+                        </content>
+                    </Button>
+                    <Button style="outline">
+                        <content>
+                            <a href="/">
+                                <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook"/>
+                            </a>
+                        </content>
+                    </Button>
+                </div>
+                <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
+            </form>
+        </Card>
+s
+    </div>
+</div>
+
+
+
