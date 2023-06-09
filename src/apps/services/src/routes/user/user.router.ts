@@ -12,3 +12,4 @@ const userController = new UserController();
 userRouter.get('/all', userController.getAllUsers);
 userRouter.get('/:userId', userController.getUser);
 userRouter.put('/update/:userId', userController.updateUser);
+userRouter.delete('/delete/:userId', userController.deleteUser);
