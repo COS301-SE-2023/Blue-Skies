@@ -3,5 +3,5 @@ export default interface IUser {
   email: string;
   password: string;
   userRole: number;
-  dataCreated: Date;
+  dateCreated: Date;
 }
