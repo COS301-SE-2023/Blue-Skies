@@ -47,36 +47,30 @@ export default class UserController {
     const { userId } = req.params;
     const query = `SELECT * FROM [dbo].[users] WHERE userId = ${userId}`;
 
-    conn.on('connect', (err: tedious.ConnectionError) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const request = new tedious.Request(
-          query,
-          (err: tedious.RequestError, rowCount: number) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(rowCount);
-            }
-          }
-        );
-
-        request.on('row', (columns: tedious.ColumnValue[]) => {
-          const user: IUser = {
-            userId: columns[0].value,
-            email: columns[1].value,
-            password: columns[2].value,
-            userRole: columns[3].value,
-            dateCreated: columns[4].value,
-          };
-
-          res.send(user);
-        });
-
-        conn.execSql(request);
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(rowCount);
+        }
       }
+    );
+
+    request.on('row', (columns: tedious.ColumnValue[]) => {
+      const user: IUser = {
+        userId: columns[0].value,
+        email: columns[1].value,
+        password: columns[2].value,
+        userRole: columns[3].value,
+        dateCreated: columns[4].value,
+      };
+
+      res.send(user);
     });
+
+    conn.execSql(request);
   };
 
   public updateUser = (req: Request, res: Response) => {
