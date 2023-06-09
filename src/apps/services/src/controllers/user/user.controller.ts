@@ -25,7 +25,7 @@ export default class UserController {
           email: columns[1].value,
           password: columns[2].value,
           userRole: columns[3].value,
-          dataCreate: columns[4].value,
+          dateCreated: columns[4].value,
         };
 
         users.push(user);
@@ -45,7 +45,7 @@ export default class UserController {
   };
   public getUser = (req: Request, res: Response) => {
     const { userId } = req.params;
-    const query = `SELECT * FROM [User] WHERE userId = ${userId}`;
+    const query = `SELECT * FROM [dbo].[users] WHERE userId = ${userId}`;
 
     conn.on('connect', (err: tedious.ConnectionError) => {
       if (err) {
@@ -68,7 +68,7 @@ export default class UserController {
             email: columns[1].value,
             password: columns[2].value,
             userRole: columns[3].value,
-            dataCreate: columns[4].value,
+            dateCreated: columns[4].value,
           };
 
           res.send(user);
@@ -82,7 +82,7 @@ export default class UserController {
   public updateUser = (req: Request, res: Response) => {
     const { userId } = req.params;
     const { email, password, userRole } = req.body;
-    const query = `UPDATE [User] SET email = '${email}', password = '${password}', userRole = '${userRole}' WHERE userId = ${userId}`;
+    const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = '${userRole}' WHERE userId = ${userId}`;
 
     conn.on('connect', (err: tedious.ConnectionError) => {
       if (err) {
