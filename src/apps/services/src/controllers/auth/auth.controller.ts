@@ -15,7 +15,7 @@ export default class AuthController {
         .toISOString()
         .slice(0, 19)
         .replace('T', ' ');
-      const query = `INSERT INTO [dbo].[users] (email, password, userRole, dateCreated) VALUES ('${email}', '${password}', '${userRole}', '${dataCreated}')`;
+      const query = `INSERT INTO [dbo].[users] (email, password, userRole, dateCreated) VALUES ('${email}', '${password}', '${userRole}', '${dateCreated}')`;
 
       const request = new tedious.Request(
         query,
