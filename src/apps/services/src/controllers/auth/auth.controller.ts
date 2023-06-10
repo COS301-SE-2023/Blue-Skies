@@ -7,13 +7,15 @@ export default class AuthController {
   public registerUser = (req: Request, res: Response) => {
     try {
       const { email, password, userRole } = req.body;
+      //check if email already exists
+      console.log(email);
 
       //Create datacreated variable with timestamp
       const dataCreated = new Date()
         .toISOString()
         .slice(0, 19)
         .replace('T', ' ');
-      const query = `INSERT INTO [dbo].[users] (email, password, userRole, dataCreated) VALUES ('${email}', '${password}', '${userRole}', '${dataCreated}')`;
+      const query = `INSERT INTO [dbo].[users] (email, password, userRole, dateCreated) VALUES ('${email}', '${password}', '${userRole}', '${dataCreated}')`;
 
       const request = new tedious.Request(
         query,
