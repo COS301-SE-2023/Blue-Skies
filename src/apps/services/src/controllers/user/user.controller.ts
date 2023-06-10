@@ -77,40 +77,58 @@ export default class UserController {
   public updateUser = (req: Request, res: Response) => {
     const { userId } = req.params;
     const { email, password, userRole } = req.body;
-    const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = '${userRole}' WHERE userId = ${userId}`;
-
-    const request = new tedious.Request(
-      query,
-      (err: tedious.RequestError, rowCount: number) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(rowCount);
+    try {
+      const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = ${userRole} WHERE userId = ${userId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(rowCount);
+          }
         }
-      }
-    );
-    request.on('requestCompleted', () => {
-      res.status(200);
-    });
-    conn.execSql(request);
+      );
+      conn.execSql(request);
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'User updated successfully.',
+        });
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to update user.',
+        details: 'Database connection error.',
+      });
+    }
   };
 
   deleteUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
-    const query = `DELETE FROM [dbo].[users] WHERE userId = ${userId}`;
-    const request = new tedious.Request(
-      query,
-      (err: tedious.RequestError, rowCount: number) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(rowCount);
+    try {
+      const query = `DELETE FROM [dbo].[users] WHERE userId = ${userId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(rowCount);
+          }
         }
-      }
-    );
-    request.on('requestCompleted', () => {
-      res.status(200);
-    });
-    conn.execSql(request);
+      );
+
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'User deleted successfully.',
+        });
+      });
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to find user to delete.',
+        details: 'Database connection error.',
+      });
+    }
   };
 }
