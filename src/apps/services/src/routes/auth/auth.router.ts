@@ -11,3 +11,4 @@ authRouter.get('/', (req, res) => {
 
 const authController = new AuthController();
 authRouter.post('/register', bodyParser.json(), authController.registerUser);
+authRouter.get('/login', bodyParser.json(), authController.loginUser);
