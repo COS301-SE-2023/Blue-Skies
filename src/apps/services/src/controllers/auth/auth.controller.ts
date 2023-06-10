@@ -11,7 +11,7 @@ export default class AuthController {
       console.log(email);
 
       //Create datacreated variable with timestamp
-      const dataCreated = new Date()
+      const dateCreated = new Date()
         .toISOString()
         .slice(0, 19)
         .replace('T', ' ');
