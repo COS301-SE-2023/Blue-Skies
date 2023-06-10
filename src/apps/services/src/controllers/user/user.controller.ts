@@ -43,6 +43,7 @@ export default class UserController {
       });
     }
   };
+
   public getUser = (req: Request, res: Response) => {
     const { userId } = req.params;
     const query = `SELECT * FROM [dbo].[users] WHERE userId = ${userId}`;
@@ -78,23 +79,38 @@ export default class UserController {
     const { email, password, userRole } = req.body;
     const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = '${userRole}' WHERE userId = ${userId}`;
 
-    conn.on('connect', (err: tedious.ConnectionError) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const request = new tedious.Request(
-          query,
-          (err: tedious.RequestError, rowCount: number) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(rowCount);
-            }
-          }
-        );
-
-        conn.execSql(request);
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(rowCount);
+        }
       }
+    );
+    request.on('requestCompleted', () => {
+      res.status(200);
     });
+    conn.execSql(request);
+  };
+
+  deleteUser = async (req: Request, res: Response) => {
+    const { userId } = req.params;
+    const query = `DELETE FROM [dbo].[users] WHERE userId = ${userId}`;
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(rowCount);
+        }
+      }
+    );
+    request.on('requestCompleted', () => {
+      res.status(200);
+    });
+    conn.execSql(request);
   };
 }
