@@ -19,7 +19,9 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else {
             console.log(rowCount);
           }
@@ -47,7 +49,9 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else {
             console.log(rowCount);
           }
@@ -82,13 +86,28 @@ export default class SystemController {
 
   public getSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;
+
+    if (!Number.isInteger(Number(systemId))) {
+      return res.status(400).json({
+        error: 'Invalid systemId',
+        details: 'systemId must be an integer.',
+      });
+    }
+
     const query = `SELECT * FROM [dbo].[systems] WHERE systemId = ${systemId}`;
 
     const request = new tedious.Request(
       query,
       (err: tedious.RequestError, rowCount: number) => {
         if (err) {
-          console.log(err);
+          return res.status(404).json({
+            error: err.message,
+          });
+        } else if (rowCount === 0) {
+          return res.status(401).json({
+            error: 'Unauthorized',
+            details: 'User does not exist.',
+          });
         } else {
           console.log(rowCount);
         }
@@ -113,6 +132,14 @@ export default class SystemController {
 
   public updateSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;
+
+    if (!Number.isInteger(Number(systemId))) {
+      return res.status(400).json({
+        error: 'Invalid systemId',
+        details: 'systemId must be an integer.',
+      });
+    }
+
     const {
       inverterOutput,
       numberOfPanels,
@@ -128,7 +155,14 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'User does not exist.',
+            });
           } else {
             console.log(rowCount);
           }
@@ -150,13 +184,28 @@ export default class SystemController {
 
   deleteSystem = async (req: Request, res: Response) => {
     const { systemId } = req.params;
+
+    if (!Number.isInteger(Number(systemId))) {
+      return res.status(400).json({
+        error: 'Invalid systemId',
+        details: 'systemId must be an integer.',
+      });
+    }
+
     try {
       const query = `DELETE FROM [dbo].[systems] WHERE systemId = ${systemId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'User does not exist.',
+            });
           } else {
             console.log(rowCount);
           }
