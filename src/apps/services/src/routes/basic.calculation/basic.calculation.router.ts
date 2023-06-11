@@ -1,5 +1,5 @@
 import express from 'express';
-import BasicCalculationController from '../../controllers/basicCalculation/basic.calculation.controller';
+import BasicCalculationController from '../../controllers/basic.calculation/basic.calculation.controller';
 import bodyParser from 'body-parser';
 export const basicCalculationRouter = express.Router();
 
