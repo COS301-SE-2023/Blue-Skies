@@ -72,4 +72,46 @@ export default class ApplianceController {
       });
     }
   };
+
+  public getAppliance = (req: Request, res: Response) => {
+    const { applianceId } = req.params;
+
+    if (!Number.isInteger(Number(applianceId))) {
+      return res.status(400).json({
+        error: 'Invalid applianceId',
+        details: 'applianceId must be an integer.',
+      });
+    }
+
+    const query = `SELECT * FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
+
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          return res.status(400).json({
+            error: err.message,
+          });
+        } else if (rowCount === 0) {
+          return res.status(401).json({
+            error: 'Unauthorized',
+            details: 'Appliance does not exist.',
+          });
+        } else {
+          console.log(rowCount);
+        }
+      }
+    );
+
+    request.on('row', (columns: tedious.ColumnValue[]) => {
+      const appliance: IAppliance = {
+        applianceId: columns[0].value,
+        type: columns[1].value,
+        powerUsage: columns[2].value,
+      };
+      res.send(appliance);
+    });
+
+    conn.execSql(request);
+  };
 }
