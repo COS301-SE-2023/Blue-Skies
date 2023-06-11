@@ -23,3 +23,12 @@ basicCalculationRouter.get(
   '/:basicCalculationId',
   basicCalculationController.getBasicCalculation
 );
+basicCalculationRouter.patch(
+  '/update/:basicCalculationId',
+  bodyParser.json(),
+  basicCalculationController.updateBasicCalculation
+);
+basicCalculationRouter.delete(
+  '/delete/:basicCalculationId',
+  basicCalculationController.deleteBasicCalculation
+);
