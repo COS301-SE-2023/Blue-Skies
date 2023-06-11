@@ -8,6 +8,7 @@
   },
   "private": true,
   "dependencies": {
+    "@types/supertest": "^2.0.12",
     "axios": "^1.0.0",
     "babel-preset-env": "^1.7.0",
     "body-parser": "^1.20.2",

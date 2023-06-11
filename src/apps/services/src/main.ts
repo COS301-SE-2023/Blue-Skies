@@ -7,7 +7,7 @@ import express from 'express';
 import * as path from 'path';
 import router from './routes/index';
 import * as tedious from 'tedious';
-const app = express();
+export const app = express();
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
