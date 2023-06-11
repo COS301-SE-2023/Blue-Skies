@@ -15,14 +15,17 @@ function maskSentinel2Clouds(image)
 
     return image.updateMask(mask).divide(10000);
 }
-
 // Do not delete
+
+var endYear = 2022;
+var numYears = 3;
+var numPoints = 10000;
+var areaSize = 2000;
 
 var southAfrica = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
     .filter(ee.Filter.eq('country_na', 'South Africa'));
 
 // Generate random points within South Africa
-var numPoints = 1; // Adjust the number of points as needed
 var randomSeed = Math.floor(Math.random() * 1000000);
 var randomPoints = ee.FeatureCollection.randomPoints({ region: southAfrica.geometry(), points: numPoints, seed: randomSeed });
 
@@ -36,8 +39,6 @@ var visualizationParams = {
     bands: ['B4', 'B3', 'B2'],
 };
 
-var year = 2020;
-
 // Function to generate square geometries centered on each point
 function createSquare(point, size) 
 {
@@ -47,32 +48,35 @@ function createSquare(point, size)
     return ee.Feature(coordinates);
 }
 
-for(var i = 1; i <= 12; i++) 
+
+for(var year = endYear - numYears + 1; year <= endYear; year++)
 {
-  // Get dates
-  var stringDateMonth = i < 10 ? '0' + i : i;
-  var startDate = ee.Date(year + '-' + stringDateMonth + '-01');
-  var endDate = ee.Date(year + '-' + stringDateMonth + '-29');
-  var timeRange = ee.DateRange(startDate, endDate);
-  
-  // Get satellite images for < 5% cloud coverage
-  var satelliteImages = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
-      .filterDate(timeRange)
-      .filterBounds(randomPoints)
-      // Pre-filter to get less cloudy granules.
-      .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
-      .map(maskSentinel2Clouds);
-      
-  // Display zoomed-in images
-  var zoomedInImages = satelliteImages.map(function (image) 
-  {
-      var squareAreas = randomPoints.map(function (point) 
-      {
-          return createSquare(point, ee.Number(3000)); // Adjust the square size as needed
-      });
-      return image.visualize(visualizationParams).clip(squareAreas);
-  });
-  
-  // Add satellite image layer of zoomed-in images
-  Map.addLayer(zoomedInImages.median(), {}, 'Month ' + i, true, 1);
+  for(var i = 1; i <= 12; i++) {
+    // Get dates
+    var stringDateMonth = i < 10 ? '0' + i : i;
+    var startDate = ee.Date(year + '-' + stringDateMonth + '-01');
+    var endDate = ee.Date(year + '-' + stringDateMonth + '-28');
+    var timeRange = ee.DateRange(startDate, endDate);
+    
+    // Get satellite images for < 5% cloud coverage
+    var satelliteImages = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+        .filterDate(timeRange)
+        .filterBounds(randomPoints)
+        // Pre-filter to get less cloudy granules.
+        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
+        .map(maskSentinel2Clouds);
+        
+    // Display zoomed-in images
+    var zoomedInImages = satelliteImages.map(function (image) 
+    {
+        var squareAreas = randomPoints.map(function (point) 
+        {
+            return createSquare(point, ee.Number(areaSize)); // Adjust the square size as needed
+        });
+        return image.visualize(visualizationParams).clip(squareAreas);
+    });
+    
+    // Add satellite image layer of zoomed-in images
+    Map.addLayer(zoomedInImages.median(), {}, 'Year ' + year + 'Month ' + i, false, 1);
+  }
 }
