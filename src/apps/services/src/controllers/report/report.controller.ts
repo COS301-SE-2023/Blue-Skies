@@ -89,4 +89,50 @@ export default class ReportController {
       });
     }
   };
+
+  public getReport = (req: Request, res: Response) => {
+    const { reportId } = req.params;
+
+    if (!Number.isInteger(Number(reportId))) {
+      return res.status(400).json({
+        error: 'Invalid reportId',
+        details: 'reportId must be an integer.',
+      });
+    }
+
+    const query = `SELECT * FROM [dbo].[reports] WHERE reportId = ${reportId}`;
+
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          return res.status(400).json({
+            error: err.message,
+          });
+        } else if (rowCount === 0) {
+          return res.status(401).json({
+            error: 'Unauthorized',
+            details: 'Report does not exist.',
+          });
+        } else {
+          console.log(rowCount);
+        }
+      }
+    );
+
+    request.on('row', (columns: tedious.ColumnValue[]) => {
+      const report: IReport = {
+        reportId: columns[0].value,
+        reportName: columns[1].value,
+        userId: columns[2].value,
+        basicCalculationId: columns[3].value,
+        solarScore: columns[4].value,
+        runningTime: columns[5].value,
+        dateCreated: columns[6].value,
+      };
+      res.send(report);
+    });
+
+    conn.execSql(request);
+  };
 }
