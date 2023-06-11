@@ -8,3 +8,6 @@ reportRouter.get('/', (req, res) => {
     message: 'Welcome to the report router!',
   });
 });
+
+const reportController = new ReportController();
+reportRouter.post('/create', bodyParser.json(), reportController.createReport);
