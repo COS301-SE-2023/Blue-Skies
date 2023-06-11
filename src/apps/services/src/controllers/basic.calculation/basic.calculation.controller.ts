@@ -129,5 +129,50 @@ export default class BasicCalculationController {
     conn.execSql(request);
   };
 
+  public updateBasicCalculation = (req: Request, res: Response) => {
+    const { basicCalculationId } = req.params;
+
+    if (!Number.isInteger(Number(basicCalculationId))) {
+      return res.status(400).json({
+        error: 'Invalid basicCalculationId',
+        details: 'basicCalculationId must be an integer.',
+      });
+    }
+
+    const { systemId, dayLightHours, location, batteryLife } = req.body;
+    try {
+      const query =
+        `UPDATE [dbo].[basicCalculations] SET systemId = '${systemId}', dayLightHours = '${dayLightHours}',` +
+        ` location = '${location}', batteryLife = ${batteryLife} WHERE basicCalculationId = ${basicCalculationId}`;
+      console.log(query);
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Basic calculation does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json({
+              message: 'Basic Calculation updated successfully.',
+            });
+          }
+        }
+      );
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to update basic calculation.',
+        details: 'Database connection error.',
+      });
+    }
+  };
+
  
 }
