@@ -16,3 +16,4 @@ applianceRouter.post(
   applianceController.createAppliance
 );
 applianceRouter.get('/all', applianceController.getAllAppliances);
+applianceRouter.get('/:applianceId', applianceController.getAppliance);
