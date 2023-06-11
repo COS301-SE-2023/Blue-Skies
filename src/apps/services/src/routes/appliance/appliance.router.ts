@@ -17,3 +17,8 @@ applianceRouter.post(
 );
 applianceRouter.get('/all', applianceController.getAllAppliances);
 applianceRouter.get('/:applianceId', applianceController.getAppliance);
+applianceRouter.patch(
+  '/update/:applianceId',
+  bodyParser.json(),
+  applianceController.updateAppliance
+);
