@@ -15,3 +15,4 @@ applianceRouter.post(
   bodyParser.json(),
   applianceController.createAppliance
 );
+applianceRouter.get('/all', applianceController.getAllAppliances);
