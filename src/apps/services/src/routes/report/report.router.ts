@@ -11,3 +11,4 @@ reportRouter.get('/', (req, res) => {
 
 const reportController = new ReportController();
 reportRouter.post('/create', bodyParser.json(), reportController.createReport);
+reportRouter.get('/all', reportController.getAllReports);
