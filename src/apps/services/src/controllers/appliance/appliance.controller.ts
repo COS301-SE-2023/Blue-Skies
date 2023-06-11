@@ -160,4 +160,48 @@ export default class ApplianceController {
       });
     }
   };
+
+  public deleteAppliance = async (req: Request, res: Response) => {
+    const { applianceId } = req.params;
+
+    if (!Number.isInteger(Number(applianceId))) {
+      return res.status(400).json({
+        error: 'Invalid applianceId',
+        details: 'applianceId must be an integer.',
+      });
+    }
+
+    try {
+      const query = `DELETE FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Appliance does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'Appliance deleted successfully.',
+        });
+      });
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to find appliance to delete.',
+        details: 'Database connection error.',
+      });
+    }
+  };
 }
