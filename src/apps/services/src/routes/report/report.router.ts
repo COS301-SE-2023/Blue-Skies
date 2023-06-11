@@ -18,3 +18,4 @@ reportRouter.patch(
   bodyParser.json(),
   reportController.updateReport
 );
+reportRouter.delete('/delete/:reportId', reportController.deleteReport);
