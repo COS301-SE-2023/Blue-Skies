@@ -6,7 +6,7 @@ import { systemRouter } from './system/system.router';
 const router = Router();
 
 router.get('/', testHelloWorld);
-router.use('/users', userRouter);
+router.use('/user', userRouter);
 router.use('/auth', authRouter);
 router.use('/system', systemRouter);
 
