@@ -21,7 +21,9 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else {
             console.log(rowCount);
           }
@@ -51,7 +53,9 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else {
             if (rowCount === 0) {
               foundUser = false;

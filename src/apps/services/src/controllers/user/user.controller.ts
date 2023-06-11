@@ -12,7 +12,9 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else {
             console.log(rowCount);
           }
@@ -60,7 +62,9 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
@@ -112,7 +116,9 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
@@ -153,7 +159,9 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log(err);
+            return res.status(404).json({
+              error: err.message,
+            });
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
