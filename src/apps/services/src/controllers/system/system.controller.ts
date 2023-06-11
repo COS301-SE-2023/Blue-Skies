@@ -3,6 +3,41 @@ import { Request, Response } from 'express';
 import ISystem from '../../models/system.interface';
 import { connection as conn } from '../../main';
 export default class SystemController {
+  public createSystem = (req: Request, res: Response) => {
+    try {
+      const {
+        inverterOutput,
+        numberOfPanels,
+        batterySize,
+        numberOfBatteries,
+        solarInput,
+      } = req.body;
+      const query =
+        `INSERT INTO [dbo].[systems] (inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
+        ` VALUES ('${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+
+      conn.execSql(request);
+
+      res.status(200).json({
+        message: 'System created successfully.',
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: error,
+      });
+    }
+  };
+
   public getAllSystems = (req: Request, res: Response) => {
     try {
       const query = 'SELECT * FROM [dbo].[systems]';
@@ -20,7 +55,7 @@ export default class SystemController {
       );
 
       request.on('row', (columns: tedious.ColumnValue[]) => {
-        const user: ISystem = {
+        const system: ISystem = {
           systemId: columns[0].value,
           inverterOutput: columns[1].value,
           numberOfPanels: columns[2].value,
@@ -29,7 +64,7 @@ export default class SystemController {
           solarInput: columns[5].value,
         };
 
-        systems.push(user);
+        systems.push(system);
       });
 
       request.on('requestCompleted', () => {
@@ -44,40 +79,101 @@ export default class SystemController {
       });
     }
   };
+
   public getSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;
     const query = `SELECT * FROM [dbo].[systems] WHERE systemId = ${systemId}`;
 
-    conn.on('connect', (err: tedious.ConnectionError) => {
-      if (err) {
-        console.log(err);
-      } else {
-        const request = new tedious.Request(
-          query,
-          (err: tedious.RequestError, rowCount: number) => {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log(rowCount);
-            }
-          }
-        );
-
-        request.on('row', (columns: tedious.ColumnValue[]) => {
-          const user: ISystem = {
-            systemId: columns[0].value,
-            inverterOutput: columns[1].value,
-            numberOfPanels: columns[2].value,
-            batterySize: columns[3].value,
-            numberOfBatteries: columns[4].value,
-            solarInput: columns[5].value,
-          };
-
-          res.send(user);
-        });
-
-        conn.execSql(request);
+    const request = new tedious.Request(
+      query,
+      (err: tedious.RequestError, rowCount: number) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(rowCount);
+        }
       }
+    );
+
+    request.on('row', (columns: tedious.ColumnValue[]) => {
+      const system: ISystem = {
+        systemId: columns[0].value,
+        inverterOutput: columns[1].value,
+        numberOfPanels: columns[2].value,
+        batterySize: columns[3].value,
+        numberOfBatteries: columns[4].value,
+        solarInput: columns[5].value,
+      };
+
+      res.send(system);
     });
+
+    conn.execSql(request);
+  };
+
+  public updateSystem = (req: Request, res: Response) => {
+    const { systemId } = req.params;
+    const {
+      inverterOutput,
+      numberOfPanels,
+      batterySize,
+      numberOfBatteries,
+      solarInput,
+    } = req.body;
+    try {
+      const query =
+        `UPDATE [dbo].[systems] SET inverterOutput = '${inverterOutput}', numberOfPanels = '${numberOfPanels}',` +
+        ` batterySize = ${batterySize}, numberOfBatteries = ${numberOfBatteries}, solarInput = ${solarInput} WHERE systemId = ${systemId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+      conn.execSql(request);
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'System updated successfully.',
+        });
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to update system.',
+        details: 'Database connection error.',
+      });
+    }
+  };
+
+  deleteSystem = async (req: Request, res: Response) => {
+    const { systemId } = req.params;
+    try {
+      const query = `DELETE FROM [dbo].[systems] WHERE systemId = ${systemId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'System deleted successfully.',
+        });
+      });
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to find system to delete.',
+        details: 'Database connection error.',
+      });
+    }
   };
 }
