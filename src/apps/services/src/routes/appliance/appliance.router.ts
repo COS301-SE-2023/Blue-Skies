@@ -5,6 +5,13 @@ export const applianceRouter = express.Router();
 
 applianceRouter.get('/', (req, res) => {
   res.send({
-    message: 'Welcome to the system router!',
+    message: 'Welcome to the appliance router!',
   });
 });
+
+const applianceController = new ApplianceController();
+applianceRouter.post(
+  '/create',
+  bodyParser.json(),
+  applianceController.createAppliance
+);
