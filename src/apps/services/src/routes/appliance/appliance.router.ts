@@ -22,3 +22,7 @@ applianceRouter.patch(
   bodyParser.json(),
   applianceController.updateAppliance
 );
+applianceRouter.delete(
+  '/delete/:applianceId',
+  applianceController.deleteAppliance
+);
