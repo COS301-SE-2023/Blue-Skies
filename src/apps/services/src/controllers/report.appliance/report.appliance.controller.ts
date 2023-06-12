@@ -207,6 +207,95 @@ export default class ReportApplianceController {
     conn.execSql(request);
   };
 
+  public updateReportId = (req: Request, res: Response) => {
+    const { reportId } = req.params;
 
+    if (!Number.isInteger(Number(reportId))) {
+      return res.status(400).json({
+        error: 'Invalid reportId',
+        details: 'reportId must be an integer.',
+      });
+    }
 
+    const { newReportId } = req.body;
+    try {
+      const query =
+        `UPDATE [dbo].[reportAppliances] SET reportId = '${newReportId}'` +
+        `WHERE reportId = ${reportId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Report appliance does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+      conn.execSql(request);
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'Report appliance updated successfully.',
+        });
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to update report appliance.',
+        details: 'Database connection error.',
+      });
+    }
+  };
+
+  public updateApplianceId = (req: Request, res: Response) => {
+    const { applianceId } = req.params;
+
+    if (!Number.isInteger(Number(applianceId))) {
+      return res.status(400).json({
+        error: 'Invalid applianceId',
+        details: 'applianceId must be an integer.',
+      });
+    }
+
+    const { newApplianceId } = req.body;
+    try {
+      const query =
+        `UPDATE [dbo].[reportAppliances] SET applianceId = '${newApplianceId}'` +
+        `WHERE applianceId = ${applianceId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Report appliance does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+      conn.execSql(request);
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'Report appliance updated successfully.',
+        });
+      });
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to update report appliance.',
+        details: 'Database connection error.',
+      });
+    }
+  };
 }

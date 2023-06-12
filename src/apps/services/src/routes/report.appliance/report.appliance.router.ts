@@ -31,4 +31,13 @@ reportApplianceRouter.get(
   '/:reportId/:applianceId',
   reportApplianceController.getAppliance
 );
-
+reportApplianceRouter.patch(
+  '/updateReportId/:reportId',
+  bodyParser.json(),
+  reportApplianceController.updateReportId
+);
+reportApplianceRouter.patch(
+  '/updateApplianceId/:applianceId',
+  bodyParser.json(),
+  reportApplianceController.updateApplianceId
+);
