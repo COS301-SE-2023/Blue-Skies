@@ -15,3 +15,20 @@ reportApplianceRouter.post(
   bodyParser.json(),
   reportApplianceController.createReportAppliance
 );
+reportApplianceRouter.get(
+  '/all',
+  reportApplianceController.getAllReportAppliances
+);
+reportApplianceRouter.get(
+  '/getAppliancesInReport/:reportId',
+  reportApplianceController.getAppliancesInReport
+);
+reportApplianceRouter.get(
+  '/getReportsWithAppliance/:applianceId',
+  reportApplianceController.getReportsWithAppliance
+);
+reportApplianceRouter.get(
+  '/:reportId/:applianceId',
+  reportApplianceController.getAppliance
+);
+
