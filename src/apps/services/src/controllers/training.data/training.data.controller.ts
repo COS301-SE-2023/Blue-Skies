@@ -1,14 +1,15 @@
 import * as tedious from 'tedious';
 import { Request, Response } from 'express';
-import IKey from '../../models/key.interface';
+import ITrainingData from '../../models/training.data.interface';
 import { connection as conn } from '../../main';
-export default class KeyController {
-  public createKey = (req: Request, res: Response) => {
+export default class TrainingDataController {
+  public createTrainingData = (req: Request, res: Response) => {
     try {
-      const { owner, APIKey, remainingCalls } = req.body;
+      let { solarIrradiation } = req.body;
+      solarIrradiation = Number(solarIrradiation);
       const query =
-        `INSERT INTO [dbo].[keys] (owner, APIKey, remainingCalls)` +
-        ` VALUES ('${owner}', '${APIKey}', ${remainingCalls})`;
+        `INSERT INTO [dbo].[trainingData] (solarIrradiation)` +
+        ` VALUES (${solarIrradiation})`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -18,7 +19,7 @@ export default class KeyController {
             });
           } else {
             return res.status(200).json({
-              message: 'Key created successfully.',
+              message: 'Training data created successfully.',
             });
           }
         }
@@ -32,10 +33,10 @@ export default class KeyController {
     }
   };
 
-  public getAllKeys = (req: Request, res: Response) => {
+  public getAllTrainingData = (req: Request, res: Response) => {
     try {
-      const query = 'SELECT * FROM [dbo].[keys]';
-      const keys: IKey[] = [];
+      const query = 'SELECT * FROM [dbo].[trainingData]';
+      const trainingDataArr: ITrainingData[] = [];
 
       const request = new tedious.Request(
         query,
@@ -51,40 +52,38 @@ export default class KeyController {
       );
 
       request.on('row', (columns: tedious.ColumnValue[]) => {
-        const key: IKey = {
-          keyId: columns[0].value,
-          owner: columns[1].value,
-          APIKey: columns[2].value,
-          remainingCalls: columns[3].value,
+        const trainingData: ITrainingData = {
+          trainingDataId: columns[0].value,
+          solarIrradiation: columns[1].value,
         };
 
-        keys.push(key);
+        trainingDataArr.push(trainingData);
       });
 
       request.on('requestCompleted', () => {
         res.status(200);
-        res.json({ keys: keys });
+        res.json({ trainingData: trainingDataArr });
       });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve keys.',
+        error: 'Failed to retrieve training data.',
         details: 'Database connection error.',
       });
     }
   };
 
-  public getKey = (req: Request, res: Response) => {
-    const { keyId } = req.params;
+  public getTrainingData = (req: Request, res: Response) => {
+    const { trainingDataId } = req.params;
 
-    if (!Number.isInteger(Number(keyId))) {
+    if (!Number.isInteger(Number(trainingDataId))) {
       return res.status(400).json({
-        error: 'Invalid keyId',
-        details: 'keyId must be an integer.',
+        error: 'Invalid trainingDataId',
+        details: 'trainingDataId must be an integer.',
       });
     }
 
-    const query = `SELECT * FROM [dbo].[keys] WHERE keyId = ${keyId}`;
+    const query = `SELECT * FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
 
     const request = new tedious.Request(
       query,
@@ -96,7 +95,7 @@ export default class KeyController {
         } else if (rowCount === 0) {
           return res.status(401).json({
             error: 'Unauthorized',
-            details: 'Key does not exist.',
+            details: 'Training data does not exist.',
           });
         } else {
           console.log(rowCount);
@@ -105,33 +104,31 @@ export default class KeyController {
     );
 
     request.on('row', (columns: tedious.ColumnValue[]) => {
-      const key: IKey = {
-        keyId: columns[0].value,
-        owner: columns[1].value,
-        APIKey: columns[2].value,
-        remainingCalls: columns[3].value,
+      const trainingData: ITrainingData = {
+        trainingDataId: columns[0].value,
+        solarIrradiation: columns[1].value,
       };
-      res.send(key);
+      res.send(trainingData);
     });
 
     conn.execSql(request);
   };
 
-  public updateKey = (req: Request, res: Response) => {
-    const { keyId } = req.params;
+  public updateTrainingData = (req: Request, res: Response) => {
+    const { trainingDataId } = req.params;
 
-    if (!Number.isInteger(Number(keyId))) {
+    if (!Number.isInteger(Number(trainingDataId))) {
       return res.status(400).json({
-        error: 'Invalid keyId',
-        details: 'keyId must be an integer.',
+        error: 'Invalid trainingDataId',
+        details: 'trainingDataId must be an integer.',
       });
     }
 
-    const { owner, APIKey, remainingCalls } = req.body;
+    const { solarIrradiation } = req.body;
     try {
       const query =
-        `UPDATE [dbo].[keys] SET owner = '${owner}', APIKey = '${APIKey}', remainingCalls = ${remainingCalls}` +
-        ` WHERE keyId = ${keyId}`;
+        `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}'` +
+        `WHERE trainingDataId = ${trainingDataId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -142,38 +139,39 @@ export default class KeyController {
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
-              details: 'Key does not exist.',
+              details: 'Training data does not exist.',
             });
           } else {
-            request.on('requestCompleted', () => {
-              res.status(200).json({
-                message: 'Key updated successfully.',
-              });
-            });
+            console.log(rowCount);
           }
         }
       );
       conn.execSql(request);
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'Training data updated successfully.',
+        });
+      });
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update key.',
+        error: 'Failed to update training data.',
         details: 'Database connection error.',
       });
     }
   };
 
-  public deleteKey = async (req: Request, res: Response) => {
-    const { keyId } = req.params;
+  public deleteTrainingData = async (req: Request, res: Response) => {
+    const { trainingDataId } = req.params;
 
-    if (!Number.isInteger(Number(keyId))) {
+    if (!Number.isInteger(Number(trainingDataId))) {
       return res.status(400).json({
-        error: 'Invalid keyId',
-        details: 'keyId must be an integer.',
+        error: 'Invalid trainingDataId',
+        details: 'trainingDataId must be an integer.',
       });
     }
 
     try {
-      const query = `DELETE FROM [dbo].[keys] WHERE keyId = ${keyId}`;
+      const query = `DELETE FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -184,7 +182,7 @@ export default class KeyController {
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
-              details: 'Key does not exist.',
+              details: 'Training data does not exist.',
             });
           } else {
             console.log(rowCount);
@@ -194,13 +192,13 @@ export default class KeyController {
 
       request.on('requestCompleted', () => {
         res.status(200).json({
-          message: 'Key deleted successfully.',
+          message: 'Training data deleted successfully.',
         });
       });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find key to delete.',
+        error: 'Failed to find training data to delete.',
         details: 'Database connection error.',
       });
     }
