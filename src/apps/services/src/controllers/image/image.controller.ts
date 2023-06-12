@@ -1,14 +1,14 @@
 import * as tedious from 'tedious';
 import { Request, Response } from 'express';
-import ITrainingData from '../../models/training.data.interface';
+import IImage from '../../models/image.interface';
 import { connection as conn } from '../../main';
-export default class TrainingDataController {
-  public createTrainingData = (req: Request, res: Response) => {
+export default class ImageController {
+  public createImage = (req: Request, res: Response) => {
     try {
-      let { solarIrradiation } = req.body;
+      let { trainingDataId, image } = req.body;
       const query =
-        `INSERT INTO [dbo].[trainingData] (solarIrradiation)` +
-        ` VALUES (${solarIrradiation})`;
+        `INSERT INTO [dbo].[images] (trainingDataId, image)` +
+        ` VALUES (${trainingDataId}, '${image}')`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -18,7 +18,7 @@ export default class TrainingDataController {
             });
           } else {
             return res.status(200).json({
-              message: 'Training data created successfully.',
+              message: 'Image created successfully.',
             });
           }
         }
@@ -32,10 +32,10 @@ export default class TrainingDataController {
     }
   };
 
-  public getAllTrainingData = (req: Request, res: Response) => {
+  public getAllImages = (req: Request, res: Response) => {
     try {
-      const query = 'SELECT * FROM [dbo].[trainingData]';
-      const trainingDataArr: ITrainingData[] = [];
+      const query = 'SELECT * FROM [dbo].[images]';
+      const images: IImage[] = [];
 
       const request = new tedious.Request(
         query,
@@ -51,38 +51,39 @@ export default class TrainingDataController {
       );
 
       request.on('row', (columns: tedious.ColumnValue[]) => {
-        const trainingData: ITrainingData = {
-          trainingDataId: columns[0].value,
-          solarIrradiation: columns[1].value,
+        const image: IImage = {
+          imageId: columns[0].value,
+          trainingDataId: columns[1].value,
+          image: columns[2].value,
         };
 
-        trainingDataArr.push(trainingData);
+        images.push(image);
       });
 
       request.on('requestCompleted', () => {
         res.status(200);
-        res.json({ trainingData: trainingDataArr });
+        res.json({ images: images });
       });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve training data.',
+        error: 'Failed to retrieve image.',
         details: 'Database connection error.',
       });
     }
   };
 
-  public getTrainingData = (req: Request, res: Response) => {
-    const { trainingDataId } = req.params;
+  public getImage = (req: Request, res: Response) => {
+    const { imageId } = req.params;
 
-    if (!Number.isInteger(Number(trainingDataId))) {
+    if (!Number.isInteger(Number(imageId))) {
       return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
+        error: 'Invalid imageId',
+        details: 'imageId must be an integer.',
       });
     }
 
-    const query = `SELECT * FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
+    const query = `SELECT * FROM [dbo].[images] WHERE imageId = ${imageId}`;
 
     const request = new tedious.Request(
       query,
@@ -94,7 +95,7 @@ export default class TrainingDataController {
         } else if (rowCount === 0) {
           return res.status(401).json({
             error: 'Unauthorized',
-            details: 'Training data does not exist.',
+            details: 'Image does not exist.',
           });
         } else {
           console.log(rowCount);
@@ -103,31 +104,32 @@ export default class TrainingDataController {
     );
 
     request.on('row', (columns: tedious.ColumnValue[]) => {
-      const trainingData: ITrainingData = {
-        trainingDataId: columns[0].value,
-        solarIrradiation: columns[1].value,
+      const image: IImage = {
+        imageId: columns[0].value,
+        trainingDataId: columns[1].value,
+        image: columns[2].value,
       };
-      res.send(trainingData);
+      res.send(image);
     });
 
     conn.execSql(request);
   };
 
-  public updateTrainingData = (req: Request, res: Response) => {
-    const { trainingDataId } = req.params;
+  public updateImage = (req: Request, res: Response) => {
+    const { imageId } = req.params;
 
-    if (!Number.isInteger(Number(trainingDataId))) {
+    if (!Number.isInteger(Number(imageId))) {
       return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
+        error: 'Invalid imageId',
+        details: 'imageId must be an integer.',
       });
     }
 
-    const { solarIrradiation } = req.body;
+    let { trainingDataId, image } = req.body;
     try {
       const query =
-        `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}'` +
-        `WHERE trainingDataId = ${trainingDataId}`;
+        `UPDATE [dbo].[images] SET trainingDataId = '${trainingDataId}', image = '${image}'` +
+        `WHERE imageId = ${imageId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -138,7 +140,7 @@ export default class TrainingDataController {
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
-              details: 'Training data does not exist.',
+              details: 'Image does not exist.',
             });
           } else {
             console.log(rowCount);
@@ -148,29 +150,29 @@ export default class TrainingDataController {
       conn.execSql(request);
       request.on('requestCompleted', () => {
         res.status(200).json({
-          message: 'Training data updated successfully.',
+          message: 'Image updated successfully.',
         });
       });
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update training data.',
+        error: 'Failed to update image.',
         details: 'Database connection error.',
       });
     }
   };
 
-  public deleteTrainingData = async (req: Request, res: Response) => {
-    const { trainingDataId } = req.params;
+  public deleteImage = async (req: Request, res: Response) => {
+    const { imageId } = req.params;
 
-    if (!Number.isInteger(Number(trainingDataId))) {
+    if (!Number.isInteger(Number(imageId))) {
       return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
+        error: 'Invalid imageId',
+        details: 'imageId must be an integer.',
       });
     }
 
     try {
-      const query = `DELETE FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
+      const query = `DELETE FROM [dbo].[images] WHERE imageId = ${imageId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -181,7 +183,7 @@ export default class TrainingDataController {
           } else if (rowCount === 0) {
             return res.status(401).json({
               error: 'Unauthorized',
-              details: 'Training data does not exist.',
+              details: 'Image does not exist.',
             });
           } else {
             console.log(rowCount);
@@ -191,13 +193,13 @@ export default class TrainingDataController {
 
       request.on('requestCompleted', () => {
         res.status(200).json({
-          message: 'Training data deleted successfully.',
+          message: 'Image deleted successfully.',
         });
       });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find training data to delete.',
+        error: 'Failed to find image to delete.',
         details: 'Database connection error.',
       });
     }
