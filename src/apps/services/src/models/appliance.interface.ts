@@ -1,4 +1,4 @@
-export default interface IAppliances {
+export default interface IAppliance {
   applianceId: number;
   type: string;
   powerUsage: number;
