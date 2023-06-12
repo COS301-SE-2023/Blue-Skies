@@ -21,7 +21,6 @@ export default class ReportController {
         `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarScore, runningTime, dateCreated)` +
         ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarScore}, ${runningTime}, '${dateCreated}')`;
 
-      console.log(query);
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {

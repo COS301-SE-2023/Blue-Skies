@@ -6,6 +6,7 @@ import { systemRouter } from './system/system.router';
 import { basicCalculationRouter } from './basic.calculation/basic.calculation.router';
 import { applianceRouter } from './appliance/appliance.router';
 import { reportRouter } from './report/report.router';
+import { reportApplianceRouter } from './report.appliance/report.appliance.router';
 const router = Router();
 
 router.get('/', testHelloWorld);
@@ -15,5 +16,6 @@ router.use('/system', systemRouter);
 router.use('/basicCalculation', basicCalculationRouter);
 router.use('/appliance', applianceRouter);
 router.use('/report', reportRouter);
+router.use('/reportAppliance', reportApplianceRouter);
 
 export default router;
