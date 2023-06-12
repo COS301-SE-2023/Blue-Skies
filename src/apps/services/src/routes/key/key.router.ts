@@ -10,3 +10,4 @@ keyRouter.get('/', (req, res) => {
 });
 
 const keyController = new KeyController();
+keyRouter.post('/create', bodyParser.json(), keyController.createKey);
