@@ -10,3 +10,8 @@ reportApplianceRouter.get('/', (req, res) => {
 });
 
 const reportApplianceController = new ApplianceController();
+reportApplianceRouter.post(
+  '/create',
+  bodyParser.json(),
+  reportApplianceController.createReportAppliance
+);
