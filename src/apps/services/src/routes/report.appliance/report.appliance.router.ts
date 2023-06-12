@@ -41,3 +41,15 @@ reportApplianceRouter.patch(
   bodyParser.json(),
   reportApplianceController.updateApplianceId
 );
+reportApplianceRouter.delete(
+  '/deleteReportId/:reportId',
+  reportApplianceController.deleteReportId
+);
+reportApplianceRouter.delete(
+  '/deleteApplianceId/:applianceId',
+  reportApplianceController.deleteApplianceId
+);
+reportApplianceRouter.delete(
+  '/delete/:reportId/:applianceId',
+  reportApplianceController.deleteReportAppliance
+);
