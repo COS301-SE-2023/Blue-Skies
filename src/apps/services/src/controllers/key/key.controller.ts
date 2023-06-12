@@ -162,4 +162,47 @@ export default class KeyController {
     }
   };
 
+  public deleteKey = async (req: Request, res: Response) => {
+    const { keyId } = req.params;
+
+    if (!Number.isInteger(Number(keyId))) {
+      return res.status(400).json({
+        error: 'Invalid keyId',
+        details: 'keyId must be an integer.',
+      });
+    }
+
+    try {
+      const query = `DELETE FROM [dbo].[keys] WHERE keyId = ${keyId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Key does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+          }
+        }
+      );
+
+      request.on('requestCompleted', () => {
+        res.status(200).json({
+          message: 'Key deleted successfully.',
+        });
+      });
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to find key to delete.',
+        details: 'Database connection error.',
+      });
+    }
+  };
 }

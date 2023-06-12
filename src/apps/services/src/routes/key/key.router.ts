@@ -14,3 +14,4 @@ keyRouter.post('/create', bodyParser.json(), keyController.createKey);
 keyRouter.get('/all', keyController.getAllKeys);
 keyRouter.get('/:keyId', keyController.getKey);
 keyRouter.patch('/update/:keyId', bodyParser.json(), keyController.updateKey);
+keyRouter.delete('/delete/:keyId', keyController.deleteKey);
