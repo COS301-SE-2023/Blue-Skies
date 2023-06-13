@@ -7,18 +7,6 @@ export default class AuthController {
   public registerUser = (req: Request, res: Response) => {
     try {
       const { email, password, userRole } = req.body;
-      console.log(
-        '🚀 ~ file: auth.controller.ts:10 ~ AuthController ~ email:',
-        email
-      );
-      console.log(
-        '🚀 ~ file: auth.controller.ts:11 ~ AuthController ~ password:',
-        password
-      );
-      console.log(
-        '🚀 ~ file: auth.controller.ts:12 ~ AuthController ~ userRole:',
-        userRole
-      );
 
       //check if parameters are empty
       if (
@@ -31,7 +19,6 @@ export default class AuthController {
           details: 'Email, password and user role are required.',
         });
       } else {
-        console.log('🚀 Register user');
         //Create datacreated variable with timestamp
         const dateCreated = new Date()
           .toISOString()
