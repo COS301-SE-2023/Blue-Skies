@@ -106,6 +106,10 @@ export default class AuthController {
   public checkEmail = (req: Request, res: Response) => {
     try {
       const { email } = req.body;
+      // console.log(
+      //   '🚀 ~ file: auth.controller.ts:109 ~ AuthController ~ email:',
+      //   email
+      // );
 
       const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
       let foundUser = true;
@@ -120,18 +124,23 @@ export default class AuthController {
             if (rowCount === 0) {
               foundUser = false;
             }
+            // console.log(
+            //   '🚀 ~ file: auth.controller.ts:125 ~ AuthController ~ rowCount:',
+            //   rowCount
+            // );
           }
         }
       );
 
       request.on('requestCompleted', () => {
-        if (!foundUser) {
+        if (foundUser) {
           res.status(200).json({
             message: 'Email is available.',
           });
         } else {
           res.status(404).json({
             error: 'Email is not available.',
+            details: 'Email already exists.',
           });
         }
       });
