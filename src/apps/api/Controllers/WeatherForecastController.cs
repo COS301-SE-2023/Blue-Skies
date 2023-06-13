@@ -29,4 +29,15 @@ public class WeatherForecastController : ControllerBase
     })
     .ToArray();
   }
+
+  [HttpGet("{id}", Name = "GetWeatherForecastById")]
+  public WeatherForecast Get(int id)
+  {
+    return new WeatherForecast
+    {
+      Date = DateOnly.FromDateTime(DateTime.Now.AddDays(id)),
+      TemperatureC = Random.Shared.Next(-20, 55),
+      Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+    };
+  }
 }
