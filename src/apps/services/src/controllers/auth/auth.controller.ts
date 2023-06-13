@@ -101,4 +101,47 @@ export default class AuthController {
       });
     }
   };
+
+  //Check if email already exists
+  public checkEmail = (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
+      let foundUser = true;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(404).json({
+              error: err.message,
+            });
+          } else {
+            if (rowCount === 0) {
+              foundUser = false;
+            }
+          }
+        }
+      );
+
+      request.on('requestCompleted', () => {
+        if (!foundUser) {
+          res.status(200).json({
+            message: 'Email is available.',
+          });
+        } else {
+          res.status(404).json({
+            error: 'Email is not available.',
+          });
+        }
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error,
+        details: 'Database connection error.',
+      });
+    }
+  };
 }
