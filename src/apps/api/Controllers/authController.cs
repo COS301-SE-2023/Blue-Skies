@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -7,22 +8,20 @@ namespace Api.Controllers;
 public class authController : ControllerBase
 {
 
-
-  [HttpGet("register", Name = "auth")]
-  public async Task<IEnumerable<Auth>> GetAsync()
+  [HttpPost("register", Name = "auth")]
+  public async Task<Response> PostAsync(Auth user)
   {
     var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/user/all");
+    var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/auth/checkemail");
+    var content = new StringContent("{\r\n    \"email\" : \"" + user.email + "\"\r\n}", null, "application/json");
+    request.Content = content;
     var response = await client.SendAsync(request);
-    response.EnsureSuccessStatusCode();
-    Console.WriteLine(await response.Content.ReadAsStringAsync());
-    return Enumerable.Range(1, 5).Select(index => new Auth
+    if (response.StatusCode == HttpStatusCode.OK)
     {
-      email = "email",
-      password = "password"
-    })
-    .ToArray();
+      var ans = new Response { message = "Email already exists", details = "Please login or use another email" };
+      return ans;
+    }
+    return new Response { message = "User has successfuly registered", details = "Please login" };
   }
-  //make a register post request to the api
 }
 
