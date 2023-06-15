@@ -12,7 +12,7 @@ public class authController : ControllerBase
   public async Task<Response> PostAsync(Auth user)
   {
     //check if email and password is not null
-    if (user.email == null || user.password == null)
+    if (user.email == null || user.password == null || user.userRole == null)
     {
       //return with error code 400
       var ans = new Response { message = "Email or password is null", details = "Please enter email and password" };
@@ -20,6 +20,7 @@ public class authController : ControllerBase
     }
     string email = user.email;
     string password = user.password;
+    string userRole = user.userRole;
     //check if email is valid
     if (!email.Contains("@") || !email.Contains("."))
     {
@@ -38,6 +39,13 @@ public class authController : ControllerBase
       var ans = new Response { message = "Email already exists", details = "Please login or use another email" };
       return ans;
     }
+    var client2 = new HttpClient();
+    var request2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/auth/register");
+    var content2 = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password + "\",\r\n    \"userRole\" : " + userRole + "\r\n}", null, "application/json");
+    request2.Content = content2;
+    var response2 = await client.SendAsync(request2);
+    Console.WriteLine(response2.StatusCode);
+    Console.WriteLine(await response2.Content.ReadAsStringAsync());
 
 
     return new Response { message = "User has successfuly registered", details = "Please login" };
