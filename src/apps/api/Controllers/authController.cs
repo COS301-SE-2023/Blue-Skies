@@ -9,14 +9,14 @@ public class authController : ControllerBase
 {
 
   [HttpPost("register", Name = "auth")]
-  public async Task<Response> PostAsync(Auth user)
+  public async Task<IActionResult> PostAsync(Auth user)
   {
     //check if email and password is not null
     if (user.email == null || user.password == null || user.userRole == null)
     {
       //return with error code 400
       var ans = new Response { message = "Email or password is null", details = "Please enter email and password" };
-      return ans;
+      return BadRequest(ans.ToString());
     }
     string email = user.email;
     string password = user.password;
@@ -26,7 +26,7 @@ public class authController : ControllerBase
     {
       //return with error code 400
       var ans = new Response { message = "Email is not valid", details = "Please enter a valid email" };
-      return ans;
+      return BadRequest(ans.ToString());
     }
     var client = new HttpClient();
     var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/auth/checkemail");
@@ -37,9 +37,8 @@ public class authController : ControllerBase
     {
       //return with error code 400
       var ans = new Response { message = "Email already exists", details = "Please login or use another email" };
-      return ans;
+      return BadRequest(ans.ToString());
     }
-    var client2 = new HttpClient();
     var request2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/auth/register");
     var content2 = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password + "\",\r\n    \"userRole\" : " + userRole + "\r\n}", null, "application/json");
     request2.Content = content2;
@@ -47,8 +46,8 @@ public class authController : ControllerBase
     Console.WriteLine(response2.StatusCode);
     Console.WriteLine(await response2.Content.ReadAsStringAsync());
 
-
-    return new Response { message = "User has successfuly registered", details = "Please login" };
+    var ans2 = new Response { message = "User registered successfully", details = "Please login" };
+    return Ok(ans2.ToString());
   }
 }
 
