@@ -25,13 +25,13 @@ public class AuthRepository
     }
   }
 
-  public async Task<bool> register(string email, string password, string userRole)
+  public async Task<bool> register(string email, string password)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/auth/register");
-      var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password + "\",\r\n    \"userRole\" : " + userRole + "\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password + "\",\r\n    \"userRole\" : 0\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.StatusCode == HttpStatusCode.OK)
