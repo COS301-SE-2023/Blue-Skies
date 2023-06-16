@@ -1,17 +1,22 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
+using System.Text.RegularExpressions;
 using Api.Repository;
+using Microsoft.AspNetCore.Mvc;
+
 namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class authController : ControllerBase
+public class AuthController : ControllerBase
 {
   private readonly AuthRepository _authRepository;
-  public authController(AuthRepository authRepository)
+
+  //Constructor
+  public AuthController()
   {
-    _authRepository = authRepository;
+    _authRepository = new AuthRepository();
   }
+
   [HttpPost]
   [Route("register")]
   public async Task<IActionResult> Register(Auth user)
@@ -27,10 +32,10 @@ public class authController : ControllerBase
       string email = user.email;
       string password = user.password;
       string userRole = user.userRole;
-      //check if email is valid
-      if (!email.Contains("@"))
+      Console.WriteLine("email: " + email);
+      string emailPattern = @"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$";
+      if (!Regex.IsMatch(email, emailPattern))
       {
-
         return BadRequest("Invalid Email");
       }
       //check if email is already registered
@@ -40,12 +45,12 @@ public class authController : ControllerBase
         return BadRequest("Email is already registered");
       }
 
+
       return Ok("User registered successfully");
     }
     catch (System.Exception)
     {
       return StatusCode(500, "Internal Server Error. Please contact support.");
-      throw;
     }
   }
 
