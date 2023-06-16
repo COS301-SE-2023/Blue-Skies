@@ -23,7 +23,7 @@
                     <h1>Register</h1>    
                 </Header>
             </Heading>
-            <form action="/">
+            <form action="/" method="post" onsubmit="@HandleSubmit">
                 <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"/>
                 <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"/>
                 <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"/>
@@ -53,9 +53,33 @@
                 <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/register" class="text-primary-500 ml-2">Login</a></p>
             </form>
         </Card>
-s
     </div>
 </div>
 
 
+@code {
+    private string? email;
+    private string? password;
+    private string? repassword;
 
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+        @* Send welcome email *@
+        @* Redirect to login page *@
+    }
+
+    private void HandleInvalidSubmit()
+    {
+        Console.WriteLine("OnInvalidSubmit");
+        @* Throw invalid error *@
+    }
+
+    private void HandleSubmit()
+    {
+        Console.WriteLine("OnSubmit");
+        @* Call api *@
+        @* If register was valid : call HandleValidSubmit() 
+            else : call HandleInvalidSubmit() *@
+    }
+}

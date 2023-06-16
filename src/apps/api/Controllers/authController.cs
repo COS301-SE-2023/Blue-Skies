@@ -37,7 +37,8 @@ public class authController : ControllerBase
     {
       //return with error code 400
       var ans = new Response { message = "Email already exists", details = "Please login or use another email" };
-      return BadRequest(ans.ToString());
+      // return BadRequest(ans.ToString());
+      return StatusCode(400, ans.ToString());
     }
     var request2 = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/auth/register");
     var content2 = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password + "\",\r\n    \"userRole\" : " + userRole + "\r\n}", null, "application/json");
