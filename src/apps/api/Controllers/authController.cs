@@ -52,9 +52,9 @@ public class AuthController : ControllerBase
 
       return Ok("User registered successfully");
     }
-    catch (System.Exception)
+    catch (Exception e)
     {
-      return StatusCode(500, "Internal Server Error. Please contact support.");
+      return StatusCode(500, "Internal Server Error. Please contact support. " + "Error: " + e.Message);
     }
   }
 
