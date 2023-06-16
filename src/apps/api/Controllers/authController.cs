@@ -2,7 +2,6 @@ using System.Net;
 using System.Text.RegularExpressions;
 using Api.Repository;
 using Microsoft.AspNetCore.Mvc;
-
 namespace Api.Controllers;
 
 [ApiController]
@@ -43,8 +42,8 @@ public class AuthController : ControllerBase
       {
         return BadRequest("Email is already registered");
       }
-      //register user
 
+      //register user
       var register = await _authRepository.register(email, password);
       if (!register)
       {
