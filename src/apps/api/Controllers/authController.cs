@@ -23,13 +23,14 @@ public class AuthController : ControllerBase
     try
     {
       //check if email and password is not null
-      if (user.email == null || user.password == null)
+      if (user.email == null || user.password == null || user.repassword == null)
       {
 
         return BadRequest("Please enter all Fields");
       }
       string email = user.email;
       string password = user.password;
+      string repassword = user.repassword;
       Console.WriteLine("email: " + email);
       string emailPattern = @"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$";
       if (!Regex.IsMatch(email, emailPattern))
@@ -42,7 +43,10 @@ public class AuthController : ControllerBase
       {
         return BadRequest("Email is already registered");
       }
-
+      if (password != repassword)
+      {
+        return BadRequest("Passwords do not match");
+      }
       //register user
       var register = await _authRepository.register(email, password);
       if (!register)
