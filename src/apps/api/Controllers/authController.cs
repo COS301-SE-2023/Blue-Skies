@@ -21,9 +21,8 @@ public class authController : ControllerBase
       //check if email and password is not null
       if (user.email == null || user.password == null || user.userRole == null)
       {
-        //return with error code 400
-        var ans = new Response { message = "Email or password is null", details = "Please enter email and password" };
-        return BadRequest(ans.ToString());
+
+        return BadRequest("Please enter all Fields");
       }
       string email = user.email;
       string password = user.password;
@@ -31,21 +30,17 @@ public class authController : ControllerBase
       //check if email is valid
       if (!email.Contains("@"))
       {
-        //return with error code 400
-        var ans = new Response { message = "Email is not valid", details = "Please enter a valid email" };
-        return BadRequest(ans.ToString());
+
+        return BadRequest("Invalid Email");
       }
       //check if email is already registered
       var checkemail = await _authRepository.checkemail(email);
       if (checkemail)
       {
-        //return with error code 400
-        var ans = new Response { message = "Email is already registered", details = "Please enter a different email" };
-        return BadRequest(ans.ToString());
+        return BadRequest("Email is already registered");
       }
 
-      var ans2 = new Response { message = "User registered successfully", details = "Please login" };
-      return Ok(ans2.ToString());
+      return Ok("User registered successfully");
     }
     catch (System.Exception)
     {
