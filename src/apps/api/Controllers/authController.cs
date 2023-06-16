@@ -44,7 +44,13 @@ public class AuthController : ControllerBase
       {
         return BadRequest("Email is already registered");
       }
+      //register user
 
+      var register = await _authRepository.register(email, password, userRole);
+      if (!register)
+      {
+        return BadRequest("Could not register user");
+      }
 
       return Ok("User registered successfully");
     }
