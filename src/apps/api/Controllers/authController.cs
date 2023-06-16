@@ -1,15 +1,20 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-
+using Api.Repository;
 namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
 public class authController : ControllerBase
 {
-
-  [HttpPost("register", Name = "auth")]
-  public async Task<IActionResult> PostAsync(Auth user)
+  private readonly AuthRepository _authRepository;
+  public authController(AuthRepository authRepository)
+  {
+    _authRepository = authRepository;
+  }
+  [HttpPost]
+  [Route("register")]
+  public async Task<IActionResult> Register(Auth user)
   {
     //check if email and password is not null
     if (user.email == null || user.password == null || user.userRole == null)
@@ -50,5 +55,6 @@ public class authController : ControllerBase
     var ans2 = new Response { message = "User registered successfully", details = "Please login" };
     return Ok(ans2.ToString());
   }
+
 }
 
