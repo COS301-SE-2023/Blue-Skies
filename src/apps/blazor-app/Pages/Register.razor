@@ -1,46 +1,54 @@
 @page "/register"
 @layout AuthLayout
 @using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+
 
 <PageTitle>Register</PageTitle>
 
 <div class="w-full h-[100vh]">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
-    <Image ImageName="Register-background.webp" css="w-full h-full object-fit -z-10" alt="background image"/>
-
+    <Image ImageName="Register-background.webp" css="w-full h-full object-fit -z-10" alt="background image" />
 
     <div class="flex w-full h-full absolute top-0 left-0 justify-start">
-    <div class="absolute top-14 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
-    <a href="/" class="absolute top-14 right-72">
-        <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
-    </a>
+        <div class="absolute top-14 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
+        <a href="/" class="absolute top-14 right-72">
+            <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo" />
+        </a>
         <Card css="my-auto w-full text-left ml-60">
-            <Heading >
+            <Heading>
                 <Superscript>
                     <p>Create your account</p>
                 </Superscript>
                 <Header>
-                    <h1>Register</h1>    
+                    <h1>Register</h1>
                 </Header>
             </Heading>
-            <form action="/" method="post" onsubmit="@HandleSubmit">
-                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"/>
-                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"/>
-                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"/>
+            <form action="/" method="post" onsubmit="HandleSubmit">
+                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address" />
+                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password" />
+                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password" />
 
+                @* <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"
+                    ValueChanged="@HandleEmailChanged" />
+                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"
+                    ValueChanged="@HandlePasswordChanged" />
+                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"
+                    ValueChanged="@HandleRepasswordChanged" /> *@
+    
                 <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
                 <div class="flex justify-center mt-8 gap-4">
                     <Button css="" style="outline">
                         <content>
                             <a href="/" class="">
-                                <Image ImageName="Google.svg" css="h-6" alt="Google"/>
+                                <Image ImageName="Google.svg" css="h-6" alt="Google" />
                             </a>
                         </content>
                     </Button>
                     <Button style="outline">
                         <content>
                             <a href="/">
-                                <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook"/>
+                                <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook" />
                             </a>
                         </content>
                     </Button>
@@ -50,36 +58,117 @@
                         <input type="submit" value="Register" />
                     </content>
                 </Button>
-                <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/register" class="text-primary-500 ml-2">Login</a></p>
+                <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/register"
+                        class="text-primary-500 ml-2">Login</a></p>
             </form>
         </Card>
     </div>
 </div>
 
-
 @code {
-    private string? email;
-    private string? password;
-    private string? repassword;
+private string? email;
+private string? password;
+private string? repassword;
 
-    private void HandleValidSubmit()
+[Required(ErrorMessage = "Email is required")]
+[EmailAddress(ErrorMessage = "Invalid email address")]
+public string? Email
+{
+    get => email;
+    set => email = value?.Trim();
+}
+
+[Required(ErrorMessage = "Password is required")]
+[MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
+public string? Password
+{
+    get => password;
+    set => password = value?.Trim();
+}
+
+[Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
+public string? Repassword
+{
+    get => repassword;
+    set => repassword = value?.Trim();
+}
+
+
+private void HandleValidSubmit()
+{
+    Console.WriteLine("OnValidSubmit");
+    // Send welcome email
+
+    // Redirect to login page
+    NavigationManager.NavigateTo("/login");
+}
+
+private void HandleInvalidSubmit()
+{
+    Console.WriteLine("OnInvalidSubmit");
+    // Throw an invalid error or perform any other necessary action
+}
+
+
+private void HandleSubmit()
+{
+    var isValid = ValidateForm();
+
+    if (isValid)
     {
-        Console.WriteLine("OnValidSubmit");
-        @* Send welcome email *@
-        @* Redirect to login page *@
+        HandleValidSubmit();
+    }
+    else
+    {
+        HandleInvalidSubmit();
+    }
+}
+
+private void HandleEmailChanged(string value)
+{
+    email = value;
+}
+
+private void HandlePasswordChanged(string value)
+{
+    password = value;
+}
+
+private void HandleRepasswordChanged(string value)
+{
+    repassword = value;
+}
+
+
+private bool ValidateForm()
+{
+    var context = new ValidationContext(this);
+    var results = new List<ValidationResult>();
+
+    var isValid = Validator.TryValidateObject(this, context, results, true);
+
+    foreach (var result in results)
+    {
+        var property = result.MemberNames.FirstOrDefault();
+        var errorMessage = result.ErrorMessage;
+
+        // Set the validation error message for the corresponding property
+        // This will display the error message using the ValidationMessage component
+        switch (property)
+        {
+            case nameof(Email):
+                Email = errorMessage;
+                break;
+            case nameof(Password):
+                Password = errorMessage;
+                break;
+            case nameof(Repassword):
+                Repassword = errorMessage;
+                break;
+        }
     }
 
-    private void HandleInvalidSubmit()
-    {
-        Console.WriteLine("OnInvalidSubmit");
-        @* Throw invalid error *@
-    }
+    return isValid;
+}
 
-    private void HandleSubmit()
-    {
-        Console.WriteLine("OnSubmit");
-        @* Call api *@
-        @* If register was valid : call HandleValidSubmit() 
-            else : call HandleInvalidSubmit() *@
-    }
 }
