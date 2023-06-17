@@ -1,4 +1,5 @@
 @using BlazorApp.Data
+@using BlazorApp.Components
 @inject BlobStorageService blobStorageService
 
 @if (!string.IsNullOrEmpty(ImageData))
@@ -14,7 +15,7 @@
 }
 else
 {
-    <p>Loading image...</p>
+    <ImageSkeleton/>
 }
 
 @code {
