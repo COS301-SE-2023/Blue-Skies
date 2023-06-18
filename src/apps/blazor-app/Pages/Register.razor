@@ -24,17 +24,10 @@
                     <h1>Register</h1>
                 </Header>
             </Heading>
-            <form action="/" method="post" onsubmit="HandleSubmit">
-                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address" />
-                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password" />
-                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password" />
-
-                @* <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"
-                    ValueChanged="@HandleEmailChanged" />
-                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"
-                    ValueChanged="@HandlePasswordChanged" />
-                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"
-                    ValueChanged="@HandleRepasswordChanged" /> *@
+            <form @onsubmit="HandleSubmit">
+                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password" @bind-InputValue="password" />
+                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password" @bind-InputValue="repassword"/>
     
                 <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
                 <div class="flex justify-center mt-8 gap-4">
@@ -67,31 +60,11 @@
 
 @code {
 private string? email;
+
 private string? password;
+
 private string? repassword;
 
-[Required(ErrorMessage = "Email is required")]
-[EmailAddress(ErrorMessage = "Invalid email address")]
-public string? Email
-{
-    get => email;
-    set => email = value?.Trim();
-}
-
-[Required(ErrorMessage = "Password is required")]
-[MinLength(8, ErrorMessage = "Password must be at least 8 characters")]
-public string? Password
-{
-    get => password;
-    set => password = value?.Trim();
-}
-
-[Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
-public string? Repassword
-{
-    get => repassword;
-    set => repassword = value?.Trim();
-}
 
 
 private void HandleValidSubmit()
@@ -100,7 +73,7 @@ private void HandleValidSubmit()
     // Send welcome email
 
     // Redirect to login page
-    NavigationManager.NavigateTo("/login");
+    @* NavigationManager.NavigateTo("/login"); *@
 }
 
 private void HandleInvalidSubmit()
@@ -112,6 +85,11 @@ private void HandleInvalidSubmit()
 
 private void HandleSubmit()
 {
+    Console.WriteLine("OnSubmit");
+    Console.WriteLine(email);
+    Console.WriteLine(password);
+    Console.WriteLine(repassword);
+
     var isValid = ValidateForm();
 
     if (isValid)
@@ -142,31 +120,7 @@ private void HandleRepasswordChanged(string value)
 
 private bool ValidateForm()
 {
-    var context = new ValidationContext(this);
-    var results = new List<ValidationResult>();
-
-    var isValid = Validator.TryValidateObject(this, context, results, true);
-
-    foreach (var result in results)
-    {
-        var property = result.MemberNames.FirstOrDefault();
-        var errorMessage = result.ErrorMessage;
-
-        // Set the validation error message for the corresponding property
-        // This will display the error message using the ValidationMessage component
-        switch (property)
-        {
-            case nameof(Email):
-                Email = errorMessage;
-                break;
-            case nameof(Password):
-                Password = errorMessage;
-                break;
-            case nameof(Repassword):
-                Repassword = errorMessage;
-                break;
-        }
-    }
+    var isValid = true;
 
     return isValid;
 }

@@ -1,37 +1,32 @@
 <div class="@css">
-    <label for="@name"
-        class="block font-light text-sm leading-6 text-gray-900 capitalize">@label</label>
+    <label for="@name" class="block font-light text-sm leading-6 text-gray-900 capitalize">@label</label>
     @if (type == "password")
     {
-        <div class="relative mt-2 rounded-md shadow-sm">
-            <input name="@name" id="@name"
-                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            @oninput="OnPasswordChanged"
-                required
-                type="@(_showPassword ? "text" : "password")"
-                value="@Password"
-                placeholder="@placeholder" />
+    <div class="relative mt-2 rounded-md shadow-sm">
+        <input name="@name" id="@name"
+            class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+            @oninput="OnInputValueChanged" required type="@(_showPassword ? " text" : "password" )" value="@InputValue"
+            placeholder="@placeholder" />
 
-            <div class="absolute top-3 mr-5 right-0 my-auto"  @onclick="ToggleShowPassword">
-                @if (_showPassword)
-                {
-                    <p  class="uppercase tracking-tight text-primary-300 font-bold text-xs">Hide</p>
-                }
-                else {
-                    <p  class="uppercase tracking-tight text-primary-300 font-bold text-xs">Show</p>
-                }
-            </div>
-
+        <div class="absolute top-3 mr-5 right-0 my-auto" @onclick="ToggleShowPassword">
+            @if (_showPassword)
+            {
+            <p class="uppercase tracking-tight text-primary-300 font-bold text-xs">Hide</p>
+            }
+            else {
+            <p class="uppercase tracking-tight text-primary-300 font-bold text-xs">Show</p>
+            }
         </div>
+
+    </div>
 
     }
     else
     {
-        <div class="relative mt-2 rounded-md shadow-sm">
-            <input type="@type" name="@name" id="@name"
-                class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="@placeholder" required>
-        </div>
+    <input name="@name" id="@name"
+        class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        @oninput="OnInputValueChanged" required type="@type" value="@InputValue"
+        placeholder="@placeholder" />
 
     }
 </div>
@@ -55,15 +50,15 @@
 
     private bool _showPassword;
     [Parameter]
-    public string? Password { get; set; }
+    public string? InputValue { get; set; }
     [Parameter]
-    public EventCallback<string> PasswordChanged { get; set; }
+    public EventCallback<string> InputValueChanged { get; set; }
 
-    private Task OnPasswordChanged(ChangeEventArgs e)
+    private Task OnInputValueChanged(ChangeEventArgs e)
     {
-        if (e.Value != null) Password = e.Value.ToString();
+        if (e.Value != null) InputValue = e.Value.ToString();
 
-        return PasswordChanged.InvokeAsync(Password);
+        return InputValueChanged.InvokeAsync(InputValue);
     }
     private void ToggleShowPassword()
     {
