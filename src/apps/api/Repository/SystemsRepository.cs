@@ -14,16 +14,19 @@ public class SystemsRepository
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
       {
-        var responseStream = await response.Content.ReadAsStreamAsync();
-        var systems = await JsonSerializer.DeserializeAsync<List<System>>(responseStream);
+        var data = await response.Content.ReadAsStringAsync();
+        //Console.WriteLine(data);
+        var systems = JsonSerializer.Deserialize<List<System>>(data);
         if (systems != null)
+        {
           return systems;
-        else
-          return new List<System>();
+        }
+        return new List<System>();
       }
       else
       {
         //return empty list
+        Console.WriteLine("Error");
         return new List<System>();
       }
 
