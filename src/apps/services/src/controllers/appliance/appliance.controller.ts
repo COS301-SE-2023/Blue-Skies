@@ -4,11 +4,12 @@ import IAppliance from '../../models/appliance.interface';
 import { connection as conn } from '../../main';
 export default class ApplianceController {
   public createAppliance = (req: Request, res: Response) => {
+    const { type, powerUsage } = req.body;
+    const query =
+      `INSERT INTO [dbo].[appliances] (type, powerUsage)` +
+      ` VALUES ('${type}', ${powerUsage})`;
+
     try {
-      const { type, powerUsage } = req.body;
-      const query =
-        `INSERT INTO [dbo].[appliances] (type, powerUsage)` +
-        ` VALUES ('${type}', ${powerUsage})`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -17,6 +18,7 @@ export default class ApplianceController {
               error: err.message,
             });
           } else {
+            console.log(rowCount);
             return res.status(200).json({
               message: 'Appliance created successfully.',
             });
@@ -27,16 +29,16 @@ export default class ApplianceController {
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: error,
+        error: error.message,
       });
     }
   };
 
   public getAllAppliances = (req: Request, res: Response) => {
-    try {
-      const query = 'SELECT * FROM [dbo].[appliances]';
-      const appliances: IAppliance[] = [];
+    const query = 'SELECT * FROM [dbo].[appliances]';
+    const appliances: IAppliance[] = [];
 
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -44,8 +46,14 @@ export default class ApplianceController {
             return res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No appliances exist.',
+            });
           } else {
             console.log(rowCount);
+            res.status(200).json(appliances);
           }
         }
       );
@@ -56,80 +64,23 @@ export default class ApplianceController {
           type: columns[1].value,
           powerUsage: columns[2].value,
         };
-
         appliances.push(appliance);
       });
 
-      request.on('requestCompleted', () => {
-        res.status(200);
-        res.json({ appliances: appliances });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve appliances.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
 
   public getAppliance = (req: Request, res: Response) => {
     const { applianceId } = req.params;
-
-    if (!Number.isInteger(Number(applianceId))) {
-      return res.status(400).json({
-        error: 'Invalid applianceId',
-        details: 'applianceId must be an integer.',
-      });
-    }
-
+    let appliance: IAppliance;
     const query = `SELECT * FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
 
-    const request = new tedious.Request(
-      query,
-      (err: tedious.RequestError, rowCount: number) => {
-        if (err) {
-          return res.status(400).json({
-            error: err.message,
-          });
-        } else if (rowCount === 0) {
-          return res.status(401).json({
-            error: 'Unauthorized',
-            details: 'Appliance does not exist.',
-          });
-        } else {
-          console.log(rowCount);
-        }
-      }
-    );
-
-    request.on('row', (columns: tedious.ColumnValue[]) => {
-      const appliance: IAppliance = {
-        applianceId: columns[0].value,
-        type: columns[1].value,
-        powerUsage: columns[2].value,
-      };
-      res.send(appliance);
-    });
-
-    conn.execSql(request);
-  };
-
-  public updateAppliance = (req: Request, res: Response) => {
-    const { applianceId } = req.params;
-
-    if (!Number.isInteger(Number(applianceId))) {
-      return res.status(400).json({
-        error: 'Invalid applianceId',
-        details: 'applianceId must be an integer.',
-      });
-    }
-
-    const { type, powerUsage } = req.body;
     try {
-      const query =
-        `UPDATE [dbo].[appliances] SET type = '${type}', powerUsage = ${powerUsage}` +
-        `WHERE applianceId = ${applianceId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -138,41 +89,75 @@ export default class ApplianceController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Appliance does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json(appliance);
           }
         }
       );
-      conn.execSql(request);
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Appliance updated successfully.',
-        });
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        appliance = {
+          applianceId: columns[0].value,
+          type: columns[1].value,
+          powerUsage: columns[2].value,
+        };
       });
+
+      conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update appliance.',
-        details: 'Database connection error.',
+        error: error.message,
+      });
+    }
+  };
+
+  public updateAppliance = (req: Request, res: Response) => {
+    const { applianceId } = req.params;
+    const { type, powerUsage } = req.body;
+    const query =
+      `UPDATE [dbo].[appliances] SET type = '${type}', powerUsage = ${powerUsage}` +
+      `WHERE applianceId = ${applianceId}`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Appliance does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json({
+              message: 'Appliance updated successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
       });
     }
   };
 
   public deleteAppliance = async (req: Request, res: Response) => {
     const { applianceId } = req.params;
-
-    if (!Number.isInteger(Number(applianceId))) {
-      return res.status(400).json({
-        error: 'Invalid applianceId',
-        details: 'applianceId must be an integer.',
-      });
-    }
-
+    const query = `DELETE FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
+    
     try {
-      const query = `DELETE FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -181,26 +166,23 @@ export default class ApplianceController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Appliance does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'Appliance deleted successfully.',
+            });
           }
         }
       );
 
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Appliance deleted successfully.',
-        });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find appliance to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
