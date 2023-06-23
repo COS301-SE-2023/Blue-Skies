@@ -56,6 +56,20 @@ public class AuthTests
     Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
 
   }
+
+  [Test]
+  public async Task Register_EmailExists()
+  {
+    string email = "jessenaidoo24@gmail.com";
+    string password = "password";
+    string repassword = "password";
+    Auth test = new Auth(email, password, repassword);
+    var response = httpClient.PostAsync("/auth/register", new StringContent(JsonSerializer.Serialize(test), Encoding.UTF8, "application/json")).Result;
+    var result = await response.Content.ReadAsStringAsync();
+    Console.WriteLine(result);
+    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+    Assert.That(result, Is.EqualTo("Email is already registered"));
+  }
 }
 
 
