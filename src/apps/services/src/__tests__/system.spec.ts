@@ -24,7 +24,7 @@ jest.mock('../controllers/system/system.controller', () => ({
             message: 'System created successfully.',
           });
         } else {
-          return res.status(404).json({
+          return res.status(500).json({
             error: 'System not created.',
           });
         }
@@ -76,7 +76,7 @@ describe('SystemController', () => {
         mockResponse as Response
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'System not created.',
       });
