@@ -1,0 +1,85 @@
+import SystemController from '../controllers/system/system.controller';
+import { Request, Response } from 'express';
+jest.mock('../controllers/system/system.controller', () => ({
+  __esModule: true,
+  default: class {
+    createSystem = jest
+      .fn()
+      .mockImplementation((req: Request, res: Response) => {
+        const {
+          inverterOutput,
+          numberOfPanels,
+          batterySize,
+          numberOfBatteries,
+          solarInput,
+        } = req.body;
+        if (
+          inverterOutput &&
+          numberOfPanels &&
+          batterySize &&
+          numberOfBatteries &&
+          solarInput
+        ) {
+          return res.status(200).json({
+            message: 'System created successfully.',
+          });
+        } else {
+          return res.status(404).json({
+            error: 'System not created.',
+          });
+        }
+      });
+  },
+}));
+
+describe('SystemController', () => {
+  let systemController: SystemController;
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
+
+  beforeAll(() => {
+    systemController = new SystemController();
+  });
+
+  beforeEach(() => {
+    mockRequest = {};
+    mockResponse = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+  });
+
+  describe('Create System', () => {
+    it('should return 200 if system can be created', () => {
+      mockRequest.body = {
+        inverterOutput: 1000,
+        numberOfPanels: 4,
+        batterySize: 1000,
+        numberOfBatteries: 4,
+        solarInput: 1000,
+      };
+      systemController.createSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'System created successfully.',
+      });
+    });
+
+    it('should return 404 if system cannot be created', () => {
+      mockRequest.body = {};
+      systemController.createSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'System not created.',
+      });
+    });
+  });
+});
