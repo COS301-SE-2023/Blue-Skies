@@ -4,7 +4,11 @@ import * as tedious from 'tedious';
 import IUser from '../../models/user.interface';
 
 export default class AuthController {
+  constructor() {
+    console.log('AuthController constructor');
+  }
   public registerUser = (req: Request, res: Response) => {
+    console.log('registerUser');
     try {
       const { email, password, userRole } = req.body;
       //check if email already exists
