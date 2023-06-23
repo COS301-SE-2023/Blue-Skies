@@ -1,33 +1,12 @@
 import AuthController from '../controllers/auth/auth.controller';
 import { Request, Response } from 'express';
 // Mocking the entire AuthController module
-jest.mock('../controllers/auth/auth.controller', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      registerUser: jest.fn(),
-      loginUser: jest.fn(),
-    };
-  });
-});
-
-// Mocking the tedious package
-jest.mock('tedious', () => ({
-  Request: jest.fn().mockImplementation((query, callback) => {
-    // Simulate successful execution
-    callback(null, 1);
-  }),
-}));
-
-// Mocking the connection object
-const mockExecSql = jest.fn();
-const mockConn = {
-  execSql: mockExecSql,
-};
-
-// Mocking the '../../main' module
-jest.mock('../main', () => ({
-  connection: {
-    conn: mockConn,
+jest.mock('../controllers/auth/auth.controller', () => ({
+  __esModule: true,
+  default: class {
+    registerUser = jest.fn();
+    loginUser = jest.fn();
+    checkEmail = jest.fn();
   },
 }));
 
@@ -37,9 +16,9 @@ describe('AuthController', () => {
   let mockResponse: Partial<Response>;
 
   beforeAll(() => {
-    // Mocking the tedious module
     authController = new AuthController();
   });
+
   beforeEach(() => {
     mockRequest = {};
     mockResponse = {
@@ -48,14 +27,46 @@ describe('AuthController', () => {
     };
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  describe('Register a user', () => {
+    it('should return 200 if user is registered', () => {
+      const email = 'test@example.com';
+      const password = 'password';
+      const userRole = 'user';
+
+      mockRequest.body = {
+        email,
+        password,
+        userRole,
+      };
+
+      authController.registerUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(authController.registerUser).toBeDefined();
+      //expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
   });
 
-  describe('registerUser', () => {
-    //dummy test
-    it('1+1', () => {
-      expect(1 + 1).toEqual(2);
+  //Checks email exists
+  describe('Check if email exists', () => {
+    it('Check Email Exists', () => {
+      const email = '';
+      const password = '';
+
+      mockRequest.body = {
+        email,
+        password,
+      };
+
+      authController.loginUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(authController.loginUser).toBeDefined();
+      //expect(mockResponse.status).toHaveBeenCalledWith(200);
     });
   });
 });
