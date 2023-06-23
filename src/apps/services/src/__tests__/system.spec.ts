@@ -29,6 +29,30 @@ jest.mock('../controllers/system/system.controller', () => ({
           });
         }
       });
+
+    getAllSystems = jest
+      .fn()
+      .mockImplementation((req: Request, res: Response) => {
+        const systems = [
+          {
+            inverterOutput: 1000,
+            numberOfPanels: 4,
+            batterySize: 1000,
+            numberOfBatteries: 4,
+            solarInput: 1000,
+          },
+          {
+            inverterOutput: 1000,
+            numberOfPanels: 4,
+            batterySize: 1000,
+            numberOfBatteries: 4,
+            solarInput: 1000,
+          },
+        ];
+        res.status(200).json({
+          systems: systems,
+        });
+      });
   },
 }));
 
@@ -47,6 +71,35 @@ describe('SystemController', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
+  });
+
+  describe('Get All Systems', () => {
+    it('should return 200 if systems can be retrieved', () => {
+      systemController.getAllSystems(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        systems: [
+          {
+            inverterOutput: 1000,
+            numberOfPanels: 4,
+            batterySize: 1000,
+            numberOfBatteries: 4,
+            solarInput: 1000,
+          },
+          {
+            inverterOutput: 1000,
+            numberOfPanels: 4,
+            batterySize: 1000,
+            numberOfBatteries: 4,
+            solarInput: 1000,
+          },
+        ],
+      });
+    });
   });
 
   describe('Create System', () => {
