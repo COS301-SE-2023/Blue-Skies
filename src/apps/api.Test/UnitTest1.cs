@@ -2,9 +2,9 @@
 
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace Api.Test;
+namespace Api.BackendTests;
 
-public class Tests
+public class HelloWorld
 {
   [SetUp]
   public void Setup()
@@ -20,6 +20,6 @@ public class Tests
 
     var response = await httpClient.GetAsync("/");
     var result = await response.Content.ReadAsStringAsync();
-    Assert.AreEqual("Hello World", result);
+    Assert.That(result, Is.EqualTo("Hello World"));
   }
 }
