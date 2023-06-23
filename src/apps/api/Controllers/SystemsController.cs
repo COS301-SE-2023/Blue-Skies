@@ -13,8 +13,8 @@ public class SystemsController : ControllerBase
   {
     _systemsRepository = new SystemsRepository();
   }
-
-  [HttpGet(Name = "all")]
+  [HttpGet]
+  [Route("all")]
   public async Task<IActionResult> GetAllSystems()
   {
     try
