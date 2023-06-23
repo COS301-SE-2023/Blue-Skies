@@ -53,10 +53,7 @@ export default class ApplianceController {
             });
           } else {
             console.log(rowCount);
-            request.on('requestCompleted', () => {
-              res.status(200);
-              res.json(appliances);
-            });
+            res.status(200).json(appliances);
           }
         }
       );
@@ -98,12 +95,11 @@ export default class ApplianceController {
             });
           } else {
             console.log(rowCount);
-            return request.on('requestCompleted', () => {
-              res.status(200).json(appliance);
-            });
+            res.status(200).json(appliance);
           }
         }
       );
+
       request.on('row', (columns: tedious.ColumnValue[]) => {
         appliance = {
           applianceId: columns[0].value,
@@ -160,6 +156,7 @@ export default class ApplianceController {
   public deleteAppliance = async (req: Request, res: Response) => {
     const { applianceId } = req.params;
     const query = `DELETE FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
+    
     try {
       const request = new tedious.Request(
         query,
