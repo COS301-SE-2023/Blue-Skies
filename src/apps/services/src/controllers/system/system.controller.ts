@@ -16,7 +16,7 @@ export default class SystemController {
       ` VALUES ('${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
 
     try {
-           const request = new tedious.Request(
+      const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
@@ -52,7 +52,7 @@ export default class SystemController {
             return res.status(400).json({
               error: err.message,
             });
-          } else if(rowCount === 0) {
+          } else if (rowCount === 0) {
             return res.status(404).json({
               error: 'Not Found',
               details: 'No systems exist.',
@@ -101,7 +101,7 @@ export default class SystemController {
           } else if (rowCount === 0) {
             return res.status(404).json({
               error: 'Not Found',
-              details: 'User does not exist.',
+              details: 'System does not exist.',
             });
           } else {
             console.log(rowCount);
@@ -139,10 +139,10 @@ export default class SystemController {
       solarInput,
     } = req.body;
     const query =
-    `UPDATE [dbo].[systems] SET inverterOutput = '${inverterOutput}', numberOfPanels = '${numberOfPanels}',` +
-    ` batterySize = ${batterySize}, numberOfBatteries = ${numberOfBatteries}, solarInput = ${solarInput} WHERE systemId = ${systemId}`;
-    
-    try {      
+      `UPDATE [dbo].[systems] SET inverterOutput = '${inverterOutput}', numberOfPanels = '${numberOfPanels}',` +
+      ` batterySize = ${batterySize}, numberOfBatteries = ${numberOfBatteries}, solarInput = ${solarInput} WHERE systemId = ${systemId}`;
+
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -153,7 +153,7 @@ export default class SystemController {
           } else if (rowCount === 0) {
             return res.status(404).json({
               error: 'Not Found',
-              details: 'User does not exist.',
+              details: 'System does not exist.',
             });
           } else {
             console.log(rowCount);
@@ -186,11 +186,11 @@ export default class SystemController {
           } else if (rowCount === 0) {
             return res.status(404).json({
               error: 'Not Found',
-              details: 'User does not exist.',
+              details: 'System does not exist.',
             });
           } else {
             console.log(rowCount);
-            res.status(200).json({ 
+            res.status(200).json({
               message: 'System deleted successfully.',
             });
           }
