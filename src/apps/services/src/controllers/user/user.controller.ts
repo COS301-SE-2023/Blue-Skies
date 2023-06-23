@@ -6,20 +6,23 @@ export default class UserController {
   public getAllUsers = (req: Request, res: Response) => {
     const query = 'SELECT * FROM [dbo].[users]';
     const users: IUser[] = [];
-    
+
     try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(404).json({
+            return res.status(400).json({
               error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No users exist.',
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
-              message: 'User created successfully.',
-            });
+            res.status(200).json(users);
           }
         }
       );
@@ -45,12 +48,10 @@ export default class UserController {
 
   public getUser = (req: Request, res: Response) => {
     const { userId } = req.params;
-    let user: IUser
+    let user: IUser;
     const query = `SELECT * FROM [dbo].[users] WHERE userId = ${userId}`;
-   
-    try {
-      
 
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -78,7 +79,6 @@ export default class UserController {
           userRole: columns[3].value,
           dateCreated: columns[4].value,
         };
-        
       });
 
       conn.execSql(request);
@@ -128,7 +128,7 @@ export default class UserController {
     const { userId } = req.params;
     const query = `DELETE FROM [dbo].[users] WHERE userId = ${userId}`;
 
-    try {      
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
