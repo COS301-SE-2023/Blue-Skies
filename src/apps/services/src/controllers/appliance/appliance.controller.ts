@@ -29,8 +29,7 @@ export default class ApplianceController {
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve appliances.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
@@ -54,6 +53,10 @@ export default class ApplianceController {
             });
           } else {
             console.log(rowCount);
+            request.on('requestCompleted', () => {
+              res.status(200);
+              res.json(appliances);
+            });
           }
         }
       );
@@ -66,22 +69,18 @@ export default class ApplianceController {
         };
         appliances.push(appliance);
       });
-      request.on('requestCompleted', () => {
-        res.status(200);
-        res.json(appliances);
-      });
 
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve appliances.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
 
   public getAppliance = (req: Request, res: Response) => {
     const { applianceId } = req.params;
+    let appliance: IAppliance;
     const query = `SELECT * FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
 
     try {
@@ -99,24 +98,24 @@ export default class ApplianceController {
             });
           } else {
             console.log(rowCount);
+            return request.on('requestCompleted', () => {
+              res.status(200).json(appliance);
+            });
           }
         }
       );
-
       request.on('row', (columns: tedious.ColumnValue[]) => {
-        const appliance: IAppliance = {
+        appliance = {
           applianceId: columns[0].value,
           type: columns[1].value,
           powerUsage: columns[2].value,
         };
-        res.send(appliance);
       });
 
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve appliances.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
@@ -153,8 +152,7 @@ export default class ApplianceController {
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update appliance.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
@@ -183,12 +181,11 @@ export default class ApplianceController {
           }
         }
       );
-      
+
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find appliance to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
