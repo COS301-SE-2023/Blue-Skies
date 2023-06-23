@@ -121,6 +121,22 @@ describe('SystemController', () => {
         },
       });
     });
+
+    it('should return 400 if systemId is not an integer', () => {
+      mockRequest.params = {
+        systemId: 'a',
+      };
+      systemController.getSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Invalid systemId',
+        details: 'systemId must be an integer.',
+      });
+    });
   });
 
   describe('Get All Systems', () => {
