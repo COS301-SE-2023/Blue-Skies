@@ -131,14 +131,6 @@ export default class SystemController {
 
   public updateSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;
-
-    if (!Number.isInteger(Number(systemId))) {
-      return res.status(400).json({
-        error: 'Invalid systemId',
-        details: 'systemId must be an integer.',
-      });
-    }
-
     const {
       inverterOutput,
       numberOfPanels,
@@ -146,10 +138,11 @@ export default class SystemController {
       numberOfBatteries,
       solarInput,
     } = req.body;
-    try {
-      const query =
-        `UPDATE [dbo].[systems] SET inverterOutput = '${inverterOutput}', numberOfPanels = '${numberOfPanels}',` +
-        ` batterySize = ${batterySize}, numberOfBatteries = ${numberOfBatteries}, solarInput = ${solarInput} WHERE systemId = ${systemId}`;
+    const query =
+    `UPDATE [dbo].[systems] SET inverterOutput = '${inverterOutput}', numberOfPanels = '${numberOfPanels}',` +
+    ` batterySize = ${batterySize}, numberOfBatteries = ${numberOfBatteries}, solarInput = ${solarInput} WHERE systemId = ${systemId}`;
+    
+    try {      
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -158,41 +151,31 @@ export default class SystemController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'System updated successfully.',
+            });
           }
         }
       );
       conn.execSql(request);
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'System updated successfully.',
-        });
-      });
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update system.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
 
-  deleteSystem = async (req: Request, res: Response) => {
+  public deleteSystem = async (req: Request, res: Response) => {
     const { systemId } = req.params;
-
-    if (!Number.isInteger(Number(systemId))) {
-      return res.status(400).json({
-        error: 'Invalid systemId',
-        details: 'systemId must be an integer.',
-      });
-    }
+    const query = `DELETE FROM [dbo].[systems] WHERE systemId = ${systemId}`;
 
     try {
-      const query = `DELETE FROM [dbo].[systems] WHERE systemId = ${systemId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -201,26 +184,23 @@ export default class SystemController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({ 
+              message: 'System deleted successfully.',
+            });
           }
         }
       );
 
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'System deleted successfully.',
-        });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find system to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
