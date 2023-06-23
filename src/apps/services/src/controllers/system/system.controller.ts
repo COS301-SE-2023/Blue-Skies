@@ -180,7 +180,7 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(404).json({
+            return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
