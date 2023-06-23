@@ -143,20 +143,14 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-
-    if (!Number.isInteger(Number(reportId))) {
-      return res.status(400).json({
-        error: 'Invalid reportId',
-        details: 'ReportId must be an integer.',
-      });
-    }
-
     const { reportName, userId, basicCalculationId, solarScore, runningTime } =
-      req.body;
-    try {
-      const query =
+    req.body;
+    const query =
         `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, basicCalculationId = ${basicCalculationId}, solarScore = ${solarScore}, runningTime = ${runningTime}` +
         `WHERE reportId = ${reportId}`;
+   
+    try {
+      
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -165,21 +159,20 @@ export default class ReportController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Report does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'Report updated successfully.',
+            });
           }
         }
       );
+
       conn.execSql(request);
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Report updated successfully.',
-        });
-      });
     } catch (error) {
       res.status(500).json({
         error: 'Failed to update report.',
@@ -190,16 +183,9 @@ export default class ReportController {
 
   public deleteReport = async (req: Request, res: Response) => {
     const { reportId } = req.params;
-
-    if (!Number.isInteger(Number(reportId))) {
-      return res.status(400).json({
-        error: 'Invalid reportId',
-        details: 'reportId must be an integer.',
-      });
-    }
-
-    try {
-      const query = `DELETE FROM [dbo].[reports] WHERE reportId = ${reportId}`;
+    const query = `DELETE FROM [dbo].[reports] WHERE reportId = ${reportId}`;
+   
+    try {      
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -208,26 +194,24 @@ export default class ReportController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Report does not exist.',
+
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'Report deleted successfully.',
+            });
           }
         }
       );
 
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Appliance deleted successfully.',
-        });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find appliance to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
