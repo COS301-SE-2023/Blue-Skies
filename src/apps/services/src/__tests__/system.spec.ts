@@ -53,6 +53,27 @@ jest.mock('../controllers/system/system.controller', () => ({
           systems: systems,
         });
       });
+    getSystem = jest.fn().mockImplementation((req: Request, res: Response) => {
+      const system = {
+        inverterOutput: 1000,
+        numberOfPanels: 4,
+        batterySize: 1000,
+        numberOfBatteries: 4,
+        solarInput: 1000,
+      };
+      const { systemId } = req.params;
+      if (systemId) {
+        res.status(200).json({
+          system: system,
+        });
+      } else {
+        //test if systemId is a number
+
+        res.status(404).json({
+          error: 'System not found.',
+        });
+      }
+    });
   },
 }));
 
