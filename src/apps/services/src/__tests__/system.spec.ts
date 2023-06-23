@@ -100,6 +100,29 @@ describe('SystemController', () => {
     };
   });
 
+  describe('Get System', () => {
+    it('should return 200 if system can be retrieved', () => {
+      mockRequest.params = {
+        systemId: '1',
+      };
+      systemController.getSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        system: {
+          inverterOutput: 1000,
+          numberOfPanels: 4,
+          batterySize: 1000,
+          numberOfBatteries: 4,
+          solarInput: 1000,
+        },
+      });
+    });
+  });
+
   describe('Get All Systems', () => {
     it('should return 200 if systems can be retrieved', () => {
       systemController.getAllSystems(
