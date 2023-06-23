@@ -197,7 +197,6 @@ export default class ReportController {
             return res.status(404).json({
               error: 'Not Found',
               details: 'Report does not exist.',
-
             });
           } else {
             console.log(rowCount);
