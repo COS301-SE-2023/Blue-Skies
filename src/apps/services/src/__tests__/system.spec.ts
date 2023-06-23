@@ -63,12 +63,18 @@ jest.mock('../controllers/system/system.controller', () => ({
       };
       const { systemId } = req.params;
       if (systemId) {
-        res.status(200).json({
-          system: system,
-        });
-      } else {
         //test if systemId is a number
-
+        if (!Number.isInteger(Number(systemId))) {
+          res.status(400).json({
+            error: 'Invalid systemId',
+            details: 'systemId must be an integer.',
+          });
+        } else {
+          res.status(200).json({
+            system: system,
+          });
+        }
+      } else {
         res.status(404).json({
           error: 'System not found.',
         });
