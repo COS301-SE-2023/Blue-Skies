@@ -54,10 +54,7 @@ export default class BasicCalculationController {
             });
           } else {
             console.log(rowCount);
-            return request.on('requestCompleted', () => {
-              res.status(200);
-              res.json(basicCalculations);
-            });
+            res.status(200).json(basicCalculations);
           }
         }
       );
@@ -103,9 +100,7 @@ export default class BasicCalculationController {
             });
           } else {
             console.log(rowCount);
-            request.on('requestCompleted', () => {
-              res.status(200).json(basicCalculation);
-            });
+            res.status(200).json(basicCalculation);
           }
         }
       );

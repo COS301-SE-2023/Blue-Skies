@@ -4,11 +4,12 @@ import IImage from '../../models/image.interface';
 import { connection as conn } from '../../main';
 export default class ImageController {
   public createImage = (req: Request, res: Response) => {
+    let { trainingDataId, image } = req.body;
+    const query =
+      `INSERT INTO [dbo].[images] (trainingDataId, image)` +
+      ` VALUES (${trainingDataId}, '${image}')`;
+
     try {
-      let { trainingDataId, image } = req.body;
-      const query =
-        `INSERT INTO [dbo].[images] (trainingDataId, image)` +
-        ` VALUES (${trainingDataId}, '${image}')`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -17,6 +18,7 @@ export default class ImageController {
               error: err.message,
             });
           } else {
+            console.log(rowCount);
             return res.status(200).json({
               message: 'Image created successfully.',
             });
@@ -33,10 +35,10 @@ export default class ImageController {
   };
 
   public getAllImages = (req: Request, res: Response) => {
-    try {
-      const query = 'SELECT * FROM [dbo].[images]';
-      const images: IImage[] = [];
+    const query = 'SELECT * FROM [dbo].[images]';
+    const images: IImage[] = [];
 
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -44,8 +46,14 @@ export default class ImageController {
             return res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No images exist.',
+            });
           } else {
             console.log(rowCount);
+            res.status(200).json(images);
           }
         }
       );
@@ -56,80 +64,23 @@ export default class ImageController {
           trainingDataId: columns[1].value,
           image: columns[2].value,
         };
-
         images.push(image);
       });
 
-      request.on('requestCompleted', () => {
-        res.status(200);
-        res.json({ images: images });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve image.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
 
   public getImage = (req: Request, res: Response) => {
     const { imageId } = req.params;
-
-    if (!Number.isInteger(Number(imageId))) {
-      return res.status(400).json({
-        error: 'Invalid imageId',
-        details: 'imageId must be an integer.',
-      });
-    }
-
+    let image: IImage;
     const query = `SELECT * FROM [dbo].[images] WHERE imageId = ${imageId}`;
 
-    const request = new tedious.Request(
-      query,
-      (err: tedious.RequestError, rowCount: number) => {
-        if (err) {
-          return res.status(400).json({
-            error: err.message,
-          });
-        } else if (rowCount === 0) {
-          return res.status(401).json({
-            error: 'Unauthorized',
-            details: 'Image does not exist.',
-          });
-        } else {
-          console.log(rowCount);
-        }
-      }
-    );
-
-    request.on('row', (columns: tedious.ColumnValue[]) => {
-      const image: IImage = {
-        imageId: columns[0].value,
-        trainingDataId: columns[1].value,
-        image: columns[2].value,
-      };
-      res.send(image);
-    });
-
-    conn.execSql(request);
-  };
-
-  public updateImage = (req: Request, res: Response) => {
-    const { imageId } = req.params;
-
-    if (!Number.isInteger(Number(imageId))) {
-      return res.status(400).json({
-        error: 'Invalid imageId',
-        details: 'imageId must be an integer.',
-      });
-    }
-
-    let { trainingDataId, image } = req.body;
     try {
-      const query =
-        `UPDATE [dbo].[images] SET trainingDataId = '${trainingDataId}', image = '${image}'` +
-        `WHERE imageId = ${imageId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -138,41 +89,75 @@ export default class ImageController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Image does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json(image);
           }
         }
       );
-      conn.execSql(request);
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Image updated successfully.',
-        });
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        image = {
+          imageId: columns[0].value,
+          trainingDataId: columns[1].value,
+          image: columns[2].value,
+        };
       });
+
+      conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update image.',
-        details: 'Database connection error.',
+        error: error.message,
+      });
+    }
+  };
+
+  public updateImage = (req: Request, res: Response) => {
+    const { imageId } = req.params;
+    let { trainingDataId, image } = req.body;
+    const query =
+      `UPDATE [dbo].[images] SET trainingDataId = '${trainingDataId}', image = '${image}'` +
+      `WHERE imageId = ${imageId}`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Image does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json({
+              message: 'Image updated successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
       });
     }
   };
 
   public deleteImage = async (req: Request, res: Response) => {
     const { imageId } = req.params;
-
-    if (!Number.isInteger(Number(imageId))) {
-      return res.status(400).json({
-        error: 'Invalid imageId',
-        details: 'imageId must be an integer.',
-      });
-    }
+    const query = `DELETE FROM [dbo].[images] WHERE imageId = ${imageId}`;
 
     try {
-      const query = `DELETE FROM [dbo].[images] WHERE imageId = ${imageId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -181,26 +166,23 @@ export default class ImageController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Image does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'Image deleted successfully.',
+            });
           }
         }
       );
 
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Image deleted successfully.',
-        });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find image to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
