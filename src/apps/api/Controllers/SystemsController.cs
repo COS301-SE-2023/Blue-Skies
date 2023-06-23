@@ -15,8 +15,16 @@ public class SystemsController : ControllerBase
   }
 
   [HttpGet(Name = "all")]
-  public async Task<List<System>> GetAllSystems()
+  public async Task<IActionResult> GetAllSystems()
   {
-    return await _systemsRepository.GetAllSystems();
+    try
+    {
+      var data = await _systemsRepository.GetAllSystems();
+      return Ok(data);
+    }
+    catch (Exception e)
+    {
+      return StatusCode(500, e.Message);
+    }
   }
 }
