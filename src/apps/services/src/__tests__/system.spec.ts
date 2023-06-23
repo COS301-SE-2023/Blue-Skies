@@ -137,6 +137,19 @@ describe('SystemController', () => {
         details: 'systemId must be an integer.',
       });
     });
+
+    it('should return 404 if system cannot be retrieved', () => {
+      mockRequest.params = {};
+      systemController.getSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'System not found.',
+      });
+    });
   });
 
   describe('Get All Systems', () => {
