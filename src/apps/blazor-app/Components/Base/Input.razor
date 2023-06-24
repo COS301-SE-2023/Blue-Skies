@@ -1,10 +1,34 @@
 <div class="@css">
     <label for="@name" class="block font-light text-sm leading-6 text-gray-900 capitalize">@label</label>
+    @if (type == "password")
+    {
     <div class="relative mt-2 rounded-md shadow-sm">
-        <input type="@type" name="@name" id="@name"
-            class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            placeholder="@placeholder">
+        <input name="@name" id="@name"
+            class="@(IsValid ? "block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" : "block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6")"
+            @oninput="OnInputValueChanged" required type="@(_showPassword ? " text" : "password" )" value="@InputValue"
+            placeholder="@placeholder" />
+
+        <div class="absolute top-3 mr-5 right-0 my-auto" @onclick="ToggleShowPassword">
+            @if (_showPassword)
+            {
+            <p class="uppercase tracking-tight text-primary-300 font-bold text-xs">Hide</p>
+            }
+            else {
+            <p class="uppercase tracking-tight text-primary-300 font-bold text-xs">Show</p>
+            }
+        </div>
+
     </div>
+
+    }
+    else
+    {
+    <input name="@name" id="@name"
+        class="@(IsValid ? "block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" : "block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-red-900 ring-1 ring-inset ring-red-300 placeholder:text-red-400 focus:ring-2 focus:ring-inset focus:ring-red-600 sm:text-sm sm:leading-6")"
+        @oninput="OnInputValueChanged" required type="@type" value="@InputValue"
+        placeholder="@placeholder" />
+
+    }
 </div>
 
 @code {
@@ -14,7 +38,7 @@
     public string name { get; set; } = "";
     [Parameter]
     public string? placeholder { get; set; }
-    
+
     [Parameter]
     public string? value { get; set; }
 
@@ -23,4 +47,36 @@
 
     [Parameter]
     public string? css { get; set; }
+
+    private bool _showPassword;
+    [Parameter]
+    public string? InputValue { get; set; }
+
+    [Parameter]
+    public bool IsValid { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<string> InputValueChanged { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IsValidChanged { get; set; }
+
+    private Task OnInputValueChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null) InputValue = e.Value.ToString();
+
+        return InputValueChanged.InvokeAsync(InputValue);
+    }
+
+    private Task OnIsValidChanged(ChangeEventArgs e)
+    {
+        IsValid = true;
+
+        return IsValidChanged.InvokeAsync(IsValid);
+    }
+    private void ToggleShowPassword()
+    {
+        _showPassword = !_showPassword;
+    }
+
 }
