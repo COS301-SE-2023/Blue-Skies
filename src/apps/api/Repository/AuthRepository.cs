@@ -20,7 +20,7 @@ public class AuthRepository
       }
       return false;
     }
-    catch (System.Exception)
+    catch (Exception)
     {
       throw new Exception("Could not check email");
     }
@@ -52,7 +52,7 @@ public class AuthRepository
       }
       return false;
     }
-    catch (System.Exception)
+    catch (Exception)
     {
       throw new Exception("Could not register user");
     }
