@@ -40,13 +40,13 @@ public class AppliancesRepository
   }
 
 
-  public async Task<Appliances> createAppliances(string type, string powerUsage)
+  public async Task<Appliances> createAppliances(string type, int powerUsage)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/appliance/create");
-      var content = new StringContent("{\r\n    \"type\" : \"" + type + "\",\r\n    \"powerUsage\" : \"" + powerUsage + "\"\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"type\" : \"" + type + "\",\r\n    \"powerUsage\" : " + powerUsage + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -55,7 +55,7 @@ public class AppliancesRepository
         app.applianceId = -1;
         app.type = type;
         //Convert string to int
-        app.powerUsage = Int32.Parse(powerUsage);
+        app.powerUsage = powerUsage;
         return app;
 
       }
