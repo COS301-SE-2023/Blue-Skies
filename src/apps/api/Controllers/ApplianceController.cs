@@ -60,4 +60,20 @@ public class ApplianceController : ControllerBase
     }
   }
 
+  //Delete an appliance
+  [HttpDelete]
+  [Route("delete")]
+  public async Task<IActionResult> DeleteAppliance([FromBody] Appliances appliance)
+  {
+    try
+    {
+      var data = await _appliancesRepository.deleteAppliances(appliance.applianceId);
+      return Ok("Deleted appliance with id: " + appliance.applianceId + "");
+    }
+    catch (Exception e)
+    {
+      return StatusCode(500, e.Message);
+    }
+  }
+
 }
