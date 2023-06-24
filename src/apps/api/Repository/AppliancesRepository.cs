@@ -5,13 +5,13 @@ namespace Api.Repository;
 public class AppliancesRepository
 {
   //Create method
-  public async Task<List<System>> GetAllAplliances()
+  public async Task<List<Appliances>> GetAllAplliances()
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/appliance/all");
-
+      var response = await client.SendAsync(request);
 
       if (response.IsSuccessStatusCode)
       {
@@ -22,13 +22,13 @@ public class AppliancesRepository
         {
           return systems;
         }
-        return new List<System>();
+        return new List<Appliances>();
       }
       else
       {
         //return empty list
         Console.WriteLine("Error");
-        return new List<System>();
+        return new List<Appliances>();
       }
 
 

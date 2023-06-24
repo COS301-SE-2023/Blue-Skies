@@ -6,5 +6,5 @@ public class Appliances{
 
     public string type { get; set; }
 
-    public int powerUsage 
+    public int powerUsage { get; set; }
 }
