@@ -69,4 +69,34 @@ public class AppliancesRepository
       throw new Exception("Database Error: " + e.Message);
     }
   }
+
+  public async Task<Appliances> updateAppliances(int id, string type, int powerUsage)
+  {
+    try
+    {
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:3333/api/appliance/update/" + id);
+      var content = new StringContent("{\r\n    \"type\" : \"" + type + "\",\r\n    \"powerUsage\" : " + powerUsage + "\r\n}", null, "application/json");
+      request.Content = content;
+      var response = await client.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+        Appliances app = new Appliances();
+        app.applianceId = id;
+        app.type = type;
+        //Convert string to int
+        app.powerUsage = powerUsage;
+        return app;
+
+      }
+      else
+      {
+        throw new Exception("Could not update Appliance");
+      }
+    }
+    catch (Exception e)
+    {
+      throw new Exception("Database Error: " + e.Message);
+    }
+  }
 }
