@@ -69,7 +69,7 @@ public class SystemsController : ControllerBase
     try
     {
       var data = await _systemsRepository.deleteSystems(system.systemId);
-      if(data==false)
+      if (data == false)
       {
         return StatusCode(404, "System with id: " + system.systemId + " not found");
       }
@@ -89,7 +89,7 @@ public class SystemsController : ControllerBase
     try
     {
       var data = await _systemsRepository.getSystemById(system.systemId);
-      if(data==null)
+      if (data == null)
       {
         return StatusCode(404, "System with id: " + system.systemId + " not found");
       }
