@@ -65,6 +65,10 @@ private string? password;
 
 private string? repassword;
 
+private bool emailValid = true;
+private bool passwordValid = true;
+private bool repasswordValid = true;
+
 
 
 private void HandleValidSubmit()
@@ -120,9 +124,40 @@ private void HandleRepasswordChanged(string value)
 
 private bool ValidateForm()
 {
-    var isValid = true;
+    @* check email using regex *@
+    if (string.IsNullOrEmpty(email))
+    {
+        Console.WriteLine("email is empty");
+        return false;
+    }
+    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+    {
+        Console.WriteLine("email is not valid");
+        return false;
+    }
 
-    return isValid;
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(password))
+    {
+        Console.WriteLine("password is empty");
+        return false;
+    }
+
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(repassword))
+    {
+        Console.WriteLine("repassword is empty");
+        return false;
+    }
+
+    @* check if password and repassword are same *@
+    if (password != repassword)
+    {
+        Console.WriteLine("password and repassword are not same");
+        return false;
+    }
+
+    return true;
 }
 
 }
