@@ -42,27 +42,26 @@ public class KeysRepository
   }
 
   //create key
-  public async Task<Keys> CreateKey(string owner, int remainingCalls)
+  public async Task<Keys> CreateKey(string owner, int remainingCalls, int suspended)
   {
     try
     {
       string APIKey = Guid.NewGuid().ToString();
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/key/create");
-      var content = new StringContent("{\r\n    \"owner\": \"" + owner + "\",\r\n    \"APIKey\" : \"" + APIKey + "\",\r\n    \"remainingCalls\" : \"" + remainingCalls + "\"\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"owner\": \"" + owner + "\",\r\n    \"APIKey\" : \"" + APIKey + "\",\r\n    \"remainingCalls\" : " + remainingCalls + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
 
       if (response.IsSuccessStatusCode)
       {
-        var data = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(data);
-        var systems = JsonSerializer.Deserialize<Keys>(data);
-        if (systems != null)
-        {
-          return systems;
-        }
-        return new Keys();
+        Keys ans = new Keys();
+        ans.owner = owner;
+        ans.APIKey = APIKey;
+        ans.remainingCalls = remainingCalls;
+        ans.suspended = suspended == 1 ? true : false;
+        return ans;
+
       }
       else
       {

@@ -30,4 +30,20 @@ public class KeysController : ControllerBase
       return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
     }
   }
+
+  //create key
+  [HttpPost("create")]
+  public async Task<IActionResult> CreateKey([FromBody] Keys keys)
+  {
+    try
+    {
+      int suspended = keys.suspended ? 1 : 0;
+      var key = await _keysRepository.CreateKey(keys.owner, keys.remainingCalls, suspended);
+      return Ok(key);
+    }
+    catch (Exception e)
+    {
+      return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+    }
+  }
 }
