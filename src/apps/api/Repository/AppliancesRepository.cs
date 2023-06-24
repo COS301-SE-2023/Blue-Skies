@@ -99,4 +99,27 @@ public class AppliancesRepository
       throw new Exception("Database Error: " + e.Message);
     }
   }
+
+  //Delete Appliance
+  public async Task<bool> deleteAppliances(int id)
+  {
+    try
+    {
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:3333/api/appliance/delete/" + id);
+      var response = await client.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+        return true;
+      }
+      else
+      {
+        throw new Exception("Could not delete Appliance");
+      }
+    }
+    catch (Exception e)
+    {
+      throw new Exception("Database Error: " + e.Message);
+    }
+  }
 }
