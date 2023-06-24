@@ -64,6 +64,7 @@ export default class KeyController {
           owner: columns[1].value,
           APIKey: columns[2].value,
           remainingCalls: columns[3].value,
+          suspended: columns[4].value,
         };
         keys.push(key);
       });
@@ -107,6 +108,7 @@ export default class KeyController {
           owner: columns[1].value,
           APIKey: columns[2].value,
           remainingCalls: columns[3].value,
+          suspended: columns[4].value,
         };
       });
 
@@ -120,9 +122,9 @@ export default class KeyController {
 
   public updateKey = (req: Request, res: Response) => {
     const { keyId } = req.params;
-    const { owner, APIKey, remainingCalls } = req.body;
+    const { owner, APIKey, remainingCalls, suspended } = req.body;
     const query =
-      `UPDATE [dbo].[keys] SET owner = '${owner}', APIKey = '${APIKey}', remainingCalls = ${remainingCalls}` +
+      `UPDATE [dbo].[keys] SET owner = '${owner}', APIKey = '${APIKey}', remainingCalls = ${remainingCalls}, suspended = '${suspended}'` +
       ` WHERE keyId = ${keyId}`;
 
     try {
