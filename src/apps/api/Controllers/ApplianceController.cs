@@ -80,4 +80,21 @@ public class ApplianceController : ControllerBase
     }
   }
 
+  //Get an appliance by id
+  [HttpGet]
+  [Route("get/{id}")]
+  public async Task<IActionResult> GetApplianceById([FromRoute] int id)
+  {
+    try
+    {
+      var data = await _appliancesRepository.getApplianceById(id);
+      return Ok(data);
+    }
+    catch (Exception e)
+    {
+      return StatusCode(404, e.Message);
+    }
+  }
+
+
 }
