@@ -12,14 +12,6 @@ public class ApplianceController : ControllerBase
   [Route("all")]
   public async Task<IActionResult> GetAllAppliances()
   {
-    try
-    {
-      var data = await _systemsRepository.GetAllSystems();
-      return Ok(data);
-    }
-    catch (Exception e)
-    {
-      return StatusCode(500, e.Message);
-    }
+    
   }
 }
