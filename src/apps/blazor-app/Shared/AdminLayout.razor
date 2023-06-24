@@ -3,28 +3,25 @@
 
 <PageTitle>Blue Skies</PageTitle>
 
-                <div class="fixed top-0 left-0 h-full p-4 border-1">
-                    <Image ImageName="Logo-small.svg" alt="Blue Skies Logo" css="w-24 h-24 mx-auto mt-8" />
-                    <div class="grid grid-cols-1 gap-5 mt-5">
-                        <a href="/admin/keys">
-                            <Image ImageName="Key.svg" alt="Key Icon" css="w-24 h-24 mx-auto mt-8" />
-                        </a>
-                        <a href="/admin/appliances">
-                            <Image ImageName="Lightbulb Bolt.svg" alt="Appliance Icon" css="w-24 h-24 mx-auto mt-8" />
-                        </a>
-                        <a href="/admin/products">
-                            <Image ImageName="Panel.svg" alt="Blue Skies Logo" css="w-24 h-24 mx-auto mt-8" />
-                        </a>
-                        <a href="/admin/stats">
-                            <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-24 h-24 mx-auto mt-8" />
-                        </a>
-                        
-                    </div>
-                </div>
-<div>
-    <main>
-        <article>
+<div class="flex w-full flex-row">
+    <div class=" h-[100vh] p-4 border-1">
+        <Image ImageName="Logo-small.svg" alt="Blue Skies Logo" css="w-20 h-20 mx-auto mt-8" />
+        <div class="grid grid-cols-1 gap-5 mt-5">
+            <a href="/admin/keys">
+                <Image ImageName="Key.svg" alt="Key Icon" css="w-10 h-10 mx-auto mt-8" /> <p>API Keys</p>
+            </a>
+            <a href="/admin/appliances">
+                <Image ImageName="Lightbulb Bolt.svg" alt="Appliance Icon" css="w-10 h-10 mx-auto mt-8" />
+            </a>
+            <a href="/admin/products">
+                <Image ImageName="Panel.svg" alt="Blue Skies Logo" css="w-10 h-10 mx-auto mt-8" />
+            </a>
+            <a href="/admin/stats">
+                <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-10 h-10 mx-auto mt-8" />
+            </a>
+        </div>
+    </div>
+    <div class="w-full">
             @Body
-        </article>
-    </main>
+    </div>
 </div>
