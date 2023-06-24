@@ -122,4 +122,36 @@ public class AppliancesRepository
       throw new Exception("Database Error: " + e.Message);
     }
   }
+
+  //Get Appliance by id
+  public async Task<Appliances> getApplianceById(int id)
+  {
+    try
+    {
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/appliance/" + id);
+      var response = await client.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+        var data = await response.Content.ReadAsStringAsync();
+        //Console.WriteLine(data);
+        var app = JsonSerializer.Deserialize<Appliances>(data);
+        if (app != null)
+        {
+          return app;
+        }
+        return new Appliances();
+      }
+      else
+      {
+        //return empty list
+        Console.WriteLine("Error");
+        return new Appliances();
+      }
+    }
+    catch (Exception e)
+    {
+      throw new Exception("Database Error: " + e.Message);
+    }
+  }
 }
