@@ -19,7 +19,7 @@ public class ApplianceController : ControllerBase
   {
     try
     {
-      var data = await _appliancesRepository.GetAllAplliances();
+      var data = await _appliancesRepository.GetAllAppliances();
       return Ok(data);
     }
     catch (Exception e)
