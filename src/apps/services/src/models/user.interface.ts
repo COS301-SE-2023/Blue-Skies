@@ -4,4 +4,5 @@ export default interface IUser {
   password: string;
   userRole: number;
   dateCreated: Date;
+  lastLoggedIn: Date;
 }

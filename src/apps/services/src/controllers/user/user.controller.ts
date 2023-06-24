@@ -34,6 +34,7 @@ export default class UserController {
           password: columns[2].value,
           userRole: columns[3].value,
           dateCreated: columns[4].value,
+          lastLoggedIn: columns[5].value,
         };
         users.push(user);
       });
@@ -78,6 +79,7 @@ export default class UserController {
           password: columns[2].value,
           userRole: columns[3].value,
           dateCreated: columns[4].value,
+          lastLoggedIn: columns[5].value,
         };
       });
 
