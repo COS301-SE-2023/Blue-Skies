@@ -1,6 +1,98 @@
 @page "/admin/appliances"
 @layout AdminLayout
+@using BlazorApp.Components.Base
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
-
+<div class="mt-2">
+    <div class="flex w-full justify-around p-4">
+        <div class="">
+            <Heading >
+                <Superscript>
+                    <h2>This is a super script</h2>
+                </Superscript>
+                <Header>
+                    <h1>Appliances</h1>
+                </Header>
+            </Heading>
+        </div>
+        <div class="flex  gap-10 items-center">
+            <Button style="outline">
+               <content>Delete</content>
+            </Button>
+            <Button style="pill">
+               <content>Edit</content>
+            </Button>
+            <Button style="pill">
+               <content>Add</content>
+            </Button>
+        </div>
+    </div>
+    
+    <div class="relative overflow-x-auto  mt-2">
+        <table class="w-full  text-sm text-left ">
+            <thead class="text-xs bg-primary-50  uppercase ">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </th>
+                    <th scope="col" class="px-6 py-3  ">
+                        Appliance Type
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Power usage
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-b border-gray-200 ">
+                    <td class="px-6 text-center py-4">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </td>
+                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                        Kettle
+                    </th>
+                    <td class="px-6 py-4">
+                        1200 W
+                    </td>
+                </tr>
+                <tr class="border-b border-gray-200 ">
+                    <td class="px-6 text-center py-4">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </td>
+                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                        Fridge
+                    </th>
+                    <td class="px-6 py-4">
+                        Many W
+                    </td>
+                </tr>
+                <tr class="border-b border-gray-200 ">
+                    <td class="px-6 text-center py-4">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </td>
+                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                        TV
+                    </th>
+                    <td class="px-6 py-4">
+                        Enough W
+                    </td>
+                </tr>
+                <tr class="border-b border-gray-200 ">
+                    <td class="px-6 text-center py-4">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </td>
+                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                        Computer
+                    </th>
+                    <td class="px-6 py-4">
+                        Mega W
+                    </td>
+                </tr>
+    
+            </tbody>
+        </table>
+    </div>
+</div>
+   
+a
