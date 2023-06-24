@@ -43,4 +43,21 @@ public class ApplianceController : ControllerBase
       return StatusCode(500, e.Message);
     }
   }
+
+  //Update an appliance
+  [HttpPatch]
+  [Route("update")]
+  public async Task<IActionResult> UpdateAppliance([FromBody] Appliances appliance)
+  {
+    try
+    {
+      var data = await _appliancesRepository.updateAppliances(appliance.applianceId, appliance.type, appliance.powerUsage);
+      return Ok(data);
+    }
+    catch (Exception e)
+    {
+      return StatusCode(500, e.Message);
+    }
+  }
+
 }
