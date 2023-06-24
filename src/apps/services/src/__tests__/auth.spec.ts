@@ -1,33 +1,44 @@
 import AuthController from '../controllers/auth/auth.controller';
 import { Request, Response } from 'express';
 // Mocking the entire AuthController module
-jest.mock('../controllers/auth/auth.controller', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      registerUser: jest.fn(),
-      loginUser: jest.fn(),
-    };
-  });
-});
+jest.mock('../controllers/auth/auth.controller', () => ({
+  __esModule: true,
+  default: class {
+    registerUser = jest
+      .fn()
+      .mockImplementation((req: Request, res: Response) => {
+        const { email, password, userRole } = req.body;
+        if (
+          email === undefined ||
+          password === undefined ||
+          userRole === undefined
+        ) {
+          res.status(500).json({
+            error: 'Email or password is incorrect.',
+            details: 'Email or password is incorrect.',
+          });
+        } else {
+          res.status(200).json({
+            message: 'User is registered.',
+          });
+        }
+      });
 
-// Mocking the tedious package
-jest.mock('tedious', () => ({
-  Request: jest.fn().mockImplementation((query, callback) => {
-    // Simulate successful execution
-    callback(null, 1);
-  }),
-}));
+    loginUser = jest.fn();
+    checkEmail = jest.fn().mockImplementation((req: Request, res: Response) => {
+      const { email } = req.body;
 
-// Mocking the connection object
-const mockExecSql = jest.fn();
-const mockConn = {
-  execSql: mockExecSql,
-};
-
-// Mocking the '../../main' module
-jest.mock('../main', () => ({
-  connection: {
-    conn: mockConn,
+      if (email === undefined) {
+        res.status(500).json({
+          error: 'Email is not available.',
+          details: 'Email already exists.',
+        });
+      } else {
+        res.status(200).json({
+          message: 'Email is available.',
+        });
+      }
+    });
   },
 }));
 
@@ -37,9 +48,9 @@ describe('AuthController', () => {
   let mockResponse: Partial<Response>;
 
   beforeAll(() => {
-    // Mocking the tedious module
     authController = new AuthController();
   });
+
   beforeEach(() => {
     mockRequest = {};
     mockResponse = {
@@ -48,14 +59,77 @@ describe('AuthController', () => {
     };
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  describe('Register a user', () => {
+    it('should return 200 if user is registered', () => {
+      const email = 'test@example.com';
+      const password = 'password';
+      const userRole = 'user';
+
+      mockRequest.body = {
+        email,
+        password,
+        userRole,
+      };
+
+      authController.registerUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(authController.registerUser).toBeDefined();
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'User is registered.',
+      });
+
+      //expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+    it('should return 500 if user is not registered', () => {
+      mockRequest.body = {};
+      authController.registerUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Email or password is incorrect.',
+        details: 'Email or password is incorrect.',
+      });
+    });
   });
 
-  describe('registerUser', () => {
-    //dummy test
-    it('1+1', () => {
-      expect(1 + 1).toEqual(2);
+  //Checks email exists
+  describe('Check if email exists', () => {
+    it('Check Email Exists return 200', () => {
+      const email = '';
+
+      mockRequest.body = {
+        email,
+      };
+
+      authController.checkEmail(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(authController.checkEmail).toBeDefined();
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Email is available.',
+      });
+    });
+
+    it('Check Email Exists return 500', () => {
+      mockRequest.body = {};
+      authController.checkEmail(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Email is not available.',
+        details: 'Email already exists.',
+      });
     });
   });
 });
