@@ -23,8 +23,7 @@ export default class AuthController {
               message: 'User registered successfully.',
             });
           }
-        }
-      );
+        });
 
       conn.execSql(request);
     } catch (error) {
@@ -38,7 +37,6 @@ export default class AuthController {
     const { email, password } = req.body;
     let user: IUser;
     const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
-    let foundUser = true;
 
     try {
       const request = new tedious.Request(
@@ -91,7 +89,6 @@ export default class AuthController {
   public checkEmail = (req: Request, res: Response) => {
     const { email } = req.body;
     const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
-    let foundUser = true;
 
     try {
       const request = new tedious.Request(
