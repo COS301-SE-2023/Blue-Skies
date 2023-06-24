@@ -4,7 +4,7 @@ namespace Api.Repository;
 //Create class 
 public class AppliancesRepository
 {
-  //Create method
+
   public async Task<List<Appliances>> GetAllAplliances()
   {
     try
@@ -36,6 +36,37 @@ public class AppliancesRepository
     catch (Exception e)
     {
       throw new Exception("Database Connection Error");
+    }
+  }
+
+
+  public async Task<Appliances> createAppliances(string type, string powerUsage)
+  {
+    try
+    {
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/appliance/create");
+      var content = new StringContent("{\r\n    \"type\" : \"" + type + "\",\r\n    \"powerUsage\" : \"" + powerUsage + "\"\r\n}", null, "application/json");
+      request.Content = content;
+      var response = await client.SendAsync(request);
+      if (response.IsSuccessStatusCode)
+      {
+        Appliances app = new Appliances();
+        app.applianceId = -1;
+        app.type = type;
+        //Convert string to int
+        app.powerUsage = Int32.Parse(powerUsage);
+        return app;
+
+      }
+      else
+      {
+        throw new Exception("Could not create Appliance");
+      }
+    }
+    catch (Exception e)
+    {
+      throw new Exception("Database Error: " + e.Message);
     }
   }
 }
