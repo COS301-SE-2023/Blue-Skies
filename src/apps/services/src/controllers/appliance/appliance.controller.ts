@@ -156,7 +156,7 @@ export default class ApplianceController {
   public deleteAppliance = async (req: Request, res: Response) => {
     const { applianceId } = req.params;
     const query = `DELETE FROM [dbo].[appliances] WHERE applianceId = ${applianceId}`;
-    
+
     try {
       const request = new tedious.Request(
         query,

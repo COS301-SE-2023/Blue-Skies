@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text.Json;
 namespace Api.Repository;
 
@@ -111,6 +112,11 @@ public class AppliancesRepository
       if (response.IsSuccessStatusCode)
       {
         return true;
+      }
+      //Check Status code
+      else if (response.StatusCode == HttpStatusCode.NotFound)
+      {
+        return false;
       }
       else
       {

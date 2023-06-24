@@ -68,6 +68,10 @@ public class ApplianceController : ControllerBase
     try
     {
       var data = await _appliancesRepository.deleteAppliances(appliance.applianceId);
+      if (data == false)
+      {
+        return StatusCode(404, "Appliance with id: " + appliance.applianceId + " does not exist");
+      }
       return Ok("Deleted appliance with id: " + appliance.applianceId + "");
     }
     catch (Exception e)
