@@ -10,5 +10,24 @@ namespace Api.Controllers;
 public class KeysController : ControllerBase
 {
 
+  private readonly KeysRepository _keysRepository;
 
+  public KeysController()
+  {
+    _keysRepository = new KeysRepository();
+  }
+
+  [HttpGet("all")]
+  public async Task<IActionResult> GetAllKeys()
+  {
+    try
+    {
+      var keys = await _keysRepository.GetAllKeys();
+      return Ok(keys);
+    }
+    catch (Exception e)
+    {
+      return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+    }
+  }
 }

@@ -8,5 +8,5 @@ public class Keys
   public string? owner { get; set; }
   public string? APIKey { get; set; }
   public int remainingCalls { get; set; }
-  public int suspended { get; set; }
+  public bool suspended { get; set; }
 }
