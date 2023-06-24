@@ -27,4 +27,20 @@ public class ApplianceController : ControllerBase
       return StatusCode(500, e.Message);
     }
   }
+
+  //Create a new appliance
+  [HttpPost]
+  [Route("create")]
+  public async Task<IActionResult> CreateAppliance([FromBody] Appliances appliance)
+  {
+    try
+    {
+      var data = await _appliancesRepository.createAppliances(appliance.type, appliance.powerUsage);
+      return Ok(data);
+    }
+    catch (Exception e)
+    {
+      return StatusCode(500, e.Message);
+    }
+  }
 }
