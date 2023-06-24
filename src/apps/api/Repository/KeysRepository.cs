@@ -18,7 +18,7 @@ public class KeysRepository
       if (response.IsSuccessStatusCode)
       {
         var data = await response.Content.ReadAsStringAsync();
-        //Console.WriteLine(data);
+        Console.WriteLine(data);
         var systems = JsonSerializer.Deserialize<List<Keys>>(data);
         if (systems != null)
         {
