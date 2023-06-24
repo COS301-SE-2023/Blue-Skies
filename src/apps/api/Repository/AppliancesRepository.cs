@@ -152,7 +152,8 @@ public class AppliancesRepository
       {
         //return empty list
         Console.WriteLine("Error");
-        return new Appliances();
+        throw new Exception("Could not get Appliance");
+
       }
     }
     catch (Exception e)
