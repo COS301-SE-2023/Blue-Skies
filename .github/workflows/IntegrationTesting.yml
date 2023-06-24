@@ -30,11 +30,13 @@ jobs:
           AZURE_SQL_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
           AZURE_SQL_SERVER: ${{ secrets.AZURE_SQL_SERVER }}
           AZURE_SQL_USER: ${{ secrets.AZURE_SQL_USER }}
+          TEST: ${{ secrets.TEST }}
         run: |
           echo "AZURE_SQL_DB=$AZURE_SQL_DB" >> $GITHUB_ENV
           echo "AZURE_SQL_PASSWORD=$AZURE_SQL_PASSWORD" >> $GITHUB_ENV
           echo "AZURE_SQL_SERVER=$AZURE_SQL_SERVER" >> $GITHUB_ENV
           echo "AZURE_SQL_USER=$AZURE_SQL_USER" >> $GITHUB_ENV
+          echo "TEST=$TEST" >> $GITHUB_ENV
 
       - run: |
           yarn
