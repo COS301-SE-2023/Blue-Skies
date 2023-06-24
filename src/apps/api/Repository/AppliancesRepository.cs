@@ -6,7 +6,7 @@ namespace Api.Repository;
 public class AppliancesRepository
 {
 
-  public async Task<List<Appliances>> GetAllAplliances()
+  public async Task<List<Appliances>> GetAllAppliances()
   {
     try
     {
@@ -39,7 +39,6 @@ public class AppliancesRepository
       throw new Exception("Database Connection Error");
     }
   }
-
 
   public async Task<Appliances> createAppliances(string type, int powerUsage)
   {
