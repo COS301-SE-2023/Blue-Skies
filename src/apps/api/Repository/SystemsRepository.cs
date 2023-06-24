@@ -17,7 +17,7 @@ public class SystemsRepository
       if (response.IsSuccessStatusCode)
       {
         var data = await response.Content.ReadAsStringAsync();
-        //Console.WriteLine(data);
+        Console.WriteLine(data);
         var systems = JsonSerializer.Deserialize<List<System>>(data);
         if (systems != null)
         {
@@ -40,13 +40,13 @@ public class SystemsRepository
     }
   }
 
-  public async Task<System> createSystems(int inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
+  public async Task<System> createSystems(string inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/system/create");
-      var content = new StringContent("{\r\n    \"inverterOutput\" : " + inverterOutput + ",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"inverterOutput\" : \"" + inverterOutput + "\",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -72,13 +72,13 @@ public class SystemsRepository
     }
   }
 
-  public async Task<System> updateSystems(int systemId, int inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
+  public async Task<System> updateSystems(int systemId, string inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Put, "http://localhost:3333/api/system/update");
-      var content = new StringContent("{\r\n    \"systemId\" : " + systemId + ",\r\n    \"inverterOutput\" : " + inverterOutput + ",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"systemId\" : " + systemId + ",\r\n    \"inverterOutput\" : \"" + inverterOutput + "\",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -117,7 +117,8 @@ public class SystemsRepository
       if (response.IsSuccessStatusCode)
       {
         return true;
-      } if (response.StatusCode == HttpStatusCode.NotFound)
+      }
+      if (response.StatusCode == HttpStatusCode.NotFound)
       {
         return false;
       }
@@ -125,7 +126,7 @@ public class SystemsRepository
       {
         throw new Exception("Error deleting system");
       }
-      
+
     }
     catch (Exception e)
     {
@@ -158,10 +159,11 @@ public class SystemsRepository
         Console.WriteLine("Error");
         throw new Exception("Error getting system");
       }
-    } catch (Exception e)
+    }
+    catch (Exception e)
     {
       throw new Exception("Database Error: " + e.Message);
     }
   }
-    
+
 }
