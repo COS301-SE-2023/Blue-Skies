@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "nx g @nx-dotnet/core:restore",
     "test": "nx test services",
+    "test:api": "nx test api",
     "start:app": "nx serve blazor-app",
     "start:api": "nx serve api",
     "start:express": "nx serve services"
