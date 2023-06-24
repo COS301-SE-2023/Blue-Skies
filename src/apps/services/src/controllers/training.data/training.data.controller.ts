@@ -4,11 +4,12 @@ import ITrainingData from '../../models/training.data.interface';
 import { connection as conn } from '../../main';
 export default class TrainingDataController {
   public createTrainingData = (req: Request, res: Response) => {
-    try {
-      let { solarIrradiation } = req.body;
-      const query =
+    const { solarIrradiation } = req.body;
+    const query =
         `INSERT INTO [dbo].[trainingData] (solarIrradiation)` +
         ` VALUES (${solarIrradiation})`;
+
+    try {     
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -17,6 +18,7 @@ export default class TrainingDataController {
               error: err.message,
             });
           } else {
+            console.log(rowCount);
             return res.status(200).json({
               message: 'Training data created successfully.',
             });
@@ -27,16 +29,16 @@ export default class TrainingDataController {
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: error,
+        error: error.message,
       });
     }
   };
 
   public getAllTrainingData = (req: Request, res: Response) => {
-    try {
-      const query = 'SELECT * FROM [dbo].[trainingData]';
-      const trainingDataArr: ITrainingData[] = [];
+    const query = 'SELECT * FROM [dbo].[trainingData]';
+    const trainingDataArr: ITrainingData[] = [];
 
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -44,8 +46,14 @@ export default class TrainingDataController {
             return res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No training data exists.',
+            });
           } else {
             console.log(rowCount);
+            res.status(200).json(trainingDataArr);
           }
         }
       );
@@ -55,19 +63,13 @@ export default class TrainingDataController {
           trainingDataId: columns[0].value,
           solarIrradiation: columns[1].value,
         };
-
         trainingDataArr.push(trainingData);
       });
 
-      request.on('requestCompleted', () => {
-        res.status(200);
-        res.json({ trainingData: trainingDataArr });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to retrieve training data.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
@@ -75,59 +77,9 @@ export default class TrainingDataController {
   public getTrainingData = (req: Request, res: Response) => {
     const { trainingDataId } = req.params;
 
-    if (!Number.isInteger(Number(trainingDataId))) {
-      return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
-      });
-    }
-
     const query = `SELECT * FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
-
-    const request = new tedious.Request(
-      query,
-      (err: tedious.RequestError, rowCount: number) => {
-        if (err) {
-          return res.status(400).json({
-            error: err.message,
-          });
-        } else if (rowCount === 0) {
-          return res.status(401).json({
-            error: 'Unauthorized',
-            details: 'Training data does not exist.',
-          });
-        } else {
-          console.log(rowCount);
-        }
-      }
-    );
-
-    request.on('row', (columns: tedious.ColumnValue[]) => {
-      const trainingData: ITrainingData = {
-        trainingDataId: columns[0].value,
-        solarIrradiation: columns[1].value,
-      };
-      res.send(trainingData);
-    });
-
-    conn.execSql(request);
-  };
-
-  public updateTrainingData = (req: Request, res: Response) => {
-    const { trainingDataId } = req.params;
-
-    if (!Number.isInteger(Number(trainingDataId))) {
-      return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
-      });
-    }
-
-    const { solarIrradiation } = req.body;
+    let trainingData: ITrainingData;
     try {
-      const query =
-        `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}'` +
-        `WHERE trainingDataId = ${trainingDataId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -136,41 +88,80 @@ export default class TrainingDataController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Training data does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json(trainingData);
           }
         }
       );
-      conn.execSql(request);
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Training data updated successfully.',
-        });
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        trainingData = {
+          trainingDataId: columns[0].value,
+          solarIrradiation: columns[1].value,
+        };
       });
+
+    conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to update training data.',
-        details: 'Database connection error.',
+        error: error.message,
+      });
+    }
+  };
+
+  public updateTrainingData = (req: Request, res: Response) => {
+    const { trainingDataId } = req.params;
+    const { solarIrradiation } = req.body;
+    const query =
+      `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}'` +
+      `WHERE trainingDataId = ${trainingDataId}`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Training data does not exist.',
+            });
+          } if(rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Training data does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json({
+              message: 'Training data updated successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
       });
     }
   };
 
   public deleteTrainingData = async (req: Request, res: Response) => {
     const { trainingDataId } = req.params;
+    const query = `DELETE FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
 
-    if (!Number.isInteger(Number(trainingDataId))) {
-      return res.status(400).json({
-        error: 'Invalid trainingDataId',
-        details: 'trainingDataId must be an integer.',
-      });
-    }
 
     try {
-      const query = `DELETE FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -179,26 +170,23 @@ export default class TrainingDataController {
               error: err.message,
             });
           } else if (rowCount === 0) {
-            return res.status(401).json({
-              error: 'Unauthorized',
+            return res.status(404).json({
+              error: 'Not Found',
               details: 'Training data does not exist.',
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'Training data deleted successfully.',
+            });
           }
         }
       );
 
-      request.on('requestCompleted', () => {
-        res.status(200).json({
-          message: 'Training data deleted successfully.',
-        });
-      });
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: 'Failed to find training data to delete.',
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };

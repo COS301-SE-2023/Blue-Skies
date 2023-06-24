@@ -5,65 +5,70 @@ import IUser from '../../models/user.interface';
 
 export default class AuthController {
   public registerUser = (req: Request, res: Response) => {
+    const { email, password, userRole } = req.body;
+    const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const query = `INSERT INTO [dbo].[users] (email, password, userRole, dateCreated) VALUES ('${email}', '${password}', '${userRole}', '${dateCreated}')`;
+
     try {
-      const { email, password, userRole } = req.body;
-      //check if email already exists
-      console.log(email);
-
-      //Create datacreated variable with timestamp
-      const dateCreated = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
-      const query = `INSERT INTO [dbo].[users] (email, password, userRole, dateCreated) VALUES ('${email}', '${password}', '${userRole}', '${dateCreated}')`;
-
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(404).json({
+            return res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
+            res.status(200).json({
+              message: 'User registered successfully.',
+            });
           }
         }
       );
 
       conn.execSql(request);
-
-      res.status(200).json({
-        message: 'User registered successfully.',
-      });
     } catch (error) {
       res.status(500).json({
-        error: error,
-        details: 'Email already exists.',
+        error: error.message,
       });
     }
   };
 
   public loginUser = (req: Request, res: Response) => {
-    try {
-      const { email, password } = req.body;
+    const { email, password } = req.body;
+    let user: IUser;
+    const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
+    let foundUser = true;
 
-      const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
-      let foundUser = true;
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(404).json({
+            return res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              error: 'Invalid email',
+              details: 'User does not exist.',
+            });
           } else {
-            if (rowCount === 0) {
-              foundUser = false;
+            if (user.password === password) {
+              res.status(200).json({
+                message: 'User logged in successfully.',
+                user: user,
+              });
+            } else {
+              res.status(401).json({
+                error: 'Unauthorized',
+                details: 'Password is incorrect.',
+              });
             }
           }
         }
       );
-      let user: IUser;
+
       request.on('row', (columns: tedious.ColumnValue[]) => {
         user = {
           userId: columns[0].value,
@@ -74,76 +79,39 @@ export default class AuthController {
         };
       });
 
-      request.on('requestCompleted', () => {
-        if (!foundUser) {
-          res.status(404).json({
-            error: 'Invalid email or password.',
-            details: 'User does not exist.',
-          });
-        } else if (user.password === password) {
-          res.status(200).json({
-            message: 'User logged in successfully.',
-            user: user,
-          });
-        } else {
-          res.status(401).json({
-            error: 'Invalid email or password.',
-            details: 'Email or password is incorrect.',
-          });
-        }
-      });
-
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: error,
-        details: 'Database connection error.',
+        error: error.message,
       });
     }
   };
 
-  //Check if email already exists
   public checkEmail = (req: Request, res: Response) => {
-    try {
-      const { email } = req.body;
-      // console.log(
-      //   '🚀 ~ file: auth.controller.ts:109 ~ AuthController ~ email:',
-      //   email
-      // );
+    const { email } = req.body;
+    const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
+    let foundUser = true;
 
-      const query = `SELECT * FROM [dbo].[users] WHERE CONVERT(VARCHAR, email) = '${email}'`;
-      let foundUser = true;
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(404).json({
+            return res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            res.status(200).json({
+              message: 'Email is available.',
+            });
           } else {
-            if (rowCount === 0) {
-              foundUser = false;
-            }
-            // console.log(
-            //   '🚀 ~ file: auth.controller.ts:125 ~ AuthController ~ rowCount:',
-            //   rowCount
-            // );
+            res.status(401).json({
+              error: 'Unauthorized',
+              details: 'Email already exists.',
+            });
           }
         }
       );
-
-      request.on('requestCompleted', () => {
-        if (foundUser) {
-          res.status(200).json({
-            message: 'Email is available.',
-          });
-        } else {
-          res.status(404).json({
-            error: 'Email is not available.',
-            details: 'Email already exists.',
-          });
-        }
-      });
 
       conn.execSql(request);
     } catch (error) {
