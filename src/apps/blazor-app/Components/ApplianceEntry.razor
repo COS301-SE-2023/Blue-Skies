@@ -9,18 +9,18 @@
     @if (recordState)
         {
         <td  class="px-6 py-4 ">
-            @if(appliance != null) {<Input css="w-1/2"  type="text" placeholder="@appliance.type" />}
+            @if(appliance != null) {<Input css="w-1/2"  type="text" placeholder="@appliance.type" @bind-InputValue="type"/>}
         </td>
         <td  class="px-6 py-4  whitespace-nowrap   ">
-            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.powerUsage.ToString()" />}
+            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.powerUsage.ToString()" @bind-InputValue="powerUsage"/>}
         </td>
         <td class="px-6 py-4 flex gap-3">
-        <div @onclick="toggleRecordState">
+        <div onclick="@(() => toggleRecordState("save"))">
             <Button style="pill">
                 <content>Save</content>
             </Button>
         </div>
-        <div @onclick="toggleRecordState">
+        <div onclick="@(() => toggleRecordState())">
             <Button style="pill-danger">
                 <content>Cancel</content>
             </Button>
@@ -34,7 +34,7 @@
         <td  class="px-6 py-4   whitespace-nowrap   ">
             <p>@if(appliance != null) {@appliance.powerUsage } kWh</p>
         </td>
-        <td @onclick="toggleRecordState" class="px-6 py-4 flex gap-3">
+        <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
             <Button style="pill">
                 <content>Edit</content>
             </Button>
@@ -43,22 +43,48 @@
 </tr>
 
 @code {
+    public string type { get; set; } = "Appliance Type";
+    public string powerUsage { get; set; } = "0";
+
+    [Parameter]
     public bool recordState { get; set; } = false;
-    public void toggleRecordState()
-    {
-        recordState = !recordState;
-    }
+
     [Parameter]
     public ApplianceModel? appliance { get; set; }
 
     [Parameter]
     public EventCallback<int> OnSelect { get; set; }
+    [Parameter]
+    public EventCallback<ApplianceModel> OnSave { get; set; }
+
+    public async void toggleRecordState(string action = "")
+    {
+        if (action == "save")
+        {
+           await HandleSave();
+        }
+        recordState = !recordState;
+    }
 
     private async Task HandleSelection(ChangeEventArgs e)
     {
         @if (e.Value != null && appliance != null)
         {
             await OnSelect.InvokeAsync(appliance.applianceId);
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        if (appliance != null)
+        {
+            var returnAppliance = new ApplianceModel
+            {
+                applianceId = appliance.applianceId,
+                type = type,
+                powerUsage = Convert.ToInt32(powerUsage)
+            };
+            await OnSave.InvokeAsync(returnAppliance);
         }
     }
 }
