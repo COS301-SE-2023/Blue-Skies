@@ -5,6 +5,7 @@ import { connection as conn } from '../../main';
 export default class SystemController {
   public createSystem = (req: Request, res: Response) => {
     const {
+      systemSize,
       inverterOutput,
       numberOfPanels,
       batterySize,
@@ -12,8 +13,8 @@ export default class SystemController {
       solarInput,
     } = req.body;
     const query =
-      `INSERT INTO [dbo].[systems] (inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
-      ` VALUES ('${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
+      `INSERT INTO [dbo].[systems] (systemSize, inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
+      ` VALUES ('${systemSize}','${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,11 +68,12 @@ export default class SystemController {
       request.on('row', (columns: tedious.ColumnValue[]) => {
         const system: ISystem = {
           systemId: columns[0].value,
-          inverterOutput: columns[1].value,
-          numberOfPanels: columns[2].value,
-          batterySize: columns[3].value,
-          numberOfBatteries: columns[4].value,
-          solarInput: columns[5].value,
+          systemSize: columns[1].value,
+          inverterOutput: columns[2].value,
+          numberOfPanels: columns[3].value,
+          batterySize: columns[4].value,
+          numberOfBatteries: columns[5].value,
+          solarInput: columns[6].value,
         };
 
         systems.push(system);
@@ -113,11 +115,12 @@ export default class SystemController {
       request.on('row', (columns: tedious.ColumnValue[]) => {
         system = {
           systemId: columns[0].value,
-          inverterOutput: columns[1].value,
-          numberOfPanels: columns[2].value,
-          batterySize: columns[3].value,
-          numberOfBatteries: columns[4].value,
-          solarInput: columns[5].value,
+          systemSize: columns[1].value,
+          inverterOutput: columns[2].value,
+          numberOfPanels: columns[3].value,
+          batterySize: columns[4].value,
+          numberOfBatteries: columns[5].value,
+          solarInput: columns[6].value,
         };
       });
 
