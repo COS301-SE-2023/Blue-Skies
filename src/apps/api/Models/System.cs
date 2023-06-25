@@ -6,7 +6,9 @@ public class System
 {
   public int systemId { get; set; }
 
-  public string? inverterOutput { get; set; }
+  public string? systemSize { get; set; }
+
+  public int inverterOutput { get; set; }
 
   public int numberOfPanels { get; set; }
 
