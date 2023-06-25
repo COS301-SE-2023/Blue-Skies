@@ -18,8 +18,8 @@ function maskSentinel2Clouds(image)
 // Do not delete
 
 var endYear = 2022;
-var numYears = 3;
-var numPoints = 10000;
+var numYears = 1;
+var numPoints = 1;
 var areaSize = 2000;
 
 var southAfrica = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
@@ -75,6 +75,35 @@ for(var year = endYear - numYears + 1; year <= endYear; year++)
         });
         return image.visualize(visualizationParams).clip(squareAreas);
     });
+    
+    var newVis = {
+      min: 0.0,
+      max: 0.9,
+      bands: ['vis-red', 'vis-green', 'vis-blue'],
+    };
+    
+    // Export each zoomed-in image
+    var images = zoomedInImages.toList(zoomedInImages.size());
+    var numImages = images.size().getInfo();
+    if (numImages > 0) {
+      for (var j = 0; j < numImages; j++) {
+        var image = ee.Image(images.get(j));
+        console.log(image);
+        var feature = ee.Feature(images.get(j));
+        var imageName = 'Year ' + feature.get('year') + ', Month ' + feature.get('month');
+        Export.image.toDrive({
+          image: image.visualize(newVis),
+          description: imageName,
+          folder: 'Training_Data',
+          fileNamePrefix: imageName,
+          scale: 10,
+          crs: 'EPSG:4326',
+          maxPixels: 1e13
+        });
+      }
+    } else {
+      console.log('No images found for Year ' + year + ', Month ' + i);
+    }
     
     // Add satellite image layer of zoomed-in images
     Map.addLayer(zoomedInImages.median(), {}, 'Year ' + year + 'Month ' + i, false, 1);
