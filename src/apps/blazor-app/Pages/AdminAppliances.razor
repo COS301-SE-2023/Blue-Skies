@@ -19,9 +19,11 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <Button style="outline">
+          <div @onclick="deleteAppliances">
+              <Button style="outline">
                <content>Delete</content>
             </Button>
+          </div>
             <Button style="pill">
                <content>Edit</content>
             </Button>
@@ -87,6 +89,7 @@
         }
         deleteArr.Clear();
         await GetAppliances();
+        Console.WriteLine("Delete");
     }
     private void addDeleteArr(int id){
         if(deleteArr.Contains(id)){
@@ -136,7 +139,7 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to delete");
         }
     }
 }
