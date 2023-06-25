@@ -1,6 +1,8 @@
 @page "/admin/appliances"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using System.Net.Http.Json
+@inject HttpClient httpClient
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -94,3 +96,10 @@
         </table>
     </div>
 </div>
+
+@functions {
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
+        protected async Task OnInitAsync() => await GetAppliances();
+
+        private async Task GetAppliances() => appliances = await httpClient.GetFromJsonAsync<List<ApplianceModel>>("api/appliances");
+}
