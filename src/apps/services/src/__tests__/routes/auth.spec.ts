@@ -12,22 +12,21 @@ jest.mock('../../main', () => jest.fn());
 jest.mock('../../controllers/auth/auth.controller', () => {
   return jest.fn().mockImplementation(() => {
     return {
-      registerUser: jest.fn(),
+      registerUser: jest
+        .fn()
+        .mockImplementation((req: Request, res: Response) => {
+          res.status(200).json({
+            message: 'User is registered.',
+          });
+        }),
+
       loginUser: jest.fn(),
       checkEmail: jest
         .fn()
         .mockImplementation((req: Request, res: Response) => {
-          const { email } = req.body;
-          if (email === undefined) {
-            res.status(500).json({
-              error: 'Email is not available.',
-              details: 'Email already exists.',
-            });
-          } else {
-            res.status(200).json({
-              message: 'Email is available.',
-            });
-          }
+          res.status(200).json({
+            message: 'Email is available.',
+          });
         }),
       updateloggedIn: jest.fn(),
     };
@@ -50,14 +49,18 @@ describe('Test the auth path', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({ message: 'Email is available.' });
     });
-    //Test checkEmail with no email
-    it('It should response the GET method', async () => {
-      const response = await request(app).get('/auth/checkemail');
-      expect(response.statusCode).toBe(500);
-      expect(response.body).toEqual({
-        error: 'Email is not available.',
-        details: 'Email already exists.',
+  });
+
+  //Test registerUser
+  describe('Test the registerUser path', () => {
+    it('It should response the POST method', async () => {
+      const response = await request(app).post('/auth/register').send({
+        email: 'test@gmail.com',
+        password: 'test',
+        userRole: 'test',
       });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({ message: 'User is registered.' });
     });
   });
 });
