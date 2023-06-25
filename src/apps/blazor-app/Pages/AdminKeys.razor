@@ -19,7 +19,7 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-          <div @onclick="deleteKeys">
+          <div @onclick="DeleteKeys">
               <Button style="outline">
                   <content>Delete</content>
              </Button>
@@ -55,7 +55,7 @@
                     var localVariable = keys[i].keyId;
                     <tr class="border-b border-gray-200 ">
                         <td class="px-6 text-center py-4">
-                            <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
+                            <input onclick="@(() => AddDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
                         </td>
                         <td class="px-6 text-center py-4">
 
@@ -102,14 +102,14 @@
     private List<APIKeyModel> keys = new List<APIKeyModel>();
 
     private List<int> deleteArr = new List<int>();
-    private async Task deleteKeys(){
+    private async Task DeleteKeys(){
         foreach(int id in deleteArr){
             await DeleteKey(id);
         }
         deleteArr.Clear();
         await GetKeys();
     }
-    private void addDeleteArr(int id){
+    private void AddDeleteArr(int id){
         if(deleteArr.Contains(id)){
             deleteArr.Remove(id);
         }else{

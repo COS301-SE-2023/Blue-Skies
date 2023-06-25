@@ -19,7 +19,7 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <div @onclick="deleteProducts">
+            <div @onclick="DeleteProducts">
                 <Button style="outline">
                    <content>Delete</content>
                 </Button>
@@ -58,7 +58,7 @@
                 var localVariable = products[i].systemId;
                 <tr class="border-b border-gray-200 ">
                     <td class="px-6 text-center py-4">
-                        <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
+                        <input onclick="@(() => AddDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
                     </td>
                     <td scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
                         @products[i].systemSize
@@ -84,7 +84,7 @@
     private List<ProductModel> products = new List<ProductModel>();
 
     private List<int> deleteArr = new List<int>();
-    private async Task deleteProducts()
+    private async Task DeleteProducts()
     {
         foreach (int id in deleteArr)
         {
@@ -93,7 +93,7 @@
         deleteArr.Clear();
         await GetProducts();
     }
-    private void addDeleteArr(int id)
+    private void AddDeleteArr(int id)
     {
         if (deleteArr.Contains(id))
         {
