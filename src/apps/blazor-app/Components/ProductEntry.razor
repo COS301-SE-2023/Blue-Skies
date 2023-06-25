@@ -16,6 +16,12 @@
         <td  class="px-6 py-4  whitespace-nowrap   ">
             @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.numberOfPanels.ToString()" @bind-InputValue="numberOfPanels"/>}
         </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.inverterOutput.ToString()" @bind-InputValue="inverterOutput"/>}
+        </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.solarInput.ToString()" @bind-InputValue="solarInput"/>}
+        </td>
         <td class="px-6 py-4 flex gap-3">
         <div onclick="@(() => toggleRecordState("save"))">
             <Button style="pill">
@@ -35,6 +41,12 @@
         </td>
         <td  class="px-6 py-4   whitespace-nowrap   ">
             <p>@if(product != null) {@product.numberOfPanels } kWh</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(product != null) {@product.inverterOutput } kWh</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(product != null) {@product.solarInput } kWh</p>
         </td>
         <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
             <Button style="pill">
