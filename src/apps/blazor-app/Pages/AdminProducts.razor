@@ -50,6 +50,7 @@
                     <th scope="col" class="px-6 py-3">
                         Solar Input
                     </th>
+                    <th scope="col" class="px-6 py-3"></th>
 
                 </tr>
             </thead>
@@ -139,10 +140,9 @@
         @* add api call *@
     }
 
-    private void SaveProduct(ApplianceModel appliance)
+    private void SaveProduct(ProductModel product)
     {
         @* add api call *@
-        
-        Console.WriteLine(appliance.type);
+        Console.WriteLine(product.systemSize);
     }
 }
