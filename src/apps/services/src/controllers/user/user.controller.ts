@@ -94,8 +94,8 @@ export default class UserController {
   public updateUser = (req: Request, res: Response) => {
     const { userId } = req.params;
     const { email, password, userRole } = req.body;
-    const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = ${userRole} WHERE userId = ${userId}`;
-
+    const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const query = `UPDATE [dbo].[users] SET email = '${email}', password = '${password}', userRole = ${userRole}, lastLoggedIn = '${currentDate}' WHERE userId = ${userId}`;
     try {
       const request = new tedious.Request(
         query,
