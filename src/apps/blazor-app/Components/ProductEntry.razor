@@ -11,16 +11,16 @@
     @if (recordState)
         {
         <td  class="px-6 py-4 ">
-            @if(product != null) {<Input css="w-1/2"  type="text" placeholder="@product.systemSize" @bind-InputValue="systemSize"/>}
+            @if(product != null) {<Input css="w-full"  type="text" placeholder="@product.systemSize" @bind-InputValue="systemSize"/>}
         </td>
         <td  class="px-6 py-4  whitespace-nowrap   ">
-            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.numberOfPanels.ToString()" @bind-InputValue="numberOfPanels"/>}
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.numberOfPanels.ToString()" @bind-InputValue="numberOfPanels"/>}
         </td>
         <td  class="px-6 py-4  whitespace-nowrap   ">
-            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.inverterOutput.ToString()" @bind-InputValue="inverterOutput"/>}
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.inverterOutput.ToString()" @bind-InputValue="inverterOutput"/>}
         </td>
         <td  class="px-6 py-4  whitespace-nowrap   ">
-            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.solarInput.ToString()" @bind-InputValue="solarInput"/>}
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.solarInput.ToString()" @bind-InputValue="solarInput"/>}
         </td>
         <td class="px-6 py-4 flex gap-3">
         <div onclick="@(() => toggleRecordState("save"))">
@@ -55,24 +55,6 @@
         </td>
         }
 </tr>
-
-@* <tr class="border-b border-gray-200 ">
-    <td class="px-6 text-center py-4">
-        <input onclick="@(() => AddDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
-    </td>
-    <td scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-        @products[i].systemSize
-    </td>
-    <td class="px-6 py-4">
-        @products[i].numberOfPanels
-    </td>
-    <td class="px-6 py-4">
-        @products[i].inverterOutput W
-    </td>
-    <td class="px-6 py-4">
-        @products[i].solarInput W
-    </td>
-</tr> *@
 
 
 @code {
