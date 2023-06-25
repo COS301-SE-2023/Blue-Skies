@@ -53,7 +53,7 @@
                 @* For each appliance *@
                 @foreach (var appliance in appliances)
                 {
-                    <ApplianceEntry appliance="appliance" OnSelect="AddDeleteArr" />   
+                    <ApplianceEntry recordState="appliance.recordState != null ? true : false" appliance="appliance" OnSelect="AddDeleteArr" OnSave="SaveAppliance"/>   
                 }
             </tbody>
         </table>
@@ -135,7 +135,13 @@
 
     private void AddAppliance()
     {
-        appliances.Add(new ApplianceModel { applianceId = 0, type = "", powerUsage = 0 });
+        appliances.Add(new ApplianceModel { applianceId = 0, type = "", powerUsage = 0, recordState = true });
         @* add api call *@
+    }
+
+    private void SaveAppliance()
+    {
+        @* add api call *@
+        Console.WriteLine("Save");
     }
 }
