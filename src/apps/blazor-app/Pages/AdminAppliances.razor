@@ -20,11 +20,11 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-          <div @onclick="deleteAppliances">
-              <Button style="outline">
-               <content>Delete</content>
-            </Button>
-          </div>
+            <div @onclick="deleteAppliances">
+                <Button style="outline">
+                    <content>Delete</content>
+                </Button>
+            </div>
             <Button style="pill">
                <content>Add</content>
             </Button>
@@ -71,7 +71,7 @@
 
     //Get All Appliances
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
-        private List<int> deleteArr = new List<int>();
+    private List<int> deleteArr = new List<int>();
     private async Task deleteAppliances(){
         foreach(int id in deleteArr){
             await DeleteAppliance(id);
@@ -91,28 +91,6 @@
             Console.WriteLine(i);
         }
     }
-    protected override async Task OnInitializedAsync()
-    {
-        
-        await GetAppliances();
-    }
-
-    private async Task GetAppliances(){
-          var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Appliance/all");
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-           var data = await response.Content.ReadAsStringAsync();
-        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-        }
-        else
-        {
-            Console.WriteLine("Failed");
-        }
-        
-    }
 
         //Delete Appliance
     private async Task DeleteAppliance(int id)
@@ -130,5 +108,28 @@
         {
             Console.WriteLine("Failed to delete");
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await GetAppliances();
+    }
+    
+    private async Task GetAppliances(){
+          var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/appliance/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+           var data = await response.Content.ReadAsStringAsync();
+        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        
     }
 }

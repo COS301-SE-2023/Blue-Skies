@@ -1,7 +1,7 @@
 @page "/login"
 @layout AuthLayout
 @using BlazorApp.Components.Base
-
+@inject NavigationManager NavigationManager
 <PageTitle>Login</PageTitle>
 
 <div class="w-full h-[100vh]">
@@ -23,9 +23,9 @@
                     <h1>Log In</h1>    
                 </Header>
             </Heading>
-            <form action="/">
-                <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
-                <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
+            <form @onsubmit="HandleSubmit">
+                <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
                 <Button css="mt-10 flex justify-center" style="pill">
                     <content>
                         <input type="submit" value="Log In" />
@@ -54,6 +54,86 @@
         </Card>
     </div>
 </div>
+
+@code {
+    public string? email { get; set; }
+    public string? password { get; set; }
+
+private async Task HandleSubmit()
+{
+    Console.WriteLine("OnSubmit");
+    Console.WriteLine(email);
+    Console.WriteLine(password);
+
+    var isValid = ValidateForm();
+
+    if (isValid)
+    {
+        await HandleValidSubmit();
+    }
+    else
+    {
+        HandleInvalidSubmit();
+    }
+}
+
+    public async Task HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/auth/login");
+        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + password + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode){
+            Console.WriteLine("Success");
+            //Navigate to home page
+             NavigationManager.NavigateTo("/");
+        }else{
+             Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+
+    public void HandleInvalidSubmit()
+    {
+        Console.WriteLine("OnInvalidSubmit");
+    }
+
+private bool ValidateForm()
+{
+    @* check email using regex *@
+    if (string.IsNullOrEmpty(email))
+    {
+        Console.WriteLine("email is empty");
+        return false;
+    }
+    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+    {
+        Console.WriteLine("email is not valid");
+        return false;
+    }
+
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(password))
+    {
+        Console.WriteLine("password is empty");
+        return false;
+    }
+
+    return true;
+}
+
+private void HandleEmailChanged(string value)
+{
+    email = value;
+}
+
+private void HandlePasswordChanged(string value)
+{
+    password = value;
+}
+}
 
 
 
