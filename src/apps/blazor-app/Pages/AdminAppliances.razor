@@ -39,6 +39,9 @@
                     <th scope="col" class="px-6 py-3 text-center">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
                     </th>
+                     <th scope="col" class="px-6 py-3  ">
+                        Appliance ID
+                    </th>
                     <th scope="col" class="px-6 py-3  ">
                         Appliance Type
                     </th>
@@ -55,6 +58,9 @@
                         <td class="px-6 text-center py-4">
                             <input type="checkbox" class="form-checkbox h-5 w-5  " />
                         </td>
+                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                            @appliance.applianceId
+                        </th>
                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
                             @appliance.type
                         </th>
@@ -63,51 +69,7 @@
                         </td>
                     </tr>
                 }
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Kettle
-                    </th>
-                    <td class="px-6 py-4">
-                        1200 W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Fridge
-                    </th>
-                    <td class="px-6 py-4">
-                        Many W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        TV
-                    </th>
-                    <td class="px-6 py-4">
-                        Enough W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Microwave
-                    </th>
-                    <td class="px-6 py-4">
-                        Mega W
-                    </td>
-                </tr>
-    
+
             </tbody>
         </table>
     </div>
