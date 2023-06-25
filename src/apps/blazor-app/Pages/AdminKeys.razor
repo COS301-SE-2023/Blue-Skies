@@ -19,9 +19,11 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <Button style="outline">
-                <content>Delete</content>
-            </Button>
+          <div @onclick="deleteKeys">
+              <Button style="outline">
+                  <content>Delete</content>
+             </Button>
+            </div>
             <Button style="pill">
                 <content>Add</content>
             </Button>
@@ -32,6 +34,9 @@
         <table class="w-full text-sm text-left ">
             <thead class="text-xs bg-primary-50  uppercase ">
                 <tr>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </th>
                     <th scope="col" class="px-6 py-3 text-center">
                         Suspend
                     </th>
@@ -47,7 +52,11 @@
             <tbody>
                 @for (int i = 0; i < keys.Count; i++)
                 {
+                    var localVariable = keys[i].keyId;
                     <tr class="border-b border-gray-200 ">
+                        <td class="px-6 text-center py-4">
+                            <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
+                        </td>
                         <td class="px-6 text-center py-4">
 
                             <label class="relative inline-flex items-center cursor-pointer">
@@ -91,15 +100,52 @@
 @code {
 
     private List<APIKeyModel> keys = new List<APIKeyModel>();
+
+    private List<int> deleteArr = new List<int>();
+    private async Task deleteKeys(){
+        foreach(int id in deleteArr){
+            await DeleteKey(id);
+        }
+        deleteArr.Clear();
+        await GetKeys();
+    }
+    private void addDeleteArr(int id){
+        if(deleteArr.Contains(id)){
+            deleteArr.Remove(id);
+        }else{
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach(int i in deleteArr){
+            Console.WriteLine(i);
+        }
+    }
+
+    private async Task DeleteKey(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/key/delete");
+        var content = new StringContent("{\r\n  \"keyId\": " + id +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetKeys();
+            Console.WriteLine("Delete");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete");
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
-        
         await GetKeys();
     }
 
     private async Task GetKeys(){
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Key/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/key/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
