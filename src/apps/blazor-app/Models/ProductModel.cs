@@ -10,6 +10,6 @@ public class ProductModel
   public int batterySize { get; set; }
   public int numberOfBatteries { get; set; }
   public int solarInput { get; set; }
-
+  public bool? recordState { get; set; }
 
 }

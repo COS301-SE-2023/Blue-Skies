@@ -1,6 +1,8 @@
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 
+
+
 <tr class="border-b border-gray-200 ">
     <td class="px-6  py-4">
         <input @onchange="HandleSelection" type="checkbox" class="form-checkbox h-5 w-5  " />
@@ -9,10 +11,10 @@
     @if (recordState)
         {
         <td  class="px-6 py-4 ">
-            @if(appliance != null) {<Input css="w-1/2"  type="text" placeholder="@appliance.type" @bind-InputValue="type"/>}
+            @if(product != null) {<Input css="w-1/2"  type="text" placeholder="@product.systemSize" @bind-InputValue="systemSize"/>}
         </td>
         <td  class="px-6 py-4  whitespace-nowrap   ">
-            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.powerUsage.ToString()" @bind-InputValue="powerUsage"/>}
+            @if(product != null) {<Input css="w-1/2" type="number" placeholder="@product.numberOfPanels.ToString()" @bind-InputValue="numberOfPanels"/>}
         </td>
         <td class="px-6 py-4 flex gap-3">
         <div onclick="@(() => toggleRecordState("save"))">
@@ -29,10 +31,10 @@
         }
         else {
         <td  class="px-6 py-4 whitespace-nowrap   ">
-            <p>@if(appliance != null) {@appliance.type}</p>
+            <p>@if(product != null) {@product.systemSize}</p>
         </td>
         <td  class="px-6 py-4   whitespace-nowrap   ">
-            <p>@if(appliance != null) {@appliance.powerUsage } kWh</p>
+            <p>@if(product != null) {@product.numberOfPanels } kWh</p>
         </td>
         <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
             <Button style="pill">
@@ -42,27 +44,54 @@
         }
 </tr>
 
+@* <tr class="border-b border-gray-200 ">
+    <td class="px-6 text-center py-4">
+        <input onclick="@(() => AddDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
+    </td>
+    <td scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+        @products[i].systemSize
+    </td>
+    <td class="px-6 py-4">
+        @products[i].numberOfPanels
+    </td>
+    <td class="px-6 py-4">
+        @products[i].inverterOutput W
+    </td>
+    <td class="px-6 py-4">
+        @products[i].solarInput W
+    </td>
+</tr> *@
+
+
 @code {
-    public string? type { get; set; } 
-    public string? powerUsage { get; set; }
+    public string? systemSize { get; set; } 
+    public string? numberOfPanels { get; set; }
+    public string? inverterOutput { get; set; }
+    public string? solarInput { get; set; }
+    public string? numberOfBatteries { get; set; }
+    public string? batterySize { get; set; }
 
     [Parameter]
     public bool recordState { get; set; } = false;
 
     [Parameter]
-    public ApplianceModel? appliance { get; set; }
+    public ProductModel? product { get; set; }
 
     [Parameter]
     public EventCallback<int> OnSelect { get; set; }
     [Parameter]
-    public EventCallback<ApplianceModel> OnSave { get; set; }
+    public EventCallback<ProductModel> OnSave { get; set; }
 
     protected override void OnInitialized()
     {
-        if (appliance != null)
+        if (product != null)
         {
-            type = appliance.type;
-            powerUsage = appliance.powerUsage.ToString();
+            systemSize = product.systemSize;
+            numberOfPanels = product.numberOfPanels.ToString();
+            inverterOutput = product.inverterOutput.ToString();
+            solarInput = product.solarInput.ToString();
+            numberOfBatteries = product.numberOfBatteries.ToString();
+            batterySize = product.batterySize.ToString();
         }
     }
 
@@ -77,23 +106,27 @@
 
     private async Task HandleSelection(ChangeEventArgs e)
     {
-        @if (e.Value != null && appliance != null)
+        @if (e.Value != null && product != null)
         {
-            await OnSelect.InvokeAsync(appliance.applianceId);
+            await OnSelect.InvokeAsync(product.systemId);
         }
     }
 
     private async Task HandleSave()
     {
-        if (appliance != null)
+        if (product != null)
         {
-            var returnAppliance = new ApplianceModel
+            var returnProduct = new ProductModel
             {
-                applianceId = appliance.applianceId,
-                type = type,
-                powerUsage = Convert.ToInt32(powerUsage)
+                systemId = product.systemId,
+                systemSize = systemSize,
+                numberOfPanels = Convert.ToInt32(numberOfPanels),
+                inverterOutput = Convert.ToInt32(inverterOutput),
+                solarInput = Convert.ToInt32(solarInput),
+                numberOfBatteries = Convert.ToInt32(numberOfBatteries),
+                batterySize = Convert.ToInt32(batterySize)
             };
-            await OnSave.InvokeAsync(returnAppliance);
+            await OnSave.InvokeAsync(returnProduct);
         }
     }
 }

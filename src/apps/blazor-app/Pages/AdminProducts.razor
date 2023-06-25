@@ -1,6 +1,7 @@
 @page "/admin/products"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
 
@@ -53,26 +54,9 @@
                 </tr>
             </thead>
             <tbody >
-            @for (int i = 0; i < products.Count; i++)
+                @foreach (var product in products)
                 {
-                var localVariable = products[i].systemId;
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input onclick="@(() => AddDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <td scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        @products[i].systemSize
-                    </td>
-                    <td class="px-6 py-4">
-                        @products[i].numberOfPanels
-                    </td>
-                    <td class="px-6 py-4">
-                        @products[i].inverterOutput W
-                    </td>
-                    <td class="px-6 py-4">
-                        @products[i].solarInput W
-                    </td>
-                </tr>
+                    <ProductEntry recordState="product.recordState != null ? true : false" product="product" OnSelect="AddDeleteArr" OnSave="SaveProduct"/>   
                 }
             </tbody>
         </table>
@@ -147,5 +131,18 @@
         {
             Console.WriteLine("Failed");
         }
+    }
+
+    private void AddProduct()
+    {
+        products.Add(new ProductModel { systemId = 0, systemSize = "", inverterOutput = 0, numberOfPanels = 0, batterySize = 0, numberOfBatteries = 0, solarInput = 0, recordState = true  });
+        @* add api call *@
+    }
+
+    private void SaveProduct(ApplianceModel appliance)
+    {
+        @* add api call *@
+        
+        Console.WriteLine(appliance.type);
     }
 }
