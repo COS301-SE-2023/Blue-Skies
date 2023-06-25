@@ -91,9 +91,11 @@ public class AppliancesRepository
                 "http://localhost:3333/api/appliance/update/" + id
             );
             var content = new StringContent(
-                "{\r\n    \"type\" : \""
+                "{\r\n"
+                    + "\"type\" : \""
                     + type
-                    + "\",\r\n    \"powerUsage\" : "
+                    + "\",\r\n"
+                    + "\"powerUsage\" : "
                     + powerUsage
                     + "\r\n}",
                 null,
@@ -106,7 +108,6 @@ public class AppliancesRepository
                 Appliances app = new Appliances();
                 app.applianceId = id;
                 app.type = type;
-                //Convert string to int
                 app.powerUsage = powerUsage;
                 return app;
             }
