@@ -20,7 +20,11 @@ jest.mock('../../controllers/auth/auth.controller', () => {
           });
         }),
 
-      loginUser: jest.fn(),
+      loginUser: jest.fn().mockImplementation((req: Request, res: Response) => {
+        res.status(200).json({
+          message: 'User is logged in.',
+        });
+      }),
       checkEmail: jest
         .fn()
         .mockImplementation((req: Request, res: Response) => {
@@ -28,7 +32,13 @@ jest.mock('../../controllers/auth/auth.controller', () => {
             message: 'Email is available.',
           });
         }),
-      updateloggedIn: jest.fn(),
+      updateloggedIn: jest
+        .fn()
+        .mockImplementation((req: Request, res: Response) => {
+          res.status(200).json({
+            message: 'User is updated.',
+          });
+        }),
     };
   });
 });
@@ -61,6 +71,29 @@ describe('Test the auth path', () => {
       });
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({ message: 'User is registered.' });
+    });
+  });
+
+  //Test loginUser
+  describe('Test the loginUser path', () => {
+    it('It should response the GET method', async () => {
+      const response = await request(app).get('/auth/login').send({
+        email: 'test@gmail.com',
+        password: 'test',
+      });
+      expect(response.statusCode).toBe(200);
+    });
+  });
+
+  //Test updateloggedIn
+  describe('Test the updateloggedIn path', () => {
+    it('It should response the PATCH method', async () => {
+      const response = await request(app).patch('/auth/lastLoggedIn/1').send({
+        email: '',
+        password: 'test',
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({ message: 'User is updated.' });
     });
   });
 });
