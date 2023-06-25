@@ -8,10 +8,10 @@
     
     @if (recordState)
         {
-        <td scope="row" class="px-6 py-4 ">
-            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.type" />}
+        <td  class="px-6 py-4 ">
+            @if(appliance != null) {<Input css="w-1/2"  type="text" placeholder="@appliance.type" />}
         </td>
-        <td scope="row" class="px-6 py-4  whitespace-nowrap   ">
+        <td  class="px-6 py-4  whitespace-nowrap   ">
             @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.powerUsage.ToString()" />}
         </td>
         <td class="px-6 py-4 flex gap-3">
@@ -28,10 +28,10 @@
     </td>
         }
         else {
-        <td scope="row" class="px-6 py-4   whitespace-nowrap   ">
+        <td  class="px-6 py-4 whitespace-nowrap   ">
             <p>@if(appliance != null) {@appliance.type}</p>
         </td>
-        <td scope="row" class="px-6 py-4   whitespace-nowrap   ">
+        <td  class="px-6 py-4   whitespace-nowrap   ">
             <p>@if(appliance != null) {@appliance.powerUsage } kWh</p>
         </td>
         <td @onclick="toggleRecordState" class="px-6 py-4 flex gap-3">
