@@ -14,7 +14,7 @@ The evaluation will incorporate a trained AI model to detect the average sunligh
  <a href="https://drive.google.com/file/d/1Xgv28BjxR3WmmBX1pDHfHS8kiyigUfJt/view?usp=share_link">Debuggers Anonymous - Demo 1</a><br>
 
 ## System Documentation
-<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification%20Version%202.pdf">Functional Requirements Version 2</a>
 
 ## Github Project Board
