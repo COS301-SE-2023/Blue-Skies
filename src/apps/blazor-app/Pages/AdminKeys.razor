@@ -1,7 +1,8 @@
 @page "/admin/keys"
 @layout AdminLayout
 @using BlazorApp.Components.Base
-@* @using BlazorApp.Models *@
+@using BlazorApp.Models
+@using System.Text.Json;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
@@ -44,8 +45,8 @@
                 </tr>
             </thead>
             <tbody>
-                @* @foreach (var item in MyProperty)
-                { *@
+                @for (int i = 0; i < keys.Count; i++)
+                {
                     <tr class="border-b border-gray-200 ">
                         <td class="px-6 text-center py-4">
 
@@ -55,19 +56,20 @@
                                     class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
                                 </div>
                             </label>
-
                         </td>
                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @* @item.Owner *@ John
+                            @keys[i].Owner
                         </th>
                         <td class="px-6 py-4">
-
                             <div class="w-full bg-gray-200 rounded-full h-2.5">
-                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
+                                @{
+                                    int percentage = (int) (keys[i].remainingCalls / 50.0 * 100);
+                                }
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: @percentage%"></div>
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <p>30/50 times</p>
+                            <p>@keys[i].remainingCalls/50 times</p>
                         </td>
                         <td>
                             <svg width="3" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -75,121 +77,35 @@
                                     d="M1.3335 9.33333C1.59871 9.33333 1.85307 9.43869 2.0406 9.62623C2.22814 9.81376 2.3335 10.0681 2.3335 10.3333C2.3335 10.5985 2.22814 10.8529 2.0406 11.0404C1.85307 11.228 1.59871 11.3333 1.3335 11.3333C1.06828 11.3333 0.813925 11.228 0.626389 11.0404C0.438853 10.8529 0.333496 10.5985 0.333496 10.3333C0.333496 10.0681 0.438853 9.81376 0.626389 9.62623C0.813925 9.43869 1.06828 9.33333 1.3335 9.33333ZM1.3335 4.66667C1.59871 4.66667 1.85307 4.77202 2.0406 4.95956C2.22814 5.1471 2.3335 5.40145 2.3335 5.66667C2.3335 5.93188 2.22814 6.18624 2.0406 6.37377C1.85307 6.56131 1.59871 6.66667 1.3335 6.66667C1.06828 6.66667 0.813925 6.56131 0.626389 6.37377C0.438853 6.18624 0.333496 5.93188 0.333496 5.66667C0.333496 5.40145 0.438853 5.1471 0.626389 4.95956C0.813925 4.77202 1.06828 4.66667 1.3335 4.66667ZM1.3335 0C1.59871 0 1.85307 0.105357 2.0406 0.292893C2.22814 0.48043 2.3335 0.734783 2.3335 1C2.3335 1.26522 2.22814 1.51957 2.0406 1.70711C1.85307 1.89464 1.59871 2 1.3335 2C1.06828 2 0.813925 1.89464 0.626389 1.70711C0.438853 1.51957 0.333496 1.26522 0.333496 1C0.333496 0.734783 0.438853 0.48043 0.626389 0.292893C0.813925 0.105357 1.06828 0 1.3335 0Z"
                                     fill="#667085" />
                             </svg>
-
                         </td>
-                    </tr>
-                    
-                @* } *@
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
-                            <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                            </div>
-                        </label>
-
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Jack
-                    </th>
-                    <td class="px-6 flex py-4">
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <p>30/50 times</p>
-                    </td>
-                    <td>
-                        <svg width="3" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M1.3335 9.33333C1.59871 9.33333 1.85307 9.43869 2.0406 9.62623C2.22814 9.81376 2.3335 10.0681 2.3335 10.3333C2.3335 10.5985 2.22814 10.8529 2.0406 11.0404C1.85307 11.228 1.59871 11.3333 1.3335 11.3333C1.06828 11.3333 0.813925 11.228 0.626389 11.0404C0.438853 10.8529 0.333496 10.5985 0.333496 10.3333C0.333496 10.0681 0.438853 9.81376 0.626389 9.62623C0.813925 9.43869 1.06828 9.33333 1.3335 9.33333ZM1.3335 4.66667C1.59871 4.66667 1.85307 4.77202 2.0406 4.95956C2.22814 5.1471 2.3335 5.40145 2.3335 5.66667C2.3335 5.93188 2.22814 6.18624 2.0406 6.37377C1.85307 6.56131 1.59871 6.66667 1.3335 6.66667C1.06828 6.66667 0.813925 6.56131 0.626389 6.37377C0.438853 6.18624 0.333496 5.93188 0.333496 5.66667C0.333496 5.40145 0.438853 5.1471 0.626389 4.95956C0.813925 4.77202 1.06828 4.66667 1.3335 4.66667ZM1.3335 0C1.59871 0 1.85307 0.105357 2.0406 0.292893C2.22814 0.48043 2.3335 0.734783 2.3335 1C2.3335 1.26522 2.22814 1.51957 2.0406 1.70711C1.85307 1.89464 1.59871 2 1.3335 2C1.06828 2 0.813925 1.89464 0.626389 1.70711C0.438853 1.51957 0.333496 1.26522 0.333496 1C0.333496 0.734783 0.438853 0.48043 0.626389 0.292893C0.813925 0.105357 1.06828 0 1.3335 0Z"
-                                fill="#667085" />
-                        </svg>
-
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
-                            <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                            </div>
-
-                        </label>
-
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Susan
-                    </th>
-                    <td class="px-6 py-4">
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <p>30/50 times</p>
-                    </td>
-                    <td>
-                        <svg width="3" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M1.3335 9.33333C1.59871 9.33333 1.85307 9.43869 2.0406 9.62623C2.22814 9.81376 2.3335 10.0681 2.3335 10.3333C2.3335 10.5985 2.22814 10.8529 2.0406 11.0404C1.85307 11.228 1.59871 11.3333 1.3335 11.3333C1.06828 11.3333 0.813925 11.228 0.626389 11.0404C0.438853 10.8529 0.333496 10.5985 0.333496 10.3333C0.333496 10.0681 0.438853 9.81376 0.626389 9.62623C0.813925 9.43869 1.06828 9.33333 1.3335 9.33333ZM1.3335 4.66667C1.59871 4.66667 1.85307 4.77202 2.0406 4.95956C2.22814 5.1471 2.3335 5.40145 2.3335 5.66667C2.3335 5.93188 2.22814 6.18624 2.0406 6.37377C1.85307 6.56131 1.59871 6.66667 1.3335 6.66667C1.06828 6.66667 0.813925 6.56131 0.626389 6.37377C0.438853 6.18624 0.333496 5.93188 0.333496 5.66667C0.333496 5.40145 0.438853 5.1471 0.626389 4.95956C0.813925 4.77202 1.06828 4.66667 1.3335 4.66667ZM1.3335 0C1.59871 0 1.85307 0.105357 2.0406 0.292893C2.22814 0.48043 2.3335 0.734783 2.3335 1C2.3335 1.26522 2.22814 1.51957 2.0406 1.70711C1.85307 1.89464 1.59871 2 1.3335 2C1.06828 2 0.813925 1.89464 0.626389 1.70711C0.438853 1.51957 0.333496 1.26522 0.333496 1C0.333496 0.734783 0.438853 0.48043 0.626389 0.292893C0.813925 0.105357 1.06828 0 1.3335 0Z"
-                                fill="#667085" />
-                        </svg>
-
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
-                            <div
-                                class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
-                            </div>
-
-                        </label>
-
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Koba
-                    </th>
-                    <td class="px-6 py-4">
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: 45%"></div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <p>30/50 times</p>
-                    </td>
-                    <td >
-                        <svg width="3" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M1.3335 9.33333C1.59871 9.33333 1.85307 9.43869 2.0406 9.62623C2.22814 9.81376 2.3335 10.0681 2.3335 10.3333C2.3335 10.5985 2.22814 10.8529 2.0406 11.0404C1.85307 11.228 1.59871 11.3333 1.3335 11.3333C1.06828 11.3333 0.813925 11.228 0.626389 11.0404C0.438853 10.8529 0.333496 10.5985 0.333496 10.3333C0.333496 10.0681 0.438853 9.81376 0.626389 9.62623C0.813925 9.43869 1.06828 9.33333 1.3335 9.33333ZM1.3335 4.66667C1.59871 4.66667 1.85307 4.77202 2.0406 4.95956C2.22814 5.1471 2.3335 5.40145 2.3335 5.66667C2.3335 5.93188 2.22814 6.18624 2.0406 6.37377C1.85307 6.56131 1.59871 6.66667 1.3335 6.66667C1.06828 6.66667 0.813925 6.56131 0.626389 6.37377C0.438853 6.18624 0.333496 5.93188 0.333496 5.66667C0.333496 5.40145 0.438853 5.1471 0.626389 4.95956C0.813925 4.77202 1.06828 4.66667 1.3335 4.66667ZM1.3335 0C1.59871 0 1.85307 0.105357 2.0406 0.292893C2.22814 0.48043 2.3335 0.734783 2.3335 1C2.3335 1.26522 2.22814 1.51957 2.0406 1.70711C1.85307 1.89464 1.59871 2 1.3335 2C1.06828 2 0.813925 1.89464 0.626389 1.70711C0.438853 1.51957 0.333496 1.26522 0.333496 1C0.333496 0.734783 0.438853 0.48043 0.626389 0.292893C0.813925 0.105357 1.06828 0 1.3335 0Z"
-                                fill="#667085" />
-                        </svg>
-
-                    </td>
-                </tr>
-
+                    </tr>   
+                }               
             </tbody>
         </table>
     </div>
 </div>
 
 @code {
-    public APIKeysModel[]? MyProperty { get; set; }
 
-    @* protected override async Task OnInitializedAsync()
+    private List<APIKeysModel> keys = new List<APIKeysModel>();
+    protected override async Task OnInitializedAsync()
     {
-        MyProperty = await Http.GetFromJsonAsync<APIKeysModel[]>("https://localhost:44384/api/keys");
-    } *@
+        
+        await GetKeys();
+    }
 
-    // call api
-
-
+    private async Task GetKeys(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Key/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+           var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeysModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
 }

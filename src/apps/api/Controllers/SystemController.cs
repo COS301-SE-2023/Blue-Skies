@@ -6,11 +6,11 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SystemsController : ControllerBase
+public class SystemController : ControllerBase
 {
   private readonly SystemsRepository _systemsRepository;
 
-  public SystemsController()
+  public SystemController()
   {
     _systemsRepository = new SystemsRepository();
   }
