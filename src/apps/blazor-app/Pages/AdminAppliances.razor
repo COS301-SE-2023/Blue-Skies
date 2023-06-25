@@ -19,11 +19,11 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-          <div @onclick="deleteAppliances">
-              <Button style="outline">
-               <content>Delete</content>
-            </Button>
-          </div>
+            <div @onclick="deleteAppliances">
+                <Button style="outline">
+                    <content>Delete</content>
+                </Button>
+            </div>
             <Button style="pill">
                <content>Edit</content>
             </Button>
@@ -58,7 +58,6 @@
                     var localVariable = appliances[i].applianceId;
                     <tr class="border-b border-gray-200 ">
                         <td class="px-6 text-center py-4">
-                            
                             <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
                         </td>
                          <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
@@ -110,7 +109,7 @@
 
     private async Task GetAppliances(){
           var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Appliance/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/appliance/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
