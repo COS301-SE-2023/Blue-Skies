@@ -62,5 +62,37 @@ public class AuthController : ControllerBase
     }
   }
 
+  //Login
+  [HttpGet]
+  [Route("login")]
+  public async Task<IActionResult> Login([FromBody] Auth user)
+  {
+    try
+    {
+      //check if email and password is not null
+      if (user.email == null || user.password == null)
+      {
+        return BadRequest("Please enter all Fields");
+      }
+      //check if email is registered
+      var checkemail = await _authRepository.checkemail(user.email);
+      if (checkemail == true)
+      {
+        return BadRequest("Email is not registered");
+      }
+      //login user
+      var login = await _authRepository.login(user.email, user.password);
+      if (login == false)
+      {
+        return BadRequest("Invalid Password");
+      }
+      return Ok("User logged in successfully");
+    }
+    catch (Exception e)
+    {
+      return StatusCode(500, "Internal Server Error. Please contact support. " + "Error: " + e.Message);
+    }
+  }
+
 }
 
