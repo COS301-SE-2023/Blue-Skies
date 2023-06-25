@@ -39,7 +39,7 @@
                         Owner
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        API usage
+                        Monthly API usage
                     </th>
                     <th></th>
                 </tr>
@@ -58,18 +58,21 @@
                             </label>
                         </td>
                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @keys[i].Owner
+                            @keys[i].owner
                         </th>
                         <td class="px-6 py-4">
                             <div class="w-full bg-gray-200 rounded-full h-2.5">
                                 @{
-                                    int percentage = (int) (keys[i].remainingCalls / 50.0 * 100);
+                                    int percentage = (int) ((50 - keys[i].remainingCalls) / 50.0 * 100);
                                 }
                                 <div class="bg-blue-600 h-2.5 rounded-full" style="width: @percentage%"></div>
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <p>@keys[i].remainingCalls/50 times</p>
+                            @{
+                                int usage = 50 - keys[i].remainingCalls;
+                            }
+                            <p>@usage/50 times</p>
                         </td>
                         <td>
                             <svg width="3" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,7 +90,7 @@
 
 @code {
 
-    private List<APIKeysModel> keys = new List<APIKeysModel>();
+    private List<APIKeyModel> keys = new List<APIKeyModel>();
     protected override async Task OnInitializedAsync()
     {
         
@@ -101,7 +104,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
            var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeysModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
         else
         {

@@ -1,6 +1,8 @@
 @page "/admin/products"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json;
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
@@ -49,59 +51,52 @@
                 </tr>
             </thead>
             <tbody >
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Small
-                    </th>
-                    <td class="px-6 py-4">
-                        8
-                    </td>
-                    <td class="px-6 py-4">
-                        5kw
-                    </td>
-                    <td class="px-6 py-4">
-                        5500W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                     <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Medium
-                    </th>
-                    <td class="px-6 py-4">
-                        12
-                    </td>
-                    <td class="px-6 py-4">
-                        8kw
-                    </td>
-                    <td class="px-6 py-4">
-                        6000W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                     <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Large
-                    </th>
-                    <td class="px-6 py-4">
-                        16
-                    </td>
-                    <td class="px-6 py-4">
-                        12kw
-                    </td>
-                    <td class="px-6 py-4">
-                        7000W
-                    </td>
-                </tr>
-    
+                @for(int i = 0; i < products.Count; i++)
+                {
+                    <tr class="border-b border-gray-200 ">
+                        <td class="px-6 text-center py-4">
+                            <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                        </td>
+                        <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                            @products[i].systemSize
+                        </th>
+                        <td class="px-6 py-4">
+                            @products[i].numberOfPanels
+                        </td>
+                        <td class="px-6 py-4">
+                            @products[i].inverterOutput W
+                        </td>
+                        <td class="px-6 py-4">
+                           @products[i].solarInput W
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 </div>
+
+@code {
+
+    private List<ProductModel> products = new List<ProductModel>();
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await GetKeys();
+    }
+
+    private async Task GetKeys(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/System/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+           var data = await response.Content.ReadAsStringAsync();
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+}
