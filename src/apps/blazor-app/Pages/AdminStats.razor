@@ -1,142 +1,46 @@
     @page "/admin/stats"
     @layout AdminLayout
-    @using ChartJs.Blazor.BarChart
+    @using ChartJs.Blazor.PieChart
     @using System.Drawing
 
     <PageTitle>Blue Skies - Stats</PageTitle>
 
-    <Chart Config="_config" @ref="_chart"></Chart>
-
-<button @onclick="RandomizeData">Randomize Data</button>
-<button @onclick="AddDataset">Add Dataset</button>
-<button @onclick="RemoveDataset">Remove Dataset</button>
-<button @onclick="AddData">Add Data</button>
-<button @onclick="RemoveData">Remove Data</button>
+<Chart Config="_config"></Chart>
 
 @code {
-    private const int InitalCount = 7;
-    private BarConfig? _config;
-    private Random _rng = new Random();
-    private Chart? _chart;
+private PieConfig? _config;
 
-    protected override void OnInitialized()
+protected override void OnInitialized()
+{
+    _config = new PieConfig
     {
-        _config = new BarConfig
+        Options = new PieOptions
         {
-            Options = new BarOptions
+            Responsive = true,
+            Title = new OptionsTitle
             {
-                Responsive = true,
-                Legend = new Legend
-                {
-                    Position = Position.Top
-                },
-                Title = new OptionsTitle
-                {
-                    Display = true,
-                    Text = "ChartJs.Blazor Bar Chart"
-                }
-            }
-        };
-
-        IDataset<int> dataset1 = new BarDataset<int>(RandomScalingFactor(InitalCount))
-        {
-            Label = "My first dataset",
-            BackgroundColor = ColorUtil.FromDrawingColor(Color.FromArgb(128, ChartColors.Red)),
-            BorderColor = ColorUtil.FromDrawingColor(ChartColors.Red),
-            BorderWidth = 1
-        };
-
-        IDataset<int> dataset2 = new BarDataset<int>(RandomScalingFactor(InitalCount))
-        {
-            Label = "My second dataset",
-            BackgroundColor = ColorUtil.FromDrawingColor(Color.FromArgb(128, ChartColors.Blue)),
-            BorderColor = ColorUtil.FromDrawingColor(ChartColors.Blue),
-            BorderWidth = 1
-        };
-
-        _config.Data.Labels.AddRange(Months.Take(InitalCount));
-        _config.Data.Datasets.Add(dataset1);
-        _config.Data.Datasets.Add(dataset2);
-    }
-
-    private void RandomizeData()
-    {
-        foreach (IDataset<int> dataset in _config.Data.Datasets)
-        {
-            int count = dataset.Count;
-            dataset.Clear();
-            for (int i = 0; i < count; i++)
-            {
-                if (_rng.NextDouble() < 0.2)
-                {
-                    dataset.Add(0);
-                }
-                else
-                {
-                    dataset.Add(RandomScalingFactor());
-                }
+                Display = true,
+                Text = "ChartJs.Blazor Pie Chart"
             }
         }
+    };
 
-        _chart.Update();
+    foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
+    {
+        _config.Data.Labels.Add(color);
     }
 
-    private void AddDataset()
+    PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
     {
-        Color color = ChartColors.All[_config.Data.Datasets.Count % ChartColors.All.Count];
-        IDataset<int> dataset = new BarDataset<int>(RandomScalingFactor(_config.Data.Labels.Count))
+        BackgroundColor = new[]
         {
-            Label = $"Dataset {_config.Data.Datasets.Count}",
-            BackgroundColor = ColorUtil.FromDrawingColor(Color.FromArgb(128, color)),
-            BorderColor = ColorUtil.FromDrawingColor(color),
-            BorderWidth = 1
-        };
-
-        _config.Data.Datasets.Add(dataset);
-        _chart.Update();
-    }
-
-    private void RemoveDataset()
-    {
-        IList<IDataset> datasets = _config.Data.Datasets;
-        if (datasets.Count == 0)
-            return;
-
-        datasets.RemoveAt(datasets.Count - 1);
-        _chart.Update();
-    }
-
-    private void AddData()
-    {
-        if (_config.Data.Datasets.Count == 0)
-            return;
-
-        string month = Months[_config.Data.Labels.Count % Months.Count];
-        _config.Data.Labels.Add(month);
-
-        foreach (IDataset<int> dataset in _config.Data.Datasets)
-        {
-            dataset.Add(RandomScalingFactor());
+            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
         }
+    };
 
-        _chart.Update();
-    }
-
-    private void RemoveData()
-    {
-        if (_config.Data.Datasets.Count == 0 ||
-            _config.Data.Labels.Count == 0)
-        {
-            return;
-        }
-
-        _config.Data.Labels.RemoveAt(_config.Data.Labels.Count - 1);
-
-        foreach (IDataset<int> dataset in _config.Data.Datasets)
-        {
-            dataset.RemoveAt(dataset.Count - 1);
-        }
-
-        _chart.Update();
-    }
+    _config.Data.Datasets.Add(dataset);
+}
 }
