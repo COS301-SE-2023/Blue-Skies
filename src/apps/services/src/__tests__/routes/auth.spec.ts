@@ -2,8 +2,6 @@ import express from 'express'; // import express
 import request from 'supertest'; // import supertest
 import { Request, Response } from 'express';
 import { authRouter } from '../../routes/auth/auth.router';
-import { connection } from '../../main';
-import AuthController from '../../controllers/auth/auth.controller';
 
 const app = express(); // an instance of an express app, a 'fake' express app
 app.use('/auth', authRouter); // routes
@@ -44,11 +42,22 @@ describe('Test the auth path', () => {
   });
 
   //Test checkEmail
-  it('It should response the GET method', async () => {
-    const response = await request(app)
-      .get('/auth/checkemail')
-      .send({ email: 'testemail@gmail.com' });
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({ message: 'Email is available.' });
+  describe('Test the checkEmail path', () => {
+    it('It should response the GET method', async () => {
+      const response = await request(app)
+        .get('/auth/checkemail')
+        .send({ email: 'testemail@gmail.com' });
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({ message: 'Email is available.' });
+    });
+    //Test checkEmail with no email
+    it('It should response the GET method', async () => {
+      const response = await request(app).get('/auth/checkemail');
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toEqual({
+        error: 'Email is not available.',
+        details: 'Email already exists.',
+      });
+    });
   });
 });
