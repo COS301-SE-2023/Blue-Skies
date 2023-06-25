@@ -1,0 +1,64 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Models
+
+<tr class="border-b border-gray-200 ">
+    <td class="px-6  py-4">
+        <input @onchange="HandleSelection" type="checkbox" class="form-checkbox h-5 w-5  " />
+    </td>   
+    
+    @if (recordState)
+        {
+        <td scope="row" class="px-6 py-4 ">
+            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.type" />}
+        </td>
+        <td scope="row" class="px-6 py-4  whitespace-nowrap   ">
+            @if(appliance != null) {<Input css="w-1/2" type="text" placeholder="@appliance.powerUsage.ToString()" />}
+        </td>
+        <td class="px-6 py-4 flex gap-3">
+        <div @onclick="toggleRecordState">
+            <Button style="pill">
+                <content>Save</content>
+            </Button>
+        </div>
+        <div @onclick="toggleRecordState">
+            <Button style="pill-danger">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </td>
+        }
+        else {
+        <td scope="row" class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(appliance != null) {@appliance.type}</p>
+        </td>
+        <td scope="row" class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(appliance != null) {@appliance.powerUsage } kWh</p>
+        </td>
+        <td @onclick="toggleRecordState" class="px-6 py-4 flex gap-3">
+            <Button style="pill">
+                <content>Edit</content>
+            </Button>
+        </td>
+        }
+</tr>
+
+@code {
+    public bool recordState { get; set; } = false;
+    public void toggleRecordState()
+    {
+        recordState = !recordState;
+    }
+    [Parameter]
+    public ApplianceModel? appliance { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSelect { get; set; }
+
+    private async Task HandleSelection(ChangeEventArgs e)
+    {
+        @if (e.Value != null && appliance != null)
+        {
+            await OnSelect.InvokeAsync(appliance.applianceId);
+        }
+    }
+}
