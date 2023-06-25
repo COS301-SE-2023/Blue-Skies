@@ -1,11 +1,37 @@
-    @page "/admin/stats"
-    @layout AdminLayout
-    @using ChartJs.Blazor.PieChart
-    @using System.Drawing
+@page "/admin/stats"
+@layout AdminLayout
+@using ChartJs.Blazor.PieChart
+@using BlazorApp.Components.Base
 
-    <PageTitle>Blue Skies - Stats</PageTitle>
+<PageTitle>Blue Skies - Stats</PageTitle>
 
+<div class="mt-2">
+    <div class="flex w-full justify-around p-4">
+        <div class="">
+            <Heading >
+                <Superscript>
+                    <h2>Website</h2>
+                </Superscript>
+                <Header>
+                    <h1>Statistics</h1>
+                </Header>
+            </Heading>
+        </div>
+        <div class="flex  gap-10 items-center">
+            <Button style="outline">
+               <content>Delete</content>
+            </Button>
+            <Button style="pill">
+               <content>Edit</content>
+            </Button>
+            <Button style="pill">
+               <content>Add</content>
+            </Button>
+        </div>
+    </div>
+    
 <Chart Config="_config"></Chart>
+</div>
 
 @code {
 private PieConfig? _config;
