@@ -67,6 +67,7 @@ public class ApplianceController : ControllerBase
   {
     try
     {
+      Console.WriteLine("Hello");
       var data = await _appliancesRepository.deleteAppliances(appliance.applianceId);
       if (data == false)
       {
