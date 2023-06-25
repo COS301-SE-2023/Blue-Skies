@@ -1,8 +1,8 @@
 @page "/admin/appliances"
 @layout AdminLayout
 @using BlazorApp.Components.Base
-@using System.Net.Http.Json
-@inject HttpClient httpClient
+@using BlazorApp.Models
+@using System.Text.Json;
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -38,6 +38,9 @@
                     <th scope="col" class="px-6 py-3 text-center">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
                     </th>
+                     <th scope="col" class="px-6 py-3  ">
+                        Appliance ID
+                    </th>
                     <th scope="col" class="px-6 py-3  ">
                         Appliance Type
                     </th>
@@ -47,59 +50,93 @@
                 </tr>
             </thead>
             <tbody>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Kettle
-                    </th>
-                    <td class="px-6 py-4">
-                        1200 W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Fridge
-                    </th>
-                    <td class="px-6 py-4">
-                        Many W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        TV
-                    </th>
-                    <td class="px-6 py-4">
-                        Enough W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                    <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Microwave
-                    </th>
-                    <td class="px-6 py-4">
-                        Mega W
-                    </td>
-                </tr>
-    
+                @* For each appliance *@
+                @for(int i = 0; i < appliances.Count; i++)
+                {
+                    var localVariable = appliances[i].applianceId;
+                    <tr class="border-b border-gray-200 ">
+                        <td class="px-6 text-center py-4">
+                            
+                            <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
+                        </td>
+                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                            @appliances[i].applianceId
+                        </th>
+                        <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                            @appliances[i].type
+                        </th>
+                        <td class="px-6 py-4">
+                            @appliances[i].powerUsage
+                        </td>
+                    </tr>
+                }
+
             </tbody>
         </table>
     </div>
 </div>
 
-@functions {
-    private List<ApplianceModel> appliances = new List<ApplianceModel>();
-        protected async Task OnInitAsync() => await GetAppliances();
+@code {
 
-        private async Task GetAppliances() => appliances = await httpClient.GetFromJsonAsync<List<ApplianceModel>>("api/appliances");
+    //Get All Appliances
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
+        private List<int> deleteArr = new List<int>();
+    private async Task deleteAppliances(){
+        foreach(int id in deleteArr){
+            await DeleteAppliance(id);
+        }
+        deleteArr.Clear();
+        await GetAppliances();
+    }
+    private void addDeleteArr(int id){
+        if(deleteArr.Contains(id)){
+            deleteArr.Remove(id);
+        }else{
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach(int i in deleteArr){
+            Console.WriteLine(i);
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await GetAppliances();
+    }
+
+    private async Task GetAppliances(){
+          var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Appliance/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+           var data = await response.Content.ReadAsStringAsync();
+        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        
+    }
+
+        //Delete Appliance
+    private async Task DeleteAppliance(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/appliance/delete");
+        var content = new StringContent("{\r\n  \"applianceId\": " +id+"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetAppliances();
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
 }

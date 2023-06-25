@@ -40,13 +40,13 @@ public class SystemsRepository
     }
   }
 
-  public async Task<System> createSystems(string inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
+  public async Task<System> createSystems(int inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/system/create");
-      var content = new StringContent("{\r\n    \"inverterOutput\" : \"" + inverterOutput + "\",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"inverterOutput\" : " + inverterOutput + ",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -72,13 +72,13 @@ public class SystemsRepository
     }
   }
 
-  public async Task<System> updateSystems(int systemId, string inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
+  public async Task<System> updateSystems(int systemId, int inverterOutput, int numberOfPanels, int batterySize, int numberOfBatteries, int solarInput)
   {
     try
     {
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Put, "http://localhost:3333/api/system/update");
-      var content = new StringContent("{\r\n    \"systemId\" : " + systemId + ",\r\n    \"inverterOutput\" : \"" + inverterOutput + "\",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
+      var content = new StringContent("{\r\n    \"systemId\" : " + systemId + ",\r\n    \"inverterOutput\" : " + inverterOutput + ",\r\n    \"numberOfPanels\" : " + numberOfPanels + ",\r\n    \"batterySize\" : " + batterySize + ",\r\n    \"numberOfBatteries\" : " + numberOfBatteries + ",\r\n    \"solarInput\" : " + solarInput + "\r\n}", null, "application/json");
       request.Content = content;
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
