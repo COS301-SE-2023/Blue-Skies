@@ -7,12 +7,12 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class KeysController : ControllerBase
+public class KeyController : ControllerBase
 {
 
   private readonly KeysRepository _keysRepository;
 
-  public KeysController()
+  public KeyController()
   {
     _keysRepository = new KeysRepository();
   }
