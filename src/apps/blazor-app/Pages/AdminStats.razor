@@ -2,6 +2,8 @@
 @layout AdminLayout
 @using ChartJs.Blazor.PieChart
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json;
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
@@ -34,39 +36,59 @@
 </div>
 
 @code {
-private PieConfig? _config;
+    private PieConfig? _config;
+    private List<UserModel> users = new List<UserModel>();
 
-protected override void OnInitialized()
-{
-    _config = new PieConfig
+    protected override void OnInitialized()
     {
-        Options = new PieOptions
+        _config = new PieConfig
         {
-            Responsive = true,
-            Title = new OptionsTitle
+            Options = new PieOptions
             {
-                Display = true,
-                Text = "ChartJs.Blazor Pie Chart"
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "ChartJs.Blazor Pie Chart"
+                }
             }
-        }
-    };
+        };
 
-    foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
-    {
-        _config.Data.Labels.Add(color);
+        foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
+        {
+            _config.Data.Labels.Add(color);
+        }
+
+        PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+                ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+                ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+                ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+            }
+        };
+        _config.Data.Datasets.Add(dataset);
+
     }
 
-    PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
+    protected override async Task OnInitializedAsync()
     {
-        BackgroundColor = new[]
+        await GetUsers();
+    }
+    private async Task GetUsers(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/user/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
-            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
-            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
-            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+            var data = await response.Content.ReadAsStringAsync();
+            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-    };
-
-    _config.Data.Datasets.Add(dataset);
-}
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
 }

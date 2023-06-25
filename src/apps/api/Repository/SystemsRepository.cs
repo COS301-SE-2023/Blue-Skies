@@ -6,7 +6,7 @@ namespace Api.Repository;
 //Create class
 public class SystemsRepository
 {
-    public async Task<List<System>> GetAllSystems()
+    public async Task<List<Systems>> GetAllSystems()
     {
         try
         {
@@ -21,18 +21,18 @@ public class SystemsRepository
             {
                 var data = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(data);
-                var systems = JsonSerializer.Deserialize<List<System>>(data);
+                var systems = JsonSerializer.Deserialize<List<Systems>>(data);
                 if (systems != null)
                 {
                     return systems;
                 }
-                return new List<System>();
+                return new List<Systems>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine("Error");
-                return new List<System>();
+                return new List<Systems>();
             }
         }
         catch (Exception e)
@@ -41,7 +41,7 @@ public class SystemsRepository
         }
     }
 
-    public async Task<System> createSystems(
+    public async Task<Systems> createSystems(
         int inverterOutput,
         int numberOfPanels,
         int batterySize,
@@ -75,7 +75,7 @@ public class SystemsRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                System sys = new System();
+                Systems sys = new Systems();
                 sys.systemId = -1;
                 sys.inverterOutput = inverterOutput;
                 sys.numberOfPanels = numberOfPanels;
@@ -95,7 +95,7 @@ public class SystemsRepository
         }
     }
 
-    public async Task<System> updateSystems(
+    public async Task<Systems> updateSystems(
         int systemId,
         int inverterOutput,
         int numberOfPanels,
@@ -109,20 +109,26 @@ public class SystemsRepository
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Put,
-                "http://localhost:3333/api/system/update"
+                "http://localhost:3333/api/system/update/" + systemId
             );
             var content = new StringContent(
-                "{\r\n    \"systemId\" : "
+                "{\r\n"
+                    + "\"systemId\" : "
                     + systemId
-                    + ",\r\n    \"inverterOutput\" : "
+                    + ",\r\n"
+                    + "\"inverterOutput\" : "
                     + inverterOutput
-                    + ",\r\n    \"numberOfPanels\" : "
+                    + ",\r\n"
+                    + "\"numberOfPanels\" : "
                     + numberOfPanels
-                    + ",\r\n    \"batterySize\" : "
+                    + ",\r\n"
+                    + "\"batterySize\" : "
                     + batterySize
-                    + ",\r\n    \"numberOfBatteries\" : "
+                    + ",\r\n"
+                    + "\"numberOfBatteries\" : "
                     + numberOfBatteries
-                    + ",\r\n    \"solarInput\" : "
+                    + ",\r\n"
+                    + "\"solarInput\" : "
                     + solarInput
                     + "\r\n}",
                 null,
@@ -132,7 +138,7 @@ public class SystemsRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                System sys = new System();
+                Systems sys = new Systems();
                 sys.systemId = systemId;
                 sys.inverterOutput = inverterOutput;
                 sys.numberOfPanels = numberOfPanels;
@@ -183,7 +189,7 @@ public class SystemsRepository
     }
 
     //get system by id
-    public async Task<System> getSystemById(int systemId)
+    public async Task<Systems> getSystemById(int systemId)
     {
         try
         {
@@ -198,12 +204,12 @@ public class SystemsRepository
             {
                 var data = await response.Content.ReadAsStringAsync();
                 //Console.WriteLine(data);
-                var system = JsonSerializer.Deserialize<System>(data);
+                var system = JsonSerializer.Deserialize<Systems>(data);
                 if (system != null)
                 {
                     return system;
                 }
-                return new System();
+                return new Systems();
             }
             else
             {
