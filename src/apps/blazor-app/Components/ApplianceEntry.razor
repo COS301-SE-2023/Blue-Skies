@@ -43,8 +43,8 @@
 </tr>
 
 @code {
-    public string type { get; set; } = "Appliance Type";
-    public string powerUsage { get; set; } = "0";
+    public string? type { get; set; } 
+    public string? powerUsage { get; set; }
 
     [Parameter]
     public bool recordState { get; set; } = false;
@@ -56,6 +56,15 @@
     public EventCallback<int> OnSelect { get; set; }
     [Parameter]
     public EventCallback<ApplianceModel> OnSave { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (appliance != null)
+        {
+            type = appliance.type;
+            powerUsage = appliance.powerUsage.ToString();
+        }
+    }
 
     public async void toggleRecordState(string action = "")
     {
