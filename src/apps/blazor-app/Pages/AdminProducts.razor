@@ -1,6 +1,8 @@
 @page "/admin/products"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json;
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
@@ -17,15 +19,17 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <Button style="outline">
-               <content>Delete</content>
-            </Button>
+            <div @onclick="deleteProducts">
+                <Button style="outline">
+                   <content>Delete</content>
+                </Button>
+            </div>
             <Button style="pill">
                <content>Add</content>
             </Button>
         </div>
     </div>
-    
+
     <div class="relative overflow-x-auto  mt-2">
         <table class="w-full  text-sm text-center ">
             <thead class="text-xs bg-primary-50  uppercase ">
@@ -49,59 +53,99 @@
                 </tr>
             </thead>
             <tbody >
+            @for (int i = 0; i < products.Count; i++)
+                {
+                var localVariable = products[i].systemId;
                 <tr class="border-b border-gray-200 ">
                     <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                        <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
                     </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Small
-                    </th>
-                    <td class="px-6 py-4">
-                        8
+                    <td scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
+                        @products[i].systemSize
                     </td>
                     <td class="px-6 py-4">
-                        5kw
+                        @products[i].numberOfPanels
                     </td>
                     <td class="px-6 py-4">
-                        5500W
+                        @products[i].inverterOutput W
+                    </td>
+                    <td class="px-6 py-4">
+                        @products[i].solarInput W
                     </td>
                 </tr>
-                <tr class="border-b border-gray-200 ">
-                     <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Medium
-                    </th>
-                    <td class="px-6 py-4">
-                        12
-                    </td>
-                    <td class="px-6 py-4">
-                        8kw
-                    </td>
-                    <td class="px-6 py-4">
-                        6000W
-                    </td>
-                </tr>
-                <tr class="border-b border-gray-200 ">
-                     <td class="px-6 text-center py-4">
-                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </td>
-                    <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                        Large
-                    </th>
-                    <td class="px-6 py-4">
-                        16
-                    </td>
-                    <td class="px-6 py-4">
-                        12kw
-                    </td>
-                    <td class="px-6 py-4">
-                        7000W
-                    </td>
-                </tr>
-    
+                }
             </tbody>
         </table>
     </div>
 </div>
+
+@code {
+
+    private List<ProductModel> products = new List<ProductModel>();
+
+    private List<int> deleteArr = new List<int>();
+    private async Task deleteProducts()
+    {
+        foreach (int id in deleteArr)
+        {
+            await DeleteProduct(id);
+        }
+        deleteArr.Clear();
+        await GetProducts();
+    }
+    private void addDeleteArr(int id)
+    {
+        if (deleteArr.Contains(id))
+        {
+            deleteArr.Remove(id);
+        }
+        else
+        {
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach (int i in deleteArr)
+        {
+            Console.WriteLine(i);
+        }
+    }
+
+    //Delete Product
+    private async Task DeleteProduct(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/system/delete");
+        var content = new StringContent("{\r\n  \"systemId\": " + id + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetProducts();
+            Console.WriteLine("Delete");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProducts();
+    }
+
+    private async Task GetProducts()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+}

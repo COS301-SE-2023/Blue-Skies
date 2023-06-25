@@ -5,7 +5,6 @@ import { connection as conn } from '../../main';
 export default class SystemController {
   public createSystem = (req: Request, res: Response) => {
     const {
-      systemSize,
       inverterOutput,
       numberOfPanels,
       batterySize,
@@ -14,7 +13,7 @@ export default class SystemController {
     } = req.body;
     const query =
       `INSERT INTO [dbo].[systems] (systemSize, inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
-      ` VALUES ('${systemSize}','${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
+      ` VALUES ('custom','${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
 
     try {
       const request = new tedious.Request(

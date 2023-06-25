@@ -71,13 +71,29 @@ private bool repasswordValid = true;
 
 
 
-private void HandleValidSubmit()
+private async Task HandleValidSubmit()
 {
     Console.WriteLine("OnValidSubmit");
     // Send welcome email
+    Console.WriteLine("Welcome " + email);
+    Console.WriteLine(password);
+    Console.WriteLine("Repassword: " + repassword);
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/auth/register");
+    var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+    request.Content = content;
+    var response = await client.SendAsync(request);
+    if(response.StatusCode == System.Net.HttpStatusCode.OK)
+    {
+        Console.WriteLine("OK");
+        NavigationManager.NavigateTo("/login");
+    }
+    else
+    {
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        Console.WriteLine("Not OK");
+    }
 
-    // Redirect to login page
-    @* NavigationManager.NavigateTo("/login"); *@
 }
 
 private void HandleInvalidSubmit()
@@ -87,7 +103,7 @@ private void HandleInvalidSubmit()
 }
 
 
-private void HandleSubmit()
+private async Task HandleSubmit()
 {
     Console.WriteLine("OnSubmit");
     Console.WriteLine(email);
@@ -98,7 +114,7 @@ private void HandleSubmit()
 
     if (isValid)
     {
-        HandleValidSubmit();
+        await HandleValidSubmit();
     }
     else
     {
