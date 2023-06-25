@@ -1,7 +1,6 @@
 @page "/admin/appliances"
 @layout AdminLayout
 @using BlazorApp.Components.Base
-@using System.Net.Http.Json
 @using BlazorApp.Models
 @using System.Text.Json;
 
@@ -52,20 +51,22 @@
             </thead>
             <tbody>
                 @* For each appliance *@
-                @foreach (var appliance in appliances)
+                @for(int i = 0; i < appliances.Count; i++)
                 {
+                    var localVariable = appliances[i].applianceId;
                     <tr class="border-b border-gray-200 ">
                         <td class="px-6 text-center py-4">
-                            <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                            
+                            <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
                         </td>
                          <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @appliance.applianceId
+                            @appliances[i].applianceId
                         </th>
                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @appliance.type
+                            @appliances[i].type
                         </th>
                         <td class="px-6 py-4">
-                            @appliance.powerUsage
+                            @appliances[i].powerUsage
                         </td>
                     </tr>
                 }
@@ -79,7 +80,25 @@
 
     //Get All Appliances
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
-
+        private List<int> deleteArr = new List<int>();
+    private async Task deleteAppliances(){
+        foreach(int id in deleteArr){
+            await DeleteAppliance(id);
+        }
+        deleteArr.Clear();
+        await GetAppliances();
+    }
+    private void addDeleteArr(int id){
+        if(deleteArr.Contains(id)){
+            deleteArr.Remove(id);
+        }else{
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach(int i in deleteArr){
+            Console.WriteLine(i);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         
@@ -101,5 +120,23 @@
             Console.WriteLine("Failed");
         }
         
+    }
+
+        //Delete Appliance
+    private async Task DeleteAppliance(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/appliance/delete");
+        var content = new StringContent("{\r\n  \"applianceId\": " +id+"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetAppliances();
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
     }
 }
