@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
       }
       //check if email is already registered
       var checkemail = await _authRepository.checkemail(email);
-      if (checkemail)
+      if (checkemail == false)
       {
         return BadRequest("Email is already registered");
       }
