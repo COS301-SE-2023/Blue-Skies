@@ -82,11 +82,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var client = new HttpClient();
+        
+        await GetAppliances();
+    }
+
+    private async Task GetAppliances(){
+          var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/Appliance/all");
         var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        var data = await response.Content.ReadAsStringAsync();
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+           var data = await response.Content.ReadAsStringAsync();
         appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        
     }
 }
