@@ -25,9 +25,11 @@
                     <content>Delete</content>
                 </Button>
             </div>
-            <Button style="pill">
-               <content>Add</content>
-            </Button>
+            <div @onclick="AddAppliance">
+                <Button style="pill">
+                   <content>Add</content>
+                </Button>
+            </div>
         </div>
     </div>
     
@@ -44,16 +46,14 @@
                     <th scope="col" class="px-6 py-3 ">
                         Power usage
                     </th>
-                    <th>
-
-                    </th>
+                    <th scope="col" class="px-6 py-3 "></th>
                 </tr>
             </thead>
             <tbody>
                 @* For each appliance *@
                 @foreach (var appliance in appliances)
                 {
-                    <ApplianceEntry appliance="appliance" OnSelect="addDeleteArr" />   
+                    <ApplianceEntry appliance="appliance" OnSelect="AddDeleteArr" />   
                 }
             </tbody>
         </table>
@@ -80,7 +80,7 @@
         await GetAppliances();
         Console.WriteLine("Delete");
     }
-    private void addDeleteArr(int id){
+    private void AddDeleteArr(int id){
         if(deleteArr.Contains(id)){
             deleteArr.Remove(id);
         }else{
@@ -131,5 +131,11 @@
             Console.WriteLine("Failed");
         }
         
+    }
+
+    private void AddAppliance()
+    {
+        appliances.Add(new ApplianceModel { applianceId = 0, type = "", powerUsage = 0 });
+        @* add api call *@
     }
 }
