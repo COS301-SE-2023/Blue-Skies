@@ -1,10 +1,8 @@
-namespace Api;
+using System.ComponentModel.DataAnnotations;
 
-public class Appliances
+public class ApplianceModel
 {
     public int applianceId { get; set; }
-
     public string? type { get; set; }
-
     public int powerUsage { get; set; }
 }
