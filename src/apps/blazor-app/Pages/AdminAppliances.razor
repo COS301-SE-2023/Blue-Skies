@@ -1,6 +1,7 @@
 @page "/admin/appliances"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
 
@@ -25,9 +26,6 @@
             </Button>
           </div>
             <Button style="pill">
-               <content>Edit</content>
-            </Button>
-            <Button style="pill">
                <content>Add</content>
             </Button>
         </div>
@@ -37,48 +35,39 @@
         <table class="w-full  text-sm text-left ">
             <thead class="text-xs bg-primary-50  uppercase ">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-center">
+                    <th scope="col" class="px-6 py-3 ">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
-                    </th>
-                     <th scope="col" class="px-6 py-3  ">
-                        Appliance ID
                     </th>
                     <th scope="col" class="px-6 py-3  ">
                         Appliance Type
                     </th>
-                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3 ">
                         Power usage
+                    </th>
+                    <th>
+
                     </th>
                 </tr>
             </thead>
             <tbody>
                 @* For each appliance *@
-                @for(int i = 0; i < appliances.Count; i++)
+                @foreach (var appliance in appliances)
                 {
-                    var localVariable = appliances[i].applianceId;
-                    <tr class="border-b border-gray-200 ">
-                        <td class="px-6 text-center py-4">
-                            
-                            <input onclick="@(() => addDeleteArr(localVariable))" type="checkbox" class="form-checkbox h-5 w-5  " />
-                        </td>
-                         <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @appliances[i].applianceId
-                        </th>
-                        <th scope="row" class="px-6 py-4 font-medium  whitespace-nowrap   ">
-                            @appliances[i].type
-                        </th>
-                        <td class="px-6 py-4">
-                            @appliances[i].powerUsage
-                        </td>
-                    </tr>
+                    <ApplianceEntry appliance="appliance" OnSelect="addDeleteArr" />   
                 }
-
             </tbody>
         </table>
     </div>
 </div>
 
 @code {
+
+    public bool recordState { get; set; } = false;
+
+    public void toggleRecordState(int state)
+    {
+        recordState = !recordState;
+    }
 
     //Get All Appliances
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
