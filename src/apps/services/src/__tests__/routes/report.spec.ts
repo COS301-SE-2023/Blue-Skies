@@ -60,9 +60,6 @@ describe('Test the report path', () => {
         });
     });
     it('It should response the POST method', async () => {
-        // /report/all
-        // /report/1
-        // /report/update/36345
         const response = await request(app).post('/report/create');
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({
@@ -90,7 +87,5 @@ describe('Test the report path', () => {
         message: 'Report is deleted.',
         });
     });
-    
-    
 });
 
