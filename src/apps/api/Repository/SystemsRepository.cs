@@ -24,19 +24,23 @@ public class SystemsRepository
         var systems = JsonSerializer.Deserialize<List<Systems>>(data);
         if (systems != null)
         {
+          Console.WriteLine(".NET: " + systems);
           return systems;
         }
+
+        Console.WriteLine(".NET: system is null error");
         return new List<Systems>();
       }
       else
       {
         //return empty list
-        Console.WriteLine("Error");
+        Console.WriteLine(".NET: Database Connection Error");
         return new List<Systems>();
       }
     }
     catch (Exception e)
     {
+      Console.WriteLine(".NET: Database Connection Error: " + e.Message);
       throw new Exception("Database Connection Error");
     }
   }
@@ -82,15 +86,19 @@ public class SystemsRepository
         sys.batterySize = batterySize;
         sys.numberOfBatteries = numberOfBatteries;
         sys.solarInput = solarInput;
+
+        Console.WriteLine(".NET: " + sys);
         return sys;
       }
       else
       {
+        Console.WriteLine(".NET: Error creating system");
         throw new Exception("Error creating system");
       }
     }
     catch (Exception e)
     {
+      Console.WriteLine(".NET: Database Error: " + e.Message);
       throw new Exception("Database Error: " + e.Message);
     }
   }
@@ -142,16 +150,20 @@ public class SystemsRepository
         sys.batterySize = batterySize;
         sys.numberOfBatteries = numberOfBatteries;
         sys.solarInput = solarInput;
+
+        Console.WriteLine(".NET: " + sys);
         return sys;
       }
       else
       {
         Console.WriteLine(await response.Content.ReadAsStringAsync());
+        Console.WriteLine(".NET: Error updating system");
         throw new Exception("Error updating system");
       }
     }
     catch (Exception e)
     {
+      Console.WriteLine(".NET: Database Error: " + e.Message);
       throw new Exception("Database Error: " + e.Message);
     }
   }
@@ -169,19 +181,23 @@ public class SystemsRepository
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
       {
+        Console.WriteLine(".NET: System deleted");
         return true;
       }
       if (response.StatusCode == HttpStatusCode.NotFound)
       {
+        Console.WriteLine(".NET: System not found");
         return false;
       }
       else
       {
+        Console.WriteLine(".NET: Error deleting system");
         throw new Exception("Error deleting system");
       }
     }
     catch (Exception e)
     {
+      Console.WriteLine(".NET: Database Error: " + e.Message);
       throw new Exception("Database Error: " + e.Message);
     }
   }
@@ -205,18 +221,21 @@ public class SystemsRepository
         var system = JsonSerializer.Deserialize<Systems>(data);
         if (system != null)
         {
+          Console.WriteLine(".NET: " + system);
           return system;
         }
+        Console.WriteLine(".NET: System not found");
         return new Systems();
       }
       else
       {
-        Console.WriteLine("Error");
+        Console.WriteLine(".NET: Error getting system");
         throw new Exception("Error getting system");
       }
     }
     catch (Exception e)
     {
+      Console.WriteLine(".NET: Database Error: " + e.Message);
       throw new Exception("Database Error: " + e.Message);
     }
   }
