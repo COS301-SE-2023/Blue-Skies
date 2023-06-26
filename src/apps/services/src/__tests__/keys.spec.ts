@@ -15,6 +15,12 @@ jest.mock('../main', () => {
 jest.mock('tedious', () => ({
   Request: jest.fn().mockImplementation((query, callback) => {
     // Simulate a successful query with mock data
+    // Simulate a successful query with mock data
+    if (query.includes('WHERE keyId = 1')) {
+      callback(null, 1);
+    } else {
+      callback(null, 0);
+    }
     const rowCount = 2;
     const keys = [
       { id: 1, name: 'Key 1' },
@@ -22,6 +28,7 @@ jest.mock('tedious', () => ({
     ];
     callback(null, rowCount);
   }),
+  ColumnValue: jest.fn(),
 }));
 
 describe('Test the key path', () => {
@@ -107,6 +114,49 @@ describe('Test the key path', () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Failed to create key',
       });
+    });
+  });
+
+  describe('getKey', () => {
+    it('should return the requested key', () => {
+      // Create an instance of the KeyController
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+      } as unknown as Request;
+
+      // Call the getKey method with the mock request and response
+      keyController.getKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      // expect(mockResponse.json).toHaveBeenCalledWith({
+      //   keyId: '1',
+      //   owner: expect.anything(),
+      //   APIKey: expect.anything(),
+      //   remainingCalls: expect.anything(),
+      //   suspended: expect.anything(),
+      // });
+    });
+
+    it('should return Not Found for a non-existing key', () => {
+      // Update the mock request to have a non-existing keyId
+      mockRequest = {
+        params: {
+          keyId: '999',
+        },
+      } as unknown as Request;
+
+      // Call the getKey method with the mock request and response
+      keyController.getKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      // expect(mockResponse.json).toHaveBeenCalledWith({
+      //   error: 'Not Found',
+      //   details: 'Key does not exist.',
+      // });
     });
   });
 });
