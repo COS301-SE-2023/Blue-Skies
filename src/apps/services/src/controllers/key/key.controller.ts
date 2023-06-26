@@ -14,11 +14,12 @@ export default class KeyController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Key created successfully.');
             return res.status(200).json({
               message: 'Key created successfully.',
             });
@@ -28,6 +29,7 @@ export default class KeyController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -43,16 +45,18 @@ export default class KeyController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: No keys exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'No keys exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: keys retrieved successfully.');
             res.status(200).json(keys);
           }
         }
@@ -71,6 +75,7 @@ export default class KeyController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -87,16 +92,18 @@ export default class KeyController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Key does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Key does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Key retrieved successfully.');
             res.status(200).json(key);
           }
         }
@@ -114,6 +121,7 @@ export default class KeyController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -131,16 +139,18 @@ export default class KeyController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Key does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Key does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Key updated successfully.');
             res.status(200).json({
               message: 'Key updated successfully.',
             });
@@ -150,6 +160,7 @@ export default class KeyController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -165,16 +176,18 @@ export default class KeyController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Key does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Key does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Key deleted successfully.');
             res.status(200).json({
               message: 'Key deleted successfully.',
             });
@@ -184,6 +197,7 @@ export default class KeyController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
