@@ -87,5 +87,12 @@ describe('Test the image path', () => {
             message: 'Image is updated.',
         });
     });
+    it('It should response the DELETE method', async () => {
+        const response = await request(app).delete('/image/delete/1');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Image is deleted.',
+        });
+    });
    
 });
