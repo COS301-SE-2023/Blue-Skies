@@ -1,6 +1,7 @@
 @page "/admin/stats"
 @layout AdminLayout
 @using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.BarChart
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 @using System.Text.Json;
@@ -23,8 +24,6 @@
     </div>
     
     <div class="flex">
-            <Chart Height="90" Config="pieConfig"></Chart>
-
         <Chart Height="90" Config="pieConfig"></Chart>
     </div>
 </div>
@@ -33,8 +32,53 @@
     private PieConfig? pieConfig;
     private List<UserModel> users = new List<UserModel>();
 
+    private const int InitalCount = 7;
+    private BarConfig _config;
+    private Random _rng = new Random();
+    private Chart _chart;
+
+
     protected override void OnInitialized()
     {
+
+        _config = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Responsive = true,
+                Legend = new Legend
+                {
+                    Position = Position.Top
+                },
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "ChartJs.Blazor Bar Chart"
+                }
+            }
+        };
+
+        IDataset<int> dataset1 = new BarDataset<int>()
+        {
+            Label = "My first dataset",
+            BackgroundColor = "rgba(255,99,132,0.2)",
+            BorderColor = "rgba(255,99,132,1)",
+            BorderWidth = 1
+        };
+
+        IDataset<int> dataset2 = new BarDataset<int>()
+        {
+            Label = "My second dataset",
+            BackgroundColor = "rgba(54, 162, 235, 0.2)",
+            BorderColor = "rgba(54, 162, 235, 1)",
+            BorderWidth = 1
+        };
+
+        @* _config.Data.Labels.AddRange(Months.Take(InitalCount)); *@
+        _config.Data.Datasets.Add(dataset1);
+        _config.Data.Datasets.Add(dataset2);
+
+        @* **************************************************************************************** *@
         pieConfig = new PieConfig
         {
             Options = new PieOptions
