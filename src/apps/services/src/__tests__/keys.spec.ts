@@ -3,6 +3,18 @@ import { Request, Response } from 'express';
 import * as tedious from 'tedious';
 
 jest.mock('../main', () => jest.fn());
+// Mock the dependencies and modules
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    // Simulate a successful query with mock data
+    const rowCount = 2;
+    const keys = [
+      { id: 1, name: 'Key 1' },
+      { id: 2, name: 'Key 2' },
+    ];
+    callback(null, rowCount);
+  }),
+}));
 
 describe('Test the key path', () => {
   let keyController: KeyController;
@@ -24,47 +36,22 @@ describe('Test the key path', () => {
     jest.clearAllMocks();
   });
 
-  it('It should response the GET method', async () => {
-    expect(keyController).toBeDefined();
-    expect(keyController.getAllKeys).toBeDefined();
-    //Test getAllKeys
-    const mockKeys: any[] = [
-      {
-        keyId: 1,
-        owner: 'John',
-        APIKey: '12345',
-        remainingCalls: 10,
-        suspended: false,
-      },
-      {
-        keyId: 2,
-        owner: 'Jane',
-        APIKey: '67890',
-        remainingCalls: 5,
-        suspended: true,
-      },
-    ];
-    const mockRowCount = 2;
-    const mockRequestError: tedious.RequestError | null = null;
+  describe('KeyController', () => {
+    describe('getAllKeys', () => {
+      it('should return all keys', () => {
+        // Create an instance of the KeyController
+        const keyController = new KeyController();
 
-    const mockRequestCallback = jest.fn(
-      (err: tedious.RequestError | null, rowCount: number) => {
-        if (err) {
-          return mockResponse.status(400).json({
-            error: err.message,
-          });
-        } else if (rowCount === 0) {
-          return mockResponse.status(404).json({
-            error: 'Not Found',
-            details: 'No keys exist.',
-          });
-        } else {
-          mockResponse.status(200).json(mockKeys);
-        }
-      }
-    );
+        // Call the getAllKeys method with the mock request and response
+        keyController.getAllKeys(
+          mockRequest as Request,
+          mockResponse as Response
+        );
 
-    //dummy test
-    expect(mockRequestCallback).not.toHaveBeenCalled();
+        // Assert that the status and json methods were called with the correct values
+        expect(mockResponse.status).toHaveBeenCalledWith(200);
+        expect(mockResponse.json).toHaveBeenCalledWith([]);
+      });
+    });
   });
 });
