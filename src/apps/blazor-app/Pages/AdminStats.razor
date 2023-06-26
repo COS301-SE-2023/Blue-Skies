@@ -64,7 +64,8 @@
     private BarConfig? barConfig;
     public RadarConfig? radarConfig;
     private List<UserModel> users = new List<UserModel>();
-
+    private string [] radarTypes = new string[] {"Small", "Medium", "Large", "Custom"};
+    private int [] radarCount = new int[4] {0, 0, 0, 0};
 
     protected override void OnInitialized()
     {
@@ -96,7 +97,7 @@
             },
         };
 
-        IDataset<int> dataset3 = new RadarDataset<int>(new[] { 4, 5, 3})
+        IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
         {
             Label = "Average System Size",
             BackgroundColor = "rgba(255,99,132,0.2)",
@@ -108,7 +109,7 @@
 
 
         };
-        foreach (string label in new[] { "Small", "Medium", "Large" })
+        foreach (string label in radarTypes)
         {
 
             radarConfig.Data.Labels.Add(label);
@@ -195,6 +196,51 @@
     protected override async Task OnInitializedAsync()
     {
         await GetUsers();
+        await GetSystemUsage();
+    }
+
+    private async Task GetSystemUsage(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/adminstats/all");
+        var response = await client.SendAsync(request);
+        List<SystemUsage> systems = null;
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+
+        if(systems != null){
+            @* int total = systems.Count;
+            radarTypes = new string[total];
+            radarCount = new int[total]; *@
+            Console.WriteLine("Systems: " + systems.Count);
+            for(int i = 0; i < systems.Count; i++){
+                radarTypes[i] = systems[i].type;
+                radarCount[i] = systems[i].count;
+                Console.WriteLine(radarTypes[i] +  ": " + radarCount[i]);
+            }
+            IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
+        {
+            Label = "Average System Size",
+            BackgroundColor = "rgba(255,99,132,0.2)",
+            BorderColor = "rgba(255,99,132,1)",
+            PointBackgroundColor = "rgba(255,99,132,1)",
+            PointBorderColor = "#fff",
+            PointHoverBackgroundColor = "#fff",
+            PointHoverBorderColor = "rgba(255,99,132,1)",
+
+
+        };
+         radarConfig.Data.Datasets.Clear(); 
+                radarConfig.Data.Datasets.Add(dataset3);
+
+        }
+
     }
     private async Task GetUsers(){
         var client = new HttpClient();
