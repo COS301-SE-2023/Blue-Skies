@@ -20,11 +20,12 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: System created successfully.');
             return res.status(200).json({
               message: 'System created successfully.',
             });
@@ -34,6 +35,7 @@ export default class SystemController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -49,16 +51,18 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: No systems exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'No systems exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: systems retrieved successfully.');
             res.status(200).json(systems);
           }
         }
@@ -80,6 +84,7 @@ export default class SystemController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -96,16 +101,18 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(404).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: System does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'System does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: System retrieved successfully.');
             res.status(200).json(system);
           }
         }
@@ -125,6 +132,7 @@ export default class SystemController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -149,16 +157,18 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(404).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: System does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'System does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: System updated successfully.');
             res.status(200).json({
               message: 'System updated successfully.',
             });
@@ -167,6 +177,7 @@ export default class SystemController {
       );
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -182,16 +193,18 @@ export default class SystemController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: System does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'System does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: System deleted successfully.');
             res.status(200).json({
               message: 'System deleted successfully.',
             });
@@ -201,6 +214,7 @@ export default class SystemController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
