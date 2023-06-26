@@ -30,13 +30,14 @@
                    <content>Add</content>
                 </Button>
             </div>
-            <div>
-                <Button style="pill">
-                   <content>Test Modal</content>
-                </Button>
-            </div>
         </div>
     </div>
+
+    <Toast @ref="Toast" Title="Successful" Type="success">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
 
 
     <div class="relative overflow-x-auto  mt-2">
@@ -65,10 +66,12 @@
                 }              
             </tbody>
         </table>
+    
     </div>
 </div>
 
 @code {
+    private Toast Toast { get; set; } = new Toast();
 
     private List<APIKeyModel> keys = new List<APIKeyModel>();
 
@@ -154,6 +157,7 @@
 
     private async Task SaveKey(APIKeyModel key)
     {
+        Toast.Show("Saved", "The record entry was successfuly saved.", "success");
         if(key.keyId == -1){
             Console.WriteLine("Add");
             var client = new HttpClient();
