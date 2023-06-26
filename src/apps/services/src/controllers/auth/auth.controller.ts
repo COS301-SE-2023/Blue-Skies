@@ -14,11 +14,12 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log("Express: " + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else {
-            console.log(rowCount);
+            console.log("Express: User registered successfully.");
             res.status(200).json({
               message: 'User registered successfully.',
             });
@@ -27,6 +28,7 @@ export default class AuthController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log("Express: " + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -43,21 +45,25 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: User does not exist.');
             res.status(404).json({
               error: 'Invalid email',
               details: 'User does not exist.',
             });
           } else {
             if (user.password === password) {
+              console.log('Express: User logged in successfully.');
               res.status(200).json({
                 message: 'User logged in successfully.',
                 user: user,
               });
             } else {
+              console.log('Express: Password is incorrect.');
               res.status(401).json({
                 error: 'Unauthorized',
                 details: 'Password is incorrect.',
@@ -80,6 +86,7 @@ export default class AuthController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -95,14 +102,17 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Email is available.');
             res.status(200).json({
               message: 'Email is available.',
             });
           } else {
+            console.log('Express: Email already exists.');
             res.status(401).json({
               error: 'Unauthorized',
               details: 'Email already exists.',
@@ -113,6 +123,7 @@ export default class AuthController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error,
         details: 'Database connection error.',
@@ -130,16 +141,18 @@ export default class AuthController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(404).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: User does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: User last logged in field updated successfully.');
             res.status(200).json({
               message: 'User last logged in field updated successfully.',
             });
@@ -149,6 +162,7 @@ export default class AuthController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
