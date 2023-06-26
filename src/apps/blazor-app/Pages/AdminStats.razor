@@ -163,18 +163,6 @@
         {
             pieConfig.Data.Labels.Add(color);
         }
-
-        PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 4})
-        {
-            BackgroundColor = new[]
-            {
-                ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
-                ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
-                ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
-                ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
-            }
-        };
-        pieConfig.Data.Datasets.Add(dataset);
     }
 
     protected override async Task OnInitializedAsync()
@@ -225,7 +213,7 @@
         }
 
     }
-    private async Task GetUsers(){
+    private async Task GetUsers() {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/user/all");
         var response = await client.SendAsync(request);
@@ -233,15 +221,53 @@
         {
             var data = await response.Content.ReadAsStringAsync();
             users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count})
-        {
-            Label = "Signed up users",
-            BackgroundColor = "rgba(255,99,132,0.2)",
-            BorderColor = "rgba(255,99,132,1)",
-            BorderWidth = 1
-        };
-                barConfig.Data.Datasets.Add(dataset1);
+            IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count})
+            {
+                Label = "Signed up users",
+                BackgroundColor = "rgba(255,99,132,0.2)",
+                BorderColor = "rgba(255,99,132,1)",
+                BorderWidth = 1
+            };
+            barConfig.Data.Datasets.Add(dataset1);
 
+            //This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the remaining users and adds them to the pie chart
+            if(users != null && users.Count > 0) {
+                var week = 0;
+                var month = 0;
+                var threeMonths = 0;
+                var remaining = 0;
+                foreach(UserModel user in users) 
+                {
+                    if(user.lastLoggedIn > DateTime.Now.AddDays(-7))
+                    {
+                        week++;
+                    }
+                    else if(user.lastLoggedIn > DateTime.Now.AddMonths(-1))
+                    {
+                        month++;
+                    }
+                    else if(user.lastLoggedIn > DateTime.Now.AddMonths(-3))
+                    {
+                        threeMonths++;
+                    }
+                    else
+                    {
+                        remaining++;
+                    }
+                }
+
+                PieDataset<int> dataset = new PieDataset<int>(new[] {remaining, threeMonths, month, week})
+                {
+                    BackgroundColor = new[]
+                    {
+                        ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+                        ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+                        ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+                        ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+                    }
+                };
+                pieConfig.Data.Datasets.Add(dataset);
+            }
         }
         else
         {
