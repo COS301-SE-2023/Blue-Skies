@@ -7,8 +7,8 @@
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
-<div class="mt-2">
-    <div class="flex w-full justify-around p-4">
+<div class="mt-2 ">
+    <div class="flex w-full justify-between p-4">
         <div class="">
             <Heading >
                 <Superscript>
@@ -19,29 +19,23 @@
                 </Header>
             </Heading>
         </div>
-        <div class="flex  gap-10 items-center">
-            <Button style="outline">
-               <content>Delete</content>
-            </Button>
-            <Button style="pill">
-               <content>Edit</content>
-            </Button>
-            <Button style="pill">
-               <content>Add</content>
-            </Button>
-        </div>
+        
     </div>
     
-<Chart Config="_config"></Chart>
+    <div class="flex">
+            <Chart Height="90" Config="pieConfig"></Chart>
+
+        <Chart Height="90" Config="pieConfig"></Chart>
+    </div>
 </div>
 
 @code {
-    private PieConfig? _config;
+    private PieConfig? pieConfig;
     private List<UserModel> users = new List<UserModel>();
 
     protected override void OnInitialized()
     {
-        _config = new PieConfig
+        pieConfig = new PieConfig
         {
             Options = new PieOptions
             {
@@ -49,14 +43,14 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "ChartJs.Blazor Pie Chart"
+                    Text = "Active Users"
                 }
             }
         };
 
         foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
         {
-            _config.Data.Labels.Add(color);
+            pieConfig.Data.Labels.Add(color);
         }
 
         PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
@@ -69,7 +63,7 @@
                 ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
             }
         };
-        _config.Data.Datasets.Add(dataset);
+        pieConfig.Data.Datasets.Add(dataset);
 
     }
 
