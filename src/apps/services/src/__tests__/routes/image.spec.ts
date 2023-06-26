@@ -80,5 +80,12 @@ describe('Test the image path', () => {
             message: 'Image is retrieved.',
         });
     });
+    it('It should response the PATCH method', async () => {
+        const response = await request(app).patch('/image/update/1');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Image is updated.',
+        });
+    });
    
 });
