@@ -1,0 +1,66 @@
+@using BlazorApp.Components.Base
+@{
+    if (_show)
+    {
+        showBg = "opacity-50 block";
+        showModal = "opacity-100 block";
+
+    }
+    else
+    {
+        showBg = "opacity-0 hidden";
+        showModal = "opacity-0 hidden";
+    }
+}
+<div class="absolute z-10 top-0 left-0 w-[100vw] h-[100vh] bg-slate-900 transition-all duration-300 @showBg"></div>
+<div class="absolute left-0 top-0 transition-all z-20 duration-300 @showModal"role="alert">
+    <Card>
+        <ChildContent>
+            <div class="flex justify-between">
+                <h1>@Title</h1>
+
+                @ChildContent
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" @onclick="Dismiss">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.5" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="#1C274C"/>
+                        <path d="M8.96967 8.96967C9.26256 8.67678 9.73744 8.67678 10.0303 8.96967L12 10.9394L13.9697 8.96969C14.2626 8.6768 14.7374 8.6768 15.0303 8.96969C15.3232 9.26258 15.3232 9.73746 15.0303 10.0304L13.0607 12L15.0303 13.9696C15.3232 14.2625 15.3232 14.7374 15.0303 15.0303C14.7374 15.3232 14.2625 15.3232 13.9696 15.0303L12 13.0607L10.0304 15.0303C9.73746 15.3232 9.26258 15.3232 8.96969 15.0303C8.6768 14.7374 8.6768 14.2626 8.96969 13.9697L10.9394 12L8.96967 10.0303C8.67678 9.73744 8.67678 9.26256 8.96967 8.96967Z" fill="#1C274C"/>
+                    </svg>
+                </button>
+            </div>
+        </ChildContent>
+    </Card>
+</div>
+
+@code {
+    public string? showBg { get; set; } 
+    public string? showModal { get; set; }
+    [Parameter]
+    public string? Title { get; set; }
+    [Parameter]
+    public string? Message { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Type { get; set; } = "success";
+
+    [Parameter]
+    public EventCallback OnShow { get; set; }
+
+
+    private bool _show = true;
+
+    protected override void OnInitialized()
+    {
+        _show = false;
+    }
+
+    public void Show()
+    {
+        _show = true;
+    }
+    public void Dismiss()
+    {
+        _show = false;
+    }
+}
