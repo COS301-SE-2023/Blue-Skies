@@ -83,7 +83,7 @@ describe('Test the key path', () => {
   //Update key
 
   it('Update key', async () => {
-    const response = await request(app).put('/key/update');
+    const response = await request(app).patch('/key/update/1');
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       message: 'Key is updated.',
@@ -92,7 +92,7 @@ describe('Test the key path', () => {
 
   //Delete key
   it('Delete key', async () => {
-    const response = await request(app).delete('/key/delete');
+    const response = await request(app).delete('/key/delete/1');
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       message: 'Key is deleted.',
