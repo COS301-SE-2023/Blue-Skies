@@ -673,6 +673,10 @@ video {
   margin-top: 2rem;
 }
 
+.ml-20 {
+  margin-left: 5rem;
+}
+
 .block {
   display: block;
 }
@@ -741,6 +745,10 @@ video {
   height: 100%;
 }
 
+.h-\[120vh\] {
+  height: 120vh;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -775,6 +783,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-1 {
+  width: 0.25rem;
 }
 
 .max-w-2xl {
@@ -1107,6 +1119,10 @@ video {
 
 .text-center {
   text-align: center;
+}
+
+.align-middle {
+  vertical-align: middle;
 }
 
 .text-4xl {

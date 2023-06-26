@@ -25,17 +25,37 @@
     </div>
     
     <div class="flex flex-col gap-20">
-        <div class="w-1/2">
-            <Chart Config="pieConfig"></Chart>
-        </div>
         <div class="flex flex-row">
+            <div class="w-full">
+                <Chart Config="pieConfig"></Chart>
+            </div>
             <div class="w-full">
                 <Chart Config="radarConfig"></Chart>
             </div>
-            <div class="w-full">
+        </div>
+        <diiv class="flex flex-row gap-10 ml-20">
+            <div class="w-1/2 mx-auto">
                 <Chart Config="barConfig"></Chart>
             </div>
-        </div>
+            <div class="w-1/2 mx-auto my-auto">
+                <Heading>
+                    <Superscript>
+                        <h2>Total API Subscriptions</h2>
+                    </Superscript>
+                    <Header>
+                        <h1 class="">4</h1>
+                    </Header>
+                </Heading>
+                <Heading css="mt-10">
+                    <Superscript>
+                        <h2>Total Accounts Suspended</h2>
+                    </Superscript>
+                    <Header>
+                        <h1>0</h1>
+                    </Header>
+                </Heading>
+            </div>
+        </diiv>
     </div>
 </div>
 
@@ -48,6 +68,10 @@
 
     protected override void OnInitialized()
     {
+        renderCharts();
+    }
+
+    private void renderCharts() {
         @* **************************************** Radar Chart Config ************************************************ *@
         radarConfig = new RadarConfig
         {
@@ -57,7 +81,8 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Some Chart"
+                    Text = "Popular System",
+                    FontSize = 20,
                 },
                 Scale = new LinearRadialAxis
                 {
@@ -73,7 +98,7 @@
 
         IDataset<int> dataset3 = new RadarDataset<int>(new[] { 4, 5, 3})
         {
-            Label = "My first dataset",
+            Label = "Average System Size",
             BackgroundColor = "rgba(255,99,132,0.2)",
             BorderColor = "rgba(255,99,132,1)",
             PointBackgroundColor = "rgba(255,99,132,1)",
@@ -103,7 +128,8 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Some Chart"
+                    Text = "Number of",
+                    FontSize = 20,
                 },
                 
             }
@@ -111,7 +137,7 @@
 
         IDataset<int> dataset1 = new BarDataset<int>(new[] {4})
         {
-            Label = "My first dataset",
+            Label = "Signed up users",
             BackgroundColor = "rgba(255,99,132,0.2)",
             BorderColor = "rgba(255,99,132,1)",
             BorderWidth = 1
@@ -119,7 +145,7 @@
 
         IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 7 })
         {
-            Label = "My second dataset",
+            Label = "Total reports generated",
             BackgroundColor = "rgba(54, 162, 235, 0.2)",
             BorderColor = "rgba(54, 162, 235, 1)",
             BorderWidth = 1
@@ -138,16 +164,13 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Active Users"
+                    Text = "Active Users",
+                    FontSize = 20,
                 },
-                @* Scale = new ArcScale
+                Legend = new Legend
                 {
-                    Ticks = new ArcScaleTicks
-                    {
-                        BeginAtZero = true
-                    },
-                    Reverse = false
-                } *@
+                    Position = Position.Right
+                }
             }
         };
 
@@ -167,7 +190,6 @@
             }
         };
         pieConfig.Data.Datasets.Add(dataset);
-
     }
 
     protected override async Task OnInitializedAsync()
