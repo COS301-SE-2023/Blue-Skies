@@ -3,5 +3,5 @@ export default interface IKey {
   owner: string;
   APIKey: number;
   remainingCalls: number;
-  suspended: boolean;
+  suspended: number;
 }

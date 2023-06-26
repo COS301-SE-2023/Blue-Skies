@@ -1,7 +1,7 @@
 @page "/login"
 @layout AuthLayout
 @using BlazorApp.Components.Base
-
+@inject NavigationManager NavigationManager
 <PageTitle>Login</PageTitle>
 
 <div class="w-full h-[100vh]">
@@ -14,25 +14,43 @@
     <a href="/" class="absolute top-14 right-72">
         <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
     </a>
-        <Card css="my-auto w-full text-left ml-60">
-            <Heading >
-                <Superscript>
+    <Image ImageName="19.svg" css="absolute hidden xl:block xl:top-52      xl:right-96          2xl:top-60      2xl:right-[550px] z-10" alt="blob"/>
+    <Image ImageName="40.svg" css="absolute hidden xl:block xl:top-72      xl:right-[550px]     2xl:top-80      2xl:right-[800px] z-10" alt="blob"/>
+    <Image ImageName="60.svg" css="absolute hidden xl:block xl:top-[380px] xl:right-40          2xl:top-[400px] 2xl:right-60 z-10" alt="blob"/>
+    <Image ImageName="90.svg" css="absolute hidden xl:block xl:bottom-16   xl:right-[525px]     2xl:bottom-20   2xl:right-[725px] z-10" alt="blob"/>
+        <Card css="my-auto w-full text-left ml-0 xl:ml-20 2xl:ml-52">   
+            <Heading >   
+                <Superscript>   
                     <p>Welcome Back</p>
                 </Superscript>
                 <Header>
                     <h1>Log In</h1>    
                 </Header>
             </Heading>
-            <form action="/">
-                <Input css="mt-8" type="email" name="email" placeholder="Enter email address"/>
-                <Input css="mt-8" type="password" name="password" placeholder="Enter password"/>
+            <form @onsubmit="HandleSubmit">
+                @if (!emailIsValid)
+                {
+                    <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
+                    <Input css="border-1 border-red-400" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                }else {
+
+                    <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                }
+                @if (!passwordIsValid)
+                {
+                    <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
+                    <Input css="border-1 border-red-400" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                }
+                else {
+                    <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                }
                 <Button css="mt-10 flex justify-center" style="pill">
                     <content>
                         <input type="submit" value="Log In" />
                     </content>
                 </Button>
 
-                <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
+                @* <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
                 <div class="flex justify-center mt-8 gap-4">
                     <Button css="" style="outline">
                         <content>
@@ -48,13 +66,102 @@
                             </a>
                         </content>
                     </Button>
-                </div>
+                </div> *@
                 <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
             </form>
         </Card>
-s
     </div>
 </div>
+
+@code {
+    public string? email { get; set; }
+    public string? password { get; set; }
+
+    public bool emailIsValid { get; set; } = true;
+    public bool passwordIsValid { get; set; } = true;
+
+private async Task HandleSubmit()
+{
+    Console.WriteLine("OnSubmit");
+    Console.WriteLine(email);
+    Console.WriteLine(password);
+
+    var isValid = ValidateForm();
+
+    if (isValid)
+    {
+        await HandleValidSubmit();
+    }
+    else
+    {
+        HandleInvalidSubmit();
+    }
+}
+
+    public async Task HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/auth/login");
+        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + password + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode){
+            Console.WriteLine("Success");
+            //Navigate to home page 
+             NavigationManager.NavigateTo("/admin/keys");
+        }else{
+            Console.WriteLine("Failed");
+             Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+    }
+
+    public void HandleInvalidSubmit()
+    {
+        Console.WriteLine("OnInvalidSubmit");
+    }
+
+private bool ValidateForm()
+{
+    emailIsValid = true;
+    @* check email using regex *@
+    if (string.IsNullOrEmpty(email))
+    {
+        Console.WriteLine("email is empty");
+        return false;
+    }
+    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+    {
+        Console.WriteLine("email is not valid");
+        @* Add Toast *@
+        emailIsValid = false;
+        return false;
+    }
+
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(password))
+    {
+        Console.WriteLine("password is empty");
+        
+        passwordIsValid = false;
+        
+        return false;
+    }
+
+    return true;
+}
+
+private void HandleEmailChanged(string value)
+{
+    email = value;
+}
+
+private void HandlePasswordChanged(string value)
+{
+    password = value;
+}
+}
 
 
 

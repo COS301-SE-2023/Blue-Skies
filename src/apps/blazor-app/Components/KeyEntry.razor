@@ -1,0 +1,162 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Models
+
+
+
+<tr class="border-b border-gray-200 text-center">
+    <td class="px-6  py-4">
+        <input @onchange="HandleSelection" type="checkbox" class="form-checkbox h-5 w-5  " />
+    </td>   
+    <td  class="px-6 py-4  whitespace-nowrap   ">
+        @if (key != null)
+        {
+            <label  class="relative inline-flex items-center cursor-pointer">
+                @if(@key.suspended == 1){
+                    <input @onclick="HandleSuspension"  type="checkbox" value="" class="sr-only peer" checked>
+                } else {
+                    <input @onclick="HandleSuspension" type="checkbox" value="" class="sr-only peer">
+                }
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer  peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                </div>
+            </label>
+        }
+        </td>
+
+    @if (recordState)
+    {
+        <td  class="px-6 py-4 ">
+            @if (key != null)
+            {
+                <Input css="w-full"  type="text" placeholder="@key.owner" @bind-InputValue="owner"/>
+            }
+        </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if (key != null)
+            {
+                int apiUsage = key.remainingCalls;
+                int percentage = (int)(apiUsage / 50.0 * 100);
+                <Input css="w-full" type="number" placeholder="@key.remainingCalls.ToString()" @bind-InputValue="remainingCalls"/>
+            }
+        </td>
+        <td class="px-6 py-4 flex gap-3">
+            <div onclick="@(() => toggleRecordState("save"))">
+                <Button style="pill">
+                    <content>Save</content>
+                </Button>
+            </div>
+            <div onclick="@(() => toggleRecordState())">
+                <Button style="pill-danger">
+                    <content>Cancel</content>
+                </Button>
+            </div>
+        </td>
+    }
+    else
+    {
+        <td  class="px-6 py-4 whitespace-nowrap   ">
+            <p>@if (key != null)
+                {
+                    @key.owner
+                }</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <div class="flex flex-row gap-8 justify-end">
+                @if (key != null)
+                    {
+                        int apiUsage = key.remainingCalls;
+                        int percentage = (int)(apiUsage / 50.0 * 100);
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: @percentage%"></div>
+                        </div>
+                
+                        <p>@apiUsage / 50 Calls</p>
+                    }
+            </div>
+        </td>
+        <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
+            <Button style="pill">
+                <content>Edit</content>
+            </Button>
+        </td>
+    }
+</tr>
+
+@code {
+    public string? owner { get; set; }
+    public string? APIKey { get; set; }
+    public string? remainingCalls { get; set; }
+    public string? suspended { get; set; }
+
+    [Parameter]
+    public bool recordState { get; set; } = false;
+
+    [Parameter]
+    public APIKeyModel? key { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSelect { get; set; }
+    [Parameter]
+    public EventCallback<APIKeyModel> OnSave { get; set; }
+    [Parameter]
+    public EventCallback<APIKeyModel> OnSuspendChange { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (key != null)
+        {
+            owner = key.owner;
+            APIKey = key.APIKey;
+            remainingCalls = key.remainingCalls.ToString();
+            suspended = key.suspended.ToString();
+        }
+    }
+
+    public async void toggleRecordState(string action = "")
+    {
+        if (action == "save")
+        {
+            await HandleSave();
+        }
+        recordState = !recordState;
+    }
+
+    private async Task HandleSuspension()
+    {
+        if (key != null)
+        {
+            var returnKey = new APIKeyModel
+                {
+                    keyId = key.keyId,
+                    owner = key.owner,
+                    APIKey = key.APIKey,
+                    remainingCalls = Convert.ToInt32(key.remainingCalls),
+                    suspended = 1 - Convert.ToInt32(key.suspended),
+                };
+            await OnSuspendChange.InvokeAsync(returnKey);
+        }
+    }
+
+    private async Task HandleSelection(ChangeEventArgs e)
+    {
+        @if (e.Value != null && key != null)
+        {
+            await OnSelect.InvokeAsync(key.keyId);
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        if (key != null)
+        {
+            var returnKey = new APIKeyModel
+                {
+                    keyId = key.keyId,
+                    owner = owner,
+                    APIKey = APIKey,
+                    remainingCalls = Convert.ToInt32(remainingCalls),
+                    suspended = Convert.ToInt32(suspended),
+                };
+            await OnSave.InvokeAsync(returnKey);
+        }
+    }
+}
