@@ -20,23 +20,27 @@ public class AppliancesRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine(data);
+                Console.WriteLine(".NET: " + data);
                 var systems = JsonSerializer.Deserialize<List<Appliances>>(data);
                 if (systems != null)
                 {
+                    Console.WriteLine(".NET: " + systems);
                     return systems;
                 }
+
+                Console.WriteLine(".NET: system is null error");
                 return new List<Appliances>();
             }
             else
             {
                 //return empty list
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Database Connection Error");
                 return new List<Appliances>();
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error:" + e.Message);
             throw new Exception("Database Connection Error:" + e.Message);
         }
     }
@@ -68,15 +72,18 @@ public class AppliancesRepository
                 app.type = type;
                 //Convert string to int
                 app.powerUsage = powerUsage;
+                Console.WriteLine(".NET: " + app);
                 return app;
             }
             else
             {
+                Console.WriteLine(".NET: Could not create Appliance");
                 throw new Exception("Could not create Appliance");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -109,15 +116,19 @@ public class AppliancesRepository
                 app.applianceId = id;
                 app.type = type;
                 app.powerUsage = powerUsage;
+
+                Console.WriteLine(".NET: " + app);
                 return app;
             }
             else
             {
+                Console.WriteLine(".NET: Could not update Appliance");
                 throw new Exception("Could not update Appliance");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -135,20 +146,24 @@ public class AppliancesRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine(".NET: " + response);
                 return true;
             }
             //Check Status code
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Console.WriteLine(".NET: " + response);
                 return false;
             }
             else
             {
+                Console.WriteLine(".NET: Could not delete Appliance");
                 throw new Exception("Could not delete Appliance");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -171,19 +186,23 @@ public class AppliancesRepository
                 var app = JsonSerializer.Deserialize<Appliances>(data);
                 if (app != null)
                 {
+                    Console.WriteLine(".NET: " + app); 
                     return app;
                 }
+
+                Console.WriteLine(".NET: Appliance is null error");
                 return new Appliances();
             }
             else
             {
                 //return empty list
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Could not get Appliance");
                 throw new Exception("Could not get Appliance");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
