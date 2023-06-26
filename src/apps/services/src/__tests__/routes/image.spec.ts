@@ -59,5 +59,12 @@ describe('Test the image path', () => {
             message: 'Welcome to the image router!',
         });
     });
-    
+    it('It should response the POST method', async () => {
+        const response = await request(app).post('/image/create');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message: 'Image is created.',
+        });
+    });
+   
 });
