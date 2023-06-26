@@ -30,6 +30,11 @@
                    <content>Add</content>
                 </Button>
             </div>
+            <div @onclick="ShowModal">
+                <Button style="pill">
+                   <content>Test</content>
+                </Button>
+            </div>
         </div>
     </div>
 
@@ -38,6 +43,12 @@
             <p></p>
         </ChildContent>
     </Toast>
+
+    <ModalPopup @ref="ModalPopup" Title="This is a test">
+        <ChildContent>
+            <p>Hello World!</p>
+        </ChildContent>
+    </ModalPopup>
 
 
     <div class="relative overflow-x-auto  mt-2">
@@ -72,6 +83,12 @@
 
 @code {
     private Toast Toast { get; set; } = new Toast();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+
+    private void ShowModal()
+    {
+        ModalPopup.Show();
+    }
 
     private List<APIKeyModel> keys = new List<APIKeyModel>();
 
