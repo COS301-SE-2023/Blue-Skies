@@ -169,6 +169,23 @@
         else
         {
             Console.WriteLine("Update");
+            Console.WriteLine(product.systemId);
+             var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/System/update");
+            var content = new StringContent("{\r\n  \"systemId\": " + product.systemId+",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            ///var content = new StringContent("{\r\n \"systemId\": " + product.systemId+",\r\n  \"systemSize\": \"" + product.systemSize +"\",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetProducts();
+                Console.WriteLine("Add");
+            }
+            else
+            {
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Console.WriteLine("Failed to Update");
+            }
             
         }
     }
