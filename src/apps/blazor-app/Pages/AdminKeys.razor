@@ -30,7 +30,7 @@
                    <content>Add</content>
                 </Button>
             </div>
-            <div @onclick="RedirectPage">
+            <div>
                 <Button style="pill">
                    <content>Test Modal</content>
                 </Button>
@@ -38,7 +38,6 @@
         </div>
     </div>
 
-    <ModalPopup @ref="popupRef"/>
 
     <div class="relative overflow-x-auto  mt-2">
         <table class="w-full text-sm text-center ">
@@ -70,13 +69,6 @@
 </div>
 
 @code {
-    private ModalPopup popupRef;
-    
-    private void RedirectPage()
-    {
-        // Shows the popup at the center of the screen
-        popupRef.Show("Popup body text");
-    }
 
     private List<APIKeyModel> keys = new List<APIKeyModel>();
 
