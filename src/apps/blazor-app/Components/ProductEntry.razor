@@ -43,10 +43,10 @@
             <p>@if(product != null) {@product.numberOfPanels }</p>
         </td>
         <td  class="px-6 py-4   whitespace-nowrap   ">
-            <p>@if(product != null) {@product.inverterOutput } kWh</p>
+            <p>@if(product != null) {@product.inverterOutput } W</p>
         </td>
         <td  class="px-6 py-4   whitespace-nowrap   ">
-            <p>@if(product != null) {@product.solarInput } kWh</p>
+            <p>@if(product != null) {@product.solarInput } W</p>
         </td>
         <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
             <Button style="pill">

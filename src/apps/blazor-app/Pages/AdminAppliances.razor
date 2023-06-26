@@ -132,18 +132,13 @@
         
     }
 
-    private async void AddAppliance()
+    private void AddAppliance()
     {
-        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0 });
-
+        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0, recordState = true });
     }
 
     private async Task SaveAppliance(ApplianceModel appliance)
     {
-        @* add api call *@
-        
-        Console.WriteLine(appliance.type);
-        Console.WriteLine(appliance.powerUsage);
         if(appliance.applianceId == -1){
             Console.WriteLine("Add");
             var client = new HttpClient();

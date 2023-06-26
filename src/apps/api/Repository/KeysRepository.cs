@@ -21,7 +21,6 @@ public class KeysRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(data);
                 var systems = JsonSerializer.Deserialize<List<Keys>>(data);
                 if (systems != null)
                 {
@@ -73,7 +72,7 @@ public class KeysRepository
                 ans.owner = owner;
                 ans.APIKey = APIKey;
                 ans.remainingCalls = remainingCalls;
-                ans.suspended = suspended == 1 ? true : false;
+                ans.suspended = suspended;
                 return ans;
             }
             else
@@ -126,7 +125,7 @@ public class KeysRepository
         string owner,
         string APIKey,
         int remainingCalls,
-        bool suspended
+        int suspended
     )
     {
         try
