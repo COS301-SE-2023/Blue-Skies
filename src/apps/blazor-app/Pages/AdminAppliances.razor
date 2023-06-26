@@ -134,14 +134,8 @@
 
     private async void AddAppliance()
     {
-        appliances.Add(new ApplianceModel { applianceId = 0, type = "", powerUsage = 0 });
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:3333/api/appliance/create");
-        var content = new StringContent("{\r\n    \"type\" : \"router\",\r\n    \"powerUsage\" : 50\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0 });
+
     }
 
     private async Task SaveAppliance(ApplianceModel appliance)
