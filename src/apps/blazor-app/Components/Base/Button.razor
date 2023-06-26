@@ -36,6 +36,13 @@
                 return "border-1 border-red-500 text-red-500 font-bold py-2 px-6 rounded-md";
             
             @*----- Default button -----*@
+            case "primary":
+                return "bg-gradient-to-br from-primary-400 to-primary-600 hover:bg-gradient-to-br hover:from-primary-500 hover:to-primary-700 text-white font-bold py-2 px-6 rounded-md";
+
+            @*----- Default Danger button -----*@
+            case "danger":
+                return "bg-gradient-to-br from-red-400 to-red-600 hover:bg-gradient-to-br hover:from-red-500 hover:to-red-700 text-white font-bold py-2 px-6 rounded-md";
+
             default:
                 return "bg-gradient-to-br from-primary-400 to-primary-600 hover:bg-gradient-to-br hover:from-primary-500 hover:to-primary-700 text-white font-bold py-2 px-6 rounded-md";
         }
