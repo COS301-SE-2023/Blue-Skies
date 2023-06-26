@@ -66,5 +66,13 @@ describe('Test the image path', () => {
             message: 'Image is created.',
         });
     });
+    it('It should response the GET method', async () => {
+        const response = await request(app).get('/image/all');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+            message: 'All images are retrieved.',
+        });
+    });
+    
    
 });
