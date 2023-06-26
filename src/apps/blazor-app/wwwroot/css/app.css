@@ -858,6 +858,10 @@ video {
   margin-left: 0px;
 }
 
+.ml-28 {
+  margin-left: 7rem;
+}
+
 .block {
   display: block;
 }
@@ -2161,6 +2165,70 @@ body {
     top: 13rem;
   }
 
+  .xl\:bottom-32 {
+    bottom: 8rem;
+  }
+
+  .xl\:bottom-60 {
+    bottom: 15rem;
+  }
+
+  .xl\:bottom-\[380px\] {
+    bottom: 380px;
+  }
+
+  .xl\:top-48 {
+    top: 12rem;
+  }
+
+  .xl\:bottom-\[350px\] {
+    bottom: 350px;
+  }
+
+  .xl\:bottom-\[250px\] {
+    bottom: 250px;
+  }
+
+  .xl\:bottom-\[20px\] {
+    bottom: 20px;
+  }
+
+  .xl\:bottom-\[200px\] {
+    bottom: 200px;
+  }
+
+  .xl\:bottom-\[300px\] {
+    bottom: 300px;
+  }
+
+  .xl\:right-20 {
+    right: 5rem;
+  }
+
+  .xl\:right-\[600px\] {
+    right: 600px;
+  }
+
+  .xl\:right-\[300px\] {
+    right: 300px;
+  }
+
+  .xl\:right-\[290px\] {
+    right: 290px;
+  }
+
+  .xl\:bottom-\[310px\] {
+    bottom: 310px;
+  }
+
+  .xl\:right-\[625px\] {
+    right: 625px;
+  }
+
+  .xl\:right-\[615px\] {
+    right: 615px;
+  }
+
   .xl\:ml-60 {
     margin-left: 15rem;
   }
@@ -2225,6 +2293,122 @@ body {
 
   .\32xl\:top-\[400px\] {
     top: 400px;
+  }
+
+  .\32xl\:top-52 {
+    top: 13rem;
+  }
+
+  .\32xl\:right-\[600px\] {
+    right: 600px;
+  }
+
+  .\32xl\:right-\[830px\] {
+    right: 830px;
+  }
+
+  .\32xl\:top-\[40px\] {
+    top: 40px;
+  }
+
+  .\32xl\:top-\[350px\] {
+    top: 350px;
+  }
+
+  .\32xl\:right-80 {
+    right: 20rem;
+  }
+
+  .\32xl\:bottom-2 {
+    bottom: 0.5rem;
+  }
+
+  .\32xl\:bottom-40 {
+    bottom: 10rem;
+  }
+
+  .\32xl\:bottom-60 {
+    bottom: 15rem;
+  }
+
+  .\32xl\:bottom-72 {
+    bottom: 18rem;
+  }
+
+  .\32xl\:right-\[625px\] {
+    right: 625px;
+  }
+
+  .\32xl\:bottom-80 {
+    bottom: 20rem;
+  }
+
+  .\32xl\:right-8 {
+    right: 2rem;
+  }
+
+  .\32xl\:right-\[300\] {
+    right: 300;
+  }
+
+  .\32xl\:right-\[300PX\] {
+    right: 300PX;
+  }
+
+  .\32xl\:right-\[300px\] {
+    right: 300px;
+  }
+
+  .\32xl\:right-\[400px\] {
+    right: 400px;
+  }
+
+  .\32xl\:bottom-\[400\] {
+    bottom: 400;
+  }
+
+  .\32xl\:bottom-\[400px\] {
+    bottom: 400px;
+  }
+
+  .\32xl\:bottom-\[300px\] {
+    bottom: 300px;
+  }
+
+  .\32xl\:bottom-\[320px\] {
+    bottom: 320px;
+  }
+
+  .\32xl\:bottom-\[330px\] {
+    bottom: 330px;
+  }
+
+  .\32xl\:right-\[\] {
+    right: ;
+  }
+
+  .\32xl\:bottom-\[450px\] {
+    bottom: 450px;
+  }
+
+  .\32xl\:right-\[800\] {
+    right: 800;
+  }
+
+  .\32xl\:bottom-10 {
+    bottom: 2.5rem;
+  }
+
+  .\32xl\:bottom-52 {
+    bottom: 13rem;
+  }
+
+  .\32xl\:right-\[850px\] {
+    right: 850px;
+  }
+
+  .\32xl\:right-\[870px\] {
+    right: 870px;
   }
 
   .\32xl\:ml-60 {
