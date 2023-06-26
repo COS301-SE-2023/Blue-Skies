@@ -2,11 +2,12 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import IUser from '../../models/user.interface';
 import { connection as conn } from '../../main';
+
 export default class UserController {
   public getAllUsers = (req: Request, res: Response) => {
     const query = 'SELECT * FROM [dbo].[users]';
     const users: IUser[] = [];
-
+    console.log('getAllUsers');
     try {
       const request = new tedious.Request(
         query,
