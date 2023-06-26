@@ -1,18 +1,20 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
-namespace Api.Controllers;
 
+namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SystemsController : ControllerBase
+public class SystemController : ControllerBase
 {
   private readonly SystemsRepository _systemsRepository;
 
-  public SystemsController()
+  public SystemController()
   {
     _systemsRepository = new SystemsRepository();
   }
+
   [HttpGet]
   [Route("all")]
   public async Task<IActionResult> GetAllSystems()
@@ -31,11 +33,17 @@ public class SystemsController : ControllerBase
   //Create a new system
   [HttpPost]
   [Route("create")]
-  public async Task<IActionResult> CreateSystem([FromBody] System system)
+  public async Task<IActionResult> CreateSystem([FromBody] Systems system)
   {
     try
     {
-      var data = await _systemsRepository.createSystems(system.inverterOutput, system.numberOfPanels, system.batterySize, system.numberOfBatteries, system.solarInput);
+      var data = await _systemsRepository.createSystems(
+          system.inverterOutput,
+          system.numberOfPanels,
+          system.batterySize,
+          system.numberOfBatteries,
+          system.solarInput
+      );
       return Ok(data);
     }
     catch (Exception e)
@@ -47,11 +55,18 @@ public class SystemsController : ControllerBase
   //update a system
   [HttpPatch]
   [Route("update")]
-  public async Task<IActionResult> UpdateSystem([FromBody] System system)
+  public async Task<IActionResult> UpdateSystem([FromBody] Systems system)
   {
     try
     {
-      var data = await _systemsRepository.updateSystems(system.systemId, system.inverterOutput, system.numberOfPanels, system.batterySize, system.numberOfBatteries, system.solarInput);
+      var data = await _systemsRepository.updateSystems(
+          system.systemId,
+          system.inverterOutput,
+          system.numberOfPanels,
+          system.batterySize,
+          system.numberOfBatteries,
+          system.solarInput
+      );
       return Ok(data);
     }
     catch (Exception e)
@@ -63,14 +78,14 @@ public class SystemsController : ControllerBase
   //delete a system
   [HttpDelete]
   [Route("delete")]
-  public async Task<IActionResult> DeleteSystem([FromBody] System system)
+  public async Task<IActionResult> DeleteSystem([FromBody] Systems system)
   {
     try
     {
       var data = await _systemsRepository.deleteSystems(system.systemId);
-      if(data==false)
+      if (data == false)
       {
-        return StatusCode(404, "System with id: " + system.systemId + " not found");
+        return StatusCode(404, "s with id: " + system.systemId + " not found");
       }
       return Ok("Deleted system with id: " + system.systemId + " successfully");
     }
@@ -83,12 +98,12 @@ public class SystemsController : ControllerBase
   //get a system by id
   [HttpGet]
   [Route("get")]
-  public async Task<IActionResult> GetSystem([FromBody] System system)
+  public async Task<IActionResult> GetSystem([FromBody] Systems system)
   {
     try
     {
       var data = await _systemsRepository.getSystemById(system.systemId);
-      if(data==null)
+      if (data == null)
       {
         return StatusCode(404, "System with id: " + system.systemId + " not found");
       }
