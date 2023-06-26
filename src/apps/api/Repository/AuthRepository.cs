@@ -18,12 +18,16 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                Console.WriteLine(".NET: " + response);
                 return true;
             }
+
+            Console.WriteLine(".NET: Could not update last logged in");
             return false;
         }
         catch (Exception)
         {
+            Console.WriteLine(".NET: Could not update last logged in");
             throw new Exception("Could not check email");
         }
     }
@@ -46,12 +50,16 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                Console.WriteLine(".NET: " + response);
                 return true;
             }
+
+            Console.WriteLine(".NET: Could not check email");
             return false;
         }
         catch (Exception)
         {
+            Console.WriteLine(".NET: Could not check email");
             throw new Exception("Could not check email");
         }
     }
@@ -79,12 +87,16 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
+                Console.WriteLine(".NET: " + response);
                 return true;
             }
+
+            Console.WriteLine(".NET: Could not register user");
             return false;
         }
         catch (Exception)
         {
+            Console.WriteLine(".NET: Could not register user");
             throw new Exception("Could not register user");
         }
     }
@@ -123,13 +135,16 @@ public class AuthRepository
 
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Console.WriteLine("Login successful");
+                Console.WriteLine(".NET: login successful");
                 return true;
             }
+
+            Console.WriteLine(".NET: Could not login user");
             return false;
         }
         catch (Exception)
         {
+            Console.WriteLine(".NET: Could not login user");
             throw new Exception("Could not login user");
         }
     }
@@ -149,6 +164,7 @@ public class AuthRepository
                 numBytesRequested: 256 / 8
             )
         );
+        Console.WriteLine(".NET: hashed password");
         return hashed;
     }
 }
