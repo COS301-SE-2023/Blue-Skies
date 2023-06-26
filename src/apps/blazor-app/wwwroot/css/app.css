@@ -563,6 +563,11 @@ video {
   bottom: 0px;
 }
 
+.inset-x-10 {
+  left: 2.5rem;
+  right: 2.5rem;
+}
+
 .left-0 {
   left: 0px;
 }
@@ -597,6 +602,162 @@ video {
 
 .right-10 {
   right: 2.5rem;
+}
+
+.top-40 {
+  top: 10rem;
+}
+
+.top-60 {
+  top: 15rem;
+}
+
+.right-80 {
+  right: 20rem;
+}
+
+.right-\[\] {
+  right: ;
+}
+
+.right-\[100\] {
+  right: 100;
+}
+
+.right-\[100px\] {
+  right: 100px;
+}
+
+.right-\[400px\] {
+  right: 400px;
+}
+
+.right-\[00px\] {
+  right: 00px;
+}
+
+.right-\[500px\] {
+  right: 500px;
+}
+
+.right-\[600px\] {
+  right: 600px;
+}
+
+.right-\[550px\] {
+  right: 550px;
+}
+
+.bottom-5 {
+  bottom: 1.25rem;
+}
+
+.bottom-10 {
+  bottom: 2.5rem;
+}
+
+.bottom-16 {
+  bottom: 4rem;
+}
+
+.right-\[700px\] {
+  right: 700px;
+}
+
+.right-\[750px\] {
+  right: 750px;
+}
+
+.right-\[7250px\] {
+  right: 7250px;
+}
+
+.right-\[725px\] {
+  right: 725px;
+}
+
+.bottom-20 {
+  bottom: 5rem;
+}
+
+.top-64 {
+  top: 16rem;
+}
+
+.top-80 {
+  top: 20rem;
+}
+
+.top-7 {
+  top: 1.75rem;
+}
+
+.top-6 {
+  top: 1.5rem;
+}
+
+.top-72 {
+  top: 18rem;
+}
+
+.start-10 {
+  inset-inline-start: 2.5rem;
+}
+
+.top-96 {
+  top: 24rem;
+}
+
+.right-\[900px\] {
+  right: 900px;
+}
+
+.right-\[0px\] {
+  right: 0px;
+}
+
+.right-\[80px\] {
+  right: 80px;
+}
+
+.right-\[800px\] {
+  right: 800px;
+}
+
+.top-\[\] {
+  top: ;
+}
+
+.top-1 {
+  top: 0.25rem;
+}
+
+.top-\[700px\] {
+  top: 700px;
+}
+
+.top-\[500px\] {
+  top: 500px;
+}
+
+.right-20 {
+  right: 5rem;
+}
+
+.top-\[400px\] {
+  top: 400px;
+}
+
+.right-40 {
+  right: 10rem;
+}
+
+.right-60 {
+  right: 15rem;
+}
+
+.top-\[450px\] {
+  top: 450px;
 }
 
 .isolate {
@@ -850,6 +1011,10 @@ video {
 .scale-150 {
   --tw-scale-x: 1.5;
   --tw-scale-y: 1.5;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1388,6 +1553,10 @@ video {
 
 .blur-lg {
   --tw-blur: blur(16px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
+.filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
