@@ -20,11 +20,10 @@ public class AppliancesRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(".NET: " + data);
                 var systems = JsonSerializer.Deserialize<List<Appliances>>(data);
                 if (systems != null)
                 {
-                    Console.WriteLine(".NET: " + systems);
+                    Console.WriteLine(".NET: get all appliances system");
                     return systems;
                 }
 
@@ -72,7 +71,7 @@ public class AppliancesRepository
                 app.type = type;
                 //Convert string to int
                 app.powerUsage = powerUsage;
-                Console.WriteLine(".NET: " + app);
+                Console.WriteLine(".NET: create Appliances app");
                 return app;
             }
             else
@@ -117,7 +116,7 @@ public class AppliancesRepository
                 app.type = type;
                 app.powerUsage = powerUsage;
 
-                Console.WriteLine(".NET: " + app);
+                Console.WriteLine(".NET: update Appliances app");
                 return app;
             }
             else
@@ -146,13 +145,13 @@ public class AppliancesRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine(".NET: " + response);
+                Console.WriteLine(".NET: delete Appliances app");
                 return true;
             }
             //Check Status code
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine(".NET: " + response);
+                Console.WriteLine(".NET: Appliance not found");
                 return false;
             }
             else
@@ -186,7 +185,7 @@ public class AppliancesRepository
                 var app = JsonSerializer.Deserialize<Appliances>(data);
                 if (app != null)
                 {
-                    Console.WriteLine(".NET: " + app); 
+                    Console.WriteLine(".NET: get Appliance by id"); 
                     return app;
                 }
 

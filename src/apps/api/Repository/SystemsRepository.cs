@@ -24,7 +24,7 @@ public class SystemsRepository
         var systems = JsonSerializer.Deserialize<List<Systems>>(data);
         if (systems != null)
         {
-          Console.WriteLine(".NET: " + systems);
+          Console.WriteLine(".NET: get all systems success");
           return systems;
         }
 
@@ -87,7 +87,7 @@ public class SystemsRepository
         sys.numberOfBatteries = numberOfBatteries;
         sys.solarInput = solarInput;
 
-        Console.WriteLine(".NET: " + sys);
+        Console.WriteLine(".NET: system created successfully");
         return sys;
       }
       else
@@ -151,7 +151,7 @@ public class SystemsRepository
         sys.numberOfBatteries = numberOfBatteries;
         sys.solarInput = solarInput;
 
-        Console.WriteLine(".NET: " + sys);
+        Console.WriteLine(".NET: system updated successfully");
         return sys;
       }
       else
@@ -221,7 +221,7 @@ public class SystemsRepository
         var system = JsonSerializer.Deserialize<Systems>(data);
         if (system != null)
         {
-          Console.WriteLine(".NET: " + system);
+          Console.WriteLine(".NET: system found by id");
           return system;
         }
         Console.WriteLine(".NET: System not found");

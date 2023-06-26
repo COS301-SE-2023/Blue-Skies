@@ -24,7 +24,7 @@ public class KeysRepository
                 var systems = JsonSerializer.Deserialize<List<Keys>>(data);
                 if (systems != null)
                 {
-                    Console.WriteLine(".NET: " + systems);
+                    Console.WriteLine(".NET: get all keys system");
                     return systems;
                 }
 
@@ -78,19 +78,19 @@ public class KeysRepository
                 ans.remainingCalls = remainingCalls;
                 ans.suspended = suspended;
 
-                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
+                Console.WriteLine(".NET: api key created");
                 return ans;
             }
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: API key not created. Database Connection Error");
                 return new Keys();
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
+            Console.WriteLine(".NET: API key not created. Database Connection Error: " + e.Message);
             throw new Exception("Database Connection Error");
         }
     }
@@ -108,13 +108,13 @@ public class KeysRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
+                Console.WriteLine(".NET: API key deleted");
                 return true;
             }
             //Check Status code
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine(".NET: " + response.StatusCode);
+                Console.WriteLine(".NET: API key not found");
                 return false;
             }
             else
@@ -174,12 +174,12 @@ public class KeysRepository
                 key.remainingCalls = remainingCalls;
                 key.suspended = suspended;
 
-                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
+                Console.WriteLine(".NET: API key updated");
                 return key;
             }
             else
             {
-                Console.WriteLine(".NET: " + response.StatusCode);
+                Console.WriteLine(".NET: API key not updated");
                 throw new Exception("Could not update Key");
             }
         }
