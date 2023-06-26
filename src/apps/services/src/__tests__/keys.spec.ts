@@ -131,13 +131,6 @@ describe('Test the key path', () => {
 
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      // expect(mockResponse.json).toHaveBeenCalledWith({
-      //   keyId: '1',
-      //   owner: expect.anything(),
-      //   APIKey: expect.anything(),
-      //   remainingCalls: expect.anything(),
-      //   suspended: expect.anything(),
-      // });
     });
 
     it('should return Not Found for a non-existing key', () => {
@@ -153,10 +146,88 @@ describe('Test the key path', () => {
 
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      // expect(mockResponse.json).toHaveBeenCalledWith({
-      //   error: 'Not Found',
-      //   details: 'Key does not exist.',
-      // });
+    });
+  });
+
+  describe('updateKey', () => {
+    it('should update the existing key', () => {
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+          suspended: 'false',
+        },
+      } as unknown as Request;
+
+      // Call the updateKey method with the mock request and response
+      keyController.updateKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Key updated successfully.',
+      });
+    });
+
+    it('should return Not Found for a non-existing key', () => {
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+          suspended: 'false',
+        },
+      } as unknown as Request;
+
+      // Update the mock request to have a non-existing keyId
+      mockRequest.params.keyId = '999';
+
+      // Call the updateKey method with the mock request and response
+      keyController.updateKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Key does not exist.',
+      });
+    });
+
+    it('should handle error when updating a key', () => {
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+          suspended: 'false',
+        },
+      } as unknown as Request;
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to update key');
+      });
+
+      // Create an instance of the KeyController
+      const keyController = new KeyController();
+
+      // Call the updateKey method with the mock request and response
+      keyController.updateKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to update key',
+      });
     });
   });
 });
