@@ -24,19 +24,23 @@ public class KeysRepository
                 var systems = JsonSerializer.Deserialize<List<Keys>>(data);
                 if (systems != null)
                 {
+                    Console.WriteLine(".NET: " + systems);
                     return systems;
                 }
+
+                Console.WriteLine(".NET: system is null error");
                 return new List<Keys>();
             }
             else
             {
                 //return empty list
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Database Connection Error");
                 return new List<Keys>();
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Connection Error");
         }
     }
@@ -73,17 +77,20 @@ public class KeysRepository
                 ans.APIKey = APIKey;
                 ans.remainingCalls = remainingCalls;
                 ans.suspended = suspended;
+
+                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
                 return ans;
             }
             else
             {
                 //return empty list
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Database Connection Error");
                 return new Keys();
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Connection Error");
         }
     }
@@ -101,20 +108,24 @@ public class KeysRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
                 return true;
             }
             //Check Status code
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Console.WriteLine(".NET: " + response.StatusCode);
                 return false;
             }
             else
             {
+                Console.WriteLine(".NET: " + response.StatusCode);
                 throw new Exception("Could not delete Key");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -162,15 +173,19 @@ public class KeysRepository
                 key.APIKey = APIKey;
                 key.remainingCalls = remainingCalls;
                 key.suspended = suspended;
+
+                Console.WriteLine(".NET: " + response.IsSuccessStatusCode);
                 return key;
             }
             else
             {
+                Console.WriteLine(".NET: " + response.StatusCode);
                 throw new Exception("Could not update Key");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
