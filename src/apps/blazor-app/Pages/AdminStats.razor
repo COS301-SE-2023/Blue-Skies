@@ -43,7 +43,7 @@
                         <h2>Total API Subscriptions</h2>
                     </Superscript>
                     <Header>
-                        <h1 class="">4</h1>
+                        <h1 class="">@keyCount</h1>
                     </Header>
                 </Heading>
                 <Heading css="mt-10">
@@ -51,7 +51,7 @@
                         <h2>Total Accounts Suspended</h2>
                     </Superscript>
                     <Header>
-                        <h1>0</h1>
+                        <h1>@suspendedCount</h1>
                     </Header>
                 </Heading>
             </div>
@@ -60,6 +60,9 @@
 </div>
 
 @code {
+    private int keyCount = 0;
+
+    private int suspendedCount = 0;
     private PieConfig? pieConfig;
     private BarConfig? barConfig;
     public RadarConfig? radarConfig;
@@ -97,24 +100,12 @@
             },
         };
 
-        IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
-        {
-            Label = "Average System Size",
-            BackgroundColor = "rgba(255,99,132,0.2)",
-            BorderColor = "rgba(255,99,132,1)",
-            PointBackgroundColor = "rgba(255,99,132,1)",
-            PointBorderColor = "#fff",
-            PointHoverBackgroundColor = "#fff",
-            PointHoverBorderColor = "rgba(255,99,132,1)",
 
-
-        };
         foreach (string label in radarTypes)
         {
 
             radarConfig.Data.Labels.Add(label);
         }
-        radarConfig.Data.Datasets.Add(dataset3);
 
         @* **************************************** Bar Chart Config ************************************************ *@
         barConfig = new BarConfig
@@ -136,15 +127,9 @@
             }
         };
 
-        IDataset<int> dataset1 = new BarDataset<int>(new[] {4})
-        {
-            Label = "Signed up users",
-            BackgroundColor = "rgba(255,99,132,0.2)",
-            BorderColor = "rgba(255,99,132,1)",
-            BorderWidth = 1
-        };
+        
 
-        IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 7 })
+        IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 10 })
         {
             Label = "Total reports generated",
             BackgroundColor = "rgba(54, 162, 235, 0.2)",
@@ -153,7 +138,6 @@
         };
 
         @* _config.Data.Labels.AddRange(Months.Take(InitalCount)); *@
-        barConfig.Data.Datasets.Add(dataset1);
         barConfig.Data.Datasets.Add(dataset2);
 
         @* **************************************** Pie Chart Config ************************************************ *@
@@ -197,6 +181,7 @@
     {
         await GetUsers();
         await GetSystemUsage();
+        await GetKeys();
     }
 
     private async Task GetSystemUsage(){
@@ -218,11 +203,9 @@
             @* int total = systems.Count;
             radarTypes = new string[total];
             radarCount = new int[total]; *@
-            Console.WriteLine("Systems: " + systems.Count);
             for(int i = 0; i < systems.Count; i++){
                 radarTypes[i] = systems[i].type;
                 radarCount[i] = systems[i].count;
-                Console.WriteLine(radarTypes[i] +  ": " + radarCount[i]);
             }
             IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
         {
@@ -250,10 +233,46 @@
         {
             var data = await response.Content.ReadAsStringAsync();
             users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count})
+        {
+            Label = "Signed up users",
+            BackgroundColor = "rgba(255,99,132,0.2)",
+            BorderColor = "rgba(255,99,132,1)",
+            BorderWidth = 1
+        };
+                barConfig.Data.Datasets.Add(dataset1);
+
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to Get users");
         }
     }
+
+    private async Task GetKeys(){
+            List<APIKeyModel> keys = new List<APIKeyModel>();
+
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/key/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                keyCount = keys.Count;
+                suspendedCount  = 0;
+            foreach (APIKeyModel item in keys)
+            {
+                if(item.suspended == 1){
+                    suspendedCount++;
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed To Get Keys");
+        }
+    }
+
+
 }
