@@ -230,4 +230,54 @@ describe('Test the key path', () => {
       });
     });
   });
+
+  describe('deleteKey', () => {
+    const mockRequest = {
+      params: {
+        keyId: '1',
+      },
+    } as unknown as Request;
+    it('should delete the existing key', () => {
+      // Call the deleteKey method with the mock request and response
+      keyController.deleteKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Key deleted successfully.',
+      });
+    });
+    it('should return Not Found for a non-existing key', () => {
+      // Update the mock request to have a non-existing keyId
+      mockRequest.params.keyId = '999';
+
+      // Call the deleteKey method with the mock request and response
+      keyController.deleteKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Key does not exist.',
+      });
+    });
+    it('should handle error when deleting a key', () => {
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to delete key');
+      });
+
+      // Create an instance of the KeyController
+      const keyController = new KeyController();
+
+      // Call the deleteKey method with the mock request and response
+      keyController.deleteKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to delete key',
+      });
+    });
+  });
 });
