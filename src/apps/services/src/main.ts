@@ -16,7 +16,6 @@ const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
 server.on('error', console.error);
-
 export const config = {
   server: process.env.AZURE_SQL_SERVER,
   authentication: {

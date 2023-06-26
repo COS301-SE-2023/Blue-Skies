@@ -14,11 +14,13 @@ export default class ApplianceController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else {
-            console.log(rowCount);
+            
+            console.log('Express: Appliance created successfully.');
             return res.status(200).json({
               message: 'Appliance created successfully.',
             });
@@ -28,6 +30,7 @@ export default class ApplianceController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -43,16 +46,18 @@ export default class ApplianceController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: No appliances exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'No appliances exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: appliances retrieved successfully.');
             res.status(200).json(appliances);
           }
         }
@@ -69,6 +74,7 @@ export default class ApplianceController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -85,16 +91,18 @@ export default class ApplianceController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Appliance does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Appliance does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Appliance retrieved successfully.');
             res.status(200).json(appliance);
           }
         }
@@ -110,6 +118,7 @@ export default class ApplianceController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -128,16 +137,18 @@ export default class ApplianceController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Appliance does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Appliance does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Appliance updated successfully.');
             res.status(200).json({
               message: 'Appliance updated successfully.',
             });
@@ -162,16 +173,18 @@ export default class ApplianceController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: Appliance does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'Appliance does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: Appliance deleted successfully.');
             res.status(200).json({
               message: 'Appliance deleted successfully.',
             });
@@ -181,6 +194,7 @@ export default class ApplianceController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });

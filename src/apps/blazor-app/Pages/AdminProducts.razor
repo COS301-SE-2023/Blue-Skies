@@ -1,0 +1,188 @@
+@page "/admin/products"
+@layout AdminLayout
+@using BlazorApp.Components.Base
+@using BlazorApp.Components
+@using BlazorApp.Models
+@using System.Text.Json;
+
+<PageTitle>Blue Skies - Solar Products</PageTitle>
+
+<div class="mt-2">
+    <div class="flex w-full justify-around p-4">
+        <div class="">
+            <Heading >
+                <Superscript>
+                    <h2>Manage all</h2>
+                </Superscript>
+                <Header>
+                    <h1>Solar Products</h1>
+                </Header>
+            </Heading>
+        </div>
+        <div class="flex  gap-10 items-center">
+            <div @onclick="DeleteProducts">
+                <Button style="outline">
+                   <content>Delete</content>
+                </Button>
+            </div>
+            <div @onclick="AddProduct">
+                <Button style="pill">
+                   <content>Add</content>
+                </Button>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative overflow-x-auto  mt-2">
+        <table class="w-full  text-sm text-center ">
+            <thead class="text-xs bg-primary-50  uppercase ">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </th>
+                    <th scope="col" class="px-6 py-3  ">
+                        System Size
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Number of Panels
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Inverter Output
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Solar Input
+                    </th>
+                    <th scope="col" class="px-6 py-3"></th>
+
+                </tr>
+            </thead>
+            <tbody >
+                @foreach (var product in products)
+                {
+                    <ProductEntry recordState="product.recordState != null ? true : false" product="product" OnSelect="AddDeleteArr" OnSave="SaveProduct"/>   
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+
+    private List<ProductModel> products = new List<ProductModel>();
+
+    private List<int> deleteArr = new List<int>();
+    private async Task DeleteProducts()
+    {
+        foreach (int id in deleteArr)
+        {
+            await DeleteProduct(id);
+        }
+        deleteArr.Clear();
+        await GetProducts();
+    }
+    private void AddDeleteArr(int id)
+    {
+        if (deleteArr.Contains(id))
+        {
+            deleteArr.Remove(id);
+        }
+        else
+        {
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach (int i in deleteArr)
+        {
+            Console.WriteLine(i);
+        }
+    }
+
+    //Delete Product
+    private async Task DeleteProduct(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/system/delete");
+        var content = new StringContent("{\r\n  \"systemId\": " + id + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetProducts();
+            Console.WriteLine("Delete");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetProducts();
+    }
+
+    private async Task GetProducts()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
+    private void AddProduct()
+    {
+        products.Add(new ProductModel { systemId = -1, systemSize = "", inverterOutput = 0, numberOfPanels = 0, batterySize = 0, numberOfBatteries = 0, solarInput = 0, recordState = true  });
+        @* add api call *@
+    }
+
+    private async Task SaveProduct(ProductModel product)
+    {
+        if(product.systemId == -1)
+        {
+            Console.WriteLine("Add");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/System/create");
+            var content = new StringContent("{\r\n  \"systemSize\": \"" + product.systemSize +"\",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetProducts();
+                Console.WriteLine("Add");
+            }
+            else
+            {
+                Console.WriteLine("Failed to add");
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+            
+        }
+        else
+        {
+            Console.WriteLine("Update");
+             var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/System/update");
+            var content = new StringContent("{\r\n  \"systemId\": " + product.systemId+",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetProducts();
+                Console.WriteLine("Add");
+            }
+            else
+            {
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Console.WriteLine("Failed to Update");
+            }
+            
+        }
+    }
+}
