@@ -2,7 +2,7 @@ import express from 'express'; // import express
 import request from 'supertest'; // import supertest
 import { Request, Response } from 'express';
 import { applianceRouter } from '../../routes/appliance/appliance.router';
-
+import ApplianceController from '../../controllers/appliance/appliance.controller';
 const app = express(); // an instance of an express app, a 'fake' express app
 app.use('/appliance', applianceRouter); // routes
 //mock the main file
