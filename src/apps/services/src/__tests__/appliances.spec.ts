@@ -1,6 +1,5 @@
 import ApplianceController from '../controllers/appliance/appliance.controller';
 import { Request, Response } from 'express';
-import { connection } from '../main';
 jest.mock('../main', () => ({
   connection: {
     execSql: jest.fn(),
