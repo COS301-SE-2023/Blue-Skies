@@ -5,7 +5,7 @@ describe('testHelloWorld', () => {
     const req = {};
     const res = {
       text: '',
-      send: function (input : string) {
+      send: function (input: string) {
         this.text = input;
       },
     };

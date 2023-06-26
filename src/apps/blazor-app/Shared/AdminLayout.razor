@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+@using BlazorApp.Components.Base
+
+<PageTitle>Blue Skies</PageTitle>
+
+<div class="flex w-full h-full flex-row">
+    <div class=" h-[120vh] p-4 border-1">
+        <Image ImageName="Logo-small.svg" alt="Blue Skies Logo" css="w-20 h-20 mx-auto mt-8" />
+        <div class="grid grid-cols-1 gap-5 mt-5">
+            <a href="/admin/keys">
+                <Image ImageName="Key.svg" alt="Key Icon" css="w-8 h-8 mx-auto mt-8" /> 
+                <p class="mt-2">API Keys</p>
+            </a>
+            <a href="/admin/appliances">
+                <Image ImageName="Lightbulb Bolt.svg" alt="Appliance Icon" css="w-8 h-8 mx-auto mt-8" />
+                <p class="mt-2">Appliances</p>
+            </a>
+            <a href="/admin/products">
+                <Image ImageName="Panel.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />  
+                <p class="mt-2">Products</p>
+            </a>
+            <a href="/admin/stats">
+                <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
+                <p class="mt-2">Statistics</p>
+            </a>
+            <a href="/">
+                <Image ImageName="Logout.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
+                <p class="mt-2">Logout</p>
+            </a>
+        </div>
+    </div>
+    <div class="w-full">
+            @Body
+    </div>
+</div>

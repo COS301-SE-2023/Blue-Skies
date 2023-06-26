@@ -1,0 +1,186 @@
+@page "/register"
+@layout AuthLayout
+@using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+
+
+<PageTitle>Register</PageTitle>
+
+<div class="w-full h-[100vh]">
+    <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
+    <Image ImageName="Register-background.webp" css="w-full h-full object-fit -z-10" alt="background image" />
+
+    <div class="flex w-full h-full absolute top-0 left-0 justify-start">
+        <div class="absolute top-12 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
+        <a href="/" class="absolute top-14 right-72">
+            <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo" />
+        </a>
+        <Image ImageName="19.svg" css="absolute hidden xl:block xl:top-48         xl:right-96          2xl:top-52      2xl:right-[600px] z-10" alt="blob"/>
+        <Image ImageName="40.svg" css="absolute hidden xl:block xl:top-60         xl:right-[650px]     2xl:top-66      2xl:right-[870px] z-10" alt="blob"/>
+        <Image ImageName="60.svg" css="absolute hidden xl:block xl:bottom-60      xl:right-[615px]     2xl:bottom-60   2xl:right-[800px] z-10" alt="blob"/>
+        <Image ImageName="90.svg" css="absolute hidden xl:block xl:bottom-[310px] xl:right-[290px]          2xl:bottom-[330px]   2xl:right-[400px] z-10" alt="blob"/>
+
+        <Card css="my-auto w-full text-left ml-28 2xl:ml-60 z-10">
+            <Heading>
+                <Superscript>
+                    <p>Create your account</p>
+                </Superscript>
+                <Header>
+                    <h1>Register</h1>
+                </Header>
+            </Heading>
+            <form @onsubmit="HandleSubmit">
+                <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password" @bind-InputValue="password" />
+                <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password" @bind-InputValue="repassword"/>
+    
+                    @*
+                <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
+                <div class="flex justify-center mt-8 gap-4">
+                     <Button css="" style="outline">
+                        <content>
+                            <a href="/" class="">
+                                <Image ImageName="Google.svg" css="h-6" alt="Google" />
+                            </a>
+                        </content>
+                    </Button>
+                    <Button style="outline">
+                        <content>
+                            <a href="/">
+                                <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook" />
+                            </a>
+                        </content>
+                    </Button> 
+                </div>
+                    *@
+                <Button css="mt-10 flex justify-center" style="pill">
+                    <content>
+                        <input type="submit" value="Register" />
+                    </content>
+                </Button>
+                <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/login"
+                        class="text-primary-500 ml-2">Login</a></p>
+            </form>
+        </Card>
+    </div>
+</div>
+
+@code {
+private string? email;
+
+private string? password;
+
+private string? repassword;
+
+private bool emailValid = true;
+private bool passwordValid = true;
+private bool repasswordValid = true;
+
+
+
+private async Task HandleValidSubmit()
+{
+    Console.WriteLine("OnValidSubmit");
+    // Send welcome email
+    Console.WriteLine("Welcome " + email);
+    Console.WriteLine(password);
+    Console.WriteLine("Repassword: " + repassword);
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/auth/register");
+    var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+    request.Content = content;
+    var response = await client.SendAsync(request);
+    if(response.StatusCode == System.Net.HttpStatusCode.OK)
+    {
+        Console.WriteLine("OK");
+        NavigationManager.NavigateTo("/login");
+    }
+    else
+    {
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        Console.WriteLine("Not OK");
+    }
+
+}
+
+private void HandleInvalidSubmit()
+{
+    Console.WriteLine("OnInvalidSubmit");
+    // Throw an invalid error or perform any other necessary action
+}
+
+
+private async Task HandleSubmit()
+{
+    Console.WriteLine("OnSubmit");
+    Console.WriteLine(email);
+    Console.WriteLine(password);
+    Console.WriteLine(repassword);
+
+    var isValid = ValidateForm();
+
+    if (isValid)
+    {
+        await HandleValidSubmit();
+    }
+    else
+    {
+        HandleInvalidSubmit();
+    }
+}
+
+private void HandleEmailChanged(string value)
+{
+    email = value;
+}
+
+private void HandlePasswordChanged(string value)
+{
+    password = value;
+}
+
+private void HandleRepasswordChanged(string value)
+{
+    repassword = value;
+}
+
+
+private bool ValidateForm()
+{
+    @* check email using regex *@
+    if (string.IsNullOrEmpty(email))
+    {
+        Console.WriteLine("email is empty");
+        return false;
+    }
+    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+    {
+        Console.WriteLine("email is not valid");
+        return false;
+    }
+
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(password))
+    {
+        Console.WriteLine("password is empty");
+        return false;
+    }
+
+    @* check if password is empty *@
+    if (string.IsNullOrEmpty(repassword))
+    {
+        Console.WriteLine("repassword is empty");
+        return false;
+    }
+
+    @* check if password and repassword are same *@
+    if (password != repassword)
+    {
+        Console.WriteLine("password and repassword are not same");
+        return false;
+    }
+
+    return true;
+}
+
+}
