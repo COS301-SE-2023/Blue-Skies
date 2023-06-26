@@ -126,7 +126,6 @@ export default class KeyController {
     const query =
       `UPDATE [dbo].[keys] SET owner = '${owner}', APIKey = '${APIKey}', remainingCalls = ${remainingCalls}, suspended = '${suspended}'` +
       ` WHERE keyId = ${keyId}`;
-
     try {
       const request = new tedious.Request(
         query,
