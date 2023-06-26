@@ -83,6 +83,13 @@ describe('Test the report path', () => {
         message: 'Report is updated.',
         });
     });
+    it('It should response the DELETE method', async () => {
+        const response = await request(app).delete('/report/delete/1');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+        message: 'Report is deleted.',
+        });
+    });
     
     
 });
