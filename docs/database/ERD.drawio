@@ -11,7 +11,7 @@
                         </mxGeometry>
                     </mxCell>
                 </object>
-                <mxCell id="3" value="userId (PK: INT" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="2" vertex="1">
+                <mxCell id="3" value="userId (PK): INT" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="2" vertex="1">
                     <mxGeometry y="30" width="163" height="26" as="geometry"/>
                 </mxCell>
                 <mxCell id="4" value="email: VARCHAR(50)" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="2" vertex="1">
@@ -187,7 +187,7 @@
                 <mxCell id="61" value="owner: VARCHAR(50)" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="59" vertex="1">
                     <mxGeometry y="56" width="163" height="29" as="geometry"/>
                 </mxCell>
-                <mxCell id="62" value="key: VARCHAR(MAX)" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="59" vertex="1">
+                <mxCell id="62" value="APIKey: VARCHAR(MAX)" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="59" vertex="1">
                     <mxGeometry y="85" width="163" height="28" as="geometry"/>
                 </mxCell>
                 <mxCell id="86" value="remainingCalls: INT" style="text;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;gradientColor=none;fontColor=#0d0d0d;rounded=0;" parent="59" vertex="1">

@@ -1,0 +1,15 @@
+<div class="@css @bg p-14 max-w-lg rounded-xl overflow-hidden shadow-lg">
+    @ChildContent
+</div>
+
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string? css { get; set;}
+
+    [Parameter]
+    public string? bg { get; set; } = "bg-white";
+}
