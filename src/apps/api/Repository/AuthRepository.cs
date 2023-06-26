@@ -18,7 +18,7 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Console.WriteLine(".NET: " + response);
+                Console.WriteLine(".NET: updated last logged in");
                 return true;
             }
 
@@ -50,7 +50,7 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Console.WriteLine(".NET: " + response);
+                Console.WriteLine(".NET: checked email");
                 return true;
             }
 
@@ -87,7 +87,7 @@ public class AuthRepository
             var response = await client.SendAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-                Console.WriteLine(".NET: " + response);
+                Console.WriteLine(".NET: registered user");
                 return true;
             }
 
@@ -107,7 +107,7 @@ public class AuthRepository
         try
         {
             string hashed = hashpassword(password);
-            Console.WriteLine("hashed: " + hashed);
+            Console.WriteLine(".NET: login password hashed");
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,

@@ -21,7 +21,7 @@ public class AdminStatsRepository
       if (response.IsSuccessStatusCode)
       {
         var data = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(".NET: " + data);
+        Console.WriteLine(".NET: Get All Systems data");
         systems = JsonSerializer.Deserialize<List<Systems>>(data);
       }
 
@@ -32,7 +32,7 @@ public class AdminStatsRepository
       if (response2.IsSuccessStatusCode)
       {
         var data2 = await response2.Content.ReadAsStringAsync();
-        Console.WriteLine(".NET: " + data2);
+        Console.WriteLine(".NET: Get All Basic Calculations");
         basicCalculations = JsonSerializer.Deserialize<List<BasicCalculation>>(data2);
       }
 
@@ -48,7 +48,7 @@ public class AdminStatsRepository
       {
         if (systemUsages.FindIndex(x => x.type == system.systemSize) == -1)
         {
-          Console.WriteLine(".NET: " + system.systemSize);
+          Console.WriteLine(".NET: system of size '" + system.systemSize + "' not found");
           systemUsages.Add(new SystemUsage { type = system.systemSize, count = 0, systemId = system.systemId });
         }
       }
@@ -57,7 +57,7 @@ public class AdminStatsRepository
         int index = systemUsages.FindIndex(x => x.systemId == item.systemId);
         if (index != -1)
         {
-          Console.WriteLine(".NET: " + systemUsages[index].type);
+          Console.WriteLine(".NET: system of size '" + systemUsages[index].type + "' found");
           systemUsages[index].count++;
         }
       }

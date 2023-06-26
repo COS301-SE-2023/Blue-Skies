@@ -23,18 +23,21 @@ public class UsersRepository
                 var systems = JsonSerializer.Deserialize<List<Users>>(data);
                 if (systems != null)
                 {
+                    Console.WriteLine(".NET: all users success");
                     return systems;
                 }
+                Console.WriteLine(".NET: system is null error");
                 return new List<Users>();
             }
             else
             {
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Database Connection Error");
                 return new List<Users>();
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Connection Error:" + e.Message);
             throw new Exception("Database Connection Error:" + e.Message);
         }
     }
@@ -80,15 +83,19 @@ public class UsersRepository
                 user.userRole = userRole;
                 user.dateCreated = dateCreated;
                 user.lastLoggedIn = lastLoggedIn;
+
+                Console.WriteLine(".NET: User updated");
                 return user;
             }
             else
             {
+                Console.WriteLine(".NET: Could not update User");
                 throw new Exception("Could not update User");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -106,20 +113,24 @@ public class UsersRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine(".NET: User deleted");
                 return true;
             }
             //Check Status code
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Console.WriteLine(".NET: User not found");
                 return false;
             }
             else
             {
+                Console.WriteLine(".NET: Could not delete User");
                 throw new Exception("Could not delete User");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -142,19 +153,22 @@ public class UsersRepository
                 var app = JsonSerializer.Deserialize<Users>(data);
                 if (app != null)
                 {
+                    Console.WriteLine(".NET: user found");
                     return app;
                 }
+                Console.WriteLine(".NET: user is null error");
                 return new Users();
             }
             else
             {
                 //return empty list
-                Console.WriteLine("Error");
+                Console.WriteLine(".NET: Could not get User");
                 throw new Exception("Could not get User");
             }
         }
         catch (Exception e)
         {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
