@@ -69,6 +69,13 @@ describe('Test the report path', () => {
         message: 'Report is created.',
         });
     });
-   
+    it('It should response the GET method', async () => {
+        const response = await request(app).get('/report/1');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+        message: 'Report is retrieved.',
+        });
+    });
+    
 });
 
