@@ -14,10 +14,10 @@
     <a href="/" class="absolute top-14 right-72">
         <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
     </a>
-    @* <Image ImageName="19.svg" css="absolute top-10 right-10 z-10" alt="blob"/>
-    <Image ImageName="19.svg" css="absolute top-10 right-10 z-10" alt="blob"/>
-    <Image ImageName="19.svg" css="absolute top-10 right-10 z-10" alt="blob"/>
-    <Image ImageName="19.svg" css="absolute top-10 right-10 z-10" alt="blob"/> *@
+    <Image ImageName="19.svg" css="absolute top-72 right-[550px] z-10" alt="blob"/>
+    <Image ImageName="40.svg" css="absolute top-96 right-[800px] z-10" alt="blob"/>
+    <Image ImageName="60.svg" css="absolute top-[450px] right-60 z-10" alt="blob"/>
+    <Image ImageName="90.svg" css="absolute bottom-20 right-[725px] z-10" alt="blob"/>
         <Card css="my-auto w-full text-left ml-60">
             <Heading >
                 <Superscript>
@@ -91,8 +91,8 @@ private async Task HandleSubmit()
         var response = await client.SendAsync(request);
         if(response.IsSuccessStatusCode){
             Console.WriteLine("Success");
-            //Navigate to home page
-             NavigationManager.NavigateTo("/");
+            //Navigate to home page 
+             NavigationManager.NavigateTo("/admin/keys");
         }else{
              Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
@@ -122,6 +122,8 @@ private bool ValidateForm()
     if (string.IsNullOrEmpty(password))
     {
         Console.WriteLine("password is empty");
+            
+        
         return false;
     }
 
