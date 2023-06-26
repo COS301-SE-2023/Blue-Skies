@@ -2,13 +2,14 @@
 @layout AdminLayout
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.RadarChart
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 @using System.Text.Json;
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
-<div class="mt-2 ">
+<div class="mt-2 pr-10 pb-10 ">
     <div class="flex w-full justify-between p-4">
         <div class="">
             <Heading >
@@ -23,25 +24,74 @@
         
     </div>
     
-    <div class="flex">
-        <Chart Height="90" Config="pieConfig"></Chart>
+    <div class="flex flex-col gap-20">
+        <div class="w-1/2">
+            <Chart Config="pieConfig"></Chart>
+        </div>
+        <div class="flex flex-row">
+            <div class="w-full">
+                <Chart Config="radarConfig"></Chart>
+            </div>
+            <div class="w-full">
+                <Chart Config="barConfig"></Chart>
+            </div>
+        </div>
     </div>
 </div>
 
 @code {
     private PieConfig? pieConfig;
+    private BarConfig? barConfig;
+    public RadarConfig? radarConfig;
     private List<UserModel> users = new List<UserModel>();
-
-    private const int InitalCount = 7;
-    private BarConfig _config;
-    private Random _rng = new Random();
-    private Chart _chart;
 
 
     protected override void OnInitialized()
     {
+        @* **************************************** Radar Chart Config ************************************************ *@
+        radarConfig = new RadarConfig
+        {
+            Options = new RadarOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Some Chart"
+                },
+                Scale = new LinearRadialAxis
+                {
+                    Ticks = new LinearRadialTicks
+                    {
+                        BeginAtZero = true,
+                        Max = 10,
+                    }
+                }
 
-        _config = new BarConfig
+            },
+        };
+
+        IDataset<int> dataset3 = new RadarDataset<int>(new[] { 4, 5, 3})
+        {
+            Label = "My first dataset",
+            BackgroundColor = "rgba(255,99,132,0.2)",
+            BorderColor = "rgba(255,99,132,1)",
+            PointBackgroundColor = "rgba(255,99,132,1)",
+            PointBorderColor = "#fff",
+            PointHoverBackgroundColor = "#fff",
+            PointHoverBorderColor = "rgba(255,99,132,1)",
+
+
+        };
+        foreach (string label in new[] { "Small", "Medium", "Large" })
+        {
+
+            radarConfig.Data.Labels.Add(label);
+        }
+        radarConfig.Data.Datasets.Add(dataset3);
+
+        @* **************************************** Bar Chart Config ************************************************ *@
+        barConfig = new BarConfig
         {
             Options = new BarOptions
             {
@@ -53,12 +103,13 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "ChartJs.Blazor Bar Chart"
-                }
+                    Text = "Some Chart"
+                },
+                
             }
         };
 
-        IDataset<int> dataset1 = new BarDataset<int>()
+        IDataset<int> dataset1 = new BarDataset<int>(new[] {4})
         {
             Label = "My first dataset",
             BackgroundColor = "rgba(255,99,132,0.2)",
@@ -66,7 +117,7 @@
             BorderWidth = 1
         };
 
-        IDataset<int> dataset2 = new BarDataset<int>()
+        IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 7 })
         {
             Label = "My second dataset",
             BackgroundColor = "rgba(54, 162, 235, 0.2)",
@@ -75,10 +126,10 @@
         };
 
         @* _config.Data.Labels.AddRange(Months.Take(InitalCount)); *@
-        _config.Data.Datasets.Add(dataset1);
-        _config.Data.Datasets.Add(dataset2);
+        barConfig.Data.Datasets.Add(dataset1);
+        barConfig.Data.Datasets.Add(dataset2);
 
-        @* **************************************************************************************** *@
+        @* **************************************** Pie Chart Config ************************************************ *@
         pieConfig = new PieConfig
         {
             Options = new PieOptions
@@ -88,16 +139,24 @@
                 {
                     Display = true,
                     Text = "Active Users"
-                }
+                },
+                @* Scale = new ArcScale
+                {
+                    Ticks = new ArcScaleTicks
+                    {
+                        BeginAtZero = true
+                    },
+                    Reverse = false
+                } *@
             }
         };
 
-        foreach (string color in new[] { "Red", "Yellow", "Green", "Blue" })
+        foreach (string color in new[] { "Remaining", "Past 3 months", "Past month", "Past week" })
         {
             pieConfig.Data.Labels.Add(color);
         }
 
-        PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 7 })
+        PieDataset<int> dataset = new PieDataset<int>(new[] { 6, 5, 3, 4})
         {
             BackgroundColor = new[]
             {
