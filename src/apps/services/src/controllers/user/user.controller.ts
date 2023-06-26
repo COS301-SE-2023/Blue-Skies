@@ -12,16 +12,18 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: No users exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'No users exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: users retrieved successfully.');
             res.status(200).json(users);
           }
         }
@@ -41,6 +43,7 @@ export default class UserController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -57,16 +60,18 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: User does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: user retrieved successfully.');
             res.status(200).json(user);
           }
         }
@@ -85,6 +90,7 @@ export default class UserController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -101,16 +107,18 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(404).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: User does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: user updated successfully.');
             res.status(200).json({
               message: 'User updated successfully.',
             });
@@ -120,6 +128,7 @@ export default class UserController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
@@ -135,16 +144,18 @@ export default class UserController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log('Express: ' + err.message);
             return res.status(400).json({
               error: err.message,
             });
           } else if (rowCount === 0) {
+            console.log('Express: User does not exist.');
             return res.status(404).json({
               error: 'Not Found',
               details: 'User does not exist.',
             });
           } else {
-            console.log(rowCount);
+            console.log('Express: user deleted successfully.');
             res.status(200).json({
               message: 'User deleted successfully.',
             });
@@ -154,6 +165,7 @@ export default class UserController {
 
       conn.execSql(request);
     } catch (error) {
+      console.log('Express: ' + error.message);
       res.status(500).json({
         error: error.message,
       });
