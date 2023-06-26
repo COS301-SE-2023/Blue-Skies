@@ -3,6 +3,14 @@ import { Request, Response } from 'express';
 import * as tedious from 'tedious';
 
 jest.mock('../main', () => jest.fn());
+
+jest.mock('../main', () => {
+  return {
+    connection: {
+      execSql: jest.fn(),
+    },
+  };
+});
 // Mock the dependencies and modules
 jest.mock('tedious', () => ({
   Request: jest.fn().mockImplementation((query, callback) => {
@@ -51,6 +59,53 @@ describe('Test the key path', () => {
         // Assert that the status and json methods were called with the correct values
         expect(mockResponse.status).toHaveBeenCalledWith(200);
         expect(mockResponse.json).toHaveBeenCalledWith([]);
+      });
+    });
+  });
+
+  //Create a test for the createKey method
+  describe('createKey', () => {
+    it('should create a new key', () => {
+      mockRequest = {
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+        },
+      };
+      // Call the createKey method with the mock request and response
+      keyController.createKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Key created successfully.',
+      });
+    });
+
+    it('should handle error when creating a key', () => {
+      mockRequest = {
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+        },
+      };
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to create key');
+      });
+
+      // Create an instance of the KeyController
+      const keyController = new KeyController();
+
+      // Call the createKey method with the mock request and response
+      keyController.createKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to create key',
       });
     });
   });
