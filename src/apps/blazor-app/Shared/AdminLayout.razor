@@ -4,22 +4,22 @@
 <PageTitle>Blue Skies</PageTitle>
 
 <div class="flex w-full h-full flex-row">
-    <div class=" h-[120vh] p-4 border-1">
+    <div class=" h-[100vh] p-4 border-1">
         <Image ImageName="Logo-small.svg" alt="Blue Skies Logo" css="w-20 h-20 mx-auto mt-8" />
-        <div class="grid grid-cols-1 gap-5 mt-5">
-            <a href="/admin/keys">
+        <div class="grid grid-cols-1 gap-5 mt-5 text-center">
+            <a onclick="@(() => ChangePage("keys"))" class="@keys " href="/admin/keys">
                 <Image ImageName="Key.svg" alt="Key Icon" css="w-8 h-8 mx-auto mt-8" /> 
                 <p class="mt-2">API Keys</p>
             </a>
-            <a href="/admin/appliances">
+            <a onclick="@(() => ChangePage("appliances"))" class="@appliances" href="/admin/appliances">
                 <Image ImageName="Lightbulb Bolt.svg" alt="Appliance Icon" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Appliances</p>
             </a>
-            <a href="/admin/products">
+            <a onclick="@(() => ChangePage("products"))" class="@products" href="/admin/products">
                 <Image ImageName="Panel.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />  
                 <p class="mt-2">Products</p>
             </a>
-            <a href="/admin/stats">
+            <a onclick="@(() => ChangePage("stats"))" class="@stats" href="/admin/stats">
                 <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Statistics</p>
             </a>
@@ -33,3 +33,32 @@
             @Body
     </div>
 </div>
+
+@code {
+    public string keys { get; set; } = "bg-slate-200 h-28 w-28 rounded-3xl";
+    public string appliances { get; set; } = "h-28 w-28 rounded-3xl";
+    public string products { get; set; } = "h-28 w-28 rounded-3xl";
+    public string stats { get; set; } = "h-28 w-28 rounded-3xl";
+
+    public void ChangePage(string page) {
+        keys = "h-28 w-28 rounded-3xl";
+        appliances = "h-28 w-28 rounded-3xl";
+        products = "h-28 w-28 rounded-3xl";
+        stats = "h-28 w-28 rounded-3xl";
+
+        switch (page) {
+            case "keys":
+                keys = "bg-slate-200 h-28 w-28 rounded-3xl";
+                break;
+            case "appliances":
+                appliances = "bg-slate-200 h-28 w-28 rounded-3xl";
+                break;
+            case "products":
+                products = "bg-slate-200 h-28 w-28 rounded-3xl";
+                break;
+            case "stats":
+                stats = "bg-slate-200 h-28 w-28 rounded-3xl";
+                break;
+        }
+    }
+}

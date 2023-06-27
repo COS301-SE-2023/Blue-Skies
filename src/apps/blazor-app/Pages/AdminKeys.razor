@@ -39,6 +39,12 @@
         </ChildContent>
     </Toast>
 
+    <Toast @ref="deleteToast" Title="Deleted" Type="error">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
+
     <ModalPopup @ref="ModalPopup" Title="Delete Account?">
         <ChildContent>
             <p>Are you sure that you want to delete this account?</p>
@@ -64,7 +70,7 @@
         <table class="w-full text-sm text-center ">
             <thead class="text-xs bg-primary-50  uppercase ">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-center">
+                    <th scope="col" class="px-6 py-3 text-left">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
                     </th>
                     <th scope="col" class="px-6 py-3 text-center">
@@ -109,6 +115,7 @@
         }
         deleteArr.Clear();
         await GetKeys();
+        deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error");
     }
     private void AddDeleteArr(int id){
         if(deleteArr.Contains(id)){
@@ -163,6 +170,7 @@
     private void AddKey()
     {
         keys.Add(new APIKeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
+        successToast.Show("Added", "A new record entry was added.", "success"); 
     }
 
     private async Task ToggleSuspend(APIKeyModel key) {

@@ -20,7 +20,7 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <div @onclick="DeleteProducts">
+            <div @onclick="ModalPopup.Show">
                 <Button style="outline">
                    <content>Delete</content>
                 </Button>
@@ -32,6 +32,38 @@
             </div>
         </div>
     </div>
+
+    <Toast @ref="successToast" Title="Successful" Type="success">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
+
+    <Toast @ref="deleteToast" Title="Deleted" Type="error">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
+
+    <ModalPopup @ref="ModalPopup" Title="Delete Solar Product?">
+        <ChildContent>
+            <p>Are you sure that you want to delete this Solar Product?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="DeleteProducts">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
 
     <div class="relative overflow-x-auto  mt-2">
         <table class="w-full  text-sm text-center ">
@@ -67,6 +99,9 @@
 </div>
 
 @code {
+    private Toast successToast { get; set; } = new Toast();
+    private Toast deleteToast { get; set; } = new Toast();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
     private List<ProductModel> products = new List<ProductModel>();
 
@@ -108,7 +143,8 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             await GetProducts();
-            Console.WriteLine("Delete");
+            Console.WriteLine("Deleted Solar Product");
+            deleteToast.Show("Deleted", "Successfully deleted product", "success");
         }
         else
         {
@@ -155,7 +191,8 @@
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 await GetProducts();
-                Console.WriteLine("Add");
+                Console.WriteLine("Updated Solar Product");
+                successToast.Show("Added", "Successfully added product", "success");
             }
             else
             {
@@ -175,7 +212,8 @@
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 await GetProducts();
-                Console.WriteLine("Add");
+                Console.WriteLine("Updated Solar Product");
+                successToast.Show("Updated", "Successfully updated product", "success");
             }
             else
             {
