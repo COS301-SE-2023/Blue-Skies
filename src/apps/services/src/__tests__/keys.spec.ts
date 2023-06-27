@@ -22,10 +22,7 @@ jest.mock('tedious', () => ({
       callback(null, 0);
     }
     const rowCount = 2;
-    const keys = [
-      { id: 1, name: 'Key 1' },
-      { id: 2, name: 'Key 2' },
-    ];
+
     callback(null, rowCount);
   }),
   ColumnValue: jest.fn(),

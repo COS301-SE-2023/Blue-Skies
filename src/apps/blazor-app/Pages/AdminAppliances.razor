@@ -20,7 +20,7 @@
             </Heading>
         </div>
         <div class="flex  gap-10 items-center">
-            <div @onclick="deleteAppliances">
+            <div @onclick="ModalPopup.Show">
                 <Button style="outline">
                     <content>Delete</content>
                 </Button>
@@ -30,16 +30,50 @@
                    <content>Add</content>
                 </Button>
             </div>
+
         </div>
     </div>
+
+     <Toast @ref="successToast" Title="" Type="success">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
+
+    <Toast @ref="deleteToast" Title="" Type="error">
+        <ChildContent>
+            <p></p>
+        </ChildContent>
+    </Toast>
+
+    <ModalPopup @ref="ModalPopup" Title="Delete Account?">
+        <ChildContent>
+            <p>Are you sure that you want to delete this Appliance?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="deleteAppliances">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
     
     <div class="relative overflow-x-auto  mt-2">
         <table class="w-full  text-sm text-left ">
             <thead class="text-xs bg-primary-50  uppercase ">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-center">
+                    <th scope="col" class="px-6 py-3 ">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
                     </th>
+                    <th>Icon</th>
                     <th scope="col" class="px-6 py-3  ">
                         Appliance Type
                     </th>
@@ -61,6 +95,9 @@
 </div>
 
 @code {
+    private Toast successToast { get; set; } = new Toast();
+    private Toast deleteToast { get; set; } = new Toast();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
     public bool recordState { get; set; } = false;
 
@@ -73,6 +110,7 @@
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<int> deleteArr = new List<int>();
     private async Task deleteAppliances(){
+        ModalPopup.Dismiss();
         foreach(int id in deleteArr){
             await DeleteAppliance(id);
         }
@@ -95,6 +133,7 @@
         //Delete Appliance
     private async Task DeleteAppliance(int id)
     {
+        ModalPopup.Dismiss();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/appliance/delete");
         var content = new StringContent("{\r\n  \"applianceId\": " +id+"\r\n}", null, "application/json");
@@ -102,6 +141,7 @@
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully","error");
             await GetAppliances();
         }
         else
@@ -148,6 +188,7 @@
             var response = await client.SendAsync(request);
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
+                successToast.Show("Appliance Added", "The appliance has been added successfully","success");
                 await GetAppliances();
             }
             else
@@ -165,6 +206,7 @@
             var response = await client.SendAsync(request);
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {
+                successToast.Show("Appliance Updated", "The appliance has been updated successfully","success");
                 await GetAppliances();
             }
             else
