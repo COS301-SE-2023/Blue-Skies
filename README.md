@@ -1,6 +1,8 @@
 [![codecov](https://codecov.io/github/COS301-SE-2023/Blue-Skies/branch/main/graph/badge.svg?token=DEFDH7DDQO)](https://codecov.io/github/COS301-SE-2023/Blue-Skies)
 ![main](https://github.com/COS301-SE-2023/Blue-Skies/actions/workflows/UnitTesting.yml/badge.svg?branch=main)
 ![GitHub issues](https://img.shields.io/github/issues/COS301-SE-2023/Blue-Skies)
+![commits](https://badgen.net/github/commits/COS301-SE-2023/Blue-Skies/main)
+
 
 # Blue Skies
 ## Debuggers Anonymous - Blue Skies - Project Description
@@ -12,10 +14,14 @@ The evaluation will incorporate a trained AI model to detect the average sunligh
 
 ## Demo recordings
  <a href="https://drive.google.com/file/d/1Xgv28BjxR3WmmBX1pDHfHS8kiyigUfJt/view?usp=share_link">Debuggers Anonymous - Demo 1</a><br>
-
+ <a href="https://drive.google.com/file/d/1fRlDQIzbm63Lm8jqSrSNpQJ2fwg71hSX/view?usp=drive_link">Debuggers Anonymous - Demo 2</a><br>
 
 ## System Documentation
-<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification%20Version%202.pdf">Functional Requirements Version 2</a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Architectural%20Requirements.pdf">Architecture Requirements<a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Coding%20Standards.pdf">Coding Standards</a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/User%20Manual.pdf">User Manual</a><br>
 
 ## Github Project Board
 <a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a>
