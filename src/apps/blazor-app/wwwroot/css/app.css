@@ -978,6 +978,10 @@ video {
   overflow: hidden;
 }
 
+.overflow-clip {
+  overflow: clip;
+}
+
 .overflow-x-auto {
   overflow-x: auto;
 }
@@ -1933,6 +1937,42 @@ body {
 
   .\32xl\:top-\[400px\] {
     top: 400px;
+  }
+
+  .\32xl\:top-64 {
+    top: 16rem;
+  }
+
+  .\32xl\:top-72 {
+    top: 18rem;
+  }
+
+  .\32xl\:top-\[\] {
+    top: ;
+  }
+
+  .\32xl\:top-\[8\] {
+    top: 8;
+  }
+
+  .\32xl\:top-\[500px\] {
+    top: 500px;
+  }
+
+  .\32xl\:top-\[300px\] {
+    top: 300px;
+  }
+
+  .\32xl\:top-\[330px\] {
+    top: 330px;
+  }
+
+  .\32xl\:top-\[430px\] {
+    top: 430px;
+  }
+
+  .\32xl\:top-\[440px\] {
+    top: 440px;
   }
 
   .\32xl\:ml-52 {
