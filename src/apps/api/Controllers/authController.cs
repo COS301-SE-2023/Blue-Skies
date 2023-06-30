@@ -82,6 +82,10 @@ public class AuthController : ControllerBase
       }
       //login user
       Users LoggedInuser = await _authRepository.login(user.email, user.password);
+      if (LoggedInuser.userId == -1 && LoggedInuser.userRole == -1)
+      {
+        return BadRequest("Incorrect email or password");
+      }
       return Ok("UserRole = " + LoggedInuser.userRole + " UserId = ");
     }
     catch (Exception e)

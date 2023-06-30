@@ -27,6 +27,9 @@
                     <h1>Log In</h1>    
                 </Header>
             </Heading>
+            <div class="@showError">
+                <p class="text-red-600 ">@errorMessage</p>
+            </div>
             <form @onsubmit="HandleSubmit">
                 @if (!emailIsValid)
                 {
@@ -80,6 +83,9 @@
     public bool emailIsValid { get; set; } = true;
     public bool passwordIsValid { get; set; } = true;
 
+    public string? showError = "hidden";
+    public string? errorMessage = "Could not login";
+
 private async Task HandleSubmit()
 {
     Console.WriteLine("OnSubmit");
@@ -108,11 +114,11 @@ private async Task HandleSubmit()
         var response = await client.SendAsync(request);
         if(response.IsSuccessStatusCode){
             Console.WriteLine("Success");
+            showError = "hidden";
             //Navigate to home page 
             string data= await response.Content.ReadAsStringAsync();
             if(data.Contains("1")){
              NavigationManager.NavigateTo("/admin/keys");
-
             }
             else{
             NavigationManager.NavigateTo("/");
@@ -120,7 +126,9 @@ private async Task HandleSubmit()
             }
         }else{
             Console.WriteLine("Failed");
-             Console.WriteLine(await response.Content.ReadAsStringAsync());
+            string message = await response.Content.ReadAsStringAsync();
+            errorMessage = message;
+             showError = "block";
         }
         Console.WriteLine(await response.Content.ReadAsStringAsync());
     }
