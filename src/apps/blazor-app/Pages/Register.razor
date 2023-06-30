@@ -29,6 +29,9 @@
                     <h1>Register</h1>
                 </Header>
             </Heading>
+            <div class="@showError">
+                <p class="text-red-600 ">@errorMessage</p>
+            </div>
             <form @onsubmit="HandleSubmit">
                 <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
                 <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password" @bind-InputValue="password" />
@@ -76,7 +79,8 @@ private bool emailValid = true;
 private bool passwordValid = true;
 private bool repasswordValid = true;
 
-
+    public string? showError = "hidden";
+    public string? errorMessage = "Could not register";
 
 private async Task HandleValidSubmit()
 {
@@ -92,12 +96,15 @@ private async Task HandleValidSubmit()
     var response = await client.SendAsync(request);
     if(response.StatusCode == System.Net.HttpStatusCode.OK)
     {
+        showError = "hidden";
         Console.WriteLine("OK");
         NavigationManager.NavigateTo("/login");
     }
     else
     {
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
+        string message = await response.Content.ReadAsStringAsync();
+        errorMessage = message;
+        showError = "";
         Console.WriteLine("Not OK");
     }
 
