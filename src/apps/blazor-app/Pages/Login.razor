@@ -109,7 +109,15 @@ private async Task HandleSubmit()
         if(response.IsSuccessStatusCode){
             Console.WriteLine("Success");
             //Navigate to home page 
+            string data= await response.Content.ReadAsStringAsync();
+            if(data.Contains("1")){
              NavigationManager.NavigateTo("/admin/keys");
+
+            }
+            else{
+            NavigationManager.NavigateTo("/");
+
+            }
         }else{
             Console.WriteLine("Failed");
              Console.WriteLine(await response.Content.ReadAsStringAsync());
