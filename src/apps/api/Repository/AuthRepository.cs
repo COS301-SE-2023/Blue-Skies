@@ -141,7 +141,15 @@ public class AuthRepository
       }
 
       Console.WriteLine(".NET: Could not login user");
-      throw new Exception("Could not login user");
+      return new Users()
+      {
+        userId = -1,
+        email = "No email",
+        password = "No password",
+        dateCreated = new DateTime(),
+        lastLoggedIn = new DateTime(),
+        userRole = -1
+      };
     }
     catch (Exception)
     {
