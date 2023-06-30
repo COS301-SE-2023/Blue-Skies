@@ -6,6 +6,15 @@ namespace Api.Repository;
 
 public class AuthRepository
 {
+  private string express = "http://localhost:3333";
+  public AuthRepository()
+  {
+    var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+    if (backendexpress != null)
+    {
+      express = backendexpress;
+    }
+  }
   public async Task<bool> updateLoggedin(int id)
   {
     try
@@ -13,7 +22,7 @@ public class AuthRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Patch,
-          "http://localhost:3333/api/auth/lastLoggedin/" + id
+          express + "/api/auth/lastLoggedin/" + id
       );
       var response = await client.SendAsync(request);
       if (response.StatusCode == HttpStatusCode.OK)
@@ -39,7 +48,7 @@ public class AuthRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Get,
-          "http://localhost:3333/api/auth/checkemail"
+          express + "/api/auth/checkemail"
       );
       var content = new StringContent(
           "{\r\n    \"email\" : \"" + email + "\"\r\n}",
@@ -72,7 +81,7 @@ public class AuthRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Post,
-          "http://localhost:3333/api/auth/register"
+          express + "/api/auth/register"
       );
       var content = new StringContent(
           "{\r\n    \"email\" : \""
@@ -111,7 +120,7 @@ public class AuthRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Get,
-          "http://localhost:3333/api/auth/login"
+          express + "/api/auth/login"
       );
       var content = new StringContent(
           "{\r\n    \"email\" : \""
