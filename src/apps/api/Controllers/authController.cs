@@ -81,12 +81,8 @@ public class AuthController : ControllerBase
         return BadRequest("Email is not registered");
       }
       //login user
-      var login = await _authRepository.login(user.email, user.password);
-      if (login == false)
-      {
-        return BadRequest("Invalid Password");
-      }
-      return Ok("User logged in successfully");
+      Users LoggedInuser = await _authRepository.login(user.email, user.password);
+      return Ok("UserRole = " + LoggedInuser.userRole + " UserId = ");
     }
     catch (Exception e)
     {
