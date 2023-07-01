@@ -104,7 +104,7 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
     private List<ProductModel> products = new List<ProductModel>();
-
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<int> deleteArr = new List<int>();
     private async Task DeleteProducts()
     {
@@ -136,7 +136,7 @@
     private async Task DeleteProduct(int id)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/system/delete");
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/system/delete");
         var content = new StringContent("{\r\n  \"systemId\": " + id + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -159,7 +159,7 @@
     private async Task GetProducts()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/System/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -184,7 +184,7 @@
         {
             Console.WriteLine("Add");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/System/create");
+            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
             var content = new StringContent("{\r\n  \"systemSize\": \"" + product.systemSize +"\",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -205,7 +205,7 @@
         {
             Console.WriteLine("Update");
              var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/System/update");
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/System/update");
             var content = new StringContent("{\r\n  \"systemId\": " + product.systemId+",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);

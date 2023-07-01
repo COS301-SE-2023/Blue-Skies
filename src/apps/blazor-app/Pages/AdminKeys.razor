@@ -100,6 +100,7 @@
     private Toast successToast { get; set; } = new Toast();
     private Toast deleteToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     private void ShowModal()
     {
@@ -133,7 +134,7 @@
     {
         ModalPopup.Dismiss();
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/key/delete");
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/key/delete");
         var content = new StringContent("{\r\n  \"keyId\": " + id +"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -154,7 +155,7 @@
 
     private async Task GetKeys(){
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/key/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -176,7 +177,7 @@
     private async Task ToggleSuspend(APIKeyModel key) {
         Console.WriteLine("Toggle Suspend");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/key/update");
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
             var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -197,7 +198,7 @@
         if(key.keyId == -1){
             Console.WriteLine("Add");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/key/create");
+            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
             var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -214,7 +215,7 @@
         }else{
             Console.WriteLine("Update");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/key/update");
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
             var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);

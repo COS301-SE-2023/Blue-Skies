@@ -6,6 +6,15 @@ namespace Api.Repository;
 //Create class
 public class AdminStatsRepository
 {
+  private string express = "http://localhost:3333";
+  public AdminStatsRepository()
+  {
+    var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+    if (backendexpress != null)
+    {
+      express = backendexpress;
+    }
+  }
   public async Task<List<SystemUsage>> GetAllSystemUsage()
   {
     try
@@ -14,7 +23,7 @@ public class AdminStatsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Get,
-          "http://localhost:3333/api/system/all"
+          express + "/api/system/all"
       );
       var response = await client.SendAsync(request);
       List<Systems> systems = null;
@@ -26,7 +35,7 @@ public class AdminStatsRepository
       }
 
       //Get basic calculations
-      var request2 = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/basicCalculation/all");
+      var request2 = new HttpRequestMessage(HttpMethod.Get, express + "/api/basicCalculation/all");
       var response2 = await client.SendAsync(request2);
       List<BasicCalculation> basicCalculations = null;
       if (response2.IsSuccessStatusCode)
