@@ -82,6 +82,8 @@ private bool repasswordValid = true;
     public string? showError = "hidden";
     public string? errorMessage = "Could not register";
 
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
 private async Task HandleValidSubmit()
 {
     Console.WriteLine("OnValidSubmit");
@@ -90,7 +92,7 @@ private async Task HandleValidSubmit()
     Console.WriteLine(password);
     Console.WriteLine("Repassword: " + repassword);
     var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/auth/register");
+    var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/auth/register");
     var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
     request.Content = content;
     var response = await client.SendAsync(request);

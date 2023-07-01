@@ -85,6 +85,7 @@
 
     public string? showError = "hidden";
     public string? errorMessage = "Could not login";
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
 private async Task HandleSubmit()
 {
@@ -108,7 +109,7 @@ private async Task HandleSubmit()
     {
         Console.WriteLine("OnValidSubmit");
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/auth/login");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/auth/login");
         var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + password + "\"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
