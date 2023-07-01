@@ -69,6 +69,7 @@
     private List<UserModel> users = new List<UserModel>();
     private string [] radarTypes = new string[] {"Small", "Medium", "Large", "Custom"};
     private int [] radarCount = new int[4] {0, 0, 0, 0};
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     protected override void OnInitialized()
     {
@@ -178,7 +179,7 @@
 
     private async Task GetSystemUsage(){
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/adminstats/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/adminstats/all");
         var response = await client.SendAsync(request);
         List<SystemUsage> systems = null;
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -219,7 +220,7 @@
     }
     private async Task GetUsers() {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/user/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -283,7 +284,7 @@
             List<APIKeyModel> keys = new List<APIKeyModel>();
 
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/key/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {

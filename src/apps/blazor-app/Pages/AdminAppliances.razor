@@ -99,6 +99,8 @@
     private Toast deleteToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
     public bool recordState { get; set; } = false;
 
     public void toggleRecordState(int state)
@@ -135,7 +137,7 @@
     {
         ModalPopup.Dismiss();
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, "http://localhost:5096/appliance/delete");
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/appliance/delete");
         var content = new StringContent("{\r\n  \"applianceId\": " +id+"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -157,7 +159,8 @@
     
     private async Task GetAppliances(){
           var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:5096/appliance/all");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/appliance/all");
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -182,7 +185,7 @@
         if(appliance.applianceId == -1){
             Console.WriteLine("Add");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, "http://localhost:5096/Appliance/create");
+            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
             var content = new StringContent("{\r\n  \"type\": \"" + appliance.type+ "\",\r\n  \"powerUsage\": " + appliance.powerUsage +"\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -200,7 +203,7 @@
         }else{
             Console.WriteLine("Update");
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:5096/Appliance/update");
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
             var content = new StringContent("{\r\n    \"applianceId\": " + appliance.applianceId + ",\r\n  \"type\": \"" + appliance.type + "\",\r\n  \"powerUsage\": " + appliance.powerUsage+ "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
