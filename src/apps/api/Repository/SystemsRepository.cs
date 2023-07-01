@@ -6,6 +6,15 @@ namespace Api.Repository;
 //Create class
 public class SystemsRepository
 {
+  private string express = "http://localhost:3333";
+  public SystemsRepository()
+  {
+    var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+    if (backendexpress != null)
+    {
+      express = backendexpress;
+    }
+  }
   public async Task<List<Systems>> GetAllSystems()
   {
     try
@@ -13,7 +22,7 @@ public class SystemsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Get,
-          "http://localhost:3333/api/system/all"
+          express + "/api/system/all"
       );
       var response = await client.SendAsync(request);
 
@@ -58,7 +67,7 @@ public class SystemsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Post,
-          "http://localhost:3333/api/system/create"
+          express + "/api/system/create"
       );
       var content = new StringContent(
           "{\r\n    \"inverterOutput\" : "
@@ -118,7 +127,7 @@ public class SystemsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Patch,
-          "http://localhost:3333/api/system/update/" + systemId
+          express + "/api/system/update/" + systemId
       );
       var content = new StringContent(
           "{\r\n\"inverterOutput\" : "
@@ -176,7 +185,7 @@ public class SystemsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Delete,
-          "http://localhost:3333/api/system/delete/" + systemId
+          express + "/api/system/delete/" + systemId
       );
       var response = await client.SendAsync(request);
       if (response.IsSuccessStatusCode)
@@ -210,7 +219,7 @@ public class SystemsRepository
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Get,
-          "http://localhost:3333/api/system/" + systemId
+          express + "/api/system/" + systemId
       );
       var response = await client.SendAsync(request);
 
