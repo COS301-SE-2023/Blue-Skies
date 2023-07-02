@@ -248,4 +248,53 @@ describe('Test the System Controller', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(404);
     });
   });
+
+  //Delete a system
+
+  describe('deleteSystem', () => {
+    it('should delete a system', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+
+      // Call the deleteSystem method with the mock request and response
+      systemController.deleteSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'System deleted successfully.',
+      });
+    });
+
+    it('should return 500 if there is an error', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the deleteSystem method with the mock request and response
+      systemController.deleteSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
 });
