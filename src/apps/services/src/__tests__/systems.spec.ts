@@ -86,5 +86,166 @@ describe('Test the System Controller', () => {
     });
   });
 
-  //create system
+  //Create a system
+
+  describe('createSystem', () => {
+    it('should create a system', () => {
+      // Mock the request body data
+      mockRequest.body = {
+        inverterOutput: '3000',
+        numberOfPanels: '3',
+        batterySize: '5000',
+        numberOfBatteries: '2',
+        solarInput: '3000',
+      };
+
+      // Call the createSystem method with the mock request and response
+      systemController.createSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'System created successfully.',
+      });
+    });
+
+    it('should return 400 if there is an error', () => {
+      // Mock the request body data
+      mockRequest.body = {
+        inverterOutput: '3000',
+        numberOfPanels: '3',
+        batterySize: '5000',
+        numberOfBatteries: '2',
+        solarInput: '3000',
+      };
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the createSystem method with the mock request and response
+      systemController.createSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
+
+  //Get a system
+
+  describe('getSystem', () => {
+    it('should return a system', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+
+      // Call the getSystem method with the mock request and response
+      systemController.getSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should return 500 if there is an error', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the getSystem method with the mock request and response
+      systemController.getSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
+
+  //Update a system
+
+  describe('updateSystem', () => {
+    it('should update a system', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        inverterOutput: '3000',
+        numberOfPanels: '3',
+        batterySize: '5000',
+        numberOfBatteries: '2',
+        solarInput: '3000',
+      };
+
+      // Call the updateSystem method with the mock request and response
+      systemController.updateSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'System updated successfully.',
+      });
+    });
+
+    it('should return 500 if there is an error', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        inverterOutput: '3000',
+        numberOfPanels: '3',
+        batterySize: '5000',
+        numberOfBatteries: '2',
+        solarInput: '3000',
+      };
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the updateSystem method with the mock request and response
+      systemController.updateSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+    });
+  });
 });
