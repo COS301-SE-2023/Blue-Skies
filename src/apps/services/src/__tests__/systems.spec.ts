@@ -84,6 +84,26 @@ describe('Test the System Controller', () => {
         error: 'Mock Error',
       });
     });
+
+    //error
+    it('should return 500 if there is an error in the request', () => {
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to get All Systems');
+      });
+
+      // Call the getAllSystems method with the mock request and response
+      systemController.getAllSystems(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to get All Systems',
+      });
+    });
   });
 
   //Create a system
