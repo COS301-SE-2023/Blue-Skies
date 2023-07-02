@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import * as tedious from 'tedious';
 import SystemController from '../controllers/system/system.controller';
-
+import ISystem from '../models/system.interface';
 jest.mock('../main', () => jest.fn());
 
 jest.mock('../main', () => {
@@ -61,7 +61,7 @@ describe('Test the System Controller', () => {
 
       // Assert that the mock response was called with the correct data
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith([]);
+      expect(mockResponse.json).toHaveBeenCalledWith([] as ISystem[]);
     });
 
     it('should return 500 if there is an error', () => {
