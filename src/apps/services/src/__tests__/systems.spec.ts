@@ -264,7 +264,7 @@ describe('Test the System Controller', () => {
       });
     });
 
-    it('should return 500 if there is an error', () => {
+    it('should return 404 if there is an error', () => {
       // Mock the request body data
       mockRequest.params = {
         keyId: '1',
@@ -292,6 +292,36 @@ describe('Test the System Controller', () => {
 
       // Assert that the mock response was called with the correct data
       expect(mockResponse.status).toHaveBeenCalledWith(404);
+    });
+
+    //error 500
+    it('should return 500 if there is an error in the request', () => {
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        inverterOutput: '3000',
+        numberOfPanels: '3',
+        batterySize: '5000',
+        numberOfBatteries: '2',
+        solarInput: '3000',
+      };
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to update System');
+      });
+
+      // Call the updateSystem method with the mock request and response
+      systemController.updateSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to update System',
+      });
     });
   });
 
@@ -340,6 +370,31 @@ describe('Test the System Controller', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Mock Error',
+      });
+    });
+
+    //Error 500
+    it('should return 500 if there is an error in the request', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        keyId: '1',
+      };
+
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to delete System');
+      });
+
+      // Call the deleteSystem method with the mock request and response
+      systemController.deleteSystem(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to delete System',
       });
     });
   });
