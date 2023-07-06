@@ -242,4 +242,63 @@ describe('AuthController', () => {
       });
     });
   });
+
+  //login
+  describe('login', () => {
+    beforeEach(() => {
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          if (query.includes('WHERE keyId = 1')) {
+            callback(null, 1);
+          } else {
+            callback(null, 0);
+          }
+          const rowCount = 2;
+
+          callback(null, rowCount);
+        }
+      );
+    });
+    it('should return 500', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+        },
+      };
+      // Mock the tedious.Request constructor to simulate an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Test error'), 0);
+        }
+      );
+      authController.loginUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+    });
+
+    it('should return a 404 status code and error message if the user does not exist', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+        },
+      };
+      // Mock the tedious.Request constructor to simulate zero rowCount
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+      authController.loginUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+    });
+  });
 });
