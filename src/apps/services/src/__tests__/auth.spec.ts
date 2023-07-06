@@ -132,4 +132,80 @@ describe('AuthController', () => {
       });
     });
   });
+
+  //checkEmail
+  describe('checkEmail', () => {
+    beforeEach(() => {
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          if (query.includes('WHERE keyId = 1')) {
+            callback(null, 1);
+          } else {
+            callback(null, 0);
+          }
+          const rowCount = 2;
+
+          callback(null, rowCount);
+        }
+      );
+    });
+    it('should check email', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+        },
+      };
+
+      authController.checkEmail(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Email is available.',
+      });
+    });
+
+    //500 error
+    it('should return a 401 error', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+        },
+      };
+
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Faild to check email');
+      });
+
+      authController.checkEmail(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Unauthorized',
+        details: 'Email already exists.',
+      });
+    });
+
+    it('should return 500 if there is an error', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+        },
+      };
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('An error occured');
+      });
+      // Call the getAllSystems method with the mock request and response
+      authController.checkEmail(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the mock response was called with the correct data
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+    });
+  });
 });
