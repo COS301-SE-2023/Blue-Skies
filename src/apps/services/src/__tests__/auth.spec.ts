@@ -208,4 +208,38 @@ describe('AuthController', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
     });
   });
+
+  //updateLastLogin
+  describe('updateLastLogin', () => {
+    beforeEach(() => {
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          if (query.includes('WHERE keyId = 1')) {
+            callback(null, 1);
+          } else {
+            callback(null, 0);
+          }
+          const rowCount = 2;
+
+          callback(null, rowCount);
+        }
+      );
+    });
+    it('should update last login', () => {
+      mockRequest = {
+        params: {
+          userId: '1',
+        },
+      };
+
+      authController.updateloggedIn(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'User last logged in field updated successfully.',
+      });
+    });
+  });
 });
