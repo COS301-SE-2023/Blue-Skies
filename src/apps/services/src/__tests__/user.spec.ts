@@ -13,42 +13,21 @@ jest.mock('../main', () => {
   };
 });
 
-//Mocj User Controller
-jest.mock('../controllers/user/user.controller', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      getAllUsers: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          return res.status(200).json([]);
-        }),
+// Mock the dependencies and modules
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    // Simulate a successful query with mock data
+    if (query.includes('WHERE keyId = 1')) {
+      callback(null, 1);
+    } else {
+      callback(null, 0);
+    }
+    const rowCount = 2;
 
-      getUser: jest.fn().mockImplementation((req: Request, res: Response) => {
-        const { userId } = req.params;
-        if (userId) return res.status(200).json([]);
-
-        return res
-          .status(400)
-          .json({ error: 'Not Found', details: 'User does not exist.' });
-      }),
-      //updateUser
-      updateUser: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          const { userId } = req.params;
-          const { email, password, userRole } = req.body;
-          if (email && password && userRole) {
-            return res.status(200).json([]);
-          } else {
-            return res
-              .status(400)
-              .json({ error: 'Bad Request', details: 'Invalid request body.' });
-          }
-        }),
-    };
-  });
-});
-
+    callback(null, rowCount);
+  }),
+  ColumnValue: jest.fn(),
+}));
 describe('User Controller', () => {
   let userController: UserController;
   let mockRequest: Partial<Request>;
@@ -67,66 +46,218 @@ describe('User Controller', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  //dummy test
+
   it('should be defined', () => {
     expect(userController).toBeDefined();
   });
 
-  //Get all users
-  describe('getAllUsers', () => {
-    it('should return all users', async () => {
-      await userController.getAllUsers(
+  //Get All Users
+  describe('Get all users', () => {
+    it('should return a list of users', () => {
+      userController.getAllUsers(
         mockRequest as Request,
         mockResponse as Response
       );
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith([]);
+      expect(mockResponse.json).toHaveBeenCalledWith([] as IUser[]);
+    });
+    //should return 500 if there is an error
+    it('should return 500 if there is an error', () => {
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
+      userController.getAllUsers(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
+    });
+    //should return 500 if there is an error in the request
+    it('should return 500 if there is an error in the request', () => {
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
+      userController.getAllUsers(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
     });
   });
 
-  //Get user
-  describe('getUser', () => {
-    //Test for valid user
-    it('should return a user', async () => {
-      mockRequest.params = { userId: '1' };
+  //Get User
+  describe('Get user', () => {
+    it('should return a user', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
       userController.getUser(mockRequest as Request, mockResponse as Response);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith([]);
+    });
+    //should return 500 if there is an error
+    it('should return 500 if there is an error', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
+      userController.getUser(mockRequest as Request, mockResponse as Response);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
+    });
+    //should return 500 if there is an error in the request
+    it('should return 500 if there is an error in the request', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
+      userController.getUser(mockRequest as Request, mockResponse as Response);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
     });
   });
-
-  //Update user
-  describe('updateUser', () => {
-    //Test for valid user
-    it('should update a user', async () => {
-      mockRequest.params = { userId: '1' };
+  //Update User
+  describe('Update user', () => {
+    it('should update a user', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
       mockRequest.body = {
         email: 'test@gmail.com',
-        password: 'password',
-        userRole: 'admin',
+        password: 'test',
+        userRole: '0',
       };
       userController.updateUser(
         mockRequest as Request,
         mockResponse as Response
       );
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith([]);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'User updated successfully.',
+      });
     });
-    //Test for invalid user
-    it('should return a 400 error', async () => {
-      mockRequest.params = { userId: '1' };
-      mockRequest.body = {
-        password: 'password',
-        userRole: 'admin',
+
+    //should return 500 if there is an error in the request
+    it('should return 500 if there is an error in the request', () => {
+      mockRequest.params = {
+        userId: '1',
       };
+      mockRequest.body = {
+        email: 'test@gmail.com',
+        password: 'test',
+        userRole: '0',
+      };
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
       userController.updateUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
+    });
+
+    //should return 404 if there is an error
+    it('should return 404 if there is an error', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      mockRequest.body = {
+        email: 'test@gmail.com',
+        password: 'test',
+        userRole: '0',
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('User not found.'));
+        }
+      );
+      userController.updateUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'User not found.',
+      });
+    });
+  });
+
+  //Delete User
+  describe('Delete user', () => {
+    it('should delete a user', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      userController.deleteUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'User deleted successfully.',
+      });
+    });
+
+    //should return 500 if there is an error in the request
+    it('should return 500 if there is an error in the request', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      const error = new Error('Server Error');
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw error;
+      });
+      userController.deleteUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: error.message,
+      });
+    });
+
+    //should return 404 if there is an error
+    it('should return 404 if there is an error', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('User not found.'));
+        }
+      );
+      userController.deleteUser(
         mockRequest as Request,
         mockResponse as Response
       );
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'Bad Request',
-        details: 'Invalid request body.',
+        error: 'User not found.',
       });
     });
   });
