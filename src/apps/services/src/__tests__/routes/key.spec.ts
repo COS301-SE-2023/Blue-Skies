@@ -1,11 +1,10 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
 import { keyRouter } from '../../routes/key/key.router';
-import router from '../../routes';
 import bodyParser from 'body-parser';
 const app = express(); // an instance of an express app, a 'fake' express app
 app.use(bodyParser.json());
-app.use('/', router); // routes
+app.use('/key', keyRouter); // routes
 //mock the main file
 jest.mock('../../main', () => {
   return {
