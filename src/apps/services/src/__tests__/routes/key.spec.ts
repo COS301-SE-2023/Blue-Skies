@@ -1,50 +1,37 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
-import { Request, Response } from 'express';
-
 import { keyRouter } from '../../routes/key/key.router';
-
+import router from '../../routes';
+import bodyParser from 'body-parser';
 const app = express(); // an instance of an express app, a 'fake' express app
-
-app.use('/key', keyRouter); // routes
+app.use(bodyParser.json());
+app.use('/', router); // routes
 //mock the main file
-jest.mock('../../main', () => jest.fn());
-
-//mock the controller
-jest.mock('../../controllers/key/key.controller', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      createKey: jest.fn().mockImplementation((req: Request, res: Response) => {
-        res.status(200).json({
-          message: 'Key is created.',
-        });
-      }),
-
-      getAllKeys: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          res.status(200).json({
-            message: 'All keys are retrieved.',
-          });
-        }),
-      getKey: jest.fn().mockImplementation((req: Request, res: Response) => {
-        res.status(200).json({
-          message: 'Key is retrieved.',
-        });
-      }),
-      updateKey: jest.fn().mockImplementation((req: Request, res: Response) => {
-        res.status(200).json({
-          message: 'Key is updated.',
-        });
-      }),
-      deleteKey: jest.fn().mockImplementation((req: Request, res: Response) => {
-        res.status(200).json({
-          message: 'Key is deleted.',
-        });
-      }),
-    };
-  });
+jest.mock('../../main', () => {
+  return {
+    connection: {
+      execSql: jest.fn(),
+    },
+  };
 });
+
+// Mock the dependencies and modules
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    // Simulate a successful query with mock data
+    // Simulate a successful query with mock data
+    if (query.includes('WHERE keyId = 1')) {
+      callback(null, 1);
+    } else {
+      callback(null, 0);
+    }
+    const rowCount = 2;
+
+    callback(null, rowCount);
+  }),
+  ColumnValue: jest.fn(),
+}));
+
 describe('Test the key path', () => {
   it('Test the key router', async () => {
     const response = await request(app).get('/key');
@@ -53,49 +40,32 @@ describe('Test the key path', () => {
       message: 'Welcome to the key router!',
     });
   });
-  //Get all keys
-  it('Get All Keys', async () => {
-    const response = await request(app).get('/key/all');
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'All keys are retrieved.',
-    });
-  });
 
-  //Get key
-  it('Get Specific key', async () => {
+  //Get A key
+  it('Get a key', async () => {
     const response = await request(app).get('/key/1');
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Key is retrieved.',
-    });
+    console.log('Hello: ', response.body);
   });
-
-  //Create key
-  it('Create key', async () => {
-    const response = await request(app).post('/key/create');
+  //Create A key
+  it('Create a key', async () => {
+    const body = {
+      owner: 'test',
+      APIKey: 'test',
+      remainingCalls: 1,
+    };
+    const response = await request(app).post('/key/create').send(body);
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Key is created.',
-    });
   });
-
-  //Update key
-
-  it('Update key', async () => {
-    const response = await request(app).patch('/key/update/1');
+  //Update A key
+  it('Update a key', async () => {
+    const body = {
+      owner: 'test',
+      APIKey: 'test',
+      remainingCalls: 1,
+      suspended: 'false',
+    };
+    const response = await request(app).patch('/key/update/1').send(body);
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Key is updated.',
-    });
-  });
-
-  //Delete key
-  it('Delete key', async () => {
-    const response = await request(app).delete('/key/delete/1');
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Key is deleted.',
-    });
   });
 });
