@@ -28,7 +28,7 @@ jest.mock('tedious', () => ({
   ColumnValue: jest.fn(),
 }));
 
-describe('Test the key path', () => {
+describe('Test the Key Controller', () => {
   let keyController: KeyController;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
