@@ -51,9 +51,6 @@ describe('Test the Key Controller', () => {
   describe('KeyController', () => {
     describe('getAllKeys', () => {
       it('should return all keys', () => {
-        // Create an instance of the KeyController
-        const keyController = new KeyController();
-
         // Call the getAllKeys method with the mock request and response
         keyController.getAllKeys(
           mockRequest as Request,
@@ -99,9 +96,6 @@ describe('Test the Key Controller', () => {
       jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
         throw new Error('Failed to create key');
       });
-
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
 
       // Call the createKey method with the mock request and response
       keyController.createKey(mockRequest as Request, mockResponse as Response);
@@ -214,9 +208,6 @@ describe('Test the Key Controller', () => {
         throw new Error('Failed to update key');
       });
 
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
-
       // Call the updateKey method with the mock request and response
       keyController.updateKey(mockRequest as Request, mockResponse as Response);
 
@@ -263,9 +254,6 @@ describe('Test the Key Controller', () => {
       jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
         throw new Error('Failed to delete key');
       });
-
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
 
       // Call the deleteKey method with the mock request and response
       keyController.deleteKey(mockRequest as Request, mockResponse as Response);

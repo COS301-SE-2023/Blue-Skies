@@ -1,45 +1,29 @@
 import AuthController from '../controllers/auth/auth.controller';
 import { Request, Response } from 'express';
-// Mocking the entire AuthController module
-jest.mock('../controllers/auth/auth.controller', () => ({
-  __esModule: true,
-  default: class {
-    registerUser = jest
-      .fn()
-      .mockImplementation((req: Request, res: Response) => {
-        const { email, password, userRole } = req.body;
-        if (
-          email === undefined ||
-          password === undefined ||
-          userRole === undefined
-        ) {
-          res.status(500).json({
-            error: 'Email or password is incorrect.',
-            details: 'Email or password is incorrect.',
-          });
-        } else {
-          res.status(200).json({
-            message: 'User is registered.',
-          });
-        }
-      });
+import * as tedious from 'tedious';
+jest.mock('../main', () => jest.fn());
 
-    loginUser = jest.fn();
-    checkEmail = jest.fn().mockImplementation((req: Request, res: Response) => {
-      const { email } = req.body;
+jest.mock('../main', () => {
+  return {
+    connection: {
+      execSql: jest.fn(),
+    },
+  };
+});
+// Mock the dependencies and modules
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    // Simulate a successful query with mock data
+    if (query.includes('WHERE keyId = 1')) {
+      callback(null, 1);
+    } else {
+      callback(null, 0);
+    }
+    const rowCount = 2;
 
-      if (email === undefined) {
-        res.status(500).json({
-          error: 'Email is not available.',
-          details: 'Email already exists.',
-        });
-      } else {
-        res.status(200).json({
-          message: 'Email is available.',
-        });
-      }
-    });
-  },
+    callback(null, rowCount);
+  }),
+  ColumnValue: jest.fn(),
 }));
 
 describe('AuthController', () => {
@@ -59,76 +43,92 @@ describe('AuthController', () => {
     };
   });
 
-  describe('Register a user', () => {
-    it('should return 200 if user is registered', () => {
-      const email = 'test@example.com';
-      const password = 'password';
-      const userRole = 'user';
-
-      mockRequest.body = {
-        email,
-        password,
-        userRole,
-      };
-
-      authController.registerUser(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-
-      expect(authController.registerUser).toBeDefined();
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: 'User is registered.',
-      });
-
-      //expect(mockResponse.status).toHaveBeenCalledWith(200);
-    });
-    it('should return 500 if user is not registered', () => {
-      mockRequest.body = {};
-      authController.registerUser(
-        mockRequest as Request,
-        mockResponse as Response
-      );
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'Email or password is incorrect.',
-        details: 'Email or password is incorrect.',
-      });
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  //Checks email exists
-  describe('Check if email exists', () => {
-    it('Check Email Exists return 200', () => {
-      const email = '';
+  describe('registerUser', () => {
+    beforeAll(() => {
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          // Simulate a successful query with mock data
+          if (query.includes('WHERE keyId = 1')) {
+            callback(null, 1);
+          } else {
+            callback(null, 0);
+          }
+          const rowCount = 2;
 
-      mockRequest.body = {
-        email,
+          callback(null, rowCount);
+        }
+      );
+    });
+    it('should register a user', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+          userRole: '0',
+        },
       };
 
-      authController.checkEmail(
+      authController.registerUser(
         mockRequest as Request,
         mockResponse as Response
       );
-
-      expect(authController.checkEmail).toBeDefined();
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: 'Email is available.',
+        message: 'User registered successfully.',
       });
     });
 
-    it('Check Email Exists return 500', () => {
-      mockRequest.body = {};
-      authController.checkEmail(
+    //500 error
+    it('should return a 500 error', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+          userRole: '0',
+        },
+      };
+
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to create key');
+      });
+
+      authController.registerUser(
         mockRequest as Request,
         mockResponse as Response
       );
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'Email is not available.',
-        details: 'Email already exists.',
+        error: 'Failed to create key',
+      });
+    });
+
+    //400 error
+    it('should return a 400 error', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+          userRole: '0',
+        },
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Error creating user'));
+        }
+      );
+
+      authController.registerUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error creating user',
       });
     });
   });
