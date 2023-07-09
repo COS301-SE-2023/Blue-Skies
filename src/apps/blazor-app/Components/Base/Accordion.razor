@@ -1,5 +1,5 @@
 @* Accordion *@
-<div class="w-full bg-[#FFF] px-12 py-7 rounded-xl border-[#3871C1] border-[1px] space-y-4">
+<div class="w-full h-fit bg-[#FFF] px-12 py-7 rounded-xl border-[#3871C1] border-[1px] space-y-4">
   <div class="justify-between items-center flex cursor-pointer" @onclick="ShowAnswer">
     <h1 class="text-[#3871C1] font-bold text-base">@Question</h1>
     @* If statement *@
@@ -12,9 +12,10 @@
     }
     else
     {
-      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
-<path d="M7.5 12.3958L18 22.6042L28.5 12.3958" stroke="#3871C1" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
+      <path d="M7.5 12.3958L18 22.6042L28.5 12.3958" stroke="#3871C1" stroke-width="2.4" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </svg>
     }
 
   </div>
@@ -31,14 +32,14 @@ private string show = "hidden";
 
 private void ShowAnswer()
 {
-  if (show == "hidden")
-  {
-    show = "block";
-  }
-  else
-  {
-    show = "hidden";
-  }
+if (show == "hidden")
+{
+show = "block";
+}
+else
+{
+show = "hidden";
+}
 }
 
 [Parameter]
