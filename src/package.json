@@ -8,7 +8,7 @@
     "start:app": "nx serve blazor-app",
     "start:api": "nx serve api",
     "start:express": "nx serve services",
-    "start:tailwind": "npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch"
+    "start:tailwind": "cd apps/blazor-app & npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch"
   },
   "private": true,
   "dependencies": {
