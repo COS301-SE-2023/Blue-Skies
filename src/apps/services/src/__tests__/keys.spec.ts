@@ -203,6 +203,32 @@ describe('Test the Key Controller', () => {
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(404);
     });
+
+    //400
+    it('should return 400 when getting a key', () => {
+      // Create an instance of the KeyController
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+      } as unknown as Request;
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the getKey method with the mock request and response
+      keyController.getKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
   });
 
   describe('updateKey', () => {
