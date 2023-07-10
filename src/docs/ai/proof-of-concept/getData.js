@@ -8,10 +8,6 @@ var scale = 10;
 var width = 0.05;
 var height = 0.05;
 
-    // Bits 10 and 11 are clouds and cirrus, respectively.
-    var cloudBitMask = 1 << 10;
-    var cirrusBitMask = 1 << 11;
-
 // Function to calculate solar radiation
 function getSolarRadiation(image, roi) 
 {
