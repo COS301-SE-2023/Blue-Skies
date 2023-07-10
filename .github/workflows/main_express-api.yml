@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: npm install and build
+      - name: yarn install and build
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
@@ -34,9 +34,8 @@ jobs:
             src/yarn.lock
             src/package-lock.json
       - run: |
-          npm install
-          npm run build --if-present
-
+          yarn
+          yarn nx run services:build --configuration=production
     
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
