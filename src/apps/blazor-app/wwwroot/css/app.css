@@ -770,6 +770,30 @@ video {
   margin-top: 0.75rem;
 }
 
+.mt-32 {
+  margin-top: 8rem;
+}
+
+.mt-52 {
+  margin-top: 13rem;
+}
+
+.mt-80 {
+  margin-top: 20rem;
+}
+
+.mb-60 {
+  margin-bottom: 15rem;
+}
+
+.mb-0 {
+  margin-bottom: 0px;
+}
+
+.mb-40 {
+  margin-bottom: 10rem;
+}
+
 .block {
   display: block;
 }
@@ -1192,8 +1216,16 @@ video {
   border-width: 1px;
 }
 
+.border {
+  border-width: 1px;
+}
+
 .border-b {
   border-bottom-width: 1px;
+}
+
+.border-t-2 {
+  border-top-width: 2px;
 }
 
 .border-\[\#3871C1\] {
