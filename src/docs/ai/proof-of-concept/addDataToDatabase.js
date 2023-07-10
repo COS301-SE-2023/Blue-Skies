@@ -26,10 +26,6 @@ fs.readdir(trainingDataFolder, (err, files) => {
         solarRadiation = parseFloat(solarRadiation);
         solarRadiation = solarRadiation / (24 * 60 * 60);
 
-        if (solarRadiation > highestSolarRadiation) {
-            highestSolarRadiation = solarRadiation;
-        }
-
         console.log('areaCode', areaCode);
         console.log('year', year);
         console.log('month', month);
