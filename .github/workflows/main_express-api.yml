@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app - express
+name: Express - Build and Deploy
 
 on:
   push:
@@ -58,6 +58,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
+          path: release.zip
 
       - name: unzip artifact for deployment
         run: unzip release.zip
