@@ -27,7 +27,7 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build
+        run: dotnet build -c Release
 
       - name: dotnet publish
         run: dotnet publish -c Release -o ./publish
