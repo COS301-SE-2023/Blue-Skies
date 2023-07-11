@@ -1,9 +1,17 @@
 @* Accordion *@
-<div class="w-full h-fit bg-[#FFF] px-12 py-7 rounded-xl border-[#3871C1] border-[1px] space-y-4">
-  <div class="justify-between items-center flex cursor-pointer" @onclick="ShowAnswer">
-    <h1 class="text-[#3871C1] font-bold text-base">@Question</h1>
+@{
+  if (show == "opacity-0 -translate-y-10") {
+  height = "h-24";
+  }
+  else {
+  height = "h-48";
+  }
+}
+<div class="w-full transition-all duration-500 bg-white px-12 py-7 @height rounded-xl border-primary-500 border-2 space-y-4" @onclick="ShowAnswer">
+  <div class="justify-between items-center flex cursor-pointer">
+    <h1 class="text-primary-500 font-bold text-base">@Question</h1>
     @* If statement *@
-    @if (show == "hidden")
+    @if (show == "opacity-0 -translate-y-10")
     {
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
       <path d="M11.25 30.625L24.75 17.5L11.25 4.375" stroke="#3871C1" stroke-width="2" stroke-linecap="round"
@@ -20,7 +28,7 @@
 
   </div>
 
-  <h2 class="@show">
+  <h2 class="@show transition-all duration-300">
     @Answer
   </h2>
 </div>
@@ -28,18 +36,16 @@
 @* Accordion *@
 
 @code {
-private string show = "hidden";
+private string show = "opacity-0 -translate-y-10";
+private string height = "h-20";
 
-private void ShowAnswer()
-{
-if (show == "hidden")
-{
-show = "block";
-}
-else
-{
-show = "hidden";
-}
+private void ShowAnswer() {
+  if (show == "opacity-0 -translate-y-10") {
+    show = "opacity-100";
+  }
+  else {
+    show = "opacity-0 -translate-y-10";
+  }
 }
 
 [Parameter]
