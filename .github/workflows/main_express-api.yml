@@ -35,7 +35,7 @@ jobs:
             src/package-lock.json
       - run: |
           yarn
-          yarn nx run services:build --configuration=production
+          yarn run services:build --configuration=production
     
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
