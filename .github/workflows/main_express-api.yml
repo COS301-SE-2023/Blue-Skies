@@ -69,8 +69,5 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4E58478F5538430999FD1967149D931F }}
           package: .
-          cache: "npm"
-          cache-dependency-path: |
-            src/yarn.lock
-            src/package-lock.json
-      - run: yarn -- production
+          
+      - run: yarn --production
