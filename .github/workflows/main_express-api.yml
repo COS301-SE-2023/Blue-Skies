@@ -9,14 +9,16 @@ on:
       - main
   workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: src
+
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: src
+        
     steps:
       - uses: actions/checkout@v2
 
@@ -67,5 +69,5 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4E58478F5538430999FD1967149D931F }}
           package: .
-          working-directory: .
+          working-directory: ./.
       - run: yarn
