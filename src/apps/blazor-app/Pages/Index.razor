@@ -1,5 +1,27 @@
 ﻿@page "/"
+@using BlazorApp.Components.Base
 
+@inject NavigationManager NavigationManager
 <PageTitle>Blue Skies - Home</PageTitle>
 
-<BlazorApp.Section.Hero/>
+<div class="w-full">
+
+  <BlazorApp.Section.Hero />
+
+  @* How it works *@
+  <div class="mt-20"><BlazorApp.Section.HowItWorks /></div>
+
+  @* Unlock your full potential *@
+  <BlazorApp.Section.CTA />
+
+  @* Frequently Asked Questions *@
+  <div class="mt-44 mb-40"><BlazorApp.Section.FAQ /></div>
+</div>
+
+@code {
+  //Go to Sign Up Page
+  void Register()
+  {
+    NavigationManager.NavigateTo("/");
+  }
+}
