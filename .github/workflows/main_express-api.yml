@@ -30,7 +30,7 @@ jobs:
             src/yarn.lock
             src/package-lock.json
       - run: |
-          scr/yarn
+          src/yarn
           src/yarn nx run services:build --configuration=production
     
       - name: Upload artifact for deployment job
