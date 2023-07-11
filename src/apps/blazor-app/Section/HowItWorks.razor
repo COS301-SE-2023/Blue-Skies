@@ -1,0 +1,87 @@
+@using BlazorApp.Components.Base
+
+<div class="@css">
+    <div class="w-fit mx-auto text-center mb-14">
+        <Heading>
+          <Header>
+            <h1>How it works</h1>
+          </Header>
+          <Subscript>
+            <h1 class="mt-4">Access personalized solar assessments, benefits, and <br /> resources for informed decision-making</h1>
+          </Subscript>
+        </Heading>
+    </div>
+    <div class="mt-8 space-y-10 lg:space-y-0 lg:flex justify-between max-w-[95%] mx-auto">
+
+      @* Choose Location *@
+      <div class="flex-col">
+        <div class="bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 mx-auto">
+          <Image ImageName="Point On Map.svg" alt="Point On Map"/>
+        </div>
+
+        <div class="text-center max-w-sm mx-auto mt-4">
+          <Heading>
+            <Header>
+              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Choose Location</h1>
+            </Header>
+            <Subscript>
+              <p class="font-normal">Choose your location to determine solar potential. Our platform
+                provides accurate results tailored to your specific area.</p>
+            </Subscript>
+          </Heading>
+        </div>
+      </div>
+
+      <div class="flex-col hidden lg:block">
+        <Image ImageName="Line.svg" alt="Line"/>
+      </div>
+
+      @* Get a solar score *@
+      <div class="flex-col">
+        <div class="bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 m-auto">
+          <Image ImageName="Sale.svg" alt="Score" />
+        </div>
+
+        <div class="text-center max-w-sm mx-auto mt-4">
+          <Heading>
+            <Header>
+              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get a solar score</h1>
+            </Header>
+            <Subscript>
+              <p class="font-normal">Obtain your solar score effortlessly. Our platform calculates your solar
+                score based on multiple key factors.</p>
+            </Subscript>
+          </Heading>
+        </div>
+      </div>
+
+      <div class="flex-col hidden lg:block">
+        <Image ImageName="Line.svg" alt="Line"/>
+      </div>
+
+      @* Get a report *@
+      <div class="flex-col">
+        <div class="bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 mx-auto">
+          <Image ImageName="Pie Chart 2.svg" alt="Report"/>
+        </div>
+
+        <div class="text-center max-w-sm mx-auto mt-4">
+          <Heading>
+            <Header>
+              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get a report</h1>
+            </Header>
+            <Subscript>
+              <p class="font-normal">Gain comprehensive insights with a detailed solar report for informed decision-making.</p>
+            </Subscript>
+
+          </Heading>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  @code {
+        [Parameter]
+        public string? css { get; set; }
+  }
