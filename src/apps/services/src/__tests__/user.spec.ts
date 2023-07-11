@@ -91,6 +91,25 @@ describe('User Controller', () => {
         error: error.message,
       });
     });
+
+    //400
+    it('should return 400 if there is an error in the request', () => {
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+      userController.getAllUsers(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
   });
 
   //Get User
@@ -130,6 +149,25 @@ describe('User Controller', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: error.message,
+      });
+    });
+
+    //400
+    it('should return 400 if there is an error in the request', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+      userController.getUser(mockRequest as Request, mockResponse as Response);
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
       });
     });
   });
