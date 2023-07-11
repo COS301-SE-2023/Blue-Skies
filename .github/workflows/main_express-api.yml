@@ -70,4 +70,4 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4E58478F5538430999FD1967149D931F }}
           package: .
           working-directory: ./.
-      - run: yarn
+      - run: yarn -- production
