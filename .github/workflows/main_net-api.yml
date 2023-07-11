@@ -51,7 +51,7 @@ jobs:
         with:
           name: .net-app
 
-      - run: mv apps/api/publish/* .
+#       - run: mv apps/api/publish/* .
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
