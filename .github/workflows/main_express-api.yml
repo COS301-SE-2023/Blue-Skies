@@ -8,10 +8,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-
-defaults:
-  run:
-    working-directory: src
     
 jobs:
   build:
@@ -34,8 +30,8 @@ jobs:
             src/yarn.lock
             src/package-lock.json
       - run: |
-          yarn
-          yarn nx run services:build --configuration=production
+          scr/yarn
+          src/yarn nx run services:build --configuration=production
     
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
