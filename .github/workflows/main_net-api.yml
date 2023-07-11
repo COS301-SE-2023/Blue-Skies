@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: src
+        working-directory: src/apps/api
 
     steps:
       - uses: actions/checkout@v2
@@ -27,16 +27,16 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: yarn nx run api:build --configuration=production
+        run: dotnet build
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ./publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: .net-app
-          path: src/dist/apps/api/net7.0
+          path: src/apps/api/publish
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,6 +50,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: .net-app
+
+      - run: mv apps/api/publish/* .
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
