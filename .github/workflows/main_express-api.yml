@@ -61,6 +61,8 @@ jobs:
         with:
           name: node-app
       
+      - run: mv dist/apps/services/* .
+      
       - run: yarn --production
     
       - name: 'Deploy to Azure Web App'
