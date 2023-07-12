@@ -4,7 +4,7 @@
   height = "h-28 sm:h-24";
   }
   else {
-  height = "h-72 sm:h-48 md:h-48 lg:h-60 xl:h-52";
+  height = "h-80 sm:h-48 md:h-48 lg:h-60 xl:h-52";
   }
 }
 <div class="w-full shadow-md transition-all duration-500 bg-white px-12 py-7 @height rounded-xl border-primary-500 border-2 space-y-4" @onclick="ShowAnswer">
@@ -28,15 +28,22 @@
 
   </div>
 
-  <h2 class="@show transition-all duration-300">
-    @Answer
-  </h2>
+  <div class="@show transition-all duration-200">
+    @if (show == "opacity-0 -translate-y-10")
+    {
+      <p class="transition-all duration-200 delay-200">@temp</p>
+    }
+    else {
+      <p class="transition-all duration-200 delay-200">@Answer</p>
+    }
+  </div>
 </div>
 
 @* Accordion *@
 
 @code {
 private string show = "opacity-0 -translate-y-10";
+private string temp = "";
 private string height = "h-20";
 
 private void ShowAnswer() {
