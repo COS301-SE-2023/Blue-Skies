@@ -1,0 +1,56 @@
+@using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+
+<div class="mt-28">
+    <div class="relative ">
+      <Image ImageName="Banhoek-landscape.jpg" css="w-full h-[50rem] -z-10" alt="background image" />
+      <Image ImageName="19.svg"
+        css="absolute hidden xl:block xl:top-52      xl:right-96          2xl:top-60      2xl:right-[550px] z-10"
+        alt="blob" />
+      <Image ImageName="40.svg"
+        css="absolute hidden xl:block xl:top-72      xl:right-[550px]     2xl:top-80      2xl:right-[800px] z-10"
+        alt="blob" />
+      <Image ImageName="60.svg"
+        css="absolute hidden xl:block xl:top-[380px] xl:right-40          2xl:top-[400px] 2xl:right-60 z-10"
+        alt="blob" />
+      <Image ImageName="90.svg"
+        css="absolute hidden xl:block xl:bottom-16   xl:right-[525px]     2xl:bottom-20   2xl:right-[725px] z-10"
+        alt="blob" />
+      <Card css="absolute -bottom-10 left-16">
+
+        <Heading>
+
+          <Header>
+            <h1>Unlock the Full Potential of Solar Power!</h1>
+          </Header>
+          <Subscript>
+            <h1 class="mt-4">Join now to save calculations, generate reports, and access advanced solar score calculations. Sign up
+              and take control of your solar energy journey today!
+            </h1>
+          </Subscript>
+        </Heading>
+
+        <div class="flex space-x-3 mt-5">
+          <Button css="h-14" style="pill">
+            <content>
+              <input type="submit" value="Get Started" />
+            </content>
+          </Button>
+          <Button style="outline" >
+            <content>
+              <input type="submit"  value="Sign Up"@onclick="Register" />
+            </content>
+          </Button>
+
+        </div>
+      </Card>
+    </div>
+  </div>
+
+  @code {
+  //Go to Sign Up Page
+  void Register()
+  {
+    NavigationManager.NavigateTo("/");
+  }
+}
