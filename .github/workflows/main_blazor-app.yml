@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-       working-directory: src/apps/api
+       working-directory: src/apps/blazor-app
 
     steps:
       - uses: actions/checkout@v2
