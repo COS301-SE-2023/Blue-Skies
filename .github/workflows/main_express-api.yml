@@ -63,7 +63,7 @@ jobs:
       
       - run: mv dist/apps/services/* .
       
-#       - run: yarn --production
+      - run: yarn --production
     
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
