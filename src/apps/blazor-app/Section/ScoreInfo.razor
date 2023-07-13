@@ -1,0 +1,35 @@
+@using BlazorApp.Components.Base
+
+<div>
+    <div class="mt-20 text-center">
+        <Heading>
+            <Header>
+                <h1 class="text-3xl">What does this mean?</h1>
+            </Header>
+            <Subscript>
+                <p class="text-primary-700">Cras tincidunt lobortis feugiat vivamus at morbi leo urna molestie atole
+                    <br /> elementum eu facilisis faucibus interdum posuere.</p>
+            </Subscript>
+        </Heading>
+    </div>
+    <div class="flex md:w-[80%] max-w-7xl mx-auto p-6">
+        <div class="w-full md:w-8/12 space-y-4">
+
+            <Accordion Question="Excellent"
+                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+            <Accordion Question="Good"
+                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+            <Accordion Question="Average"
+                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+            <Accordion Question="Low"
+                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+            <Accordion Question="Unfeasible"
+                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+
+        </div>
+        <div class="md:w-4/12 justify-center hidden md:block">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWY4BLcKDyhQiK3Ns0DiBZOvMPuxNVS0CzWA&usqp=CAU"
+                alt="">
+        </div>
+    </div>
+</div>
