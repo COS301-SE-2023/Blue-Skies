@@ -10,9 +10,10 @@ trainingDataRouter.get('/', (req, res) => {
 });
 
 const trainingDataController = new TrainingDataController();
+
 trainingDataRouter.post(
   '/create',
-  bodyParser.json(),
+  bodyParser.json({ limit: '10mb' }),
   trainingDataController.createTrainingData
 );
 trainingDataRouter.get('/all', trainingDataController.getAllTrainingData);
@@ -23,6 +24,7 @@ trainingDataRouter.get(
 trainingDataRouter.patch(
   '/update/:trainingDataId',
   bodyParser.json(),
+  bodyParser.json({ limit: '10mb' }),
   trainingDataController.updateTrainingData
 );
 trainingDataRouter.delete(

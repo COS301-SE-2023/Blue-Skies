@@ -1,111 +1,168 @@
 //This code snippet generates random numbers and retrieves satellite images and satellite radiation information from Google Earth Engine based on the generated coordinates
 
-// Keep it's for Google Earth Engine
-function maskSentinel2Clouds(image) 
-{
-    var qualityAssessment = image.select('QA60');
-
-    // Bits 10 and 11 are clouds and cirrus, respectively.
-    var cloudBitMask = 1 << 10;
-    var cirrusBitMask = 1 << 11;
-
-    // Both flags should be set to zero, indicating clear conditions.
-    var mask = qualityAssessment.bitwiseAnd(cloudBitMask).eq(0)
-        .and(qualityAssessment.bitwiseAnd(cirrusBitMask).eq(0));
-
-    return image.updateMask(mask).divide(10000);
-}
-// Do not delete
-
 var endYear = 2022;
-var numYears = 1;
-var numPoints = 1;
-var areaSize = 2000;
+var numYears = 3;
+var numPoints = 3;
+var folderName = "Training_Data";
+var scale = 10;
+var width = 0.05;
+var height = 0.05;
 
-var southAfrica = ee.FeatureCollection('USDOS/LSIB_SIMPLE/2017')
-    .filter(ee.Filter.eq('country_na', 'South Africa'));
-
-// Generate random points within South Africa
-var randomSeed = Math.floor(Math.random() * 1000000);
-var randomPoints = ee.FeatureCollection.randomPoints({ region: southAfrica.geometry(), points: numPoints, seed: randomSeed });
-
-// Display random points on the map
-Map.addLayer(randomPoints, { color: 'FF0000' }, 'Random Points');
-
-// For display purposes
-var visualizationParams = {
-    min: 0.0,
-    max: 0.3,
-    bands: ['B4', 'B3', 'B2'],
-};
-
-// Function to generate square geometries centered on each point
-function createSquare(point, size) 
+// Function to calculate solar radiation
+function getSolarRadiation(image, roi) 
 {
-    var halfSize = size.divide(2);
-    var centroid = point.geometry().centroid();
-    var coordinates = centroid.buffer(halfSize).bounds();
-    return ee.Feature(coordinates);
-}
+  var solarRadiation = -1;
+  if (image !== null) 
+  {
+    // Get the date of the specific image
+    var date = image.date();
 
+    // Filter the solar dataset to get the image with the closest date
+    var solarDataSet = ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR')
+      .filterDate(date, date.advance(1, 'day')); // Filter the solar dataset for the specific dateApologies for the incomplete response. Here's the continuation of the code:
 
-for(var year = endYear - numYears + 1; year <= endYear; year++)
-{
-  for(var i = 1; i <= 12; i++) {
-    // Get dates
-    var stringDateMonth = i < 10 ? '0' + i : i;
-    var startDate = ee.Date(year + '-' + stringDateMonth + '-01');
-    var endDate = ee.Date(year + '-' + stringDateMonth + '-28');
-    var timeRange = ee.DateRange(startDate, endDate);
-    
-    // Get satellite images for < 5% cloud coverage
-    var satelliteImages = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
-        .filterDate(timeRange)
-        .filterBounds(randomPoints)
-        // Pre-filter to get less cloudy granules.
-        .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 5))
-        .map(maskSentinel2Clouds);
-        
-    // Display zoomed-in images
-    var zoomedInImages = satelliteImages.map(function (image) 
+    var solarImage = solarDataSet.first();
+
+    // Clip the solar image to the region of interest
+    var solarImageROI = solarImage.clip(roi);
+
+    // Get the solar radiation band from the solar image
+    var solarRadiationBand = solarImageROI.select('surface_net_solar_radiation_sum');
+
+    // Calculate the mean solar radiation for the area
+    var solarRadiationValue = solarRadiationBand.reduceRegion(
     {
-        var squareAreas = randomPoints.map(function (point) 
-        {
-            return createSquare(point, ee.Number(areaSize)); // Adjust the square size as needed
-        });
-        return image.visualize(visualizationParams).clip(squareAreas);
-    });
-    
-    var newVis = {
-      min: 0.0,
-      max: 0.9,
-      bands: ['vis-red', 'vis-green', 'vis-blue'],
-    };
-    
-    // Export each zoomed-in image
-    var images = zoomedInImages.toList(zoomedInImages.size());
-    var numImages = images.size().getInfo();
-    if (numImages > 0) {
-      for (var j = 0; j < numImages; j++) {
-        var image = ee.Image(images.get(j));
-        console.log(image);
-        var feature = ee.Feature(images.get(j));
-        var imageName = 'Year ' + feature.get('year') + ', Month ' + feature.get('month');
-        Export.image.toDrive({
-          image: image.visualize(newVis),
-          description: imageName,
-          folder: 'Training_Data',
-          fileNamePrefix: imageName,
-          scale: 10,
-          crs: 'EPSG:4326',
-          maxPixels: 1e13
-        });
-      }
-    } else {
-      console.log('No images found for Year ' + year + ', Month ' + i);
+      reducer: ee.Reducer.mean(),
+      geometry: roi,
+      scale: scale // Resolution in meters
+    }).get('surface_net_solar_radiation_sum');
+
+    // Check if solar radiation value exists
+    if (solarRadiationValue !== null) 
+    {
+      solarRadiation = ee.Number(solarRadiationValue);
     }
-    
-    // Add satellite image layer of zoomed-in images
-    Map.addLayer(zoomedInImages.median(), {}, 'Year ' + year + 'Month ' + i, false, 1);
   }
+  return solarRadiation;
 }
+
+// Generate a random 8-digit key
+function generateRandomKey() 
+{
+  var key = '';
+  for (var i = 0; i < 8; i++) 
+  {
+    key += Math.floor(Math.random() * 10);
+  }
+  return key;
+}
+
+// Iterate over each random point
+var features = randomPoints.features;
+features.forEach(function (feature) 
+{
+  // Generate a random key
+  var randomKey = generateRandomKey();
+  
+  var point = ee.Feature(feature);
+
+  // Get the point's coordinates
+  var latitude = point.geometry().coordinates().get(1).getInfo();
+  var longitude = point.geometry().coordinates().get(0).getInfo();
+
+  // Calculate half of the width and height
+  var halfWidth = width / 2;
+  var halfHeight = height / 2;
+
+  // Calculate the coordinates of the bounding box
+  var lowerLeft = [longitude - halfWidth, latitude - halfHeight];
+  var lowerRight = [longitude + halfWidth, latitude - halfHeight];
+  var upperRight = [longitude + halfWidth, latitude + halfHeight];
+  var upperLeft = [longitude - halfWidth, latitude + halfHeight];
+
+  // Define the region of interest as a polygon
+  var roi = ee.Geometry.Polygon([
+    lowerLeft,
+    lowerRight,
+    upperRight,
+    upperLeft,
+  ]);
+  
+  for (var year = endYear - numYears + 1; year <= endYear; year++) 
+  {
+    for (var i = 1; i <= 12; i++) 
+    {
+      // Get dates
+      var stringDateMonth = i < 10 ? '0' + i : i;
+      var startDate = ee.Date(year + '-' + stringDateMonth + '-01');
+      var endDate = ee.Date(year + '-' + stringDateMonth + '-28');
+      var timeRange = ee.DateRange(startDate, endDate);
+
+      // Filter the image collection based on cloud coverage
+      var collection = ee.ImageCollection('COPERNICUS/S2_HARMONIZED')
+        .filterBounds(roi)
+        .filterDate(startDate, endDate)
+        .sort('CLOUDY_PIXEL_PERCENTAGE')
+        .limit(1); // Limit the collection to one image
+      
+      // Get the image from the collection
+      var image = ee.Image(collection.first());
+
+      // Get the solar radiation for the specific image
+      var solarRadiation = getSolarRadiation(image, roi);
+
+      // Check if both solar radiation and an image exist
+      if (solarRadiation !== -1 && image.getInfo()) 
+      {
+        // Format the date
+        var dateFormatted = ee.Date(image.date()).format("YYYY_MM_dd");
+
+        // Multiply solar radiation by 100 and convert to integer
+        var solarRadiationNumber = ee.Number(solarRadiation).multiply(100).int();
+
+        // Extract the integer and decimal parts of the solar radiation
+        var integerPart = solarRadiationNumber.divide(100).int();
+        var decimalPart = solarRadiationNumber.mod(100);
+
+        // Concatenate the random key, date, and components for the description
+        var description = ee.String(randomKey)
+          .cat("_")
+          .cat(dateFormatted)
+          .cat("_")
+          .cat(integerPart)
+          .cat("_")
+          .cat(decimalPart).getInfo();
+
+        print(description);
+
+        // Select the bands you want to export
+        var bands = ['B4', 'B3', 'B2']; // Example bands, modify as per your requirement
+
+        // Adjustvisualization parameters
+        var visParams = 
+        {
+          bands: bands,
+          min: 0.0, // Set the minimum value of the range
+          max: 3000, // Set the maximum value of the range
+        };
+
+        // Apply visualization parameters to the image
+        var visImage = image.select(bands).visualize(visParams);
+
+        // Export the image to Google Drive
+        Export.image.toDrive(
+        {
+          image: visImage,
+          description: description,
+          folder: folderName,
+          scale: scale,
+          region: roi,
+        });
+      } 
+      else 
+      {
+        print('Error: Cannot export the image. Either solar radiation or image is missing.');
+      }
+    }
+  }
+});
