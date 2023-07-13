@@ -4,12 +4,12 @@ import ITrainingData from '../../models/training.data.interface';
 import { connection as conn } from '../../main';
 export default class TrainingDataController {
   public createTrainingData = (req: Request, res: Response) => {
-    const { solarIrradiation } = req.body;
+    const { solarIrradiation, image, areaId, date } = req.body;
     const query =
-        `INSERT INTO [dbo].[trainingData] (solarIrradiation)` +
-        ` VALUES (${solarIrradiation})`;
+      `INSERT INTO [dbo].[trainingData] (solarIrradiation, image, areaId, date)` +
+      ` VALUES (${solarIrradiation}, '${image}', ${areaId}, '${date}')`;
 
-    try {     
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -62,6 +62,9 @@ export default class TrainingDataController {
         const trainingData: ITrainingData = {
           trainingDataId: columns[0].value,
           solarIrradiation: columns[1].value,
+          image: columns[2].value,
+          areaId: columns[3].value,
+          date: columns[4].value,
         };
         trainingDataArr.push(trainingData);
       });
@@ -103,10 +106,13 @@ export default class TrainingDataController {
         trainingData = {
           trainingDataId: columns[0].value,
           solarIrradiation: columns[1].value,
+          image: columns[2].value,
+          areaId: columns[3].value,
+          date: columns[4].value,
         };
       });
 
-    conn.execSql(request);
+      conn.execSql(request);
     } catch (error) {
       res.status(500).json({
         error: error.message,
@@ -116,9 +122,9 @@ export default class TrainingDataController {
 
   public updateTrainingData = (req: Request, res: Response) => {
     const { trainingDataId } = req.params;
-    const { solarIrradiation } = req.body;
+    const { solarIrradiation, image, areaId, date } = req.body;
     const query =
-      `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}'` +
+      `UPDATE [dbo].[trainingData] SET solarIrradiation = '${solarIrradiation}', image = '${image}', areaId = '${areaId}', date = '${date}'` +
       `WHERE trainingDataId = ${trainingDataId}`;
 
     try {
@@ -134,7 +140,8 @@ export default class TrainingDataController {
               error: 'Not Found',
               details: 'Training data does not exist.',
             });
-          } if(rowCount === 0) {
+          }
+          if (rowCount === 0) {
             return res.status(404).json({
               error: 'Not Found',
               details: 'Training data does not exist.',
@@ -159,7 +166,6 @@ export default class TrainingDataController {
   public deleteTrainingData = async (req: Request, res: Response) => {
     const { trainingDataId } = req.params;
     const query = `DELETE FROM [dbo].[trainingData] WHERE trainingDataId = ${trainingDataId}`;
-
 
     try {
       const request = new tedious.Request(
