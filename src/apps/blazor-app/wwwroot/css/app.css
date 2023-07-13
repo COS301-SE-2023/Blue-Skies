@@ -567,6 +567,10 @@ video {
   bottom: -2.5rem;
 }
 
+.-bottom-40 {
+  bottom: -10rem;
+}
+
 .bottom-10 {
   bottom: 2.5rem;
 }
@@ -577,10 +581,6 @@ video {
 
 .left-1\/2 {
   left: 50%;
-}
-
-.left-16 {
-  left: 4rem;
 }
 
 .right-0 {
@@ -619,8 +619,12 @@ video {
   top: 0.75rem;
 }
 
-.-bottom-40 {
-  bottom: -10rem;
+.top-24 {
+  top: 6rem;
+}
+
+.top-32 {
+  top: 8rem;
 }
 
 .isolate {
@@ -754,10 +758,6 @@ video {
   margin-top: 1rem;
 }
 
-.mt-44 {
-  margin-top: 11rem;
-}
-
 .mt-5 {
   margin-top: 1.25rem;
 }
@@ -766,20 +766,12 @@ video {
   margin-top: 1.5rem;
 }
 
-.mt-8 {
-  margin-top: 2rem;
-}
-
-.mt-60 {
-  margin-top: 15rem;
-}
-
-.mt-64 {
-  margin-top: 16rem;
-}
-
 .mt-72 {
   margin-top: 18rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
 }
 
 .block {
@@ -850,20 +842,20 @@ video {
   height: 1.5rem;
 }
 
-.h-72 {
-  height: 18rem;
-}
-
 .h-8 {
   height: 2rem;
+}
+
+.h-80 {
+  height: 20rem;
 }
 
 .h-\[100vh\] {
   height: 100vh;
 }
 
-.h-\[50rem\] {
-  height: 50rem;
+.h-\[30rem\] {
+  height: 30rem;
 }
 
 .h-fit {
@@ -873,26 +865,6 @@ video {
 
 .h-full {
   height: 100%;
-}
-
-.h-80 {
-  height: 20rem;
-}
-
-.h-40 {
-  height: 10rem;
-}
-
-.h-\[40rem\] {
-  height: 40rem;
-}
-
-.h-\[20rem\] {
-  height: 20rem;
-}
-
-.h-\[30rem\] {
-  height: 30rem;
 }
 
 .w-1\/2 {
@@ -1267,11 +1239,6 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-red-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
-}
-
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -1307,11 +1274,6 @@ video {
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;
-}
-
-.object-fill {
-  -o-object-fit: fill;
-     object-fit: fill;
 }
 
 .p-1 {
@@ -1369,6 +1331,11 @@ video {
   padding-right: 1rem;
 }
 
+.px-5 {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -1414,11 +1381,6 @@ video {
   padding-bottom: 1.75rem;
 }
 
-.px-5 {
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-}
-
 .pb-10 {
   padding-bottom: 2.5rem;
 }
@@ -1456,6 +1418,11 @@ video {
   line-height: 2rem;
 }
 
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
@@ -1486,14 +1453,9 @@ video {
   line-height: 1rem;
 }
 
-.text-3xl {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
+.text-6xl {
+  font-size: 3.75rem;
+  line-height: 1;
 }
 
 .font-bold {
@@ -1733,16 +1695,16 @@ video {
   transition-delay: 200ms;
 }
 
+.duration-200 {
+  transition-duration: 200ms;
+}
+
 .duration-300 {
   transition-duration: 300ms;
 }
 
 .duration-500 {
   transition-duration: 500ms;
-}
-
-.duration-200 {
-  transition-duration: 200ms;
 }
 
 .ease-in-out {
@@ -1993,16 +1955,6 @@ body {
     line-height: 1.25rem;
   }
 
-  .sm\:text-5xl {
-    font-size: 3rem;
-    line-height: 1;
-  }
-
-  .sm\:text-4xl {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-  }
-
   .sm\:leading-6 {
     line-height: 1.5rem;
   }
@@ -2039,28 +1991,24 @@ body {
     justify-content: space-between;
   }
 
-  .md\:text-5xl {
-    font-size: 3rem;
-    line-height: 1;
-  }
-
   .md\:text-4xl {
     font-size: 2.25rem;
     line-height: 2.5rem;
   }
+
+  .md\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
 }
 
 @media (min-width: 1024px) {
-  .lg\:absolute {
-    position: absolute;
+  .lg\:-bottom-10 {
+    bottom: -2.5rem;
   }
 
   .lg\:left-16 {
     left: 4rem;
-  }
-
-  .lg\:-bottom-10 {
-    bottom: -2.5rem;
   }
 
   .lg\:mt-44 {
@@ -2115,6 +2063,11 @@ body {
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
   }
 
+  .lg\:px-0 {
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
   .lg\:px-8 {
     padding-left: 2rem;
     padding-right: 2rem;
@@ -2123,16 +2076,6 @@ body {
   .lg\:py-28 {
     padding-top: 7rem;
     padding-bottom: 7rem;
-  }
-
-  .lg\:px-0 {
-    padding-left: 0px;
-    padding-right: 0px;
-  }
-
-  .lg\:text-5xl {
-    font-size: 3rem;
-    line-height: 1;
   }
 }
 
