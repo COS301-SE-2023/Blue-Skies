@@ -1,9 +1,9 @@
 @using BlazorApp.Components.Base
 
-<div class="bg-white overflow-hidden h-[85vh] w-full">
-  <div class="relative isolate px-6 pt-14 lg:px-8">
-    <div class="grid grid-cols-2">
-      <div class="mx-auto max-w-2xl py-32 sm:py-20 lg:py-28">
+<div class="bg-white overflow-hidden h-fit w-full">
+  <div class="relative isolate pt-14">
+    <div class="grid gap-4 grid-cols-1 lg:grid-cols-2">
+      <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
         <div class="text-center">
           <Heading>
             <Header>
@@ -26,7 +26,7 @@
               <input type="text" name="address" id="address" class="block w-full rounded-full h-16 border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 placeholder:absolute placeholder:left-20 placeholder:top-5" placeholder="Enter you address">
             </div>
           </div>
-          <div class="mt-10 flex items-center justify-center gap-x-6">
+          <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Button style="pill" css="h-14">
               <content>
                 <a href="#" class="text-sm font-semibold hover:text-white">Get Solar Score</a>
@@ -36,7 +36,7 @@
           </div>
         </div>
       </div>
-      <div class="mx-auto max-w-xl py-32 sm:py-20 lg:py-28">
+      <div class="mx-auto max-w-xl px-5 lg:px-0 py-32 sm:py-20 lg:py-28">
 
         
         <Image ImageName="Hero Image.jpg" css="absolute z-10 rounded-3xl"/>
