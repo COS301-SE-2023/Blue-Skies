@@ -307,4 +307,229 @@ describe('Report Controller', () => {
   });
 
   //updateReport
+  describe('updateReport', () => {
+    it('should return a successful response with a message when the query is successful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      const mockReport = {
+        reportName: 'testReport',
+        userId: 1,
+        basicCalculationId: 1,
+        solarScore: 1,
+        runningTime: 1,
+      };
+
+      mockRequest.body = mockReport;
+
+      reportController.updateReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should return a 400 response with an error message when the query is unsuccessful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      const mockReport = {
+        reportName: 'testReport',
+        userId: 1,
+        basicCalculationId: 1,
+        solarScore: 1,
+        runningTime: 1,
+      };
+
+      mockRequest.body = mockReport;
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Query failed'));
+        }
+      );
+
+      reportController.updateReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Query failed',
+      });
+    });
+
+    it('should return a 500 response with an error message when an error is thrown', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      const mockReport = {
+        reportName: 'testReport',
+        userId: 1,
+        basicCalculationId: 1,
+        solarScore: 1,
+        runningTime: 1,
+      };
+
+      mockRequest.body = mockReport;
+
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+
+      reportController.updateReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to update report.',
+        details: 'Database connection error.',
+      });
+    });
+
+    //404
+    it('should return a 404 response with an error message when the query returns no rows', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      const mockReport = {
+        reportName: 'testReport',
+        userId: 1,
+        basicCalculationId: 1,
+        solarScore: 1,
+        runningTime: 1,
+      };
+
+      mockRequest.body = mockReport;
+
+      // Simulate a successful query with no rows
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          const rowCount = 0;
+
+          callback(null, rowCount);
+        }
+      );
+
+      reportController.updateReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Report does not exist.',
+      });
+    });
+  });
+
+  //deleteReport
+  describe('deleteReport', () => {
+    it('should return a successful response with a message when the query is successful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      reportController.deleteReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should return a 400 response with an error message when the query is unsuccessful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Query failed'));
+        }
+      );
+
+      reportController.deleteReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Query failed',
+      });
+    });
+
+    it('should return a 500 response with an error message when an error is thrown', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+
+      reportController.deleteReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error thrown',
+      });
+    });
+
+    //404
+    it('should return a 404 response with an error message when the query returns no rows', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        reportId: '1',
+      };
+
+      // Simulate a successful query with no rows
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          const rowCount = 0;
+
+          callback(null, rowCount);
+        }
+      );
+
+      reportController.deleteReport(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Report does not exist.',
+      });
+    });
+  });
 });
