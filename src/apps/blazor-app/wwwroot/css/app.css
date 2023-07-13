@@ -800,6 +800,22 @@ video {
   margin-top: 9rem;
 }
 
+.mb-10 {
+  margin-bottom: 2.5rem;
+}
+
+.mt-0 {
+  margin-top: 0px;
+}
+
+.mt-40 {
+  margin-top: 10rem;
+}
+
+.mb-20 {
+  margin-bottom: 5rem;
+}
+
 .block {
   display: block;
 }
@@ -984,6 +1000,18 @@ video {
 
 .w-40 {
   width: 10rem;
+}
+
+.w-\[635\.419px\] {
+  width: 635.419px;
+}
+
+.w-\[700\] {
+  width: 700;
+}
+
+.w-\[700px\] {
+  width: 700px;
 }
 
 .max-w-2xl {
