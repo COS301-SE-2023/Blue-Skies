@@ -413,7 +413,8 @@ describe('Training Data Controller', () => {
 
       (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
         (query, callback) => {
-          callback(null, 0);
+          const rowCount = 0;
+          callback(null, rowCount);
         }
       );
 
