@@ -1,0 +1,67 @@
+@using BlazorApp.Components.Base
+
+<div class="mt-20 text-center">
+    <Heading>
+        <Header>
+            <h1 class="text-3xl">Your results in numbers</h1>
+        </Header>
+        <Subscript>
+            <p class="text-primary-700">The following numbers are based on your location.</p>
+        </Subscript>
+    </Heading>
+</div>
+<div class="flex px-4 flex-col lg:flex-row justify-center mt-16">
+    <div class="mx-auto">
+        <Image ImageName="Solarscore.png" alt="Solar Score" />
+    </div>
+    <div class="grid grid-cols-1 mx-auto md:grid-cols-2 gap-10">
+        <Card css="border-2 border-primary-300 w-80 h-80 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl  p-4 w-20 ">
+                <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">89</p>
+                <p class="text-5xl text-gray-400 font-bold">%</p>
+            </div>
+        </Card>
+        <Card css="border-2  border-primary-300 p-4 w-80 h-80 flex my-auto flex-col">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">9</p>
+                <p class="text-5xl text-gray-400 font-bold">h</p>
+            </div>
+        </Card>
+        <Card css="border-2  border-primary-300 p-4 w-80 h-80">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">129</p>
+                <p class="text-5xl text-gray-400 font-bold">kw/h</p>
+            </div>
+        </Card>
+        <Card css="border-2 flex flex-col gap-4 border-primary-300 p-4 w-80 h-80">
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
+            <div class="flex justify-evenly">
+                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="text-primary-900 font-semibold">5kw</p>
+                </div>
+                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="text-primary-900 font-semibold">8kw</p>
+                </div>
+                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="text-primary-900 font-semibold">12kw</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">8</p>
+                <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
+            </div>
+        </Card>
+    </div>
+</div>
