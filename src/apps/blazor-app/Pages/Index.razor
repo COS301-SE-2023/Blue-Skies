@@ -1,7 +1,7 @@
 ﻿@page "/"
 @using BlazorApp.Components.Base
-
 @inject NavigationManager NavigationManager
+@layout MainLayout
 <PageTitle>Blue Skies - Home</PageTitle>
 
 <div class="w-full">
@@ -22,6 +22,6 @@
   //Go to Sign Up Page
   void Register()
   {
-    NavigationManager.NavigateTo("/");
+    NavigationManager.NavigateTo("/register");
   }
 }
