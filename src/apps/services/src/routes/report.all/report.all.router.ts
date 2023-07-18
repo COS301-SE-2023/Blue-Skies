@@ -11,3 +11,5 @@ reportAllRouter.get('/', (req, res) => {
 
 const reportAllController = new ReportAllController();
 reportAllRouter.get('/all', reportAllController.getAllReportAll);
+reportAllRouter.get('/:reportId', reportAllController.getReportAll);
+reportAllRouter.get('/user/:userId', reportAllController.getUserReportAll);
