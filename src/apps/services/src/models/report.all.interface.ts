@@ -3,7 +3,7 @@ export default interface IReportAll {
   email: string;
   password: string;
   userRole: number;
-  dateCreated: Date;
+  userDateCreated: Date;
   lastLoggedIn: Date;
   reportId: number;
   reportName: string;
