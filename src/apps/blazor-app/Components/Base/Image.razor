@@ -6,11 +6,13 @@
 {
     @if (IsSvgImage)
     {
-        <img class="@css" src="@($"data:image/svg+xml;utf8,{Uri.EscapeDataString(ImageData)}")" alt="@alt" />
+        @* <img class="@css" src="@($"data:image/svg+xml;utf8,{Uri.EscapeDataString(ImageData)}")" alt="@alt" /> *@
+        <img class="@css" src="/assets/@ImageName" alt="@ImageName" />
     }
     else
     {
-        <img class="@css rounded-md shadow" src="@($"data:image;base64,{ImageData}")" alt="@alt" />
+        <img class="@css" src="/assets/@ImageName" alt="@ImageName" />
+        @* <img class="@css rounded-md shadow" src="@($"data:image;base64,{ImageData}")" alt="@alt" /> *@
     }
 }
 else
@@ -31,7 +33,7 @@ else
     private bool IsSvgImage { get; set; }
     private string? ImageData { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         try
         {
@@ -42,19 +44,21 @@ else
                 if (extension.Equals(".svg", StringComparison.OrdinalIgnoreCase))
                 {
                     IsSvgImage = true;
-                    ImageData = await blobStorageService.GetSvgContent("assets", ImageName);
+                    @* ImageData = await blobStorageService.GetSvgContent("assets", ImageName); *@
+                    ImageData = ImageName;
                 }
                 else
                 {
                     IsSvgImage = false;
-                    byte[] imageBytes = await blobStorageService.GetImageBytes("assets", ImageName);
-                    ImageData = Convert.ToBase64String(imageBytes);
-                }
+                    @* byte[] imageBytes = await blobStorageService.GetImageBytes("assets", ImageName); *@
+                    @* ImageData = Convert.ToBase64String(imageBytes); *@
+                    ImageData = ImageName;
+                } 
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            Console.WriteLine("Image.razor: "+ex.Message);
         }
     }
 }
