@@ -824,6 +824,10 @@ video {
   display: none;
 }
 
+.h-10 {
+  height: 2.5rem;
+}
+
 .h-14 {
   height: 3.5rem;
 }
@@ -893,16 +897,12 @@ video {
   height: 100%;
 }
 
-.h-72 {
-  height: 18rem;
-}
-
 .h-60 {
   height: 15rem;
 }
 
-.h-96 {
-  height: 24rem;
+.h-72 {
+  height: 18rem;
 }
 
 .w-1\/2 {
@@ -974,12 +974,16 @@ video {
   width: 100%;
 }
 
-.w-72 {
-  width: 18rem;
-}
-
 .w-96 {
   width: 24rem;
+}
+
+.w-60 {
+  width: 15rem;
+}
+
+.w-72 {
+  width: 18rem;
 }
 
 .max-w-2xl {
@@ -1174,12 +1178,6 @@ video {
   margin-bottom: calc(1rem * var(--tw-space-y-reverse));
 }
 
-.space-x-7 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1.75rem * var(--tw-space-x-reverse));
-  margin-left: calc(1.75rem * calc(1 - var(--tw-space-x-reverse)));
-}
-
 .overflow-hidden {
   overflow: hidden;
 }
@@ -1341,21 +1339,6 @@ video {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.bg-slate-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(100 116 139 / var(--tw-bg-opacity));
-}
-
-.bg-slate-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
-}
-
-.bg-slate-800 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(30 41 59 / var(--tw-bg-opacity));
-}
-
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -1431,6 +1414,10 @@ video {
 
 .p-8 {
   padding: 2rem;
+}
+
+.p-3 {
+  padding: 0.75rem;
 }
 
 .px-10 {
@@ -1737,6 +1724,11 @@ video {
 .text-yellow-accent-500 {
   --tw-text-opacity: 1;
   color: rgb(255 193 8 / var(--tw-text-opacity));
+}
+
+.text-primary-400 {
+  --tw-text-opacity: 1;
+  color: rgb(92 142 212 / var(--tw-text-opacity));
 }
 
 .opacity-0 {
@@ -2123,10 +2115,6 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .md\:flex-row {
-    flex-direction: row;
-  }
-
   .md\:items-center {
     align-items: center;
   }
@@ -2202,10 +2190,6 @@ body {
 
   .lg\:flex-row {
     flex-direction: row;
-  }
-
-  .lg\:flex-col {
-    flex-direction: column;
   }
 
   .lg\:justify-end {
