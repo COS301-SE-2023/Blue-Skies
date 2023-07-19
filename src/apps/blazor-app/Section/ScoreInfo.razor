@@ -13,22 +13,51 @@
         </Heading>
     </div>
     <div class="flex md:w-[80%] max-w-7xl mx-auto p-6 mt-5">
-        <div class="w-full lg:w-8/12 space-y-4">
+    <div class="w-full lg:w-8/12 space-y-4">
+<div @onclick="args => ToggleGraphic(0)">
+    <Accordion css="rounded-[100px]" scoreInfo="true" Question="Excellent"
+        Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+    </div>
+    <div @onclick="args => ToggleGraphic(1)">
+        <Accordion css="rounded-[100px]" scoreInfo="true" Question="Good"
+            Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+    </div>
+    <div @onclick="args => ToggleGraphic(2)">
+    <Accordion css="rounded-[100px]" scoreInfo="true" Question="Average"
+        Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+    </div>
+    <div @onclick="args => ToggleGraphic(3)">
+    <Accordion css="rounded-[100px]" scoreInfo="true" Question="Low"
+        Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
+    </div>
+    <Accordion css="rounded-[100px]" scoreInfo="true" Question="Unfeasible"
+        Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
 
-            <Accordion css="rounded-[100px]" scoreInfo="true" Question="Excellent"
-                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
-            <Accordion css="rounded-[100px]" scoreInfo="true" Question="Good"
-                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
-            <Accordion css="rounded-[100px]" scoreInfo="true" Question="Average"
-                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
-            <Accordion css="rounded-[100px]" scoreInfo="true" Question="Low"
-                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
-            <Accordion css="rounded-[100px]" scoreInfo="true" Question="Unfeasible"
-                Answer="70 - 100% lorem ipsum dolor sit amet, consectetur adipiscing elit id venenatis pretium risus euismod dictum egestas orci netus feugiat ut." />
-
-        </div>
-        <div class="lg:w-4/12 justify-center hidden lg:block">
-            <Image ImageName="Graphic.svg" css="scale-150 translate-x-36 translate-y-32"/>
-        </div>
+</div>
+    <div class="lg:w-4/12 justify-center hidden lg:block">
+        <Image ImageName="@graphicName" css="scale-150 translate-x-36 translate-y-32" />
     </div>
 </div>
+</div>
+
+@code{
+    public string graphicName = "Graphic.svg";
+
+    @* Toggle graphic *@
+    public void ToggleGraphic(int type)
+    {
+        switch (type)
+        {
+            case 0: graphicName = "Graphic.svg";
+                break;
+            case 1: graphicName = "Graphic-Good.svg";
+                break;
+            case 2: graphicName = "Graphic-Average.svg";
+                break;
+            case 3: graphicName = "Graphic-Low.svg";
+                break;
+            default:
+                break;
+        }
+    }
+}

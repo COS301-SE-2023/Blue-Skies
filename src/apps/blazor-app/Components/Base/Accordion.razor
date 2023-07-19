@@ -17,30 +17,20 @@
     {
     @if (scoreInfo == true)
     {
-    <svg xmlns="http://www.w3.org/2000/svg" width="33" height="32" viewBox="0 0 33 32" fill="none">
-      <circle cx="16.1128" cy="16" r="16" fill="#F2F2F2" />
-      <path d="M16.1128 10.24V21.76" stroke="#000F52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-      <path d="M10.3528 16H21.8728" stroke="#000F52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-    </svg>
-
+      <Image ImageName="Closed-Question.svg" css="" />
     }else{
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
       <path d="M11.25 30.625L24.75 17.5L11.25 4.375" stroke="#3871C1" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round" />
     </svg>
+    
     }
     }
     else
     {
     @if(scoreInfo == true)
     {
-    <svg xmlns="http://www.w3.org/2000/svg" width="33" height="32" viewBox="0 0 33 32" fill="none">
-      <circle cx="16.1128" cy="16" r="16" fill="#000F52" />
-      <path d="M10.3528 21.76L21.8728 10.24" stroke="white" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" />
-      <path d="M21.8728 21.76L10.3528 10.24" stroke="white" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" />
-    </svg>
+    <Image ImageName="Open-Question.svg" css="" />
     }else{
 
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
@@ -74,7 +64,7 @@ private void ShowAnswer() {
   if (show == "opacity-0 -translate-y-10") {
     show = "opacity-100";
     if(scoreInfo == true){
-      css = "rounded-[30px] bg-blue-50 ";
+      css = "rounded-[30px] bg-blue-50";
     }
   }
   else {
