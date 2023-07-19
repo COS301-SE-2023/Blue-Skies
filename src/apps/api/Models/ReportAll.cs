@@ -14,11 +14,11 @@ public class ReportAll
     public int runningTime { get; set; }
     public DateTime reportDateCreated { get; set; }
     public int basicCalculationId { get; set; }
-    public int daylightHours { get; set; }
+    public float daylightHours { get; set; }
     public string? location { get; set; }
     public DateTime basicCalculationDateCreated { get; set; }
     public int systemId { get; set; }
-    public int systemSize { get; set; }
+    public string? systemSize { get; set; }
     public int inverterOutput { get; set; }
     public int numberOfPanels { get; set; }
     public int batterySize { get; set; }
