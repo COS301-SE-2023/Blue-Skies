@@ -140,12 +140,6 @@ export default class TrainingDataController {
               error: 'Not Found',
               details: 'Training data does not exist.',
             });
-          }
-          if (rowCount === 0) {
-            return res.status(404).json({
-              error: 'Not Found',
-              details: 'Training data does not exist.',
-            });
           } else {
             console.log(rowCount);
             res.status(200).json({
