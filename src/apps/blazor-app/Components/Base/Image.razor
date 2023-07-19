@@ -42,12 +42,12 @@ else
                 if (extension.Equals(".svg", StringComparison.OrdinalIgnoreCase))
                 {
                     IsSvgImage = true;
-                    ImageData = await blobStorageService.GetSvgContent("web-app", ImageName);
+                    ImageData = await blobStorageService.GetSvgContent("assets", ImageName);
                 }
                 else
                 {
                     IsSvgImage = false;
-                    byte[] imageBytes = await blobStorageService.GetImageBytes("web-app", ImageName);
+                    byte[] imageBytes = await blobStorageService.GetImageBytes("assets", ImageName);
                     ImageData = Convert.ToBase64String(imageBytes);
                 }
             }
