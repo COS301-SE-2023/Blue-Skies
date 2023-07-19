@@ -619,6 +619,30 @@ video {
   top: 0.75rem;
 }
 
+.-top-0 {
+  top: -0px;
+}
+
+.-top-5 {
+  top: -1.25rem;
+}
+
+.-right-0 {
+  right: -0px;
+}
+
+.-right-5 {
+  right: -1.25rem;
+}
+
+.-right-3 {
+  right: -0.75rem;
+}
+
+.-top-3 {
+  top: -0.75rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1118,6 +1142,10 @@ video {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .flex-row {
   flex-direction: row;
 }
@@ -1276,6 +1304,11 @@ video {
 
 .rounded-b {
   border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.rounded-l {
+  border-top-left-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem;
 }
 
