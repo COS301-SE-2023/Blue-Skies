@@ -1,36 +1,76 @@
+@using BlazorApp.Components.Base
+
 <div class="flex-row lg:flex lg:justify-evenly items-center space-y-10 w-fit lg:w-full p-10 mx-auto">
   <h1 class="text-blue-900 font-bold text-4xl">Build your home</h1>
-  <div class="w-60">
-    <h2 class="mb-2 text-sm font-medium text-gray-900">Select an option</h2>
+
+  <div class="w-60  my-auto">
+    <h2 class="text-sm mb-2 font-medium text-gray-900">Select an option</h2>
     <select
-      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5"
-    >
+      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5">
       <option value="US">United States</option>
       <option value="CA">Canada</option>
       <option value="FR">France</option>
       <option value="DE">Germany</option>
     </select>
   </div>
-  <div class="lg:text-center space-y-5">
+
+  <div class="lg:text-center space-y-5 my-auto ">
     <p>System Size</p>
     <div class="flex space-x-9">
-      <div
-        class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16"
-      >
+      <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
         <p class="text-primary-900 font-semibold">5kw</p>
       </div>
-      <div
-        class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16"
-      >
+      <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
         <p class="text-primary-900 font-semibold">8kw</p>
       </div>
-      <div
-        class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16"
-      >
+      <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
         <p class="text-primary-900 font-semibold">12kw</p>
       </div>
     </div>
   </div>
 </div>
 
+<div class="flex w-full h-full px-4">
+  <div class="w-4/12 flex flex-col justify-start gap-4">
+    <Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
+      <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+        <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
+      </div>
+      <div class="flex  gap-1 mt-3">
+        <p class="text-3xl text-primary-900 font-semibold">89</p>
+        <p class="text-3xl text-gray-400 font-bold">%</p>
+      </div>
+    </Card>
+    <Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
+      <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+        <Image ImageName="History.svg" alt="Sale" css="scale-150" />
+      </div>
+      <div class="flex gap-1 mt-3">
+              <p class="text-3xl text-primary-900 font-semibold">9</p>
+              <p class="text-3xl text-gray-400 font-bold">h</p>
+          </div>
+    </Card>
+    <Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
+      <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+        <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
+      </div>
+      <div class="flex gap-1 mt-3">
+          <p class="text-3xl text-primary-900 font-semibold">129</p>
+          <p class="text-3xl text-gray-400 font-bold">kw/h</p>
+      </div>
+    </Card>
+  </div>
+  <div class="w-full bg-blue-500 h-10">
 
+  </div>
+  <div class="w-8/12 bg-green-500 px-4">
+    <Card>
+      <Heading>
+        <Header>
+          <h1 class="text-base font-medium text-center">What this means for you</h1>
+        </Header>
+      </Heading>
+      <div class=""></div>
+    </Card>
+  </div>
+</div>
