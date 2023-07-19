@@ -5,6 +5,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,13 +13,37 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="BlazorApp.styles.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="favicon.svg"/>
+    <link rel="icon" type="image/png" href="favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
     <link href="css/app.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="~/js/autocomplete.js"></script>
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: {
+                    lat: -28,
+                    lng: 25
+                },
+                zoom: 5.5,
+                mapTypeControl: false,
+            });
+            const input = document.getElementById("pac-input");
+            const options = {
+                fields: ["formatted_address", "geometry", "name"],
+                strictBounds: false,
+                types: [],
+            };
+            const autocomplete = new google.maps.places.Autocomplete(input, options);
+        }
+        window.initMap = initMap;
+    </script>
 </head>
+
 <body>
     <div class=" overflow-x-hidden overflow-y-auto">
         <component type="typeof(App)" render-mode="ServerPrerendered" />
@@ -40,5 +65,10 @@
 
     <!-- This is the glue between Blazor and Chart.js -->
     <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
+        defer></script>
+    
 </body>
+
 </html>
