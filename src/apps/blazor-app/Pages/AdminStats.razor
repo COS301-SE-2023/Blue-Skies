@@ -61,7 +61,7 @@
 
 @code {
     private int keyCount = 0;
-
+    private int maxRadarCount = 0;
     private int suspendedCount = 0;
     private PieConfig? pieConfig;
     private BarConfig? barConfig;
@@ -104,7 +104,6 @@
 
         foreach (string label in radarTypes)
         {
-
             radarConfig.Data.Labels.Add(label);
         }
 
@@ -182,42 +181,43 @@
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/adminstats/all");
         var response = await client.SendAsync(request);
         List<SystemUsage> systems = null;
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if(response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
         {
             var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if(data != null) {
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
         }
         else
         {
             Console.WriteLine("Failed");
         }
 
-        if(systems != null){
-            @* int total = systems.Count;
-            radarTypes = new string[total];
-            radarCount = new int[total]; *@
-            for(int i = 0; i < systems.Count; i++){
+        if(systems != null && systems.Count > 0 && radarConfig != null)
+        {
+            maxRadarCount = (int)(systems.Max(x => x.count) * 1.25);
+            for(int i = 0; i < systems.Count; i++)
+            {
                 radarTypes[i] = systems[i].type;
                 radarCount[i] = systems[i].count;
             }
             IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
-        {
-            Label = "Average System Size",
-            BackgroundColor = "rgba(255,99,132,0.2)",
-            BorderColor = "rgba(255,99,132,1)",
-            PointBackgroundColor = "rgba(255,99,132,1)",
-            PointBorderColor = "#fff",
-            PointHoverBackgroundColor = "#fff",
-            PointHoverBorderColor = "rgba(255,99,132,1)",
+            {
+                Label = "Average System Size",
+                BackgroundColor = "rgba(255,99,132,0.2)",
+                BorderColor = "rgba(255,99,132,1)",
+                PointBackgroundColor = "rgba(255,99,132,1)",
+                PointBorderColor = "#fff",
+                PointHoverBackgroundColor = "#fff",
+                PointHoverBorderColor = "rgba(255,99,132,1)",
+            };
 
-
-        };
-         radarConfig.Data.Datasets.Clear(); 
-                radarConfig.Data.Datasets.Add(dataset3);
-
+            radarConfig.Data.Datasets.Clear(); 
+            radarConfig.Options.Scale.Ticks.Max = maxRadarCount;
+            radarConfig.Data.Datasets.Add(dataset3);
         }
-
     }
+    
     private async Task GetUsers() {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
@@ -304,6 +304,4 @@
             Console.WriteLine("Failed To Get Keys");
         }
     }
-
-
 }
