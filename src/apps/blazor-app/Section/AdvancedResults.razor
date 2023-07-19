@@ -1,0 +1,40 @@
+@using BlazorApp.Components.Base
+
+<div class="flex w-fit mx-auto gap-4">
+     <div class="mx-auto w-96">
+        <Image ImageName="Solarscore.png" alt="Solar Score" />
+    </div>
+    <div class="flex justify-start gap-2">
+        <Card css="border-2 border-primary-300 p-4 w-80 h-80 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl  p-4 w-20 ">
+                <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">89</p>
+                <p class="text-5xl text-gray-400 font-bold">%</p>
+            </div>
+        </Card>
+        <Card css="border-2 border-primary-300 p-4 w-80 h-80 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">9</p>
+                <p class="text-5xl text-gray-400 font-bold">h</p>
+            </div>
+        </Card>
+        <Card css="border-2 border-primary-300 p-4 w-80 h-80 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
+            </div>
+            <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-5xl text-primary-900 font-semibold">129</p>
+                <p class="text-5xl text-gray-400 font-bold">kw/h</p>
+            </div>
+        </Card>
+    </div>
+</div>
+
