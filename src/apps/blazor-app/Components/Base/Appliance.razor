@@ -1,13 +1,13 @@
 @using BlazorApp.Components.Base
 
-<div>
+<div class="flex flex-col justify-center items-center">
     <div class="relative w-24 h-24 flex justify-center items-center rounded-full bg-primary-100">
         <div class="absolute flex justify-center items-center top-0 right-0 w-8 h-8 rounded-full bg-primary-300">
             <p class="text-primary-900 font-medium text-center">@Count</p>
         </div>
-        <Image ImageName="@ImageName" alt="icon" css="h-6"/>
+        <Image ImageName="@ImageName" alt="icon" css="h-8"/>
     </div>
-    <p class="mt-2">@Name</p>
+    <p class="mt-2 text-center">@Name</p>
 </div>
 
 @code {
