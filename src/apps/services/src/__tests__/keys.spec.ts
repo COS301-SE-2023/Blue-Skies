@@ -28,7 +28,7 @@ jest.mock('tedious', () => ({
   ColumnValue: jest.fn(),
 }));
 
-describe('Test the key path', () => {
+describe('Test the Key Controller', () => {
   let keyController: KeyController;
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
@@ -48,21 +48,57 @@ describe('Test the key path', () => {
     jest.clearAllMocks();
   });
 
-  describe('KeyController', () => {
-    describe('getAllKeys', () => {
-      it('should return all keys', () => {
-        // Create an instance of the KeyController
-        const keyController = new KeyController();
+  describe('getAllKeys', () => {
+    it('should return all keys', () => {
+      // Call the getAllKeys method with the mock request and response
+      keyController.getAllKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
 
-        // Call the getAllKeys method with the mock request and response
-        keyController.getAllKeys(
-          mockRequest as Request,
-          mockResponse as Response
-        );
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([]);
+    });
 
-        // Assert that the status and json methods were called with the correct values
-        expect(mockResponse.status).toHaveBeenCalledWith(200);
-        expect(mockResponse.json).toHaveBeenCalledWith([]);
+    it('should handle error when getting all keys', () => {
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to get keys');
+      });
+
+      // Call the getAllKeys method with the mock request and response
+      keyController.getAllKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to get keys',
+      });
+    });
+
+    //400
+    it('should return 400 when getting all keys', () => {
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the getAllKeys method with the mock request and response
+      keyController.getAllKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
       });
     });
   });
@@ -100,9 +136,6 @@ describe('Test the key path', () => {
         throw new Error('Failed to create key');
       });
 
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
-
       // Call the createKey method with the mock request and response
       keyController.createKey(mockRequest as Request, mockResponse as Response);
 
@@ -110,6 +143,32 @@ describe('Test the key path', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Failed to create key',
+      });
+    });
+
+    //400
+    it('should return 400 when creating a key', () => {
+      mockRequest = {
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+        },
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the createKey method with the mock request and response
+      keyController.createKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
       });
     });
   });
@@ -143,6 +202,32 @@ describe('Test the key path', () => {
 
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(404);
+    });
+
+    //400
+    it('should return 400 when getting a key', () => {
+      // Create an instance of the KeyController
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+      } as unknown as Request;
+
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the getKey method with the mock request and response
+      keyController.getKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
     });
   });
 
@@ -214,9 +299,6 @@ describe('Test the key path', () => {
         throw new Error('Failed to update key');
       });
 
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
-
       // Call the updateKey method with the mock request and response
       keyController.updateKey(mockRequest as Request, mockResponse as Response);
 
@@ -224,6 +306,36 @@ describe('Test the key path', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Failed to update key',
+      });
+    });
+
+    //400
+    it('should return 400 when updating a key', () => {
+      mockRequest = {
+        params: {
+          keyId: '1',
+        },
+        body: {
+          owner: 'John Doe',
+          APIKey: 'abc123',
+          remainingCalls: 10,
+          suspended: 'false',
+        },
+      } as unknown as Request;
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the updateKey method with the mock request and response
+      keyController.updateKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
       });
     });
   });
@@ -264,9 +376,6 @@ describe('Test the key path', () => {
         throw new Error('Failed to delete key');
       });
 
-      // Create an instance of the KeyController
-      const keyController = new KeyController();
-
       // Call the deleteKey method with the mock request and response
       keyController.deleteKey(mockRequest as Request, mockResponse as Response);
 
@@ -274,6 +383,24 @@ describe('Test the key path', () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: 'Failed to delete key',
+      });
+    });
+    //400
+    it('should return 400 when deleting a key', () => {
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the deleteKey method with the mock request and response
+      keyController.deleteKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
       });
     });
   });

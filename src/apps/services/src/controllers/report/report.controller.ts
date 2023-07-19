@@ -4,26 +4,16 @@ import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const {
-      reportName,
-      userId,
-      basicCalculationId,
-      solarScore,
-      runningTime,
-    } = req.body;
+    const { reportName, userId, basicCalculationId, solarScore, runningTime } =
+      req.body;
 
-    const dateCreated = new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace('T', ' ');
-      
+    const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
+
     const query =
       `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarScore, runningTime, dateCreated)` +
       ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarScore}, ${runningTime}, '${dateCreated}')`;
 
-
     try {
-
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -49,9 +39,8 @@ export default class ReportController {
   };
 
   public getAllReports = (req: Request, res: Response) => {
-    
-      const query = 'SELECT * FROM [dbo].[reports]';
-      const reports: IReport[] = [];
+    const query = 'SELECT * FROM [dbo].[reports]';
+    const reports: IReport[] = [];
 
     try {
       const request = new tedious.Request(
@@ -140,17 +129,15 @@ export default class ReportController {
     }
   };
 
-
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
     const { reportName, userId, basicCalculationId, solarScore, runningTime } =
-    req.body;
+      req.body;
     const query =
-        `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, basicCalculationId = ${basicCalculationId}, solarScore = ${solarScore}, runningTime = ${runningTime}` +
-        `WHERE reportId = ${reportId}`;
-   
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, basicCalculationId = ${basicCalculationId}, solarScore = ${solarScore}, runningTime = ${runningTime}` +
+      `WHERE reportId = ${reportId}`;
+
     try {
-      
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
@@ -184,8 +171,8 @@ export default class ReportController {
   public deleteReport = async (req: Request, res: Response) => {
     const { reportId } = req.params;
     const query = `DELETE FROM [dbo].[reports] WHERE reportId = ${reportId}`;
-   
-    try {      
+
+    try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {

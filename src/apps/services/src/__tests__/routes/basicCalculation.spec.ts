@@ -1,7 +1,6 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
 import { Request, Response } from 'express';
-import BasicCalculationController from '../../controllers/basic.calculation/basic.calculation.controller';
 import { basicCalculationRouter } from '../../routes/basic.calculation/basic.calculation.router';
 
 const app = express(); // an instance of an express app, a 'fake' express app
@@ -56,6 +55,15 @@ jest.mock(
 );
 
 describe('basicCalculationRouter', () => {
+  // / path
+  it('should have a route to /', async () => {
+    const response = await request(app).get('/basicCalculation');
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe(
+      'Welcome to the basic calculation router!'
+    );
+  });
+
   it('should have a route to create a basicCalculation', async () => {
     const response = await request(app).post('/basicCalculation/create');
     expect(response.status).toBe(200);
