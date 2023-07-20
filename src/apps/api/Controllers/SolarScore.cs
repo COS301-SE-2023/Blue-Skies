@@ -1,8 +1,8 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
+//using IronPython.Hosting;
+// using Microsoft.Scripting.Hosting;
 
 namespace Api.Controllers;
 
@@ -16,15 +16,15 @@ public class SolarScoreController : ControllerBase{
     {
         try
         {
-            string hello = "";
-            var engine = Python.CreateEngine(); // Extract Python language engine from their grasp
-            var scope = engine.CreateScope(); // Introduce Python namespace (scope)
-            scope.SetVariable("hello", hello);
-            ScriptSource source = engine.CreateScriptSourceFromFile("../Scripts/hello.py"); // Load the script
-            object result = source.Execute(scope);
-            hello = scope.GetVariable<string>("hello");
+            // string hello = "";
+            // var engine = Python.CreateEngine(); // Extract Python language engine from their grasp
+            // var scope = engine.CreateScope(); // Introduce Python namespace (scope)
+            // scope.SetVariable("hello", hello);
+            // ScriptSource source = engine.CreateScriptSourceFromFile("../Scripts/hello.py"); // Load the script
+            // object result = source.Execute(scope);
+            // hello = scope.GetVariable<string>("hello");
 
-            return Ok(hello);
+            return Ok();
         }
         catch (Exception e)
         {
