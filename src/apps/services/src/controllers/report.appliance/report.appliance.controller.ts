@@ -29,7 +29,7 @@ export default class ReportApplianceController {
       conn.execSql(request);
     } catch (error) {
       res.status(500).json({
-        error: error,
+        error: error.message,
       });
     }
   };
