@@ -1,30 +1,34 @@
 @using BlazorApp.Components.Base
 
-<div class="flex-row lg:flex lg:justify-evenly items-center space-y-10 w-fit lg:w-full p-10 mx-auto">
-    <h1 class="text-blue-950 font-semibold text-3xl">Build your home</h1>
-
-    <div class="w-60  my-auto">
-        <h2 class="text-sm mb-2 font-medium text-gray-900">Select an option</h2>
-        <select
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5">
-            <option value="US">United States</option>
-            <option value="CA">Canada</option>
-            <option value="FR">France</option>
-            <option value="DE">Germany</option>
-        </select>
+<div class="flex w-full h-full items-center mb-20 px-4">
+    <div class="w-4/12 flex items-center justify-center gap-4">
+        <h1 class="text-blue-950 my-auto font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
     </div>
-
-    <div class="lg:text-center space-y-5 my-auto ">
-        <p>System Size</p>
-        <div class="flex space-x-9">
-            <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                <p class="text-primary-900 font-semibold">5kw</p>
-            </div>
-            <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                <p class="text-primary-900 font-semibold">8kw</p>
-            </div>
-            <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                <p class="text-primary-900 font-semibold">12kw</p>
+    <div class="w-full flex flex-col justify-center items-center ">
+        <div class="w-60  my-auto">
+            <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
+            <select 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                <option value="-">Select a template</option>
+                <option value="2">2 Bedroom House</option>
+                <option value="3">3 Bedroom House</option>
+                <option value="4">4 Bedroom House</option>
+            </select>
+        </div>
+    </div>
+    <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4 my-auto">
+        <div class="lg:text-center space-y-5 my-auto ">
+            <p>System Size</p>
+            <div class="flex space-x-9">
+                <div onclick="@(() => SetSystemSize("5kw"))" class=" flex shadow-md transition-all duration-500  @(SystemSize == "5kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class=" font-semibold">5kw</p>
+                </div>
+                <div onclick="@(() => SetSystemSize("8kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "8kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">8kw</p>
+                </div>
+                <div onclick="@(() => SetSystemSize("12kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "12kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">12kw</p>
+                </div>
             </div>
         </div>
     </div>
@@ -41,9 +45,24 @@
         <Appliance ImageName="Computer.svg" Name="Computer" />
         <Appliance ImageName="TV.svg" Name="TV" />
     </div>
-    <div class="w-full ">
+    <div class="w-full flex flex-col justify-center items-center">
         <div class="flex justify-center items-center h-full">
-            <Image ImageName="House 3.svg" alt="House" css="scale-105" />
+            @* <Image ImageName="House 3.svg" alt="House" css="scale-105" /> *@
+            @switch (SystemSize)
+            {
+                case "5kw":
+                    <Image ImageName="House 3.svg" alt="House" css="scale-105" />
+                    break;
+                case "8kw":
+                    <Image ImageName="House 2.svg" alt="House" css="scale-105" />
+                    break;
+                case "12kw":
+                    <Image ImageName="House 1.svg" alt="House" css="scale-105" />
+                    break;
+                default:
+                    <Image ImageName="House 3.svg" alt="House" css="scale-105" />
+                    break;
+            }
         </div>
     </div>
     <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
@@ -72,6 +91,20 @@
 
     </div>
 </div>
+
+@code {
+    private string SystemSize = "5kw";
+
+    private void SetSystemSize(string size)
+    {
+        SystemSize = size;
+    }
+
+    private void ApplyTemplate(string size)
+    {
+        SystemSize = size;
+    }
+}
 
 @* <h2 class="text-base mt-5 font-semibold text-center text-primary-900">What you can run in a power outage</h2>
 <div class="grid grid-cols-3 items-center justify-center gap-4 mt-4">
