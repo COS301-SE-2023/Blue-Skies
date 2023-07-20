@@ -3,16 +3,15 @@
 <div class="flex w-full h-full items-center mb-20 px-4">
     <div class="w-4/12 flex items-center justify-center gap-4">
         <h1 class="text-blue-950 my-auto font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
-    </div>
+    </div>3
     <div class="w-full flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
-            <select 
+            <select @onchange="ApplyTemplate" aria-placeholder="Select a home size"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                <option value="-">Select a template</option>
                 <option value="2">2 Bedroom House</option>
                 <option value="3">3 Bedroom House</option>
-                <option value="4">4 Bedroom House</option>
+                <option value="4">4+ Bedroom House</option>
             </select>
         </div>
     </div>
@@ -68,7 +67,7 @@
     <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-evenly mt-5 mb-16">
-            <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count="8" />
+            <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count="@PanelCount" />
             <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count="2" />
         </div>
         <svg width="272" height="272" viewBox="0 0 272 272" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -94,54 +93,48 @@
 
 @code {
     private string SystemSize = "5kw";
+    private int PanelCount = 8;
+
+    private void SetPanelCount(int count) {
+        PanelCount = count;
+    }
 
     private void SetSystemSize(string size)
     {
         SystemSize = size;
+        switch (size)
+        {
+            case "5kw":
+                SetPanelCount(8);
+                break;
+            case "8kw":
+                SetPanelCount(14);
+                break;
+            case "12kw":
+                SetPanelCount(20);
+                break;
+            default:
+                SetPanelCount(8);
+                break;
+        }
     }
 
-    private void ApplyTemplate(string size)
-    {
-        SystemSize = size;
+    @*Apply template based off option selection*@
+    private void ApplyTemplate(ChangeEventArgs e) {
+        switch (e.Value)
+        {
+            case "2":
+                SetSystemSize("5kw");
+                break;
+            case "3":
+                SetSystemSize("8kw");
+                break;
+            case "4":
+                SetSystemSize("12kw");
+                break;
+            default:
+                SetSystemSize("5kw");
+                break;
+        }
     }
 }
-
-@* <h2 class="text-base mt-5 font-semibold text-center text-primary-900">What you can run in a power outage</h2>
-<div class="grid grid-cols-3 items-center justify-center gap-4 mt-4">
-    <Appliance ImageName="Fridge.svg" Name="Fridge" Count="2" />
-    <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
-    <Appliance ImageName="Kettle.svg" Name="Kettle" Count="1" />
-    <Appliance ImageName="CCTV.svg" Name="CCTV" />
-    <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
-    <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
-    <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
-    <Appliance ImageName="TV.svg" Name="TV" Count="1" />
-</div> *@
-
-@* <Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
-    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-        <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
-    </div>
-    <div class="flex  gap-1 mt-3">
-        <p class="text-3xl text-primary-900 font-semibold">89</p>
-        <p class="text-3xl text-gray-400 font-bold">%</p>
-    </div>
-</Card>
-<Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
-    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-        <Image ImageName="History.svg" alt="Sale" css="scale-150" />
-    </div>
-    <div class="flex gap-1 mt-3">
-        <p class="text-3xl text-primary-900 font-semibold">9</p>
-        <p class="text-3xl text-gray-400 font-bold">h</p>
-    </div>
-</Card>
-<Card css="border-2 w-fit flex gap-4 border-primary-300 p-3 my-auto">
-    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-        <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
-    </div>
-    <div class="flex gap-1 mt-3">
-        <p class="text-3xl text-primary-900 font-semibold">129</p>
-        <p class="text-3xl text-gray-400 font-bold">kw/h</p>
-    </div>
-</Card> *@
