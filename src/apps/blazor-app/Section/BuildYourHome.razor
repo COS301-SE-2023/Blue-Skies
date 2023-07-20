@@ -66,7 +66,7 @@
     </div>
     <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
-        <div class="flex justify-evenly mt-5 mb-16">
+        <div class="flex justify-between gap-4 mt-5 mb-16">
             <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count="@PanelCount" />
             <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count="2" />
         </div>
@@ -89,6 +89,23 @@
         </svg>
 
     </div>
+</div>
+
+<div class="flex gap-5 px-10 w-full mt-10">
+    <div class="border-primary-500 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
+        <h1 class="text-base mb-10 font-semibold text-primary-900">What do you want to run in a power outage?</h1>
+        <div class="flex gap-4 justify-evenly">
+            <Appliance ImageName="Fridge.svg" Name="Fridge" Count="1" />
+            <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
+            <Appliance ImageName="Kettle.svg" Name="Kettle" Count="0" />
+            <Appliance ImageName="CCTV.svg" Name="CCTV" Count="4" />
+            <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
+            <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
+            <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
+            <Appliance ImageName="TV.svg" Name="TV" Count="2" />
+        </div>
+    </div>
+    <div class="bg-green-500 w-4/12"></div>
 </div>
 
 @code {
