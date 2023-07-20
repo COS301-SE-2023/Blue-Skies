@@ -9,7 +9,7 @@ import { reportRouter } from './report/report.router';
 import { reportApplianceRouter } from './report.appliance/report.appliance.router';
 import { keyRouter } from './key/key.router';
 import { trainingDataRouter } from './training.data/training.data.router';
-import { imageRouter } from './image/image.router';
+import { reportAllRouter } from './report.all/report.all.router';
 
 const router = Router();
 
@@ -23,6 +23,6 @@ router.use('/report', reportRouter);
 router.use('/reportAppliance', reportApplianceRouter);
 router.use('/key', keyRouter);
 router.use('/trainingData', trainingDataRouter);
-router.use('/image', imageRouter);
+router.use('/reportAll', reportAllRouter)
 
 export default router;
