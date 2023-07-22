@@ -27,4 +27,5 @@ public class ReportAll
     public int applianceId { get; set; }
     public string? type { get; set; }
     public int powerUsage { get; set; }
+    public int numberofAppliances { get; set; }
 }
