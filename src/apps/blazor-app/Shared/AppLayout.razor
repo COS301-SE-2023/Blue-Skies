@@ -5,15 +5,15 @@
 
     
     <div class="flex w-full h-full flex-row">
-        <div class="relative w-72 p-4 shadow">
+        <div class="relative w-72 p-4 shadow-sm">
             <div class="fixed px-2">
                 <Image ImageName="Logo.svg" alt="Blue Skies Logo" css="w-48 mx-auto" />
                 <div class="grid grid-cols-1 gap-5 mt-5 text-left">
                     <a href="/" onclick="@(() => ChangePage("home"))" class="@home">Home</a>
                     <a href="/solarscore" onclick="@(() => ChangePage("solarscore"))" class="@solarscore">Solar Score</a>
-                    <a onclick="@(() => ChangePage("advanced"))" class="@advanced">Advanced</a>
-                    <a onclick="@(() => ChangePage("dashboard"))" class="@dashboard">Dashboard</a>
-                    <a onclick="@(() => ChangePage("reports"))" class="@reports">Reports</a>
+                    <a href="/advanced" onclick="@(() => ChangePage("advanced"))" class="@advanced">Advanced</a>
+                    <a href="/dashboard" onclick="@(() => ChangePage("dashboard"))" class="@dashboard">Dashboard</a>
+                    <a href="/reports" onclick="@(() => ChangePage("reports"))" class="@reports">Reports</a>
                 </div>
             </div>
         </div>
