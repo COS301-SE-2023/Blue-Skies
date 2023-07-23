@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.Components.Base
 
-<div class="fixed top-0 left-0 bg-white h-24 w-full z-20"></div>
+<div class="fixed top-0 left-0 shadow-sm bg-white h-24 w-full z-20"></div>
 
 <header class="bg-transparent fixed top-0 left-0 h-20 w-full z-20">
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
@@ -24,11 +24,21 @@
       <a href="/advanced" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
     </div>
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      <Button style="outline">
+      @* <Button style="outline">
         <content>
           <a href="/login" class="text-sm font-semibold leading-6 text-primary-500">Log in <span aria-hidden="true">&rarr;</span></a>
         </content>
-      </Button>
+      </Button> *@
+      <div class="fixed top-5 right-4 flex gap-4 z-30 ">
+        <div class="w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  ">
+          <Image ImageName="Download.svg" alt="User Circle" css="w-10 h-10 scale-[.6]" />
+          <p>Reports</p>
+        </div>
+        <div class="w-14 h-14 hover:w-44 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  ">
+          <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
+          <p>Username</p>
+        </div>
+      </div>
     </div>
   </nav>
   <!-- Mobile menu, show/hide based on menu open state. -->
