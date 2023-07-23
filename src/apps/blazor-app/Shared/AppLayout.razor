@@ -1,0 +1,62 @@
+@inherits LayoutComponentBase
+@using BlazorApp.Components.Base
+
+<PageTitle>Blue Skies</PageTitle>
+
+    
+    <div class="flex w-full h-full flex-row">
+        <div class="relative w-72 p-4 shadow">
+            <div class="fixed px-2">
+                <Image ImageName="Logo.svg" alt="Blue Skies Logo" css="w-48 mx-auto" />
+                <div class="grid grid-cols-1 gap-5 mt-5 text-left">
+                    <a href="/" onclick="@(() => ChangePage("home"))" class="@home">Home</a>
+                    <a href="/solarscore" onclick="@(() => ChangePage("solarscore"))" class="@solarscore">Solar Score</a>
+                    <a onclick="@(() => ChangePage("advanced"))" class="@advanced">Advanced</a>
+                    <a onclick="@(() => ChangePage("dashboard"))" class="@dashboard">Dashboard</a>
+                    <a onclick="@(() => ChangePage("reports"))" class="@reports">Reports</a>
+                </div>
+            </div>
+        </div>
+        <div class="w-full px- mt-10">
+                @Body
+        </div>
+    </div>
+
+    <div class="fixed top-5 right-4 w-14 h-14 hover:w-44 transition-all duration-300 overflow-hidden  bg-white rounded-full z-10 flex gap-2 border shadow border-primary-500 p-2 items-center  ">
+        <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
+        <p>Username</p>
+    </div>
+
+@code {
+    public string home { get; set; } = "bg-primary-200 p-3 rounded-xl ";
+    public string solarscore { get; set; } = "p-3 rounded-xl ";
+    public string advanced { get; set; } = "p-3 rounded-xl ";
+    public string dashboard { get; set; } = "p-3 rounded-xl ";
+    public string reports { get; set; } = "p-3 rounded-xl ";
+
+    public void ChangePage(string page) {
+        home = "p-3 rounded-xl";
+        solarscore = "p-3 rounded-xl";
+        advanced = "p-3 rounded-xl";
+        dashboard = "p-3 rounded-xl ";
+        reports = "p-3 rounded-xl ";
+
+        switch (page) {
+            case "home":
+                home = "bg-primary-200 p-3 rounded-xl shadow-inner";
+                break;
+            case "solarscore":
+                solarscore = "bg-primary-200 p-3 rounded-xl shadow-inner";
+                break;
+            case "advanced":
+                advanced = "bg-primary-200 p-3 rounded-xl shadow-inner";
+                break;
+            case "dashboard":
+                dashboard = "bg-primary-200 p-3 rounded-xl shadow-inner";
+                break;
+            case "reports":
+                reports = "bg-primary-200 p-3 rounded-xl shadow-inner";
+                break;
+        }
+    }
+}
