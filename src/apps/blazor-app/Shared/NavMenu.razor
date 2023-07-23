@@ -2,9 +2,9 @@
 @inject IJSRuntime JSRuntime
 
 
-<div class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-200 w-full z-20 @(isScrollingDown ? "h-0" : "h-24")"></div>
+<div class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-[250ms] w-full z-20 @(isScrollingDown ? "h-0" : "h-24") "></div>
 
-<header class="fixed h-20 left-0 bg-transparent w-full z-20 transition-all duration-300 delay-200 @(isScrollingDown ? "-top-20" : "top-0")">
+<header class="fixed h-20 left-0 bg-transparent w-full z-20 transition-all duration-300 delay-[250ms] @(isScrollingDown ? "-top-20" : "top-0")">
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       <a href="#" class="-m-1.5 p-1.5">
@@ -37,12 +37,13 @@
           <Image ImageName="Download.svg" alt="User Circle" css="w-10 h-10 scale-[.6]" />
           <p>Reports</p>
         </div>
-        <div class=" w-14 h-14 hover:w-44 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow" : "-translate-y-20")">
+        <div class="z-40  transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow w-14 h-14 hover:w-44" : "-translate-y-20 w-44")">
           <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
           <p>Username</p>
         </div>
-        <div class="shadow w-14 h-14 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
+        <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
           <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
+          <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
         </div>
       </div>
     </div>
