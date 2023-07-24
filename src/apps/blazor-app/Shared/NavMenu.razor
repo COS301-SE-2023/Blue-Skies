@@ -38,13 +38,13 @@
           <Image ImageName="Download.svg" alt="User Circle" css="w-10 h-10 scale-[.6]" />
           <p>Reports</p>
         </div>
-        <div class="z-40 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow w-14 h-14 hover:w-44" : "-translate-y-20")">
+        <div class="z-40 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow w-14 h-14 hover:w-44" : "w-32 -translate-y-20")">
           <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
           
           @if(loggedIn == true){
-           <p> @userEmail </p>
+           <a href="/dashboard"> @userEmail </a>
           }else{
-           <p> Log In </p>
+           <a href="/dashboard"> Log In </a>
           }
          
         </div>
