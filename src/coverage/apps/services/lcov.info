@@ -1,5 +1,5 @@
 TN:
-SF:apps\services\src\controllers\appliance\appliance.controller.ts
+SF:apps/services/src/controllers/appliance/appliance.controller.ts
 FN:5,(anonymous_0)
 FN:6,(anonymous_1)
 FN:15,(anonymous_2)
@@ -255,7 +255,7 @@ BRF:16
 BRH:11
 end_of_record
 TN:
-SF:apps\services\src\controllers\key\key.controller.ts
+SF:apps/services/src/controllers/key/key.controller.ts
 FN:5,(anonymous_0)
 FN:6,(anonymous_1)
 FN:15,(anonymous_2)
@@ -659,7 +659,7 @@ BRF:16
 BRH:16
 end_of_record
 TN:
-SF:apps\services\src\routes\default.ts
+SF:apps/services/src/routes/default.ts
 FN:1,testHelloWorld
 FNF:1
 FNH:1
@@ -672,7 +672,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\appliance\appliance.router.ts
+SF:apps/services/src/routes/appliance/appliance.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -695,7 +695,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\auth\auth.router.ts
+SF:apps/services/src/routes/auth/auth.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -717,7 +717,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\basic.calculation\basic.calculation.router.ts
+SF:apps/services/src/routes/basic.calculation/basic.calculation.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -740,7 +740,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\key\key.router.ts
+SF:apps/services/src/routes/key/key.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -763,7 +763,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\report\report.router.ts
+SF:apps/services/src/routes/report/report.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -786,7 +786,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\report.appliance\report.appliance.router.ts
+SF:apps/services/src/routes/report.appliance/report.appliance.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -814,7 +814,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\system\system.router.ts
+SF:apps/services/src/routes/system/system.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
@@ -837,7 +837,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:apps\services\src\routes\user\user.router.ts
+SF:apps/services/src/routes/user/user.router.ts
 FN:6,(anonymous_0)
 FNF:1
 FNH:1
