@@ -1,6 +1,6 @@
 @using BlazorApp.Components.Base
 
-<Card css="flex w-full justify-evenly @css">
+<Card css="flex w-full justify-evenly">
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
@@ -28,5 +28,5 @@
 
 @code {
     [Parameter]
-    public string css { get; set; }
+    public string? css { get; set; }
 }
