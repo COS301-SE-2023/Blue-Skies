@@ -24,4 +24,5 @@ export default interface IReportAll {
   applianceId: number;
   type: string;
   powerUsage: number;
+  numberOfAppliances: number;
 }
