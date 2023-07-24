@@ -1,3 +1,5 @@
+# python3 getImages.py -25.771 28.357 2022 3
+
 import os
 import sys
 import concurrent.futures
@@ -7,9 +9,6 @@ from google.oauth2 import service_account
 from dotenv import load_dotenv
 from PIL import Image
 
-# python getImages.py -25.771 28.357 2022 3
-# LATITUDE = -25.771
-# LONGITUDE = 28.357
 LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
@@ -52,7 +51,7 @@ upperLeft = [LONGITUDE - halfWidth, LATITUDE + halfHeight]
 roi = ee.Geometry.Polygon([lowerLeft, lowerRight, upperRight, upperLeft])
 
 def download_and_save_image(image, roi, imageName):
-    thumb_url = image.getThumbURL({
+    image_url = image.getThumbURL({
         'region': roi,
         'bands': ['B4', 'B3', 'B2'],
         'min': 0.0,
@@ -60,15 +59,10 @@ def download_and_save_image(image, roi, imageName):
         'scale': 10
     })
 
-    response = requests.get(thumb_url)
-    with open(imageName + '.png', 'wb') as f:
-        f.write(response.content)
-
-    image = Image.open(imageName + '.png')
-    image.save(imageName + '.tif')
-    os.remove(imageName + '.png')
-
-    print('Image ' + imageName + ' saved successfully.')
+    image_path = f'{imageName}.png'
+    image = Image.open(requests.get(image_url, stream=True).raw)
+    image.save(image_path)
+    print('Image', imageName, 'saved successfully.')
 
 with concurrent.futures.ThreadPoolExecutor() as executor:
     for i in range(YEAR - TIME_FRAME + 1, YEAR + 1):

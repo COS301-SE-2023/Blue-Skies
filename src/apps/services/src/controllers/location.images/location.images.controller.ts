@@ -5,6 +5,9 @@ export default class LocationImagesController {
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
+    //Get current year
+    const currentYear = new Date().getFullYear();
+
     try {
       const result = await this.executePython(
         'apps/services/src/controllers/location.images/getImages.py',
