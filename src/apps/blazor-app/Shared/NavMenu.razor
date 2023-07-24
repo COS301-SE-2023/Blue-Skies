@@ -1,5 +1,6 @@
 ﻿@using BlazorApp.Components.Base
 @inject IJSRuntime JSRuntime
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 
 <div class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-[250ms] w-full z-20 @(isScrollingDown ? "h-0" : "h-24") "></div>
@@ -37,10 +38,16 @@
           <Image ImageName="Download.svg" alt="User Circle" css="w-10 h-10 scale-[.6]" />
           <p>Reports</p>
         </div>
-        <a href="/dashboard" class="z-40  transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow w-14 h-14 hover:w-44" : "-translate-y-20 w-44")">
+        <div class="z-40 transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center   @(isScrollingDown ? "shadow w-14 h-14 hover:w-44" : "-translate-y-20")">
           <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
-          <p>Username</p>
-        </a>
+          
+          @if(loggedIn == true){
+           <p> @userEmail </p>
+          }else{
+           <p> Log In </p>
+          }
+         
+        </div>
         <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
           <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
           <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
@@ -74,6 +81,8 @@
 
 
 @code {
+    private bool loggedIn = false;
+    private string userEmail = "";
     private bool collapseNavMenu = false;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -103,4 +112,22 @@
         currentScrollPosition = scrollY;
         StateHasChanged();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+      var result = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
+
+      if (result.Success)
+      {
+          loggedIn = result.Value;
+          var ans = await ProtectedSessionStore.GetAsync<string>("userEmail");
+          userEmail = ans.Value;
+      }
+      else
+      {
+          loggedIn = false;
+      }
+
+    }
+
 }

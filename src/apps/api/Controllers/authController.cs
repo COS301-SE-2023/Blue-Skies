@@ -86,7 +86,7 @@ public class AuthController : ControllerBase
       {
         return BadRequest("Incorrect email or password");
       }
-      return Ok("UserRole = " + LoggedInuser.userRole + " UserId = ");
+      return Ok("UserRole = " + LoggedInuser.userRole);
     }
     catch (Exception e)
     {
