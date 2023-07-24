@@ -35,7 +35,7 @@ export default class TrainingDataController {
   };
 
   public getAllTrainingData = (req: Request, res: Response) => {
-    const query = 'SELECT * FROM [dbo].[trainingData]';
+    const query = 'SELECT TOP (10) * FROM [dbo].[trainingData]';
     const trainingDataArr: ITrainingData[] = [];
 
     try {
