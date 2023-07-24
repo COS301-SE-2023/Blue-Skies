@@ -3,15 +3,19 @@
         <Card>
             <Heading>
                 <Header>
-                    <h1 class="text-lg">Location</h1>
+                    <h1 class="text-xl">Location</h1>
                 </Header>
             </Heading>
-            <div class="flex">
+            <div class="flex gap-4 my-auto items-center">
                 <div class="">
-                    <Image ImageName="Solarscore.png" css="w-72 h-72" alt="Solar Score" />
+                    <Image ImageName="Solarscore.png" css="w-60 h-60" alt="Solar Score" />
                 </div>
-                <div class="">
-                    
+                <div class="flex flex-col justify-start gap-10">
+                    <LocationItem Title="Address" ImageName="Point On Map.svg" Text="1234 Main Street" />
+                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="89%" />
+                    <div class="translate-x-1">
+                        <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg" Text="129 kw/h" />
+                    </div>
                 </div>
             </div>
         </Card>
@@ -20,7 +24,7 @@
         <Card>
             <Heading>
                 <Header>
-                    <h1 class="text-lg">System Size</h1>
+                    <h1 class="text-xl">System Size</h1>
                 </Header>
             </Heading>
             
