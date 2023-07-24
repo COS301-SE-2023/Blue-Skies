@@ -183,7 +183,7 @@
     private async Task SaveAppliance(ApplianceModel appliance)
     {
         if(appliance.applianceId == -1){
-            Console.WriteLine("Add");
+            Console.WriteLine("Add Appliance");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
             var content = new StringContent("{\r\n  \"type\": \"" + appliance.type+ "\",\r\n  \"powerUsage\": " + appliance.powerUsage +"\r\n}", null, "application/json");
@@ -201,7 +201,7 @@
             }
 
         }else{
-            Console.WriteLine("Update");
+            Console.WriteLine("Update Appliance");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
             var content = new StringContent("{\r\n    \"applianceId\": " + appliance.applianceId + ",\r\n  \"type\": \"" + appliance.type + "\",\r\n  \"powerUsage\": " + appliance.powerUsage+ "\r\n}", null, "application/json");

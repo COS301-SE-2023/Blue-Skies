@@ -2,6 +2,8 @@
 @layout AuthLayout
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+
 <PageTitle>Login</PageTitle>
 
 <div class="w-full h-[100vh]">
@@ -14,11 +16,13 @@
     <a href="/" class="absolute top-14 right-72">
         <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
     </a>
+
     @* <Image ImageName="19.svg" css="absolute hidden xl:block xl:top-52      xl:right-96          2xl:top-60      2xl:right-[550px] z-10" alt="blob"/>
     <Image ImageName="40.svg" css="absolute hidden xl:block xl:top-72      xl:right-[550px]     2xl:top-80      2xl:right-[800px] z-10" alt="blob"/>
     <Image ImageName="60.svg" css="absolute hidden xl:block xl:top-[380px] xl:right-40          2xl:top-[400px] 2xl:right-60 z-10" alt="blob"/>
     <Image ImageName="90.svg" css="absolute hidden xl:block xl:bottom-16   xl:right-[525px]     2xl:bottom-20   2xl:right-[725px] z-10" alt="blob"/> *@
-        <Card css="my-auto w-full text-left ml-0 xl:ml-20 2xl:ml-52">   
+
+        <Card css="my-auto max-w-lg w-full text-left ml-0 xl:ml-20 2xl:ml-52">   
             <Heading >   
                 <Superscript>   
                     <p>Welcome Back</p>
@@ -91,7 +95,7 @@ private async Task HandleSubmit()
 {
     Console.WriteLine("OnSubmit");
     Console.WriteLine(email);
-    Console.WriteLine(password);
+
 
     var isValid = ValidateForm();
 
@@ -113,17 +117,22 @@ private async Task HandleSubmit()
         var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + password + "\"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
+
         if(response.IsSuccessStatusCode){
             Console.WriteLine("Success");
             showError = "hidden";
             //Navigate to home page 
             string data= await response.Content.ReadAsStringAsync();
-            if(data.Contains("1")){
-             NavigationManager.NavigateTo("/admin/keys");
+            await ProtectedSessionStore.SetAsync("loggedIn", true);
+            await ProtectedSessionStore.SetAsync("userEmail", email);
+
+            if(data.Contains("UserRole = 1")){
+                await ProtectedSessionStore.SetAsync("isAdmin", true);
+                NavigationManager.NavigateTo("/admin/keys");              
             }
             else{
-            NavigationManager.NavigateTo("/");
-
+                await ProtectedSessionStore.SetAsync("isAdmin", false);
+                NavigationManager.NavigateTo("/");
             }
         }else{
             Console.WriteLine("Failed");
