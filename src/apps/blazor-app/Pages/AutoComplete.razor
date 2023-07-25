@@ -33,13 +33,24 @@
 </div>
 
 @code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private HttpClient httpClient;
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
+    private string mapboxAccessToken = "";
 
-    protected override void OnInitialized()
+
+    protected async override void OnInitialized()
     {
         httpClient = new HttpClient();
+
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/mapboxkey");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK){
+            mapboxAccessToken = await response.Content.ReadAsStringAsync();
+        }
+        mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
     private async Task OnSearchInput(ChangeEventArgs e)
@@ -49,16 +60,15 @@
     }
 
     private async Task GetLocationSuggestions()
-    {
-        string mapboxAccessToken = "";
+    {        
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
         string requestUrl = $"{baseUrl}{System.Net.WebUtility.UrlEncode(searchQuery)}.json?country=za&proximity=ip&access_token={mapboxAccessToken}";
 
         try
         {
-            var response = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
-            suggestions = response?.Features ?? new List<LocationSuggestion>();
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            suggestions = mapResponse?.Features ?? new List<LocationSuggestion>();
         }
         catch (Exception ex)
         {

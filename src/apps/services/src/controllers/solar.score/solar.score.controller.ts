@@ -4,7 +4,7 @@ import { spawn } from 'child_process';
 export default class SolarScoreController {
   public getMapBoxApiKey = async (req: Request, res: Response) => {
     try {
-      const key = process.env.MAP_BOX_API_KEY;
+      const key: string = process.env.MAP_BOX_API_KEY;
       res.status(200).json(key);
     } catch (error) {
       res.status(500).json({ error: error });
