@@ -156,12 +156,8 @@
     {
         await GetKeys();
         var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
-        Console.WriteLine(ans.Value);
         if(!ans.Value){
-            Console.WriteLine("Not Admin");
             NavigationManager.NavigateTo("/unauthorized");
-        } else {
-            Console.WriteLine("Admin");
         }     
     }
 
