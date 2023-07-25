@@ -17,3 +17,5 @@ solarScoreRouter.get(
   bodyParser.json(),
   solarScoreController.getLocationImages
 );
+
+solarScoreRouter.get('/mapboxkey', solarScoreController.getMapBoxApiKey);
