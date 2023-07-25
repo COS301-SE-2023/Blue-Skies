@@ -1,7 +1,8 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Components
 
 
-<div class="bg-white overflow-hidden h-fit w-full">
+<div class="bg-white h-fit w-full">
   <div class="relative isolate pt-14">
     <div class="grid gap-4 grid-cols-1 lg:grid-cols-2">
       <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
@@ -16,7 +17,7 @@
             </Subscript>
           </Heading>
           <div>
-            
+            <AutoComplete />
           </div>
           <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Button style="pill" css="h-14">
