@@ -1,9 +1,25 @@
 @page "/advanced"
 @layout MainLayout
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 
 <PageTitle>Advanced Calculations</PageTitle>
 
 <div class="w-full">
     <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
+    <div class="w-full">
+        <BlazorApp.Section.BuildYourHome/>
+    </div>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var ans = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
+        if (!ans.Value)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

@@ -18,6 +18,10 @@ trainingDataRouter.post(
 );
 trainingDataRouter.get('/all', trainingDataController.getAllTrainingData);
 trainingDataRouter.get(
+  '/area/:areaId',
+  trainingDataController.getTrainingDataByArea
+);
+trainingDataRouter.get(
   '/:trainingDataId',
   trainingDataController.getTrainingData
 );
