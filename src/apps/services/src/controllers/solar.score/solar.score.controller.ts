@@ -2,6 +2,14 @@ import { Request, Response } from 'express';
 import { spawn } from 'child_process';
 
 export default class SolarScoreController {
+  public getMapBoxApiKey = async (req: Request, res: Response) => {
+    try {
+      const key = process.env.MAP_BOX_API_KEY;
+      res.status(200).json(key);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
