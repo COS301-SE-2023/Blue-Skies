@@ -19,14 +19,14 @@
             type="text" @bind="searchQuery" @oninput="OnSearchInput" placeholder="Enter you address" name="address"
             id="address" />
     </div>
-    <div class="absolute transition-all duration-150 @(suggestions.Count == 0 ? "opacity-0" : "opacity-100") w-full bg-white top-full left-0">
+    <div class="absolute  @(suggestions.Count == 0 ? "opacity-0" : "opacity-100") w-full bg-white top-full left-0">
         <ul class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-30">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {
                 if (suggestion.Place_Name == "No results found")
                 {
-                    <li class="p-3 text-left hover:bg-primary-100 rounded-xl">
+                    <li class="p-3 text-left rounded-xl">
                         <p class="">
                             @suggestion.Place_Name
                         </p>
@@ -36,7 +36,7 @@
                 } else {
                     var address = suggestion.Place_Name.Substring(0, suggestion.Place_Name.IndexOf(","));
                     var rest = suggestion.Place_Name.Substring(suggestion.Place_Name.IndexOf(",") + 1);
-                    <li class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300 delay-[@i] @(suggestions.Count == 0 ? "opacity-0 -translate-y-20" : "opacity-100")">
+                    <li class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300 delay-200 @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
                         <p class="font-bold">
                             @address
                         </p>
