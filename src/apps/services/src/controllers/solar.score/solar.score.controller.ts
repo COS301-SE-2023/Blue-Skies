@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { spawn } from 'child_process';
 
-export default class LocationImagesController {
+export default class SolarScoreController {
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
@@ -10,7 +10,7 @@ export default class LocationImagesController {
 
     try {
       const result = await this.executePython(
-        'apps/services/src/controllers/location.images/getImages.py',
+        'apps/services/src/controllers/solar.score/getImages.py',
         [latitude, longitude, 2022, 3]
       );
 
