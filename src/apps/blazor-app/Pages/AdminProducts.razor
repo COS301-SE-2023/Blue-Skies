@@ -4,13 +4,15 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
-            <Heading >
+            <Heading>
                 <Superscript>
                     <h2>Manage all</h2>
                 </Superscript>
@@ -22,12 +24,12 @@
         <div class="flex  gap-10 items-center">
             <div @onclick="ModalPopup.Show">
                 <Button style="outline">
-                   <content>Delete</content>
+                    <content>Delete</content>
                 </Button>
             </div>
             <div @onclick="AddProduct">
                 <Button style="pill">
-                   <content>Add</content>
+                    <content>Add</content>
                 </Button>
             </div>
         </div>
@@ -88,10 +90,11 @@
 
                 </tr>
             </thead>
-            <tbody >
+            <tbody>
                 @foreach (var product in products)
                 {
-                    <ProductEntry recordState="product.recordState != null ? true : false" product="product" OnSelect="AddDeleteArr" OnSave="SaveProduct"/>   
+                    <ProductEntry recordState="product.recordState != null ? true : false" product="product"
+                        OnSelect="AddDeleteArr" OnSave="SaveProduct" />
                 }
             </tbody>
         </table>
@@ -137,7 +140,7 @@
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/system/delete");
-        var content = new StringContent("{\r\n  \"systemId\": " + id + "\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n \"systemId\": " + id + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -154,6 +157,11 @@
     protected override async Task OnInitializedAsync()
     {
         await GetProducts();
+        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
+        if (!ans.Value)
+        {
+            NavigationManager.NavigateTo("/unauthorized");
+        }
     }
 
     private async Task GetProducts()
@@ -164,7 +172,11 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive
+                = true
+                });
         }
         else
         {
@@ -174,21 +186,34 @@
 
     private void AddProduct()
     {
-        products.Add(new ProductModel { systemId = -1, systemSize = "", inverterOutput = 0, numberOfPanels = 0, batterySize = 0, numberOfBatteries = 0, solarInput = 0, recordState = true  });
+        products.Add(new ProductModel
+            {
+                systemId = -1,
+                systemSize = "",
+                inverterOutput = 0,
+                numberOfPanels = 0,
+                batterySize = 0,
+                numberOfBatteries = 0,
+                solarInput = 0,
+                recordState = true
+            });
         @* add api call *@
     }
 
     private async Task SaveProduct(ProductModel product)
     {
-        if(product.systemId == -1)
+        if (product.systemId == -1)
         {
             Console.WriteLine("Add Solar Product");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
-            var content = new StringContent("{\r\n  \"systemSize\": \"" + product.systemSize +"\",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            var content = new StringContent("{\r\n \"systemSize\": \"" + product.systemSize + "\",\r\n \"inverterOutput\": " +
+            product.inverterOutput + ",\r\n \"numberOfPanels\": " + product.numberOfPanels + ",\r\n \"batterySize\": " +
+            product.batterySize + ",\r\n \"numberOfBatteries\": " + product.numberOfBatteries + ",\r\n \"solarInput\": " +
+            product.solarInput + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
@@ -199,17 +224,20 @@
                 Console.WriteLine("Failed to add");
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
-            
+
         }
         else
         {
             Console.WriteLine("Update Solar Product");
-             var client = new HttpClient();
+            var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/System/update");
-            var content = new StringContent("{\r\n  \"systemId\": " + product.systemId+",\r\n  \"inverterOutput\": " + product.inverterOutput+",\r\n  \"numberOfPanels\": "+product.numberOfPanels + ",\r\n  \"batterySize\": "+ product.batterySize + ",\r\n  \"numberOfBatteries\": "+ product.numberOfBatteries + ",\r\n  \"solarInput\": " + product.solarInput + "\r\n}", null, "application/json");
+            var content = new StringContent("{\r\n \"systemId\": " + product.systemId + ",\r\n \"inverterOutput\": " +
+            product.inverterOutput + ",\r\n \"numberOfPanels\": " + product.numberOfPanels + ",\r\n \"batterySize\": " +
+            product.batterySize + ",\r\n \"numberOfBatteries\": " + product.numberOfBatteries + ",\r\n \"solarInput\": " +
+            product.solarInput + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
@@ -220,7 +248,7 @@
                 Console.WriteLine(await response.Content.ReadAsStringAsync());
                 Console.WriteLine("Failed to Update");
             }
-            
+
         }
     }
 }
