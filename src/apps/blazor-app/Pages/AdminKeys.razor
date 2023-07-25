@@ -4,8 +4,12 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
+
+
 
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
@@ -151,6 +155,10 @@
     protected override async Task OnInitializedAsync()
     {
         await GetKeys();
+        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
+        if(!ans.Value){
+            NavigationManager.NavigateTo("/unauthorized");
+        }     
     }
 
     private async Task GetKeys(){
@@ -175,7 +183,7 @@
     }
 
     private async Task ToggleSuspend(APIKeyModel key) {
-        Console.WriteLine("Toggle Suspend");
+        Console.WriteLine("Toggle Suspend API Key");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
             var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
@@ -196,7 +204,7 @@
     {
         successToast.Show("Saved", "The record entry was successfuly saved.", "success");
         if(key.keyId == -1){
-            Console.WriteLine("Add");
+            Console.WriteLine("Add API Key");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
             var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
@@ -213,7 +221,7 @@
             }
 
         }else{
-            Console.WriteLine("Update");
+            Console.WriteLine("Update API Key");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
             var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");

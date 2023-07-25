@@ -65,8 +65,7 @@ public class ReportController : ControllerBase
                 report.userId,
                 report.basicCalculationId,
                 report.solarScore,
-                report.runningTime,
-                report.dateCreated
+                report.runningTime
             );
             return Ok(data);
         }
@@ -79,14 +78,14 @@ public class ReportController : ControllerBase
     //delete a report
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> DeleteReport([FromBody] Reports report)
+    public async Task<IActionResult> DeleteReport([FromBody] ReportAll report)
     {
         try
         {
             var data = await _reportsRepository.deleteReports(report.reportId);
             if (data == false)
             {
-                return StatusCode(404, "s with id: " + report.reportId + " not found");
+                return StatusCode(404, "Report with id: " + report.reportId + " not found");
             }
             return Ok("Deleted report with id: " + report.reportId + " successfully");
         }
@@ -98,15 +97,15 @@ public class ReportController : ControllerBase
 
     //get a report by id
     [HttpGet]
-    [Route("get")]
-    public async Task<IActionResult> GetReport([FromBody] Reports report)
+    [Route("get/{id}")]
+    public async Task<IActionResult> GetReport([FromRoute] int id)
     {
         try
         {
-            var data = await _reportsRepository.getReportById(report.reportId);
+            var data = await _reportsRepository.getReportById(id);
             if (data == null)
             {
-                return StatusCode(404, "Report with id: " + report.reportId + " not found");
+                return StatusCode(404, "Report with id: " + id + " not found");
             }
             return Ok(data);
         }

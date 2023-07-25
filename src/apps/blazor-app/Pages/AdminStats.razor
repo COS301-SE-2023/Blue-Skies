@@ -6,6 +6,8 @@
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
@@ -174,6 +176,10 @@
         await GetUsers();
         await GetSystemUsage();
         await GetKeys();
+        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
+        if(!ans.Value){
+            NavigationManager.NavigateTo("/unauthorized");
+        } 
     }
 
     private async Task GetSystemUsage(){
