@@ -2,9 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\src",
-    "\\src\\coverage\\apps",
+    "\\src\\apps",
+    "\\src\\apps\\machine-learning",
     "\\src\\libs"
   ],
-  "SelectedNode": "\\src\\libs\\generated",
+  "SelectedNode": "\\src\\apps\\machine-learning",
   "PreviewInSolutionExplorer": false
 }
