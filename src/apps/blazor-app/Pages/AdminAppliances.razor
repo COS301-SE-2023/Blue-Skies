@@ -4,6 +4,8 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -155,6 +157,10 @@
     protected override async Task OnInitializedAsync()
     {
         await GetAppliances();
+        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
+        if(!ans.Value){
+            NavigationManager.NavigateTo("/unauthorized");
+        } 
     }
     
     private async Task GetAppliances(){
