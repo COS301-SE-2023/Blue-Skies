@@ -88,10 +88,43 @@ namespace DeepLearning_ImageClassification
 
       IEnumerable<ModelOutput> predictions = mlContext.Data.CreateEnumerable<ModelOutput>(predictionData, reuseRowObject: true).Take(10);
 
+      var correct = 0;
+      //Keep track of how far off the data is from the right value - Possible outputs are Very_Bad, Bad, Average, Good, Very_Good
+      var error = new int[5];
+
       Console.WriteLine("Classifying multiple images");
       foreach (var prediction in predictions)
       {
         OutputPrediction(prediction);
+        if (prediction.Label == prediction.PredictedLabel)
+          correct++;
+        else
+          error[getLabelIndex(prediction.Label)]++;
+      }
+      Console.WriteLine($"Correctly classified {correct} out of {predictions.Count()} images");
+      Console.WriteLine($"Very_Bad: {error[0]}");
+      Console.WriteLine($"Bad: {error[1]}");
+      Console.WriteLine($"Average: {error[2]}");
+      Console.WriteLine($"Good: {error[3]}");
+      Console.WriteLine($"Very_Good: {error[4]}");
+    }
+
+    private static int getLabelIndex(string label)
+    {
+      switch (label)
+      {
+        case "Very_Bad":
+          return 0;
+        case "Bad":
+          return 1;
+        case "Average":
+          return 2;
+        case "Good":
+          return 3;
+        case "Very_Good":
+          return 4;
+        default:
+          return -1;
       }
     }
 
