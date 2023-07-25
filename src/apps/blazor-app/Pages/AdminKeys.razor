@@ -101,6 +101,8 @@
 </div>
 
 @code {
+    @inject IJSRuntime JSRuntime;
+
     private Toast successToast { get; set; } = new Toast();
     private Toast deleteToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -151,6 +153,9 @@
         {
             Console.WriteLine("Failed to delete");
         }
+    }
+    protected  void AfterInitializedAsync(){
+
     }
     protected override async Task OnInitializedAsync()
     {
