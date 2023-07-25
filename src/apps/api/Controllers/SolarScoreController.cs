@@ -9,8 +9,8 @@ namespace Api.Controllers;
 public class SolarScoreController : ControllerBase
 {
     [HttpGet]
-    [Route("test")]
-    public async Task<IActionResult> testImage()
+    [Route("getSolarScore")]
+    public async Task<IActionResult> testImage([FromBody] Coordinates cord)
     {
         //Load sample data
         var imageBytes = System.IO.File.ReadAllBytes(
