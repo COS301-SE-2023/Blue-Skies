@@ -4,8 +4,12 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
+
+
 
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
@@ -151,6 +155,10 @@
     protected override async Task OnInitializedAsync()
     {
         await GetKeys();
+        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
+        if(!ans.Value){
+            NavigationManager.NavigateTo("/unauthorized");
+        }     
     }
 
     private async Task GetKeys(){
