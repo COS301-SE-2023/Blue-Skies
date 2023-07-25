@@ -79,6 +79,13 @@ jest.mock(
               message: 'ReportId is deleted.',
             });
           }),
+        updateNumberOfAppliances: jest
+          .fn()
+          .mockImplementation((req: Request, res: Response) => {
+            res.status(200).json({
+              message: 'ApplianceId is updated.',
+            });
+          }),
         updateApplianceId: jest
           .fn()
           .mockImplementation((req: Request, res: Response) => {
@@ -140,6 +147,15 @@ describe('Test the reportAppliance path', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
       message: 'Appliance is retrieved.',
+    });
+  });
+  it('It should response the patch method', async () => {
+    const response = await request(app).patch(
+      '/reportAppliance/updatenumberOfAppliances/1/1'
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      message: 'ApplianceId is updated.',
     });
   });
   it('It should response the patch method', async () => {

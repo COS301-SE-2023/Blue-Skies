@@ -1,0 +1,27 @@
+@using BlazorApp.Components.Base
+
+<Card css="flex w-full justify-evenly">
+    <div class="flex flex-col justify-center items-center ">
+        <div class="w-60  my-auto">
+            <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
+            <select
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                <option value="2">My Home</option>
+                <option value="3">Beach House</option>
+                <option value="4">Moms House</option>
+                <option value="4">My Home 2</option>
+            </select>
+        </div>
+    </div>
+    <Heading>
+        <Superscript>Date Saved</Superscript>
+        <Header>
+            <h1 class="text-lg">12 August 2023</h1>
+        </Header>
+    </Heading>
+    <Button style="pill" css="h-14">
+        <content>
+            <a href="#" class="text-sm font-semibold hover:text-white">Generate Report</a>
+        </content>
+    </Button>
+</Card>

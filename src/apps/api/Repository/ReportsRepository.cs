@@ -65,9 +65,9 @@ public class ReportsRepository
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/report/create");
             var content = new StringContent(
-                "{\r\n    \"reportName\" : "
+                "{\r\n    \"reportName\" : \""
                     + reportName
-                    + ",\r\n    \"userId\" : "
+                    + "\",\r\n    \"userId\" : "
                     + userId
                     + ",\r\n    \"basicCalculationId\" : "
                     + basicCalculationId
@@ -113,8 +113,7 @@ public class ReportsRepository
         int userId,
         int basicCalculationId,
         int solarScore,
-        int runningTime,
-        DateTime dateCreated
+        int runningTime
     )
     {
         try
@@ -126,9 +125,9 @@ public class ReportsRepository
                 express + "/api/report/update/" + reportId
             );
             var content = new StringContent(
-                "{\r\n    \"reportName\" : "
+                "{\r\n    \"reportName\" : \""
                     + reportName
-                    + ",\r\n    \"userId\" : "
+                    + "\",\r\n    \"userId\" : "
                     + userId
                     + ",\r\n    \"basicCalculationId\" : "
                     + basicCalculationId
@@ -142,6 +141,7 @@ public class ReportsRepository
             );
             request.Content = content;
             var response = await client.SendAsync(request);
+            
             if (response.IsSuccessStatusCode)
             {
                 Reports rep = new Reports();

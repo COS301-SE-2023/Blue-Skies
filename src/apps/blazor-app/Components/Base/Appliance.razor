@@ -1,0 +1,23 @@
+@using BlazorApp.Components.Base
+
+<div class="flex flex-col justify-center items-center">
+    <div class="relative w-20 h-20 flex justify-center items-center rounded-2xl bg-primary-100">
+        @if(Count >= 0) {
+            <div class="absolute flex justify-center items-center -top-3 -right-3 w-8 h-8 rounded-lg bg-primary-300">
+                <p class="text-primary-900 font-medium text-center">@Count</p>
+            </div>
+        }
+        <Image ImageName="@ImageName" alt="icon" css="h-8"/>
+    </div>
+    <p class="mt-2 text-center">@Name</p>
+</div>
+
+@code {
+    [Parameter]
+    public string? ImageName { get; set; }
+    [Parameter]
+    public string? Name { get; set; }
+    [Parameter]
+    public int Count { get; set; } = -1;
+    
+}
