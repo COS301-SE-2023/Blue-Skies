@@ -6,79 +6,85 @@
 
 <PageTitle>Login</PageTitle>
 
-<div class="w-full h-[100vh]">
-    <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
-    <Image ImageName="Banhoek-landscape.jpg" css="w-full h-full object-fit -z-10" alt="background image"/>
+    @if (!isLoaded) {}
+    else if (logIn) {
+        NavigationManager.NavigateTo("/");
+    } else  if (isAd) {
+        NavigationManager.NavigateTo("/admin/keys");
+    } else {
+    <div class="w-full h-[100vh]">
+        <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
+            <Image ImageName="Banhoek-landscape.jpg" css="w-full h-full object-fit -z-10" alt="background image"/>
 
+            <div class="flex w-full h-full absolute top-0 left-0 justify-start">
+            <div class="absolute top-14 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
+            <a href="/" class="absolute top-14 right-72">
+                <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
+            </a>
 
-    <div class="flex w-full h-full absolute top-0 left-0 justify-start">
-    <div class="absolute top-14 right-72 h-32 w-3/12 bg-white opacity-40 blur-3xl"></div>
-    <a href="/" class="absolute top-14 right-72">
-        <Image ImageName="Logo.svg" css="h-20 m-4" alt="Logo"/>
-    </a>
+            <Image ImageName="19.svg" css="absolute hidden xl:block xl:top-52      xl:right-96          2xl:top-60      2xl:right-[550px] z-10" alt="blob"/>
+            <Image ImageName="40.svg" css="absolute hidden xl:block xl:top-72      xl:right-[550px]     2xl:top-80      2xl:right-[800px] z-10" alt="blob"/>
+            <Image ImageName="60.svg" css="absolute hidden xl:block xl:top-[380px] xl:right-40          2xl:top-[400px] 2xl:right-60 z-10" alt="blob"/>
+            <Image ImageName="90.svg" css="absolute hidden xl:block xl:bottom-16   xl:right-[525px]     2xl:bottom-20   2xl:right-[725px] z-10" alt="blob"/>
 
-    <Image ImageName="19.svg" css="absolute hidden xl:block xl:top-52      xl:right-96          2xl:top-60      2xl:right-[550px] z-10" alt="blob"/>
-    <Image ImageName="40.svg" css="absolute hidden xl:block xl:top-72      xl:right-[550px]     2xl:top-80      2xl:right-[800px] z-10" alt="blob"/>
-    <Image ImageName="60.svg" css="absolute hidden xl:block xl:top-[380px] xl:right-40          2xl:top-[400px] 2xl:right-60 z-10" alt="blob"/>
-    <Image ImageName="90.svg" css="absolute hidden xl:block xl:bottom-16   xl:right-[525px]     2xl:bottom-20   2xl:right-[725px] z-10" alt="blob"/>
+            <Card css="my-auto max-w-lg w-full text-left ml-0 xl:ml-20 2xl:ml-52">   
+                <Heading >   
+                    <Superscript>   
+                        <p>Welcome Back</p>
+                    </Superscript>
+                    <Header>
+                        <h1>Log In</h1>    
+                    </Header>
+                </Heading>
+                <div class="@showError">
+                    <p class="text-red-600 ">@errorMessage</p>
+                </div>
+                <form @onsubmit="HandleSubmit">
+                    @if (!emailIsValid)
+                    {
+                        <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
+                        <Input css="border-1 border-red-400" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                    }else {
 
-        <Card css="my-auto max-w-lg w-full text-left ml-0 xl:ml-20 2xl:ml-52">   
-            <Heading >   
-                <Superscript>   
-                    <p>Welcome Back</p>
-                </Superscript>
-                <Header>
-                    <h1>Log In</h1>    
-                </Header>
-            </Heading>
-            <div class="@showError">
-                <p class="text-red-600 ">@errorMessage</p>
-            </div>
-            <form @onsubmit="HandleSubmit">
-                @if (!emailIsValid)
-                {
-                    <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
-                    <Input css="border-1 border-red-400" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
-                }else {
-
-                    <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
-                }
-                @if (!passwordIsValid)
-                {
-                    <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
-                    <Input css="border-1 border-red-400" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                }
-                else {
-                    <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                }
-                <Button css="mt-10 flex justify-center" style="pill">
-                    <content>
-                        <input type="submit" value="Log In" />
-                    </content>
-                </Button>
-
-                @* <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
-                <div class="flex justify-center mt-8 gap-4">
-                    <Button css="" style="outline">
+                        <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                    }
+                    @if (!passwordIsValid)
+                    {
+                        <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
+                        <Input css="border-1 border-red-400" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                    }
+                    else {
+                        <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                    }
+                    <Button css="mt-10 flex justify-center" style="pill">
                         <content>
-                            <a href="/" class="">
-                                <Image ImageName="Google.svg" css="h-6" alt="Google"/>
-                            </a>
+                            <input type="submit" value="Log In" />
                         </content>
                     </Button>
-                    <Button style="outline">
-                        <content>
-                            <a href="/">
-                                <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook"/>
-                            </a>
-                        </content>
-                    </Button>
-                </div> *@
-                <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
-            </form>
-        </Card>
+
+                    @* <p class="text-primary-900 text-center mt-8 text-sm">or continue with</p>
+                    <div class="flex justify-center mt-8 gap-4">
+                        <Button css="" style="outline">
+                            <content>
+                                <a href="/" class="">
+                                    <Image ImageName="Google.svg" css="h-6" alt="Google"/>
+                                </a>
+                            </content>
+                        </Button>
+                        <Button style="outline">
+                            <content>
+                                <a href="/">
+                                    <Image ImageName="Facebook-logo.svg" css="h-6" alt="Facebook"/>
+                                </a>
+                            </content>
+                        </Button>
+                    </div> *@
+                    <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
+                </form>
+            </Card>
+        </div>
     </div>
-</div>
+    }
 
 @code {
     public string? email { get; set; }
@@ -91,18 +97,17 @@
     public string? errorMessage = "Could not login";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    private bool isAd = false;
+    private bool logIn = false;
+    private bool isLoaded = false;
+
      protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        if (loggedIn.Value)
-        {
-            NavigationManager.NavigateTo("/");
-        }  else  if (isAdmin.Value)
-        {
-            NavigationManager.NavigateTo("/admin/keys");
-        }
-
+        isAd = isAdmin.Value;
+        logIn = loggedIn.Value;
+        isLoaded = true;
     }
 
 private async Task HandleSubmit()

@@ -5,30 +5,34 @@
 @layout MainLayout
 <PageTitle>Blue Skies - Home</PageTitle>
 
-<div class="w-full">
+    @if (!isLoaded){}
+    else if (isAd){
+        NavigationManager.NavigateTo("/admin/keys");
+    } else {
+    <div class="w-full">
+        <BlazorApp.Section.Hero />
 
-  <BlazorApp.Section.Hero />
+        @* How it works *@
+        <div class="mt-20"><BlazorApp.Section.HowItWorks /></div>
 
-  @* How it works *@
-  <div class="mt-20"><BlazorApp.Section.HowItWorks /></div>
+        @* Unlock your full potential *@
+        <BlazorApp.Section.CTA />
 
-  @* Unlock your full potential *@
-  <BlazorApp.Section.CTA />
-
-  @* Frequently Asked Questions *@
-  <div class="mt-72 lg:mt-44 mb-40"><BlazorApp.Section.FAQ /></div>
-</div>
+        @* Frequently Asked Questions *@
+        <div class="mt-72 lg:mt-44 mb-40"><BlazorApp.Section.FAQ /></div>
+    </div>
+    }
 
 @code {
+  private bool isAd = false;
+  private bool isLoaded = false;
 
- protected override async Task OnInitializedAsync()
-    {
-        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        if (isAdmin.Value)
-        {
-            NavigationManager.NavigateTo("/admin/keys");
-        }
-    }
+  protected override async Task OnInitializedAsync()
+  {
+    var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+    isAd = isAdmin.Value;
+    isLoaded = true;
+  }
 
   //Go to Sign Up Page
   void Register()
