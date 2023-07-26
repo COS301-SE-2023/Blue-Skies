@@ -87,7 +87,7 @@ public async Task<List<Reports>> GetUserReports(int userId)
         }
     }
 
-    public async Task<Reports> createReports(
+    public async Task<Reports> CreateReports(
         string reportName,
         int userId,
         int basicCalculationId,
@@ -142,7 +142,7 @@ public async Task<List<Reports>> GetUserReports(int userId)
         }
     }
 
-    public async Task<Reports> updateReports(
+    public async Task<Reports> UpdateReports(
         int reportId,
         string reportName,
         int userId,
@@ -205,7 +205,7 @@ public async Task<List<Reports>> GetUserReports(int userId)
     }
 
     //Delete report
-    public async Task<bool> deleteReports(int reportId)
+    public async Task<bool> DeleteReports(int reportId)
     {
         try
         {
@@ -239,7 +239,7 @@ public async Task<List<Reports>> GetUserReports(int userId)
     }
 
     //get report by id
-    public async Task<Reports> getReportById(int reportId)
+    public async Task<Reports> GetReportById(int reportId)
     {
         try
         {
