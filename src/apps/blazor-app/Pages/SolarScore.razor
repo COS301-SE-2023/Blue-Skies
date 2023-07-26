@@ -6,7 +6,7 @@
 
 <PageTitle>Solar Score</PageTitle>
 
-<div class="@pageTransitionClass">
+<div class="fade-in-enter-active">
 @if (!isLoaded) {}
 else if (isAd) {
     NavigationManager.NavigateTo("/admin/keys");
@@ -29,18 +29,5 @@ else if (isAd) {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         isAd = isAdmin.Value;
         isLoaded = true;
-    }
-
-    private string pageTransitionClass = "slide-out active";
-
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            // Simulate a delay to show the transition effect
-            await Task.Delay(500);
-            pageTransitionClass = "slide-in active";
-            StateHasChanged();
-        }
     }
 }
