@@ -2,6 +2,7 @@
 @using System.Net.Http.Json
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
+@inject ProtectedSessionStorage ProtectedSessionStorage
 
 
 <div class="mt-20 relative">
@@ -19,11 +20,11 @@
         </div>
         <input
             class="pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
-            type="text" @bind="searchQuery" @oninput="OnSearchInput" placeholder="Enter you address" name="address"
-            id="address" />
+            type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @oninput="OnSearchInput" @onblur="HideSuggestions" placeholder="Enter your address" />
+
     </div>
     <div class="absolute z-20 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
-        <ul class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-10">
+        <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-10">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {
@@ -69,7 +70,7 @@
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private string mapboxAccessToken = "";
-    private bool suggestionSelected = false;
+
 
 
 
@@ -90,15 +91,24 @@
     private async void OnSuggestionClick(LocationSuggestion suggestion)
     {
         searchQuery = suggestion.Place_Name;
-        string inputValue = await JSRuntime.InvokeAsync<string>("eval", $"document.getElementById('address').value");
-        inputValue = searchQuery;
-        await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('address').value = '{inputValue}'");
-
-        suggestionSelected = true;
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
+        await ProtectedSessionStorage.SetAsync("location", suggestion);
     }
+
+    private async Task HideSuggestions()
+    {
+        await Task.Delay(200); // Adding a slight delay to ensure the click event on a suggestion happens before hiding the list
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
+    }
+
+    private async Task ShowSuggestions()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'block';");
+    }
+
     private async Task OnSearchInput(ChangeEventArgs e)
     {
-        if(e.Value != null && e.Value.ToString() != "" || !suggestionSelected)
+        if(e.Value != null && e.Value.ToString() != "")
         {
             searchQuery = e.Value.ToString();
             await GetLocationSuggestions();
