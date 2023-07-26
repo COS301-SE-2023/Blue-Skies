@@ -1,6 +1,8 @@
 @page "/solarscore"
 @layout MainLayout
-
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Solar Score</PageTitle>
 
@@ -9,3 +11,10 @@
     <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
     <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var selected = await ProtectedSessionStore.GetAsync<bool>("SelectedAddress");
+    }
+}
