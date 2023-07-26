@@ -20,7 +20,6 @@ namespace DeepLearning_ImageClassification
 
       Console.WriteLine(projectDirectory);
 
-      // You must unzip assets.zip before training
       IEnumerable<ImageData> images = LoadImagesFromDirectory(folder: assetsRelativePath, useFolderNameAsLabel: true);
 
       IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
@@ -51,11 +50,19 @@ namespace DeepLearning_ImageClassification
         FeatureColumnName = "Image",
         LabelColumnName = "LabelAsKey",
         ValidationSet = validationSet,
+        ValidationSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "validationSetBottleneckFile.csv"),
+        TrainSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "trainSetBottleneckFile.csv"),
         Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
         MetricsCallback = (metrics) => Console.WriteLine(metrics),
+        WorkspacePath = workspaceRelativePath,
+        FinalModelPrefix = Path.Combine(workspaceRelativePath, "model"),
+        EarlyStoppingCriteria = null,
         TestOnTrainSet = false,
         ReuseTrainSetBottleneckCachedValues = true,
-        ReuseValidationSetBottleneckCachedValues = true
+        ReuseValidationSetBottleneckCachedValues = true,
+        Epoch = 100,
+        LearningRate = 0.01f,
+        BatchSize = 100
       };
 
       var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
