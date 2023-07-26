@@ -6,22 +6,25 @@
 
 <PageTitle>Solar Score</PageTitle>
 
+@if (!isLoaded) {}
+else if (isAd) {
+    NavigationManager.NavigateTo("/admin/keys");
+} else {      
 <div class="w-full">
     <div class="mb-20"><BlazorApp.Section.Results/></div>
     <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
     <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
 </div>
+}
 
 @code {
+    private bool isAd = false;
+    private bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
         var selected = await ProtectedLocalStore.GetAsync<bool>("SelectedAddress");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        if (isAdmin.Value)
-        {
-            NavigationManager.NavigateTo("/admin/keys");
-        }
-
-    
+        isAd = isAdmin.Value;
+        isLoaded = true;
     }
 }
