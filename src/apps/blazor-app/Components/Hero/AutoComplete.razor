@@ -68,7 +68,7 @@
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private string mapboxAccessToken = "";
 
-
+    
     protected async override void OnInitialized()
     {
         httpClient = new HttpClient();
@@ -131,4 +131,6 @@
         public string? Type { get; set; }
         public List<double>? Coordinates { get; set; }
     }
+
+   
 }
