@@ -2,6 +2,8 @@
 @layout MainLayout
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
+@using BlazorApp.Models
+@using System.Text.Json
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
 
@@ -107,15 +109,42 @@
     </div>
 }
 @code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private List<ReportModel> reports = new List<ReportModel>();
     private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
+    private int userId = -1;
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
+        userId = usId.Value;
+
+        await GetUserReports();
     }
+
+    private async Task GetUserReports(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId );
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                if (reports.Count > 0)
+                {
+                Console.WriteLine(reports[0].reportName);
+                }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
 }
