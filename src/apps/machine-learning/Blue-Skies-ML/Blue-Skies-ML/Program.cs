@@ -60,7 +60,7 @@ namespace DeepLearning_ImageClassification
         TestOnTrainSet = false,
         ReuseTrainSetBottleneckCachedValues = true,
         ReuseValidationSetBottleneckCachedValues = true,
-        Epoch = 100,
+        Epoch = 200,
         LearningRate = 0.01f,
         BatchSize = 100
       };
