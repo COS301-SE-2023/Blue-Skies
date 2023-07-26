@@ -6,6 +6,7 @@
 
 <PageTitle>Solar Score</PageTitle>
 
+<div class="@pageTransitionClass">
 @if (!isLoaded) {}
 else if (isAd) {
     NavigationManager.NavigateTo("/admin/keys");
@@ -16,6 +17,8 @@ else if (isAd) {
     <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
 </div>
 }
+</div>
+
 
 @code {
     private bool isAd = false;
@@ -26,5 +29,18 @@ else if (isAd) {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         isAd = isAdmin.Value;
         isLoaded = true;
+    }
+
+    private string pageTransitionClass = "slide-out active";
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Simulate a delay to show the transition effect
+            await Task.Delay(500);
+            pageTransitionClass = "slide-in active";
+            StateHasChanged();
+        }
     }
 }
