@@ -76,9 +76,9 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
                 .filterBounds(roi) \
                 .filterDate(startDate, endDate) \
                 .sort('CLOUDY_PIXEL_PERCENTAGE') \
-                .limit(1)
+                .first()
 
-            image = ee.Image(collection.first())
+            image = ee.Image(collection)
             imageName = stringYear + '-' + stringMonth
 
             executor.submit(download_and_save_image, image, roi, imageName)
