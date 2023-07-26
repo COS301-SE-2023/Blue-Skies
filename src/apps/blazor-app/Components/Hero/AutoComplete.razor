@@ -1,5 +1,7 @@
 @using System.Net.Http
 @using System.Net.Http.Json
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
 
 <div class="mt-20 relative">
@@ -38,7 +40,7 @@
                     if (suggestion.Place_Name.Contains(",")) {
                         var address = suggestion.Place_Name.Substring(0, suggestion.Place_Name.IndexOf(","));
                         var rest = suggestion.Place_Name.Substring(suggestion.Place_Name.IndexOf(",") + 1);
-                        <li class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300  @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
+                        <li onclick="@(() => OnSuggestionClick(suggestion))" class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300  @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
                             <p class="font-bold">
                                 @address
                             </p>
@@ -67,6 +69,9 @@
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private string mapboxAccessToken = "";
+    private bool suggestionSelected = false;
+
+
 
     
     protected async override void OnInitialized()
@@ -82,9 +87,18 @@
         mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
+    private async void OnSuggestionClick(LocationSuggestion suggestion)
+    {
+        searchQuery = suggestion.Place_Name;
+        string inputValue = await JSRuntime.InvokeAsync<string>("eval", $"document.getElementById('address').value");
+        inputValue = searchQuery;
+        await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('address').value = '{inputValue}'");
+
+        suggestionSelected = true;
+    }
     private async Task OnSearchInput(ChangeEventArgs e)
     {
-        if(e.Value != null && e.Value.ToString() != "")
+        if(e.Value != null && e.Value.ToString() != "" || !suggestionSelected)
         {
             searchQuery = e.Value.ToString();
             await GetLocationSuggestions();
@@ -122,6 +136,7 @@
 
     public class LocationSuggestion
     {
+        public string Id { get; set; } = "";
         public string Place_Name { get; set; } = "";
         public Geometry? Geometry { get; set; }
     }
