@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStore
 @layout MainLayout
 <PageTitle>Blue Skies - Home</PageTitle>
 
@@ -19,6 +20,16 @@
 </div>
 
 @code {
+
+ protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (isAdmin.Value)
+        {
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+    }
+
   //Go to Sign Up Page
   void Register()
   {
