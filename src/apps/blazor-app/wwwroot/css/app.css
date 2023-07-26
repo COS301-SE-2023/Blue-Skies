@@ -1485,6 +1485,11 @@ video {
   background-color: rgb(219 234 254 / var(--tw-bg-opacity));
 }
 
+.bg-blue-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(147 197 253 / var(--tw-bg-opacity));
+}
+
 .bg-blue-50 {
   --tw-bg-opacity: 1;
   background-color: rgb(239 246 255 / var(--tw-bg-opacity));
@@ -1558,6 +1563,11 @@ video {
 .bg-red-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(252 165 165 / var(--tw-bg-opacity));
+}
+
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
 .bg-slate-200 {
@@ -2074,14 +2084,6 @@ video {
   transition-duration: 150ms;
 }
 
-.transition {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-
 .delay-100 {
   transition-delay: 100ms;
 }
@@ -2114,44 +2116,55 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Example CSS for Fade-In and Fade-Out transitions */
+/* Fade-In Transition */
 
-.fade-in {
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
+.fade-in-enter-active {
+  animation: fadeIn .6s;
 }
 
-.fade-in.active {
-  opacity: 1;
+/* Slide-In Transition */
+
+.slide-in-enter-active {
+  animation: slideIn .6s;
+  animation-delay: 50ms;
 }
 
-.fade-out {
-  opacity: 1;
-  transition: opacity 0.3s ease-out;
+.fade-in-leave-active {
+  animation: fadeOut .6s;
 }
 
-.fade-out.active {
-  opacity: 0;
+/* Fade-Out Transition */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(1%);
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
-/* Example CSS for Slide-In and Slide-Out transitions */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10%);
+  }
 
-.slide-in {
-  transform: translateX(-100%);
-  transition: transform 0.3s ease-in;
+  to {
+    opacity: 1;
+  }
 }
 
-.slide-in.active {
-  transform: translateX(0);
-}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
 
-.slide-out {
-  transform: translateX(0);
-  transition: transform 0.3s ease-out;
-}
-
-.slide-out.active {
-  transform: translateX(100%);
+  to {
+    opacity: 0;
+  }
 }
 
 .placeholder\:text-gray-400::-moz-placeholder {
@@ -2731,4 +2744,5 @@ body {
     margin-left: 15rem;
   }
 }
+
   
