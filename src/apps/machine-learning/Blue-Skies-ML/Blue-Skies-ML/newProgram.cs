@@ -57,35 +57,41 @@ namespace SolarRadiationPrediction
 
         public static void SaveToCsv(MLContext mlContext, IDataView imageData)
         {
+            var directory = Path.GetDirectoryName(_dataPath);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             using (StreamWriter writer = new StreamWriter(_dataPath))
             {
                 writer.WriteLine("ImagePath,Longitude,Latitude,Date,SolarRadiation");
 
                 foreach (var image in mlContext.Data.CreateEnumerable<ImageData>(imageData, reuseRowObject: true))
                 {
-                    string filename = Path.GetFileNameWithoutExtension(image.ImagePath);
-                    string[] parts = filename.Split('-');
-                    if (parts.Length != 4)
-                    {
-                        Console.WriteLine($"Invalid filename format: {filename}");
-                        continue;
-                    }
+                    // Parse the image file name to extract longitude, latitude, date, and solar radiation
+                    var fileName = Path.GetFileNameWithoutExtension(image.ImagePath);
+                    var parts = fileName.Split('-');
 
-                    if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float longitude) ||
-                        !float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float latitude) ||
-                        !DateTime.TryParseExact(parts[2], "yyyy_MM_dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date) ||
-                        !float.TryParse(parts[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float solarRadiation))
+                    if (parts.Length >= 4)
                     {
-                        Console.WriteLine($"Error parsing data from filename: {filename}");
-                        continue;
-                    }
+                        var longitude = parts[0];
+                        var latitude = parts[1];
+                        var date = parts[2];
+                        var solarRadiation = parts[3];
 
-                    writer.WriteLine($"{image.ImagePath},{longitude},{latitude},{date:yyyy_MM_dd},{solarRadiation}");
+                        writer.WriteLine($"{image.ImagePath},{longitude},{latitude},{date},{solarRadiation}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Invalid file name format: {image.ImagePath}");
+                    }
                 }
             }
 
             Console.WriteLine("CSV file with solar data saved.");
         }
+
 
         public static IEnumerable<ImageData> LoadImagesFromDirectory(string folder)
         {
