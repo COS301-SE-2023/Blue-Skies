@@ -4,19 +4,21 @@
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Advanced Calculations</PageTitle>
-    @if(!isLoaded){}
-    else if (!logIn) {
-        NavigationManager.NavigateTo("/login");
-    } else  if (isAd) {
-        NavigationManager.NavigateTo("/admin/keys");
-    } else {
-    <div class="w-full">
-        <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
+    <div class="fade-in-enter-active">
+        @if(!isLoaded){}
+        else if (!logIn) {
+            NavigationManager.NavigateTo("/login");
+        } else  if (isAd) {
+            NavigationManager.NavigateTo("/admin/keys");
+        } else {
         <div class="w-full">
-            <BlazorApp.Section.BuildYourHome/>
+            <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
+            <div class="w-full">
+                <BlazorApp.Section.BuildYourHome/>
+            </div>
         </div>
+        }
     </div>
-    }
 
 @code {
     private bool logIn = false;
