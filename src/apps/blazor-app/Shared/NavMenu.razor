@@ -34,11 +34,12 @@
       </Button> *@
 
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
+        <a onclick="@(() => logout())" href="/">
         <div class="@(loggedIn ? "flex" : "hidden") shadow group w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0 -translate-y-40") ">
           <Image ImageName="Logout.svg" alt="User Circle" css="w-10 h-10 scale-75" />
           <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Log Out</p>
         </div>
-
+      </a>
         <a href="@(loggedIn ? "/dashboard" : "/login")">
           @{
             int count = userEmail.Length;
@@ -136,6 +137,15 @@
           loggedIn = false;
       }
 
+    }
+
+    public async void logout()
+    {
+      await ProtectedLocalStore.SetAsync("loggedIn", false);
+      await ProtectedLocalStore.SetAsync("userEmail", "");
+      loggedIn = false;
+      userEmail = "";
+      StateHasChanged();
     }
 
 }
