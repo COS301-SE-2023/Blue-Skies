@@ -10,6 +10,10 @@
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
+@if (!isLoaded) {}
+else if(!isAd){
+    NavigationManager.NavigateTo("/unauthorized");
+} else {
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
@@ -96,6 +100,7 @@
         </table>
     </div>
 </div>
+}
 
 @code {
     private Toast successToast { get; set; } = new Toast();
@@ -106,14 +111,18 @@
 
     public bool recordState { get; set; } = false;
 
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
+    private List<int> deleteArr = new List<int>();
+
+    private bool isAd = false;
+    private bool isLoaded = false;
+
     public void toggleRecordState(int state)
     {
         recordState = !recordState;
     }
 
     //Get All Appliances
-    private List<ApplianceModel> appliances = new List<ApplianceModel>();
-    private List<int> deleteArr = new List<int>();
     private async Task deleteAppliances(){
         ModalPopup.Dismiss();
         foreach(int id in deleteArr){
@@ -157,10 +166,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        if(!ans.Value){
-            NavigationManager.NavigateTo("/unauthorized");
-        }
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
+        isLoaded = true;
         await GetAppliances();
     }
     
