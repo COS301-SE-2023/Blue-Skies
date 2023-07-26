@@ -1,7 +1,7 @@
 @page "/solarscore"
 @layout MainLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Solar Score</PageTitle>
@@ -15,6 +15,13 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var selected = await ProtectedSessionStore.GetAsync<bool>("SelectedAddress");
+        var selected = await ProtectedLocalStore.GetAsync<bool>("SelectedAddress");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (isAdmin.Value)
+        {
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+
+    
     }
 }
