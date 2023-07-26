@@ -22,7 +22,7 @@ namespace SolarRadiationPrediction
 
             IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
 
-            // Extract date, longitude, and latitude from image paths and save to CSV
+            // Extract date, longitude, latitude, and solar radiation from image paths and save to CSV
             SaveToCsv(mlContext, imageData);
 
             // Load data from CSV for training the regression model
@@ -41,13 +41,25 @@ namespace SolarRadiationPrediction
             var metrics = mlContext.Regression.Evaluate(predictions);
 
             Console.WriteLine($"R2 Score: {metrics.RSquared}");
+
+            // Example prediction
+            var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
+            var sampleData = new ModelInput
+            {
+                ImagePath = "sample_image.png",
+                Longitude = 24.041f,
+                Latitude = 29.837f,
+                Date = new DateTime(2021, 08, 09)
+            };
+            var prediction = predictionEngine.Predict(sampleData);
+            Console.WriteLine($"Predicted Solar Radiation: {prediction.SolarRadiation}");
         }
 
         public static void SaveToCsv(MLContext mlContext, IDataView imageData)
         {
             using (StreamWriter writer = new StreamWriter(_dataPath))
             {
-                writer.WriteLine("ImagePath,Longitude,Latitude,Date");
+                writer.WriteLine("ImagePath,Longitude,Latitude,Date,SolarRadiation");
 
                 foreach (var image in mlContext.Data.CreateEnumerable<ImageData>(imageData, reuseRowObject: true))
                 {
@@ -61,13 +73,14 @@ namespace SolarRadiationPrediction
 
                     if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out float longitude) ||
                         !float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out float latitude) ||
-                        !DateTime.TryParseExact(parts[2], "yyyy_MM_dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                        !DateTime.TryParseExact(parts[2], "yyyy_MM_dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date) ||
+                        !float.TryParse(parts[3], NumberStyles.Float, CultureInfo.InvariantCulture, out float solarRadiation))
                     {
                         Console.WriteLine($"Error parsing data from filename: {filename}");
                         continue;
                     }
 
-                    writer.WriteLine($"{image.ImagePath},{longitude},{latitude},{date:yyyy_MM_dd}");
+                    writer.WriteLine($"{image.ImagePath},{longitude},{latitude},{date:yyyy_MM_dd},{solarRadiation}");
                 }
             }
 
@@ -111,5 +124,13 @@ namespace SolarRadiationPrediction
         public float Latitude { get; set; }
 
         public DateTime Date { get; set; }
+
+        [LoadColumn(4)] // Target variable (solar radiation) is at column index 4 in the CSV file
+        public float SolarRadiation { get; set; }
+    }
+
+    class ModelOutput
+    {
+        public float SolarRadiation { get; set; }
     }
 }
