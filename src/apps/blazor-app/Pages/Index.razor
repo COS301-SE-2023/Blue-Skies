@@ -3,8 +3,10 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @layout MainLayout
+
 <PageTitle>Blue Skies - Home</PageTitle>
 
+<div class="@pageTransitionClass">
     @if (!isLoaded){}
     else if (isAd){
         NavigationManager.NavigateTo("/admin/keys");
@@ -22,6 +24,7 @@
         <div class="mt-72 lg:mt-44 mb-40"><BlazorApp.Section.FAQ /></div>
     </div>
     }
+</div>
 
 @code {
   private bool isAd = false;
@@ -32,6 +35,19 @@
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
     isAd = isAdmin.Value;
     isLoaded = true;
+  }
+
+  private string pageTransitionClass = "fade-in";
+
+  protected override async void OnAfterRender(bool firstRender)
+  {
+      if (firstRender)
+      {
+          // Simulate a delay to show the transition effect
+          await Task.Delay(500);
+          pageTransitionClass = "fade-in active";
+          StateHasChanged();
+      }
   }
 
   //Go to Sign Up Page

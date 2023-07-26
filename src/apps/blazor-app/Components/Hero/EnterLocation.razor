@@ -2,6 +2,7 @@
 @using BlazorApp.Components.Hero
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStorage
 <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
     <div class="text-center">
         <Heading>
@@ -20,8 +21,7 @@
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <Button style="pill" css="h-14">
                 <content>
-                    <p @onclick="saveBasicCalculation" class="text-sm font-semibold hover:text-white">Get Solar Score
-                    </p>
+                    <p @onclick="saveBasicCalculation" class="text-sm font-semibold hover:text-white">Get Solar Score</p>
                 </content>
             </Button>
             <a href="/advanced" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculations <span
@@ -32,6 +32,7 @@
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
     private List<ProductModel> products = new List<ProductModel>();
 
     public async void saveBasicCalculation()
@@ -56,6 +57,7 @@
             null,
             "application/json"
         );
+
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.IsSuccessStatusCode)
@@ -75,15 +77,11 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive
-                = true
-                });
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to get products");
         }
     }
 
