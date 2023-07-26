@@ -1,5 +1,7 @@
 @inherits LayoutComponentBase
 @using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Blue Skies</PageTitle>
 
@@ -23,7 +25,7 @@
                 <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Statistics</p>
             </a>
-            <a href="/">
+            <a onclick="@(() => logout())" href="/">
                 <Image ImageName="Logout.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Logout</p>
             </a>
@@ -39,6 +41,12 @@
     public string appliances { get; set; } = "h-28 w-28 rounded-3xl";
     public string products { get; set; } = "h-28 w-28 rounded-3xl";
     public string stats { get; set; } = "h-28 w-28 rounded-3xl";
+
+    public async void logout() {
+        await ProtectedLocalStore.SetAsync("isAdmin", false);
+        await ProtectedLocalStore.SetAsync("loggedIn", false);
+        await ProtectedLocalStore.SetAsync("userEmail", "");
+    }
 
     public void ChangePage(string page) {
         keys = "h-28 w-28 rounded-3xl";
