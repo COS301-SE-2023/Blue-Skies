@@ -72,10 +72,11 @@ class imageRequest :
             .filterBounds(self.roi) \
             .filterDate(self.start_date, self.end_date) \
             .sort('CLOUDY_PIXEL_PERCENTAGE') \
-            .limit(1)
+            .first()
 
         # Get the image from the collection
-        image = ee.Image(collection.first())
+        image = ee.Image(collection)
+
 
         # Get the solar radiation for the specific image
         self.solar_radiation = get_solar_radiation(image, self.roi)
