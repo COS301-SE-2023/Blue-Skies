@@ -1,6 +1,6 @@
 @page "/advanced"
 @layout MainLayout
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 
 
@@ -16,7 +16,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
+        var ans = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         if (!ans.Value)
         {
             NavigationManager.NavigateTo("/login");
