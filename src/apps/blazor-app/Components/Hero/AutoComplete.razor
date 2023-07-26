@@ -3,7 +3,7 @@
 
 
 <div class="mt-20 relative">
-    <div class="relative mt-2 rounded-full shadow-sm border border-primary-500">
+    <div class="relative mt-2 z-30 rounded-full shadow-sm border border-primary-500">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span class="text-gray-500 translate-x-5 sm:text-sm">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -20,8 +20,8 @@
             type="text" @bind="searchQuery" @oninput="OnSearchInput" placeholder="Enter you address" name="address"
             id="address" />
     </div>
-    <div class="absolute transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
-        <ul class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-30">
+    <div class="absolute z-20 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
+        <ul class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-10">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {
@@ -55,7 +55,6 @@
                     }
                     <hr class="h-px bg-gray-200 border-0 " />
                 }
-                Console.WriteLine(i);
                 i += 100;
             }
         </ul>
@@ -98,8 +97,7 @@
     {        
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
-        string requestUrl = $"{baseUrl}{System.Net.WebUtility.UrlEncode(searchQuery)}.json?country=za&limit=3&proximity=ip&access_token={mapboxAccessToken}";
-        Console.WriteLine(requestUrl);
+        string requestUrl = $"{baseUrl}{System.Net.WebUtility.UrlEncode(searchQuery)}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
 
         try
         {
