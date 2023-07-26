@@ -30,6 +30,25 @@ public class ReportController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("getUserReports/{userId}")]
+    public async Task<IActionResult> GetAllReports([FromRoute] int userId)
+    {
+        try
+        {
+            var data = await _reportsRepository.GetUserReports(userId);
+            if (data == null)
+            {
+                return StatusCode(404, "Report with userId: " + userId + " not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     //Create a new report
     [HttpPost]
     [Route("create")]
