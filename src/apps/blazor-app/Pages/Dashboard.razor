@@ -101,11 +101,11 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        @* var ans = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         if (!ans.Value)
         {
             NavigationManager.NavigateTo("/login");
-        }
+        } *@
     }
 }
 ```
