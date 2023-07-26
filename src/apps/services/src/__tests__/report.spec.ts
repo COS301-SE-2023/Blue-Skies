@@ -213,6 +213,100 @@ describe('Report Controller', () => {
     });
   });
 
+  //GET USER REPORTS
+  describe('getUserReports', () => {
+    it('should return a successful response with a message when the query is successful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        userId: '1',
+      };
+
+      reportController.getAllReports(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([] as IReport[]);
+    });
+
+    it('should return a 400 response with an error message when the query is unsuccessful', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        userId: '1',
+      };
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Query failed'));
+        }
+      );
+
+      reportController.getAllReports(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Query failed',
+      });
+    });
+
+    it('should return a 500 response with an error message when an error is thrown', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        userId: '1',
+      };
+
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+
+      reportController.getAllReports(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error thrown',
+      });
+    });
+
+    //404
+    it('should return a 404 response with an error message when the query returns no rows', () => {
+      // Mock the request body data
+      mockRequest.params = {
+        userId: '1',
+      };
+
+      // Simulate a successful query with no rows
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          const rowCount = 0;
+
+          callback(null, rowCount);
+        }
+      );
+
+      reportController.getAllReports(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'No reports exist.',
+      });
+    });
+  });
+
   //getReport
   describe('getReport', () => {
     it('should return a successful response with a message when the query is successful', () => {
