@@ -2,6 +2,7 @@
 @layout AuthLayout
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 
 <PageTitle>Register</PageTitle>
@@ -84,6 +85,20 @@ private bool repasswordValid = true;
 
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+ protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (loggedIn.Value)
+        {
+            NavigationManager.NavigateTo("/");
+        }  else  if (isAdmin.Value)
+        {
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+
+    }
+
 private async Task HandleValidSubmit()
 {
     Console.WriteLine("OnValidSubmit");
@@ -100,7 +115,10 @@ private async Task HandleValidSubmit()
     {
         showError = "hidden";
         Console.WriteLine("OK");
-        NavigationManager.NavigateTo("/login");
+        await ProtectedLocalStore.SetAsync("loggedIn", true);
+        await ProtectedLocalStore.SetAsync("userEmail", email);
+        await ProtectedLocalStore.SetAsync("isAdmin", false);
+        NavigationManager.NavigateTo("/");
     }
     else
     {

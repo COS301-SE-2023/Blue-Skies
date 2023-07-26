@@ -91,6 +91,20 @@
     public string? errorMessage = "Could not login";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+     protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (loggedIn.Value)
+        {
+            NavigationManager.NavigateTo("/");
+        }  else  if (isAdmin.Value)
+        {
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+
+    }
+
 private async Task HandleSubmit()
 {
     Console.WriteLine("OnSubmit");
