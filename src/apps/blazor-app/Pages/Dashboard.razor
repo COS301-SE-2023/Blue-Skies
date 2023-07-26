@@ -2,7 +2,7 @@
 @layout MainLayout
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
@@ -101,7 +101,7 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
+        var ans = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         if (!ans.Value)
         {
             NavigationManager.NavigateTo("/login");

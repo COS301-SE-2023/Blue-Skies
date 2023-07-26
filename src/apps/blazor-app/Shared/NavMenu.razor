@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.Components.Base
 @inject IJSRuntime JSRuntime
-@inject ProtectedSessionStorage ProtectedSessionStore
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 
 <div class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-[250ms] w-full z-20 @(isScrollingDown ? "h-0" : "h-24") "></div>
@@ -122,12 +122,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-      var result = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
+      var result = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
 
       if (result.Success)
       {
           loggedIn = result.Value;
-          var ans = await ProtectedSessionStore.GetAsync<string>("userEmail");
+          var ans = await ProtectedLocalStore.GetAsync<string>("userEmail");
           userEmail = ans.Value;
       }
       else

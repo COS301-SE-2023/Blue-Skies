@@ -2,7 +2,7 @@
 @layout AuthLayout
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject ProtectedSessionStorage ProtectedSessionStore
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Login</PageTitle>
 
@@ -122,15 +122,15 @@ private async Task HandleSubmit()
             showError = "hidden";
             //Navigate to home page 
             string data= await response.Content.ReadAsStringAsync();
-            await ProtectedSessionStore.SetAsync("loggedIn", true);
-            await ProtectedSessionStore.SetAsync("userEmail", email);
+            await ProtectedLocalStore.SetAsync("loggedIn", true);
+            await ProtectedLocalStore.SetAsync("userEmail", email);
 
             if(data.Contains("UserRole = 1")){
-                await ProtectedSessionStore.SetAsync("isAdmin", true);
+                await ProtectedLocalStore.SetAsync("isAdmin", true);
                 NavigationManager.NavigateTo("/admin/keys");              
             }
             else{
-                await ProtectedSessionStore.SetAsync("isAdmin", false);
+                await ProtectedLocalStore.SetAsync("isAdmin", false);
                 NavigationManager.NavigateTo("/");
             }
         }else{
