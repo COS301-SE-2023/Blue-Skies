@@ -12,11 +12,11 @@ from dotenv import load_dotenv
 from PIL import Image
  
 class solarClass(Enum):
-    VERY_BAD = "Very_Bad"
+    # VERY_BAD = "Very_Bad"
     BAD = "Bad"
     AVERAGE = "Average"
     GOOD = "Good"
-    VERY_GOOD = "Very_Good"
+    # VERY_GOOD = "Very_Good"
 
 # Your input parameters
 end_year = int(sys.argv[1])
@@ -25,10 +25,10 @@ num_points = int(sys.argv[3])
 
 scale = 10
 
-very_bad_solar_radiation = 120
-bad_solar_radiation = 150
-average_solar_radiation = 180
-good_solar_radiation = 210
+# very_bad_solar_radiation = 120
+bad_solar_radiation = 120
+average_solar_radiation = 210
+# good_solar_radiation = 210
 
 
 # Load environment variables from .env file
@@ -90,7 +90,7 @@ class imageRequest :
             # Construct the image name
             # Make longitude and latitude strings with 3 decimal places
             self.image_name = f'{self.latitude:.3f}-{self.longitude:.3f}-{date_formatted.getInfo()}-{solar_radiation_number.getInfo()}'
-            solar_classs = get_solar_radiation_class(self.solar_radiation).value
+            solar_class = get_solar_radiation_class(self.solar_radiation).value
 
             # Download and save the image locally
             image_url = image.getThumbURL({
@@ -102,9 +102,9 @@ class imageRequest :
             })
 
             # Save in folder assests with the name of the image
-            if not os.path.exists(f'assets/{solar_classs}'):
-                os.makedirs(f'assets/{solar_classs}')
-            image_path = f'assets/{solar_classs}/{self.image_name}.png'
+            if not os.path.exists(f'assets/{solar_class}'):
+                os.makedirs(f'assets/{solar_class}')
+            image_path = f'assets/{solar_class}/{self.image_name}.png'
             image = Image.open(requests.get(image_url, stream=True).raw)
             image.save(image_path)
             print('Image', self.image_name, 'saved successfully.')
@@ -146,16 +146,16 @@ random_points = ee.FeatureCollection.randomPoints(region=south_africa.geometry()
 features = random_points.getInfo()['features']
 
 def get_solar_radiation_class(solar_radiation):
-    if solar_radiation < very_bad_solar_radiation:
-        return solarClass.VERY_BAD
-    elif solar_radiation < bad_solar_radiation:
+    # if solar_radiation < very_bad_solar_radiation:
+    #     return solarClass.VERY_BAD
+    if solar_radiation < bad_solar_radiation:
         return solarClass.BAD
     elif solar_radiation < average_solar_radiation:
         return solarClass.AVERAGE
-    elif solar_radiation < good_solar_radiation:
-        return solarClass.GOOD
+    # elif solar_radiation < good_solar_radiation:
+    #     return solarClass.GOOD
     else:
-        return solarClass.VERY_GOOD
+        return solarClass.GOOD
 
 # Iterate over each random point
 for feature in features:
