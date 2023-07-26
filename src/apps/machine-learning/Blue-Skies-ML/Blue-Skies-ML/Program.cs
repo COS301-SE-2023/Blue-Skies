@@ -45,6 +45,13 @@ namespace DeepLearning_ImageClassification
       IDataView validationSet = validationTestSplit.TrainSet;
       IDataView testSet = validationTestSplit.TestSet;
 
+      //Pretrained models:
+      //  ResnetV2101
+      //  InceptionV3
+      //  MobilenetV2
+      //  ResnetV250
+
+
       var classifierOptions = new ImageClassificationTrainer.Options()
       {
         FeatureColumnName = "Image",
@@ -52,7 +59,7 @@ namespace DeepLearning_ImageClassification
         ValidationSet = validationSet,
         ValidationSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "validationSetBottleneckFile.csv"),
         TrainSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "trainSetBottleneckFile.csv"),
-        Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
+        Arch = ImageClassificationTrainer.Architecture.InceptionV3,
         MetricsCallback = (metrics) => Console.WriteLine(metrics),
         WorkspacePath = workspaceRelativePath,
         FinalModelPrefix = Path.Combine(workspaceRelativePath, "model"),
