@@ -43,9 +43,10 @@
     public string stats { get; set; } = "h-28 w-28 rounded-3xl";
 
     public async void logout() {
-        await ProtectedLocalStore.SetAsync("isAdmin", false);
         await ProtectedLocalStore.SetAsync("loggedIn", false);
         await ProtectedLocalStore.SetAsync("userEmail", "");
+        await ProtectedLocalStore.SetAsync("isAdmin", false);
+        NavigationManager.NavigateTo("/");
     }
 
     public void ChangePage(string page) {

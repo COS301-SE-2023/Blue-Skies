@@ -12,6 +12,10 @@
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
+@if (!isLoaded) {}
+else if(!isAd){
+    NavigationManager.NavigateTo("/unauthorized");
+} else {
 <div class="mt-2 pr-10 pb-10 ">
     <div class="flex w-full justify-between p-4">
         <div class="">
@@ -61,6 +65,7 @@
         </diiv>
     </div>
 </div>
+}
 
 @code {
     private int keyCount = 0;
@@ -74,8 +79,13 @@
     private int [] radarCount = new int[4] {0, 0, 0, 0};
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-    protected override void OnInitialized()
+    private bool isLoaded = false;
+    private bool isAd = false;
+    protected override async void OnInitialized()
     {
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
+        isLoaded = true;
         renderCharts();
     }
 

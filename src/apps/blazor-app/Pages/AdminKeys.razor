@@ -10,8 +10,10 @@
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
-
-
+@if (!isLoaded) {}
+else if(!isAd){
+    NavigationManager.NavigateTo("/unauthorized");
+} else {
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
@@ -99,6 +101,7 @@
         </table>
  </div>
 </div>
+}
 
 @code {
     @inject IJSRuntime JSRuntime;
@@ -108,14 +111,17 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    private List<APIKeyModel> keys = new List<APIKeyModel>();
+    private List<int> deleteArr = new List<int>();
+
+    private bool isAd = false;
+    private bool isLoaded = false;
+
     private void ShowModal()
     {
         ModalPopup.Show();
     }
 
-    private List<APIKeyModel> keys = new List<APIKeyModel>();
-
-    private List<int> deleteArr = new List<int>();
     private async Task DeleteKeys(){
         foreach(int id in deleteArr){
             await DeleteKey(id);
@@ -154,16 +160,12 @@
             Console.WriteLine("Failed to delete");
         }
     }
-    protected  void AfterInitializedAsync(){
-
-    }
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        if(!ans.Value){
-            NavigationManager.NavigateTo("/unauthorized");
-        }
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
         await GetKeys();
+        isLoaded = true;
  
     }
 
