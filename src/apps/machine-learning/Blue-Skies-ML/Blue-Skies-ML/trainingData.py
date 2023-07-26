@@ -22,9 +22,7 @@ class solarClass(Enum):
 end_year = int(sys.argv[1])
 num_years = int(sys.argv[2])
 num_points = int(sys.argv[3])
-# end_year = 2022
-# num_years = 3
-# num_points = 1
+
 scale = 10
 
 very_bad_solar_radiation = 120
