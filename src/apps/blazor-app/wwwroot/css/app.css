@@ -1074,6 +1074,26 @@ video {
   width: 100%;
 }
 
+.w-44 {
+  width: 11rem;
+}
+
+.w-3 {
+  width: 0.75rem;
+}
+
+.w-4 {
+  width: 1rem;
+}
+
+.w-32 {
+  width: 8rem;
+}
+
+.w-36 {
+  width: 9rem;
+}
+
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -2187,6 +2207,14 @@ body {
 
 .hover\:w-60:hover {
   width: 15rem;
+}
+
+.hover\:w-32:hover {
+  width: 8rem;
+}
+
+.hover\:w-36:hover {
+  width: 9rem;
 }
 
 .hover\:-translate-y-1:hover {
