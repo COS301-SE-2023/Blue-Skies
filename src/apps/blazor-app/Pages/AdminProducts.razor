@@ -10,10 +10,6 @@
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
-@if (!isLoaded) {}
-else if(!isAd){
-    NavigationManager.NavigateTo("/unauthorized");
-} else {
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
@@ -105,7 +101,6 @@ else if(!isAd){
         </table>
     </div>
 </div>
-}
 
 @code {
     private Toast successToast { get; set; } = new Toast();
@@ -116,8 +111,6 @@ else if(!isAd){
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<int> deleteArr = new List<int>();
 
-    private bool isAd = false;
-    private bool isLoaded = false;
     private async Task DeleteProducts()
     {
         foreach (int id in deleteArr)
@@ -165,9 +158,6 @@ else if(!isAd){
     }
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        isAd = isAdmin.Value;
-        isLoaded = true;
         await GetProducts();
 
     }

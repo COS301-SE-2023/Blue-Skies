@@ -10,10 +10,6 @@
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
-@if (!isLoaded) {}
-else if(!isAd){
-    NavigationManager.NavigateTo("/unauthorized");
-} else {
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
@@ -100,7 +96,6 @@ else if(!isAd){
         </table>
     </div>
 </div>
-}
 
 @code {
     private Toast successToast { get; set; } = new Toast();
@@ -113,9 +108,6 @@ else if(!isAd){
 
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<int> deleteArr = new List<int>();
-
-    private bool isAd = false;
-    private bool isLoaded = false;
 
     public void toggleRecordState(int state)
     {
@@ -166,9 +158,6 @@ else if(!isAd){
 
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        isAd = isAdmin.Value;
-        isLoaded = true;
         await GetAppliances();
     }
     

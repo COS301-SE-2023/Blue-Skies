@@ -10,10 +10,6 @@
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
-@if (!isLoaded) {}
-else if(!isAd){
-    NavigationManager.NavigateTo("/unauthorized");
-} else {
 <div class="mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
@@ -101,7 +97,6 @@ else if(!isAd){
         </table>
  </div>
 </div>
-}
 
 @code {
     @inject IJSRuntime JSRuntime;
@@ -113,9 +108,6 @@ else if(!isAd){
 
     private List<APIKeyModel> keys = new List<APIKeyModel>();
     private List<int> deleteArr = new List<int>();
-
-    private bool isAd = false;
-    private bool isLoaded = false;
 
     private void ShowModal()
     {
@@ -162,11 +154,7 @@ else if(!isAd){
     }
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        isAd = isAdmin.Value;
         await GetKeys();
-        isLoaded = true;
- 
     }
 
     private async Task GetKeys(){
