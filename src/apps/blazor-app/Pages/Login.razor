@@ -1,6 +1,8 @@
 @page "/login"
 @layout AuthLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 
@@ -140,11 +142,13 @@ private async Task HandleSubmit()
             Console.WriteLine("Success");
             showError = "hidden";
             //Navigate to home page 
-            string data= await response.Content.ReadAsStringAsync();
+            UserModel data= await response.Content.ReadFromJsonAsync<UserModel>();
+
             await ProtectedLocalStore.SetAsync("loggedIn", true);
             await ProtectedLocalStore.SetAsync("userEmail", email);
-
-            if(data.Contains("UserRole = 1")){
+            await ProtectedLocalStore.SetAsync("userId", data.userId);
+      
+            if(data.userRole == 1){
                 await ProtectedLocalStore.SetAsync("isAdmin", true);
                 NavigationManager.NavigateTo("/admin/keys");              
             }
@@ -158,7 +162,6 @@ private async Task HandleSubmit()
             errorMessage = message;
              showError = "block";
         }
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
     }
 
     public void HandleInvalidSubmit()
