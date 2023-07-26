@@ -24,7 +24,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            var key = await _solarScoreRepository.getMapBoxApiKey();
+            var key = await _solarScoreRepository.GetMapBoxApiKey();
             return Ok(key);
         }
         catch (Exception e)

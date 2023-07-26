@@ -53,7 +53,7 @@ public class ReportAllRepository
     }
 
     //get report by reportId
-    public async Task<List<ReportAll>> getReportById(int reportId)
+    public async Task<List<ReportAll>> GetReportById(int reportId)
     {
         try
         {
@@ -92,7 +92,7 @@ public class ReportAllRepository
     }
 
     //get report by userId
-    public async Task<List<ReportAll>> getReportByUserId(int userId)
+    public async Task<List<ReportAll>> GetReportByUserId(int userId)
     {
         try
         {

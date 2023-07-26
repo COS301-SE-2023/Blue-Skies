@@ -22,7 +22,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.createReportAppliance(
+            var data = await _reportsRepository.CreateReportAppliance(
                 report.reportId,
                 report.applianceId,
                 report.numberOfAppliances
@@ -98,7 +98,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.getReportAppliance(reportid, applianceId);
+            var data = await _reportsRepository.GetReportAppliance(reportid, applianceId);
             if (data == null)
             {
                 return StatusCode(
@@ -125,7 +125,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.updateNumberOfAppliances(
+            var data = await _reportsRepository.UpdateNumberOfAppliances(
                 report.reportId,
                 report.applianceId,
                 report.numberOfAppliances
@@ -145,7 +145,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.updateReportId(reportId, newReportId);
+            var data = await _reportsRepository.UpdateReportId(reportId, newReportId);
             return Ok(data);
         }
         catch (Exception e)
@@ -164,7 +164,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.updateApplianceId(applianceId, newApplianceId);
+            var data = await _reportsRepository.UpdateApplianceId(applianceId, newApplianceId);
             return Ok(data);
         }
         catch (Exception e)
@@ -180,7 +180,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.deleteReportId(reportId);
+            var data = await _reportsRepository.DeleteReportId(reportId);
             if (data == false)
             {
                 return StatusCode(
@@ -203,7 +203,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.deleteApplianceId(applianceId);
+            var data = await _reportsRepository.DeleteApplianceId(applianceId);
             if (data == false)
             {
                 return StatusCode(
@@ -231,7 +231,7 @@ public class ReportApplianceController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.deleteReportAppliance(reportId, applianceId);
+            var data = await _reportsRepository.DeleteReportAppliance(reportId, applianceId);
             if (data == false)
             {
                 return StatusCode(

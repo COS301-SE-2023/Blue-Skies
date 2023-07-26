@@ -16,7 +16,7 @@ public class SolarScoreRepository
         }
     }
 
-    public async Task<string> getMapBoxApiKey()
+    public async Task<string> GetMapBoxApiKey()
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/mapboxkey");
