@@ -12,6 +12,13 @@ namespace DeepLearning_ImageClassification
   {
     static void Main(string[] args)
     {
+      TrainAndTestModel();
+
+
+    }
+
+    public static void TrainAndTestModel()
+    {
       var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
       var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
       var assetsRelativePath = Path.Combine(projectDirectory, "assets");
@@ -45,13 +52,6 @@ namespace DeepLearning_ImageClassification
       IDataView validationSet = validationTestSplit.TrainSet;
       IDataView testSet = validationTestSplit.TestSet;
 
-      //Pretrained models:
-      //  ResnetV2101 - 0.39
-      //  InceptionV3 - 0.39
-      //  MobilenetV2 - 0.39
-      //  ResnetV250 = 0.39
-
-
       var classifierOptions = new ImageClassificationTrainer.Options()
       {
         FeatureColumnName = "Image",
@@ -69,7 +69,7 @@ namespace DeepLearning_ImageClassification
         ReuseValidationSetBottleneckCachedValues = true,
         Epoch = 200,
         LearningRate = 0.05f,
-        BatchSize = 500
+        BatchSize = 50
       };
 
       var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
@@ -104,7 +104,7 @@ namespace DeepLearning_ImageClassification
 
       var correct = 0;
       //Keep track of how far off the data is from the right value - Possible outputs are Very_Bad, Bad, Average, Good, Very_Good
-      var error = new int[5];
+      var error = new int[3];
 
       Console.WriteLine("Classifying multiple images");
       foreach (var prediction in predictions)
@@ -116,27 +116,23 @@ namespace DeepLearning_ImageClassification
           error[getLabelIndex(prediction.Label)]++;
       }
       Console.WriteLine($"Correctly classified {correct} out of {predictions.Count()} images");
-      Console.WriteLine($"Very_Bad: {error[0]}");
-      Console.WriteLine($"Bad: {error[1]}");
-      Console.WriteLine($"Average: {error[2]}");
-      Console.WriteLine($"Good: {error[3]}");
-      Console.WriteLine($"Very_Good: {error[4]}");
+      //Console.WriteLine($"Very_Bad: {error[0]}");
+      Console.WriteLine($"Bad: {error[0]}");
+      Console.WriteLine($"Average: {error[1]}");
+      Console.WriteLine($"Good: {error[2]}");
+     // Console.WriteLine($"Very_Good: {error[4]}");
     }
 
     private static int getLabelIndex(string label)
     {
       switch (label)
       {
-        case "Very_Bad":
-          return 0;
         case "Bad":
-          return 1;
+          return 0;
         case "Average":
-          return 2;
+          return 1;
         case "Good":
-          return 3;
-        case "Very_Good":
-          return 4;
+          return 2;     
         default:
           return -1;
       }
