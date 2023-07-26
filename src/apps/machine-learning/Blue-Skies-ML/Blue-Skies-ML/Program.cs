@@ -46,10 +46,10 @@ namespace DeepLearning_ImageClassification
       IDataView testSet = validationTestSplit.TestSet;
 
       //Pretrained models:
-      //  ResnetV2101
-      //  InceptionV3
-      //  MobilenetV2
-      //  ResnetV250
+      //  ResnetV2101 - 0.39
+      //  InceptionV3 - 0.39
+      //  MobilenetV2 - 0.39
+      //  ResnetV250 = 0.39
 
 
       var classifierOptions = new ImageClassificationTrainer.Options()
@@ -68,8 +68,8 @@ namespace DeepLearning_ImageClassification
         ReuseTrainSetBottleneckCachedValues = true,
         ReuseValidationSetBottleneckCachedValues = true,
         Epoch = 200,
-        LearningRate = 0.01f,
-        BatchSize = 100
+        LearningRate = 0.05f,
+        BatchSize = 500
       };
 
       var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)

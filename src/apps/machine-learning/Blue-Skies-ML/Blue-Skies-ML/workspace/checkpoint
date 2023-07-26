@@ -1,0 +1,2 @@
+model_checkpoint_path: "modelinception_v3.meta"
+all_model_checkpoint_paths: "C:\Users\wilco\Documents\GitHub\Blue-Skies\src\apps\machine-learning\Blue-Skies-ML\Blue-Skies-ML\workspace\modelinception_v3.meta"
