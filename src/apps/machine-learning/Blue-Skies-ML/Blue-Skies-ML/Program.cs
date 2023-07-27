@@ -117,11 +117,9 @@ namespace DeepLearning_ImageClassification
           error[getLabelIndex(prediction.Label)]++;
       }
       Console.WriteLine($"Correctly classified {correct} out of {predictions.Count()} images");
-      //Console.WriteLine($"Very_Bad: {error[0]}");
       Console.WriteLine($"Bad: {error[0]}");
       Console.WriteLine($"Average: {error[1]}");
       Console.WriteLine($"Good: {error[2]}");
-     // Console.WriteLine($"Very_Good: {error[4]}");
     }
 
     private static int getLabelIndex(string label)
