@@ -47,7 +47,11 @@
         List<ProductModel> products= await GetProducts();
         int systemId = 1;
         int dayLightHours = 4;
-        string location =locationSuggestion.Place_Name;
+        string location = "";
+        if (locationSuggestion != null)
+        {
+            location = locationSuggestion.Place_Name;
+        }
         int batteryLife = 10;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
@@ -85,7 +89,7 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
         else
         {
