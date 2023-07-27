@@ -2,7 +2,7 @@
 @using BlazorApp.Components.Hero
 @using BlazorApp.Models
 @using System.Text.Json;
-@inject ProtectedSessionStorage ProtectedSessionStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
 <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
     <div class="text-center">
         <Heading>
@@ -33,14 +33,15 @@
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-    private List<ProductModel> products = new List<ProductModel>();
 
     public async void saveBasicCalculation()
     {
-        await GetProducts();
+        var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
+        LocationSuggestion locationSuggestion = locationTemp.Value;
+        List<ProductModel> products= await GetProducts();
         int systemId = 1;
         int dayLightHours = 4;
-        string location = "Cape Town";
+        string location =locationSuggestion.Place_Name;
         int batteryLife = 10;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
@@ -69,8 +70,9 @@
             Console.WriteLine("Failure");
         }
     }
-    private async Task GetProducts()
+    private async Task<List<ProductModel>> GetProducts()
     {
+        List<ProductModel> products = new List<ProductModel>();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
         var response = await client.SendAsync(request);
@@ -83,6 +85,8 @@
         {
             Console.WriteLine("Failed to get products");
         }
+
+        return products;
     }
 
 }
