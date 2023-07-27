@@ -1,142 +1,301 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using Microsoft.ML;
-using Microsoft.ML.Data;
+// using System;
+// using System.Collections.Generic;
+// using System.IO;
+// using System.Linq;
+// using Microsoft.ML;
+// using Microsoft.ML.Data;
 
-namespace SolarRadiationPrediction
-{
-    class Program
-    {
-        static readonly string _dataPath = Path.Combine(Environment.CurrentDirectory, "Data", "solar_data.csv");
+// namespace SolarRadiationPrediction
+// {
+//     class Program
+//     {
+//         private static ITransformer trainedModel;
 
-        static void Main(string[] args)
-        {
-            var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
-            var assetsRelativePath = Path.Combine(projectDirectory, "assets");
+//         static void Main(string[] args)
+//         {
+//             TrainAndTestModel();
 
-            MLContext mlContext = new MLContext();
+//             // Load the pretrained model to generate the bottlenecks
+//             var model = LoadPretrainedModel();
 
-            IEnumerable<ImageData> images = LoadImagesFromDirectory(folder: assetsRelativePath);
+//             // Create the CSV file with the bottlenecks and additional data
+//             CreateCsvFromBottlenecks(model);
 
-            IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
+//             // Train the model on the new CSV data
+//             TrainModel();
+//         }
 
-            // Extract date, longitude, latitude, and solar radiation from image paths and save to CSV
-            SaveToCsv(mlContext, imageData);
+//         public static void TrainAndTestModel()
+//         {
+//             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
+//             var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
+//             var assetsRelativePath = Path.Combine(projectDirectory, "assets");
 
-            // Load data from CSV for training the regression model
-            var data = mlContext.Data.LoadFromTextFile<ModelInput>(_dataPath, separatorChar: ',');
+//             MLContext mlContext = new MLContext();
 
-            // Define the data preprocessing pipeline
-            var preprocessingPipeline = mlContext.Transforms.Conversion.MapValueToKey("Label", "SolarRadiation")
-                .Append(mlContext.Transforms.Concatenate("Features", "Longitude", "Latitude", "Date"));
+//             Console.WriteLine(projectDirectory);
 
-            // Train the regression model
-            var regressionPipeline = preprocessingPipeline.Append(mlContext.Regression.Trainers.FastTree());
-            var trainedModel = regressionPipeline.Fit(data);
+//             IEnumerable<ImageData> images = LoadImagesFromDirectory(folder: assetsRelativePath, useFolderNameAsLabel: true);
 
-            // Test the regression model
-            var predictions = trainedModel.Transform(data);
-            var metrics = mlContext.Regression.Evaluate(predictions);
+//             IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
 
-            Console.WriteLine($"R2 Score: {metrics.RSquared}");
+//             IDataView shuffledData = mlContext.Data.ShuffleRows(imageData);
 
-            // Example prediction
-            var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
-            var sampleData = new ModelInput
-            {
-                ImagePath = "sample_image.png",
-                Longitude = 24.041f,
-                Latitude = 29.837f,
-                Date = new DateTime(2021, 08, 09)
-            };
-            var prediction = predictionEngine.Predict(sampleData);
-            Console.WriteLine($"Predicted Solar Radiation: {prediction.SolarRadiation}");
-        }
+//             var preprocessingPipeline = mlContext.Transforms.Conversion.MapValueToKey(
+//                 inputColumnName: "Label",
+//                 outputColumnName: "LabelAsKey")
+//             .Append(mlContext.Transforms.LoadRawImageBytes(
+//                 outputColumnName: "Image",
+//                 imageFolder: assetsRelativePath,
+//                 inputColumnName: "ImagePath"));
 
-        public static void SaveToCsv(MLContext mlContext, IDataView imageData)
-        {
-            var directory = Path.GetDirectoryName(_dataPath);
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+//             IDataView preProcessedData = preprocessingPipeline
+//                                         .Fit(shuffledData)
+//                                         .Transform(shuffledData);
 
-            using (StreamWriter writer = new StreamWriter(_dataPath))
-            {
-                writer.WriteLine("ImagePath,Longitude,Latitude,Date,SolarRadiation");
+//             TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcessedData, testFraction: 0.3);
+//             TrainTestData validationTestSplit = mlContext.Data.TrainTestSplit(trainSplit.TestSet);
 
-                foreach (var image in mlContext.Data.CreateEnumerable<ImageData>(imageData, reuseRowObject: true))
-                {
-                    // Parse the image file name to extract longitude, latitude, date, and solar radiation
-                    var fileName = Path.GetFileNameWithoutExtension(image.ImagePath);
-                    var parts = fileName.Split('-');
+//             IDataView trainSet = trainSplit.TrainSet;
+//             IDataView validationSet = validationTestSplit.TrainSet;
+//             IDataView testSet = validationTestSplit.TestSet;
 
-                    if (parts.Length >= 4)
-                    {
-                        var longitude = parts[0];
-                        var latitude = parts[1];
-                        var date = parts[2];
-                        var solarRadiation = parts[3];
+//             var classifierOptions = new ImageClassificationTrainer.Options()
+//             {
+//                 FeatureColumnName = "Image",
+//                 LabelColumnName = "LabelAsKey",
+//                 ValidationSet = validationSet,
+//                 ValidationSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "validationSetBottleneckFile.csv"),
+//                 TrainSetBottleneckCachedValuesFileName = Path.Combine(workspaceRelativePath, "trainSetBottleneckFile.csv"),
+//                 Arch = ImageClassificationTrainer.Architecture.InceptionV3,
+//                 MetricsCallback = (metrics) => Console.WriteLine(metrics),
+//                 WorkspacePath = workspaceRelativePath,
+//                 FinalModelPrefix = Path.Combine(workspaceRelativePath, "model"),
+//                 EarlyStoppingCriteria = null,
+//                 TestOnTrainSet = false,
+//                 ReuseTrainSetBottleneckCachedValues = true,
+//                 ReuseValidationSetBottleneckCachedValues = true,
+//                 Epoch = 200,
+//                 LearningRate = 0.05f,
+//                 BatchSize = 50
+//             };
 
-                        writer.WriteLine($"{image.ImagePath},{longitude},{latitude},{date},{solarRadiation}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Invalid file name format: {image.ImagePath}");
-                    }
-                }
-            }
+//             var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
+//                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
 
-            Console.WriteLine("CSV file with solar data saved.");
-        }
+//             ITransformer trainedModel = trainingPipeline.Fit(trainSet);
 
+//             ClassifySingleImage(mlContext, testSet, trainedModel);
 
-        public static IEnumerable<ImageData> LoadImagesFromDirectory(string folder)
-        {
-            var files = Directory.GetFiles(folder, "*", SearchOption.AllDirectories);
+//             ClassifyImages(mlContext, testSet, trainedModel);
 
-            foreach (var file in files)
-            {
-                if (!IsImageFile(file))
-                    continue;
+//             // Load the pretrained model to generate the bottlenecks
+//             var model = LoadPretrainedModel();
 
-                yield return new ImageData()
-                {
-                    ImagePath = file
-                };
-            }
-        }
+//             // Create the CSV file with the bottlenecks and additional data
+//             CreateCsvFromBottlenecks(model);
 
-        public static bool IsImageFile(string file)
-        {
-            var extension = Path.GetExtension(file).ToLower();
-            return extension == ".jpg" || extension == ".jpeg" || extension == ".png";
-        }
-    }
+//             // Save the trained model to the field
+//             trainedModel = trainingPipeline.Fit(data);
+//         }
 
-    class ImageData
-    {
-        public string ImagePath { get; set; }
-    }
+//             public static void ClassifySingleImage(MLContext mlContext, IDataView data, ITransformer trainedModel)
+//         {
+//             PredictionEngine<ModelInput, ModelOutput> predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
 
-    class ModelInput
-    {
-        public string ImagePath { get; set; }
+//             ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(data, reuseRowObject: true).First();
 
-        public float Longitude { get; set; }
+//             ModelOutput prediction = predictionEngine.Predict(image);
 
-        public float Latitude { get; set; }
+//             Console.WriteLine("Classifying single image");
+//             OutputPrediction(prediction);
+//         }
 
-        public DateTime Date { get; set; }
+//         public static void ClassifyImages(MLContext mlContext, IDataView data, ITransformer trainedModel)
+//         {
+//             IDataView predictionData = trainedModel.Transform(data);
 
-        [LoadColumn(4)] // Target variable (solar radiation) is at column index 4 in the CSV file
-        public float SolarRadiation { get; set; }
-    }
+//             IEnumerable<ModelOutput> predictions = mlContext.Data.CreateEnumerable<ModelOutput>(predictionData, reuseRowObject: true).Take(10);
 
-    class ModelOutput
-    {
-        public float SolarRadiation { get; set; }
-    }
-}
+//             var correct = 0;
+//             var error = new int[3];
+
+//             Console.WriteLine("Classifying multiple images");
+//             foreach (var prediction in predictions)
+//             {
+//                 OutputPrediction(prediction);
+//                 if (prediction.Label == prediction.PredictedLabel)
+//                     correct++;
+//                 else
+//                     error[getLabelIndex(prediction.Label)]++;
+//             }
+//             Console.WriteLine($"Correctly classified {correct} out of {predictions.Count()} images");
+//             Console.WriteLine($"Bad: {error[0]}");
+//             Console.WriteLine($"Average: {error[1]}");
+//             Console.WriteLine($"Good: {error[2]}");
+//         }
+
+//         private static int getLabelIndex(string label)
+//         {
+//             switch (label)
+//             {
+//                 case "Bad":
+//                     return 0;
+//                 case "Average":
+//                     return 1;
+//                 case "Good":
+//                     return 2;
+//                 default:
+//                     return -1;
+//             }
+//         }
+
+//         private static void OutputPrediction(ModelOutput prediction)
+//         {
+//             string imageName = Path.GetFileName(prediction.ImagePath);
+//             Console.WriteLine($"Image: {imageName} | Actual Value: {prediction.Label} | Predicted Value: {prediction.PredictedLabel}");
+//         }
+
+//         public static IEnumerable<ImageData> LoadImagesFromDirectory(string folder, bool useFolderNameAsLabel = true)
+//         {
+//             var files = Directory.GetFiles(folder, "*", searchOption: SearchOption.AllDirectories);
+
+//             foreach (var file in files)
+//             {
+//                 if ((Path.GetExtension(file) != ".jpg") && (Path.GetExtension(file) != ".png"))
+//                     continue;
+
+//                 var label = Path.GetFileName(file);
+
+//                 if (useFolderNameAsLabel)
+//                     label = Directory.GetParent(file).Name;
+//                 else
+//                 {
+//                     for (int index = 0; index < label.Length; index++)
+//                     {
+//                         if (!char.IsLetter(label[index]))
+//                         {
+//                             label = label.Substring(0, index);
+//                             break;
+//                         }
+//                     }
+//                 }
+
+//                 yield return new ImageData()
+//                 {
+//                     ImagePath = file,
+//                     Label = label
+//                 };
+//             }
+//         }
+
+//         private static ITransformer LoadPretrainedModel()
+//         {
+//             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
+//             var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
+//             var assetsRelativePath = Path.Combine(projectDirectory, "assets");
+
+//             MLContext mlContext = new MLContext();
+
+//             var modelPath = Path.Combine(workspaceRelativePath, "model.zip");
+//             var data = mlContext.Data.LoadFromTextFile<ModelInput>(modelPath, separatorChar: ',');
+
+//             var pipeline = mlContext.Transforms.Conversion.MapValueToKey("Label", "LabelAsKey")
+//                 .Append(mlContext.Transforms.LoadRawImageBytes("Image", assetsRelativePath, "ImagePath"))
+//                 .Append(mlContext.Model.LoadTensorFlowModel(modelPath)
+//                     .ScoreTensorName("dense_3/Softmax")
+//                     .AddInput("conv2d_input", name => name == nameof(ModelInput.Image) ? true : false)
+//                     .AddOutput("dense_3/Softmax")
+//                     .AddInput("Placeholder", name => name == nameof(ModelInput.LabelAsKey) ? true : false)
+//                     .AddOutput("dense_3/Softmax"))
+//                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel", "PredictedLabel"))
+//                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("LabelAsKey", "Label"));
+
+//             var model = pipeline.Fit(data);
+
+//             return model;
+//         }
+
+//         private static void CreateCsvFromBottlenecks(ITransformer model)
+//         {
+//             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
+//             var assetsRelativePath = Path.Combine(projectDirectory, "assets");
+
+//             MLContext mlContext = new MLContext();
+
+//             var predictionData = model.Transform(data);
+
+//             var predictions = mlContext.Data.CreateEnumerable<ModelOutput>(predictionData, reuseRowObject: true);
+
+//             var csvPath = Path.Combine(projectDirectory, "solar_data.csv");
+
+//             using (StreamWriter writer = new StreamWriter(csvPath))
+//             {
+//                 writer.WriteLine("Longitude,Latitude,Date");
+
+//                 foreach (var prediction in predictions)
+//                 {
+//                     var imageName = Path.GetFileName(prediction.ImagePath);
+//                     var coordinatesAndDate = imageName.Split('-');
+//                     var longitude = coordinatesAndDate[0];
+//                     var latitude = coordinatesAndDate[1];
+//                     var date = coordinatesAndDate[2];
+//                     writer.WriteLine($"{longitude},{latitude},{date}");
+//                 }
+//             }
+//         }
+
+//         private static void TrainModel()
+//         {
+//             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../apps/machine-learning/Blue-Skies-ML/Blue-Skies-ML"));
+//             var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
+//             var csvPath = Path.Combine(projectDirectory, "solar_data.csv");
+
+//             MLContext mlContext = new MLContext();
+
+//             var data = mlContext.Data.LoadFromTextFile<ModelInput>(csvPath, separatorChar: ',');
+
+//             var featureColumnName = "Features";
+//             var labelColumnName = "Label";
+
+//             var dataProcessPipeline = mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: labelColumnName, inputColumnName: "Label")
+//                 .Append(mlContext.Transforms.Concatenate(featureColumnName, "Longitude", "Latitude"));
+
+//             dataProcessPipeline = dataProcessPipeline.Append(mlContext.Transforms.Conversion.MapKeyToValue("Label", labelColumnName));
+
+//             var trainer = mlContext.Regression.Trainers.LightGbm();
+
+//             var trainingPipeline = dataProcessPipeline.Append(mlContext.Transforms.NormalizeMinMax(featureColumnName))
+//                 .Append(trainer);
+
+//             var trainedModel = trainingPipeline.Fit(data);
+//         }
+//     }
+
+//     class ImageData
+//     {
+//         public string ImagePath { get; set; }
+
+//         public string Label { get; set; }
+//     }
+
+//     class ModelInput
+//     {
+//         public byte[] Image { get; set; }
+
+//         public UInt32 LabelAsKey { get; set; }
+
+//         public string ImagePath { get; set; }
+
+//         public string Label { get; set; }
+//     }
+
+//     class ModelOutput
+//     {
+//         public string ImagePath { get; set; }
+
+//         public string Label { get; set; }
+
+//         public string PredictedLabel { get; set; }
+//     }
+// }

@@ -5,6 +5,7 @@ using System.IO;
 using Microsoft.ML;
 using static Microsoft.ML.DataOperationsCatalog;
 using Microsoft.ML.Vision;
+using GetSolarIrradiationFromImage;
 
 namespace DeepLearning_ImageClassification
 {
@@ -12,8 +13,8 @@ namespace DeepLearning_ImageClassification
   {
     static void Main(string[] args)
     {
-      TrainAndTestModel();
-
+        TrainAndTestModel();
+        GetSolarIrradiationFromImage getSolarIrradiationFromImage = new GetSolarIrradiationFromImage("model.zip");
 
     }
 

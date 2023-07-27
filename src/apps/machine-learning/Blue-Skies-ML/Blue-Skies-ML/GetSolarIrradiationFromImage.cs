@@ -7,7 +7,7 @@ using Microsoft.ML;
 using System.IO;
 
 
-namespace Blue_Skies_ML
+namespace GetSolarIrradiationFromImage
 {
   internal class GetSolarIrradiationFromImage
   {
