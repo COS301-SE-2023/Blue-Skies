@@ -53,7 +53,7 @@ public class ReportAllRepository
     }
 
     //get report by reportId
-    public async Task<List<ReportAll>> GetReportById(int reportId)
+    public async Task<ReportAll> GetReportById(int reportId)
     {
         try
         {
@@ -67,7 +67,7 @@ public class ReportAllRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var reports = JsonSerializer.Deserialize<List<ReportAll>>(data);
+                var reports = JsonSerializer.Deserialize<ReportAll>(data);
                 if (reports != null)
                 {
                     Console.WriteLine(".NET: get all reports success");
@@ -75,13 +75,13 @@ public class ReportAllRepository
                 }
 
                 Console.WriteLine(".NET: report is null error");
-                return new List<ReportAll>();
+                return new ReportAll();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error");
-                return new List<ReportAll>();
+                return new ReportAll();
             }
         }
         catch (Exception e)

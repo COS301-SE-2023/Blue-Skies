@@ -67,8 +67,7 @@ export default class ReportAllController {
   public getReportAll = (req: Request, res: Response) => {
     const { reportId } = req.params;
     const query = `SELECT * FROM [dbo].[report-all] WHERE reportId = ${reportId}`;
-    const reportAlls: IReportAll[] = [];
-
+    let reportAll: IReportAll;
     try {
       const request = new tedious.Request(
         query,
@@ -84,13 +83,13 @@ export default class ReportAllController {
             });
           } else {
             console.log(rowCount);
-            res.status(200).json(reportAlls);
+            res.status(200).json(reportAll);
           }
         }
       );
 
       request.on('row', (columns: tedious.ColumnValue[]) => {
-        const reportAll: IReportAll = {
+        reportAll = {
           userId: columns[0].value,
           email: columns[1].value,
           password: columns[2].value,
@@ -114,7 +113,6 @@ export default class ReportAllController {
           numberOfBatteries: columns[20].value,
           solarInput: columns[21].value,
         };
-        reportAlls.push(reportAll);
       });
 
       conn.execSql(request);
