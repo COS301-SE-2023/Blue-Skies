@@ -1,4 +1,5 @@
 @using BlazorApp.Components.Base
+@inject ProtectedLocalStorage ProtectedLocalStore
 <div class="flex w-full gap-3 @css">
     <div class="w-2/3">
         <Card>
@@ -30,8 +31,19 @@
                     </Header>
                 </Heading>
                 <div class="flex justify-around gap-4 mt-4 scale-75">
-                    <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count="8" />
-                    <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count="2" />
+                    @{
+                        var numPanels = 0;
+                        var numBatteries = 0;
+                        if (reportAll.Count > 0)
+                        {
+                            numPanels = reportAll[0].numberOfPanels;
+                            Console.WriteLine(numPanels);
+                            numBatteries = reportAll[0].numberOfBatteries;
+                            Console.WriteLine(numBatteries);
+                        }
+                    }
+                    <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
+                    <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@numBatteries />
                 </div>
                 <div class="flex w-full justify-center items-center gap-1 mt-4">
                     <p class="text-5xl text-primary-900 font-semibold">5</p>
@@ -45,4 +57,17 @@
 @code {
     [Parameter]
     public string? css { get; set; }
+    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var repAll = await ProtectedLocalStore.GetAsync<List<ReportAllModel>>("userReports");
+            if (repAll.Value != null)
+            {
+                reportAll = repAll.Value;    
+            }
+            Console.WriteLine(reportAll.Count + " is the count -" + reportAll[0].systemId);
+    }
+
 }

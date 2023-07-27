@@ -22,8 +22,4 @@ public class ReportAllModel
     public int batterySize { get; set; }
     public int numberOfBatteries { get; set; }
     public int solarInput { get; set; }
-    public int applianceId { get; set; }
-    public string? type { get; set; }
-    public int powerUsage { get; set; }
-    public int numberofAppliances { get; set; }
 }
