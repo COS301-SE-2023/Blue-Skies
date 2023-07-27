@@ -1,4 +1,6 @@
 @using BlazorApp.Components.Base
+@inject ProtectedLocalStorage ProtectedLocalStorage
+@using BlazorApp.Models
 
 <Card css="flex w-full justify-evenly">
     <div class="flex flex-col justify-center items-center ">
@@ -6,10 +8,10 @@
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
             <select
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                <option value="2">My Home</option>
-                <option value="3">Beach House</option>
-                <option value="4">Moms House</option>
-                <option value="4">My Home 2</option>
+                @for (int i = 0; i < userReports.Count; i++)
+                {
+                    <option onclick=@(() => updateReport(i)) value="@i">@userReports[i].reportName</option>
+                }
             </select>
         </div>
     </div>
@@ -25,3 +27,20 @@
         </content>
     </Button>
 </Card>
+
+@code {
+    private List<ReportModel> userReports = new List<ReportModel>();
+    private selectedReport = 0;
+
+protected override async Task OnInitializedAsync()
+    {
+        var reports = await ProtectedLocalStorage.GetAsync<List<ReportModel>>("userReports");
+        userReports = reports.Value;
+    }
+
+    private async void updateReport(int selected)
+    {
+        await ProtectedLocalStorage.SetAsync("selectedReport", selected);
+        Console.WriteLine(selected);
+    }
+}
