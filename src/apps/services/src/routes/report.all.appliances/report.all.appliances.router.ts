@@ -1,15 +1,14 @@
 import express from 'express';
 import ReportAllApplianceController from '../../controllers/report.all.appliances/report.all.appliances.controller';
 import bodyParser from 'body-parser';
-export const reportAllRouter = express.Router();
+export const reportAllApplianceRouter = express.Router();
 
-reportAllRouter.get('/', (req, res) => {
+reportAllApplianceRouter.get('/', (req, res) => {
   res.send({
     message: 'Welcome to the report router!',
   });
 });
 
 const reportAllController = new ReportAllApplianceController();
-reportAllRouter.get('/all', reportAllController.getAllReportAllAppliance);
-reportAllRouter.get('/:reportId', reportAllController.getReportAllAppliance);
-reportAllRouter.get('/user/:userId', reportAllController.getUserReportAllAppliance);
+reportAllApplianceRouter.get('/all', reportAllController.getAllReportAllAppliance);
+reportAllApplianceRouter.get('/:reportId', reportAllController.getReportAllAppliance);
