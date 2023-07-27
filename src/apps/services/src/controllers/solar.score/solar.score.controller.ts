@@ -13,14 +13,13 @@ export default class SolarScoreController {
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
-    const { userId } = req.params;
     //Get current year
     const currentYear = new Date().getFullYear();
 
     try {
       const result = await this.executePython(
         'apps/services/src/controllers/solar.score/getImages.py',
-        [latitude, longitude, currentYear - 1, 3, userId]
+        [latitude, longitude, currentYear - 1, 3]
       );
 
       res.json({ result: result });

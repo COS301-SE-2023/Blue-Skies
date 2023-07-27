@@ -34,15 +34,12 @@ public class SolarScoreController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getsolarscore/{userId}")]
-    public async Task<IActionResult> GetSolarScore(
-        [FromRoute] int userId,
-        [FromBody] Coordinates cord
-    )
+    [Route("getsolarscore")]
+    public async Task<IActionResult> GetSolarScore([FromBody] Coordinates cord)
     {
         try
         {
-            var score = await _solarScoreRepository.GetSolarScore(cord, userId);
+            var score = await _solarScoreRepository.GetSolarScore(cord);
             return Ok(score);
         }
         catch (Exception e)

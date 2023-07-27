@@ -38,6 +38,12 @@
     {
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value;
+
+        List<double> cord = locationSuggestion.Geometry.Coordinates;
+        double latitude = cord[1];
+        double longitude = cord[0];
+
+        await GetSolarScore(latitude, longitude);
         List<ProductModel> products= await GetProducts();
         int systemId = 1;
         int dayLightHours = 4;
@@ -60,7 +66,7 @@
         );
 
         request.Content = content;
-        var response = await client.SendAsync(request);
+       /* var response = await client.SendAsync(request);
         if(response.IsSuccessStatusCode)
         {
             Console.WriteLine("Success");
@@ -68,7 +74,7 @@
         else
         {
             Console.WriteLine("Failure");
-        }
+        }*/
     }
     private async Task<List<ProductModel>> GetProducts()
     {
@@ -89,4 +95,27 @@
         return products;
     }
 
+    public async Task<string> GetSolarScore(double latitude, double longitude)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/SolarScore/getSolarScore"
+        );
+        var content = new StringContent(
+            "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Got solar Score";
+        }
+        else
+        {
+            throw new Exception("Error getting solar score");
+        }
+    }
 }
