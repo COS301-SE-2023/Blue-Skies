@@ -13,7 +13,7 @@ solarScoreRouter.get('/', (req, res) => {
 const solarScoreController = new SolarScoreController();
 
 solarScoreRouter.get(
-  '/getimages',
+  '/getimages/:userId',
   bodyParser.json(),
   solarScoreController.getLocationImages
 );
