@@ -6,11 +6,15 @@
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-            <select
+            <select @bind="SelectedReport"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
                 @for (int i = 0; i < userReports.Count; i++)
                 {
-                    <option onclick=@(() => updateReport(i)) value="@i">@userReports[i].reportName</option>
+                    <option value="@i">@userReports[i].reportName</option>
+                }
+                @if (userReports.Count == 0)
+                {
+                   <option value="0">No reports to select</option> 
                 }
             </select>
         </div>
@@ -18,7 +22,15 @@
     <Heading>
         <Superscript>Date Saved</Superscript>
         <Header>
-            <h1 class="text-lg">12 August 2023</h1>
+            @* <h1 class="text-lg">12 August 2023</h1> *@
+            @{
+                var date = "";
+                if (userReports.Count > 0)
+                {
+                date = userReports[selectedReport].dateCreated.ToString("dd MMMM yyyy");
+                }
+            }
+            <h1 class="text-lg">@date</h1>
         </Header>
     </Heading>
     <Button style="pill" css="h-14">
@@ -30,17 +42,35 @@
 
 @code {
     private List<ReportModel> userReports = new List<ReportModel>();
-    private ReportModel selectedReport;
+    int selectedReport = 0;
 
-protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         var reports = await ProtectedLocalStorage.GetAsync<List<ReportModel>>("userReports");
-        userReports = reports.Value;
+            if (reports.Value != null)
+            {
+                userReports = reports.Value;    
+            }
     }
 
-    private async void updateReport(int selected)
+    private int SelectedReport
     {
-        await ProtectedLocalStorage.SetAsync("selectedReport", selected);
+        get => selectedReport;
+        set 
+        {
+            if (selectedReport != value)
+            {
+                selectedReport = value;
+                UpdateReport(selectedReport);
+            }
+        }
+        
+    }
+
+    private async void UpdateReport(int selected)
+    {
         Console.WriteLine(selected);
+        selectedReport = selected;
+        await ProtectedLocalStorage.SetAsync("selectedReport", selected);
     }
 }
