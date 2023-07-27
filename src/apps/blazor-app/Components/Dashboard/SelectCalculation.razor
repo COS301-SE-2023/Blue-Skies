@@ -1,5 +1,6 @@
 @using BlazorApp.Components.Base
-@inject ProtectedLocalStorage ProtectedLocalStorage
+@inject ProtectedLocalStorage ProtectedLocalStore
+@using System.Text.Json
 @using BlazorApp.Models
 
 <Card css="flex w-full justify-evenly">
@@ -42,15 +43,19 @@
 
 @code {
     private List<ReportModel> userReports = new List<ReportModel>();
+    private ReportAllModel reportAll = new ReportAllModel();
     int selectedReport = 0;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
 
     protected override async Task OnInitializedAsync()
     {
-        var reports = await ProtectedLocalStorage.GetAsync<List<ReportModel>>("userReports");
+        var reports = await ProtectedLocalStore.GetAsync<List<ReportModel>>("userReports");
             if (reports.Value != null)
             {
                 userReports = reports.Value;    
             }
+            GetReportAll();
     }
 
     private int SelectedReport
@@ -69,8 +74,32 @@
 
     private async void UpdateReport(int selected)
     {
-        Console.WriteLine(selected);
         selectedReport = selected;
-        await ProtectedLocalStorage.SetAsync("selectedReport", selected);
+        await ProtectedLocalStore.SetAsync("selectedReport", selected);
+    }
+
+     private async void GetReportAll()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/get/" + userReports[selectedReport].reportId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reportAll = JsonSerializer.Deserialize<ReportAllModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                });
+            if (reportAll != null)
+            {
+                await ProtectedLocalStore.SetAsync("userReports", reportAll);
+                Console.WriteLine(reportAll.systemId);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
     }
 }
