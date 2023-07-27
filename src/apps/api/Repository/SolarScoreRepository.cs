@@ -33,12 +33,12 @@ public class SolarScoreRepository
         }
     }
 
-    public async Task<string> GetSolarScore(Coordinates coordinates, int userId)
+    public async Task<string> GetSolarScore(Coordinates coordinates)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            express + "/api/solarscore/getimages/" + userId
+            express + "/api/solarscore/getimages/"
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": "
