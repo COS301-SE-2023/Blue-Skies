@@ -14,7 +14,6 @@ namespace DeepLearning_ImageClassification
     static void Main(string[] args)
     {
         TrainAndTestModel();
-        GetSolarIrradiationFromImage getSolarIrradiationFromImage = new GetSolarIrradiationFromImage("model.zip");
 
     }
 
@@ -78,9 +77,17 @@ namespace DeepLearning_ImageClassification
 
       ITransformer trainedModel = trainingPipeline.Fit(trainSet);
 
-      ClassifySingleImage(mlContext, testSet, trainedModel);
+      mlContext.Model.Save(trainedModel, imageData.Schema, "model.zip");
 
-      ClassifyImages(mlContext, testSet, trainedModel);
+      Console.WriteLine("Saving model");
+      DataViewSchema modelSchema;
+
+      Console.WriteLine("Loading saved model");
+      ITransformer savedTrainedModel = mlContext.Model.Load("model.zip", out modelSchema);
+
+      ClassifySingleImage(mlContext, testSet, savedTrainedModel);
+
+      ClassifyImages(mlContext, testSet, savedTrainedModel);
 
       Console.ReadKey();
     }
