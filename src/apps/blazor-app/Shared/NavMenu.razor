@@ -88,6 +88,8 @@
 
 
 @code {
+    [Parameter]
+    public bool isDashboard { get; set; } = false;
     private string width = "";
     private bool loggedIn = false;
     private string userEmail = "";
@@ -129,7 +131,8 @@
       {
           loggedIn = result.Value;
           var ans = await ProtectedLocalStore.GetAsync<string>("userEmail");
-          userEmail = ans.Value;
+            if (ans.Value != null) 
+              userEmail = ans.Value;
       }
       else
       {
@@ -147,4 +150,4 @@
       StateHasChanged();
     }
 
-}
+} 

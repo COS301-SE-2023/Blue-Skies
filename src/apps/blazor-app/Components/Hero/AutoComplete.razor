@@ -66,7 +66,7 @@
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private HttpClient httpClient;
+    private HttpClient httpClient = new HttpClient();
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private string mapboxAccessToken = "";
@@ -110,7 +110,7 @@
     {
         if(e.Value != null && e.Value.ToString() != "")
         {
-            searchQuery = e.Value.ToString();
+            searchQuery = e.Value.ToString()!;
             await GetLocationSuggestions();
         } else {
             suggestions = new List<LocationSuggestion>();
@@ -141,7 +141,7 @@
 
     public class GeocodingResponse
     {
-        public List<LocationSuggestion> Features { get; set; }
+        public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
     }
 
 
