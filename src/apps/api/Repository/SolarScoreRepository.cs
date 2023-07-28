@@ -62,7 +62,7 @@ public class SolarScoreRepository
     }
 
     //Get sun times
-    public async Task<float> GetSunTimes(Coordinates coordinates)
+    public async Task<string> GetSunTimes(Coordinates coordinates)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
@@ -83,14 +83,14 @@ public class SolarScoreRepository
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
-            //convert data to double 
-            float ans = float.Parse(data);
-            return ans;
-            
+            return data;
+
         }
         else
         {
             throw new Exception("Error getting sun times");
         }
     }
+
+
 }
