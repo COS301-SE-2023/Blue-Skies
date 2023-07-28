@@ -1,16 +1,14 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
-import router from '../../routes';
+import { keyRouter } from '../../routes/key/key.router';
 import bodyParser from 'body-parser';
-import * as tedious from 'tedious';
-import { config } from '../../main';
 const app = express(); // an instance of an express app, a 'fake' express app
 app.use(bodyParser.json());
-app.use('/', router); // routes
+app.use('/key', keyRouter); // routes
 //mock the main file
-jest.mock('../../main');
+jest.mock('../../main', () => jest.fn());
 
-const connection = new tedious.Connection(config);
+// const connection = new tedious.Connection(config);
 // connection.on('connect', async function (err) {
 //   if (err) {
 //     console.log('Error', err);
@@ -24,6 +22,5 @@ describe('Test the key path', () => {
     expect(response.body).toEqual({
       message: 'Welcome to the key router!',
     });
-    console.log(config);
   });
 });
