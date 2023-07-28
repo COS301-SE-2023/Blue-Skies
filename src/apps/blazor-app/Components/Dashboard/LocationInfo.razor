@@ -50,7 +50,7 @@
                         var systemSize = 0;
                         if (reportAll != null)
                         {
-                            systemSize = reportAll[selectedReport].inverterOutput;
+                            systemSize = reportAll[selectedReport].inverterOutput/1000;
                             numPanels = reportAll[selectedReport].numberOfPanels;
                             numBatteries = reportAll[selectedReport].numberOfBatteries;
                         }
@@ -60,7 +60,7 @@
                 </div>
                 <div class="flex w-full justify-center items-center gap-1 mt-4">
                     <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
-                    <p class="text-5xl text-gray-400 font-bold">w</p>
+                    <p class="text-5xl text-gray-400 font-bold">kw</p>
                 </div>
             </div>
         </Card>

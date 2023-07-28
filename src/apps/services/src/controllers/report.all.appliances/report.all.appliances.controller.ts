@@ -74,8 +74,8 @@ export default class ReportAllAppliancesController {
 
       request.on('row', (columns: tedious.ColumnValue[]) => {
         const reportAllAppliance: IReportAllAppliance = {
-          applianceId: columns[0].value,
-          reportId: columns[1].value,
+          reportId: columns[0].value,
+          applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
           type: columns[3].value,
           powerUsage: columns[4].value

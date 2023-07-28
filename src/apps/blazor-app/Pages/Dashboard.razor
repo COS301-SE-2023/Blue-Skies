@@ -40,14 +40,24 @@
                     </Heading>
                     <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
                         <div class="flex gap-4 justify-evenly scale-90">
-                            <Appliance ImageName="Fridge.svg" Name="Fridge" Count="1" />
-                            <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
-                            <Appliance ImageName="Kettle.svg" Name="Kettle" Count="0" />
-                            <Appliance ImageName="CCTV.svg" Name="CCTV" Count="4" />
-                            <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
-                            <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
-                            <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
-                            <Appliance ImageName="TV.svg" Name="TV" Count="2" />
+                            @{
+                                updateAppliances();
+                                for (int i = 0; i < reportAllAppliance.Count; i++)
+                                {
+                                    var appliance = reportAllAppliance[i].type;
+                                    var count = reportAllAppliance[i].numberOfAppliances;
+                                    string iconName = appliance + ".svg";
+                                    <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                }
+                            }
+                            @* <Appliance ImageName="Fridge.svg" Name="Fridge" Count="1" />
+                        <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
+                        <Appliance ImageName="Kettle.svg" Name="Kettle" Count="0" />
+                        <Appliance ImageName="CCTV.svg" Name="CCTV" Count="4" />
+                        <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
+                        <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
+                        <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
+                        <Appliance ImageName="TV.svg" Name="TV" Count="2" /> *@
                         </div>
                     </div>
                     <div class="flex w-full mt-5">
@@ -71,7 +81,26 @@
                             </svg>
                         </div>
                         <div class="w-full">
-                            <Image ImageName="House 3.svg" alt="House" css="scale-90" />
+                            @{
+                                var imageName = "";
+                                var sysSize = reportAll[selectedReport].systemSize;
+                                if (sysSize != null)
+                                {
+                                    if (sysSize.Equals("Small"))
+                                    {
+                                        imageName = "House 3.svg";
+                                    }
+                                    else if (sysSize.Equals("Medium"))
+                                    {
+                                        imageName = "House 2.svg";
+                                    }
+                                    else if (sysSize.Equals("Large"))
+                                    {
+                                        imageName = "House 1.svg";
+                                    }
+                                }
+                            }
+                            <Image ImageName=@imageName alt="House" css="scale-90" />
                         </div>
                         <div class="w-full flex flex-col gap-4 justify-start items-center">
                             <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
@@ -124,7 +153,9 @@
     private List<ReportModel> reports = new List<ReportModel>();
     private List<string> userReportNames = new List<string>();
     private List<ReportAllModel> reportAll = new List<ReportAllModel>();
+    private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+
     private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
@@ -144,6 +175,23 @@
         await GetUserReports();
         await GetReportAll();
         await GetReportAllAppliance();
+    }
+
+    private void updateAppliances()
+    {
+        reportAllAppliance.Clear();
+        int reportId = reportAll[selectedReport].reportId;
+        Console.WriteLine("Count all: " + allReportAllAppliance.Count);
+        Console.WriteLine("Report id: " + reportId);
+        foreach (var reportAllApp in allReportAllAppliance)
+        {
+            Console.WriteLine("Report id in loop: " + reportAllApp.reportId);
+            if (reportAllApp.reportId == reportId)
+            {
+                reportAllAppliance.Add(reportAllApp);
+            }
+        }
+        Console.WriteLine("Count: " + reportAllAppliance.Count);
     }
 
     private async Task GetUserReports()
@@ -201,26 +249,24 @@
     private async Task GetReportAllAppliance()
     {
         var client = new HttpClient();
-        int reportId = reportAll[selectedReport].reportId;
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/get/" + reportId);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            reportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive =
                 true
                 })!;
-            if (reportAllAppliance.Count > 0)
+            if (allReportAllAppliance.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReportAllAppliancereportAllAppliance", reportAllAppliance);
+                await ProtectedLocalStore.SetAsync("userReportAllAppliancereportAllAppliance", allReportAllAppliance);
             }
-            Console.WriteLine(reportAllAppliance.Count);
         }
         else
         {
-            Console.WriteLine("Failed to get reportAllAppliance");
+            Console.WriteLine("Failed to get allReportAllAppliance");
         }
     }
 }
