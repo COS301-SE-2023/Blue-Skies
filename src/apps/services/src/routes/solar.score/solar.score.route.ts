@@ -19,9 +19,3 @@ solarScoreRouter.get(
 );
 
 solarScoreRouter.get('/mapboxkey', solarScoreController.getMapBoxApiKey);
-
-solarScoreRouter.get(
-  '/getsuntimes',
-  bodyParser.json(),
-  solarScoreController.getSunTimes
-);

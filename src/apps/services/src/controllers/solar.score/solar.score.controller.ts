@@ -27,22 +27,6 @@ export default class SolarScoreController {
       res.status(500).json({ error: error });
     }
   };
-
-  public getSunTimes = async (req: Request, res: Response) => {
-    console.log('Get Sun Times Python script started');
-    const { latitude, longitude } = req.body;
-    const currentYear = new Date().getFullYear();
-    try {
-      const result = await this.executePython(
-        'apps/services/src/controllers/solar.score/GetSunTimes.py',
-        [latitude, longitude, currentYear]
-      );
-      const ans: number = parseFloat(result[0]);
-      res.json(ans);
-    } catch (error) {
-      res.status(500).json({ error: error });
-    }
-  };
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
     const py = spawn('python', [script, ...parameters]);
