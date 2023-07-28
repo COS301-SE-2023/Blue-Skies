@@ -37,8 +37,8 @@ export default class SolarScoreController {
         'apps/services/src/controllers/solar.score/GetSunTimes.py',
         [latitude, longitude, currentYear]
       );
-
-      res.json({ result: result[0] });
+      const ans: number = parseFloat(result[0]);
+      res.json(ans);
     } catch (error) {
       res.status(500).json({ error: error });
     }
