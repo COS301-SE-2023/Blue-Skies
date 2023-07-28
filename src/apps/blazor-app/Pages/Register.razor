@@ -2,10 +2,19 @@
 @layout AuthLayout
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 
 <PageTitle>Register</PageTitle>
 
+@if (!isLoaded) {}
+else if (logIn)
+{
+    NavigationManager.NavigateTo("/");
+}  else  if (isAd)
+{
+    NavigationManager.NavigateTo("/admin/keys");
+} else {
 <div class="w-full h-[100vh]">
     <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
     <Image ImageName="Register-background.webp" css="w-full h-full object-fit -z-10" alt="background image" />
@@ -46,7 +55,7 @@
                                 <Image ImageName="Google.svg" css="h-6" alt="Google" />
                             </a>
                         </content>
-                    </Button>
+                    </Button>q
                     <Button style="outline">
                         <content>
                             <a href="/">
@@ -67,22 +76,35 @@
         </Card>
     </div>
 </div>
+}
 
 @code {
-private string? email;
+    private string? email;
 
-private string? password;
+    private string? password;
 
-private string? repassword;
+    private string? repassword;
 
-private bool emailValid = true;
-private bool passwordValid = true;
-private bool repasswordValid = true;
+    private bool emailValid = true;
+    private bool passwordValid = true;
+    private bool repasswordValid = true;
 
     public string? showError = "hidden";
     public string? errorMessage = "Could not register";
 
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    private bool isAd = false;
+    private bool logIn = false;
+    private bool isLoaded = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
+        logIn = loggedIn.Value;
+        isLoaded = true;
+    }
 
 private async Task HandleValidSubmit()
 {
@@ -100,7 +122,16 @@ private async Task HandleValidSubmit()
     {
         showError = "hidden";
         Console.WriteLine("OK");
-        NavigationManager.NavigateTo("/login");
+        await ProtectedLocalStore.SetAsync("loggedIn", true);
+        if (email != null)
+        {
+            await ProtectedLocalStore.SetAsync("userEmail", email);
+        } else
+        {
+            await ProtectedLocalStore.SetAsync("userEmail", "");
+        }
+        await ProtectedLocalStore.SetAsync("isAdmin", false);
+        NavigationManager.NavigateTo("/");
     }
     else
     {

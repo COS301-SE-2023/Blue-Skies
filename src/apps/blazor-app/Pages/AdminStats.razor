@@ -4,15 +4,18 @@
 @using ChartJs.Blazor.BarChart
 @using ChartJs.Blazor.RadarChart
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Admin
 @using BlazorApp.Models
 @using System.Text.Json;
+@inject ProtectedLocalStorage ProtectedLocalStore;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
-<div class="mt-2 pr-10 pb-10 ">
+<div class="mt-2 pr-10 pb-10 slide-in-enter-active">
     <div class="flex w-full justify-between p-4">
         <div class="">
-            <Heading >
+            <Heading>
                 <Superscript>
                     <h2>Website</h2>
                 </Superscript>
@@ -21,9 +24,9 @@
                 </Header>
             </Heading>
         </div>
-        
+
     </div>
-    
+
     <div class="flex flex-col gap-20">
         <div class="flex flex-row">
             <div class="w-full">
@@ -38,22 +41,22 @@
                 <Chart Config="barConfig"></Chart>
             </div>
             @* <div class="w-1/2 mx-auto my-auto">
-                <Heading>
-                    <Superscript>
-                        <h2>Total API Subscriptions</h2>
-                    </Superscript>
-                    <Header>
-                        <h1 class="">@keyCount</h1>
-                    </Header>
-                </Heading>
-                <Heading css="mt-10">
-                    <Superscript>
-                        <h2>Total Accounts Suspended</h2>
-                    </Superscript>
-                    <Header>
-                        <h1>@suspendedCount</h1>
-                    </Header>
-                </Heading>
+            <Heading>
+            <Superscript>
+            <h2>Total API Subscriptions</h2>
+            </Superscript>
+            <Header>
+            <h1 class="">@keyCount</h1>
+            </Header>
+            </Heading>
+            <Heading css="mt-10">
+            <Superscript>
+            <h2>Total Accounts Suspended</h2>
+            </Superscript>
+            <Header>
+            <h1>@suspendedCount</h1>
+            </Header>
+            </Heading>
             </div> *@
         </diiv>
     </div>
@@ -67,8 +70,8 @@
     private BarConfig? barConfig;
     public RadarConfig? radarConfig;
     private List<UserModel> users = new List<UserModel>();
-    private string [] radarTypes = new string[] {"Small", "Medium", "Large", "Custom"};
-    private int [] radarCount = new int[4] {0, 0, 0, 0};
+    private string[] radarTypes = new string[] { "Small", "Medium", "Large", "Custom" };
+    private int[] radarCount = new int[4] { 0, 0, 0, 0 };
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     protected override void OnInitialized()
@@ -76,30 +79,31 @@
         renderCharts();
     }
 
-    private void renderCharts() {
+    private void renderCharts()
+    {
         @* **************************************** Radar Chart Config ************************************************ *@
         radarConfig = new RadarConfig
-        {
-            Options = new RadarOptions
             {
-                Responsive = true,
-                Title = new OptionsTitle
+                Options = new RadarOptions
                 {
-                    Display = true,
-                    Text = "Popular System",
-                    FontSize = 20,
-                },
-                Scale = new LinearRadialAxis
-                {
-                    Ticks = new LinearRadialTicks
+                    Responsive = true,
+                    Title = new OptionsTitle
                     {
-                        BeginAtZero = true,
-                        Max = 10,
+                        Display = true,
+                        Text = "Popular System",
+                        FontSize = 20,
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            BeginAtZero = true,
+                            Max = 10,
+                        }
                     }
-                }
 
-            },
-        };
+                },
+            };
 
 
         foreach (string label in radarTypes)
@@ -109,59 +113,59 @@
 
         @* **************************************** Bar Chart Config ************************************************ *@
         barConfig = new BarConfig
-        {
-            Options = new BarOptions
             {
-                Responsive = true,
-                Legend = new Legend
+                Options = new BarOptions
                 {
-                    Position = Position.Top
-                },
-                Title = new OptionsTitle
-                {
-                    Display = true,
-                    Text = "Number of",
-                    FontSize = 20,
-                },
-                Tooltips = new Tooltips
-                {
-                    Enabled = false
-                },
-                
-            }
-        };
+                    Responsive = true,
+                    Legend = new Legend
+                    {
+                        Position = Position.Top
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Number of",
+                        FontSize = 20,
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = false
+                    },
 
-        
+                }
+            };
+
+
 
         IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 10 })
-        {
-            Label = "Total reports generated",
-            BackgroundColor = "rgba(54, 162, 235, 0.2)",
-            BorderColor = "rgba(54, 162, 235, 1)",
-            BorderWidth = 1
-        };
+            {
+                Label = "Total reports generated",
+                BackgroundColor = "rgba(54, 162, 235, 0.2)",
+                BorderColor = "rgba(54, 162, 235, 1)",
+                BorderWidth = 1
+            };
 
         @* _config.Data.Labels.AddRange(Months.Take(InitalCount)); *@
         barConfig.Data.Datasets.Add(dataset2);
 
         @* **************************************** Pie Chart Config ************************************************ *@
         pieConfig = new PieConfig
-        {
-            Options = new PieOptions
             {
-                Responsive = true,
-                Title = new OptionsTitle
+                Options = new PieOptions
                 {
-                    Display = true,
-                    Text = "Active Users",
-                    FontSize = 20,
-                },
-                Legend = new Legend
-                {
-                    Position = Position.Right
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Active Users",
+                        FontSize = 20,
+                    },
+                    Legend = new Legend
+                    {
+                        Position = Position.Right
+                    }
                 }
-            }
-        };
+            };
 
         foreach (string color in new[] { "Remaining", "Past 3 months", "Past month", "Past week" })
         {
@@ -174,18 +178,29 @@
         await GetUsers();
         await GetSystemUsage();
         await GetKeys();
+        var ans = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (!ans.Value)
+        {
+            NavigationManager.NavigateTo("/unauthorized");
+        }
     }
 
-    private async Task GetSystemUsage(){
+    private async Task GetSystemUsage()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/adminstats/all");
         var response = await client.SendAsync(request);
-        List<SystemUsage> systems = null;
-        if(response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
+        List<SystemUsage>? systems = null;
+        if (response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
         {
             var data = await response.Content.ReadAsStringAsync();
-            if(data != null) {
-                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (data != null)
+            {
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive =
+                    true
+                    })!;
             }
         }
         else
@@ -193,65 +208,74 @@
             Console.WriteLine("Failed");
         }
 
-        if(systems != null && systems.Count > 0 && radarConfig != null)
+        if (systems != null && systems.Count > 0 && radarConfig != null)
         {
             maxRadarCount = (int)(systems.Max(x => x.count) * 1.25);
-            for(int i = 0; i < systems.Count; i++)
+            for (int i = 0; i < systems.Count; i++)
             {
-                radarTypes[i] = systems[i].type;
+                radarTypes[i] = systems[i].type!;
                 radarCount[i] = systems[i].count;
             }
             IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
-            {
-                Label = "Average System Size",
-                BackgroundColor = "rgba(255,99,132,0.2)",
-                BorderColor = "rgba(255,99,132,1)",
-                PointBackgroundColor = "rgba(255,99,132,1)",
-                PointBorderColor = "#fff",
-                PointHoverBackgroundColor = "#fff",
-                PointHoverBorderColor = "rgba(255,99,132,1)",
-            };
+                {
+                    Label = "Average System Size",
+                    BackgroundColor = "rgba(255,99,132,0.2)",
+                    BorderColor = "rgba(255,99,132,1)",
+                    PointBackgroundColor = "rgba(255,99,132,1)",
+                    PointBorderColor = "#fff",
+                    PointHoverBackgroundColor = "#fff",
+                    PointHoverBorderColor = "rgba(255,99,132,1)",
+                };
 
-            radarConfig.Data.Datasets.Clear(); 
+            radarConfig.Data.Datasets.Clear();
             radarConfig.Options.Scale.Ticks.Max = maxRadarCount;
             radarConfig.Data.Datasets.Add(dataset3);
         }
     }
-    
-    private async Task GetUsers() {
+
+    private async Task GetUsers()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count})
+            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count })
+                {
+                    Label = "Signed up users",
+                    BackgroundColor = "rgba(255,99,132,0.2)",
+                    BorderColor = "rgba(255,99,132,1)",
+                    BorderWidth = 1
+                };
+            if (barConfig != null)
             {
-                Label = "Signed up users",
-                BackgroundColor = "rgba(255,99,132,0.2)",
-                BorderColor = "rgba(255,99,132,1)",
-                BorderWidth = 1
-            };
-            barConfig.Data.Datasets.Add(dataset1);
+                barConfig.Data.Datasets.Add(dataset1);
+            }
 
-            //This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the remaining users and adds them to the pie chart
-            if(users != null && users.Count > 0) {
+            @* This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the
+            remaining users and adds them to the pie chart *@
+        if (users != null && users.Count > 0)
+            {
                 var week = 0;
                 var month = 0;
                 var threeMonths = 0;
                 var remaining = 0;
-                foreach(UserModel user in users) 
+                foreach (UserModel user in users)
                 {
-                    if(user.lastLoggedIn > DateTime.Now.AddDays(-7))
+                    if (user.lastLoggedIn > DateTime.Now.AddDays(-7))
                     {
                         week++;
                     }
-                    else if(user.lastLoggedIn > DateTime.Now.AddMonths(-1))
+                    else if (user.lastLoggedIn > DateTime.Now.AddMonths(-1))
                     {
                         month++;
                     }
-                    else if(user.lastLoggedIn > DateTime.Now.AddMonths(-3))
+                    else if (user.lastLoggedIn > DateTime.Now.AddMonths(-3))
                     {
                         threeMonths++;
                     }
@@ -261,17 +285,20 @@
                     }
                 }
 
-                PieDataset<int> dataset = new PieDataset<int>(new[] {remaining, threeMonths, month, week})
-                {
-                    BackgroundColor = new[]
+                PieDataset<int> dataset = new PieDataset<int>(new[] { remaining, threeMonths, month, week })
                     {
-                        ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
-                        ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
-                        ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
-                        ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
-                    }
-                };
-                pieConfig.Data.Datasets.Add(dataset);
+                        BackgroundColor = new[]
+                    {
+ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+}
+                    };
+                if (pieConfig != null)
+                {
+                    pieConfig.Data.Datasets.Add(dataset);
+                }
             }
         }
         else
@@ -280,21 +307,27 @@
         }
     }
 
-    private async Task GetKeys(){
-            List<APIKeyModel> keys = new List<APIKeyModel>();
+    private async Task GetKeys()
+    {
+        List<APIKeyModel> keys = new List<APIKeyModel>();
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                keyCount = keys.Count;
-                suspendedCount  = 0;
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            keyCount = keys.Count;
+            suspendedCount = 0;
             foreach (APIKeyModel item in keys)
             {
-                if(item.suspended == 1){
+                if (item.suspended == 1)
+                {
                     suspendedCount++;
                 }
             }

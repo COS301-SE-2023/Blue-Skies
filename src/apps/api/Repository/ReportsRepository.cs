@@ -52,7 +52,42 @@ public class ReportsRepository
         }
     }
 
-    public async Task<Reports> createReports(
+public async Task<List<Reports>> GetUserReports(int userId)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/getUserReports/" + userId);
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var reports = JsonSerializer.Deserialize<List<Reports>>(data);
+                if (reports != null)
+                {
+                    Console.WriteLine(".NET: get all reports success");
+                    return reports;
+                }
+
+                Console.WriteLine(".NET: report is null error");
+                return new List<Reports>();
+            }
+            else
+            {
+                //return empty list
+                Console.WriteLine(".NET: Database Connection Error");
+                return new List<Reports>();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
+            throw new Exception("Database Connection Error");
+        }
+    }
+
+    public async Task<Reports> CreateReports(
         string reportName,
         int userId,
         int basicCalculationId,
@@ -107,7 +142,7 @@ public class ReportsRepository
         }
     }
 
-    public async Task<Reports> updateReports(
+    public async Task<Reports> UpdateReports(
         int reportId,
         string reportName,
         int userId,
@@ -170,7 +205,7 @@ public class ReportsRepository
     }
 
     //Delete report
-    public async Task<bool> deleteReports(int reportId)
+    public async Task<bool> DeleteReports(int reportId)
     {
         try
         {
@@ -204,7 +239,7 @@ public class ReportsRepository
     }
 
     //get report by id
-    public async Task<Reports> getReportById(int reportId)
+    public async Task<Reports> GetReportById(int reportId)
     {
         try
         {
