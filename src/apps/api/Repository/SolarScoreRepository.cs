@@ -5,7 +5,7 @@ namespace Api.Repository;
 
 public class SolarScoreRepository
 {
-    private string express = "http://localhost:3333";
+    private readonly string express = "http://localhost:3333";
 
     public SolarScoreRepository()
     {
@@ -62,7 +62,7 @@ public class SolarScoreRepository
     }
 
     //Get sun times
-    public async Task<string> GetSunTimes(Coordinates coordinates)
+    public async Task<float> GetSunTimes(Coordinates coordinates)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
@@ -82,7 +82,11 @@ public class SolarScoreRepository
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            return "Got sun times";
+            string data = response.Content.ReadAsStringAsync().Result;
+            //convert data to double 
+            float ans = float.Parse(data);
+            return ans;
+            
         }
         else
         {
