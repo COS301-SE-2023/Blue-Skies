@@ -187,12 +187,12 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/adminstats/all");
         var response = await client.SendAsync(request);
-        List<SystemUsage> systems = null;
+        List<SystemUsage> systems = new List<SystemUsage>();
         if(response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
         {
             var data = await response.Content.ReadAsStringAsync();
             if(data != null) {
-                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             }
         }
         else
@@ -205,7 +205,7 @@
             maxRadarCount = (int)(systems.Max(x => x.count) * 1.25);
             for(int i = 0; i < systems.Count; i++)
             {
-                radarTypes[i] = systems[i].type;
+                radarTypes[i] = systems[i].type!;
                 radarCount[i] = systems[i].count;
             }
             IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
@@ -232,7 +232,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
             IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count})
             {
                 Label = "Signed up users",
@@ -240,7 +240,7 @@
                 BorderColor = "rgba(255,99,132,1)",
                 BorderWidth = 1
             };
-            barConfig.Data.Datasets.Add(dataset1);
+            barConfig?.Data.Datasets.Add(dataset1);
 
             //This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the remaining users and adds them to the pie chart
             if(users != null && users.Count > 0) {
@@ -278,7 +278,7 @@
                         ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
                     }
                 };
-                pieConfig.Data.Datasets.Add(dataset);
+                pieConfig?.Data.Datasets.Add(dataset);
             }
         }
         else
@@ -296,7 +296,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
                 keyCount = keys.Count;
                 suspendedCount  = 0;
             foreach (APIKeyModel item in keys)
