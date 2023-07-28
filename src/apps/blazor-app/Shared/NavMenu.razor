@@ -143,8 +143,17 @@
 
     public async void logout()
     {
-      await ProtectedLocalStore.SetAsync("loggedIn", false);
-      await ProtectedLocalStore.SetAsync("userEmail", "");
+      await ProtectedLocalStore.DeleteAsync("reportAppliances");
+      await ProtectedLocalStore.DeleteAsync("selectedReport");
+      await ProtectedLocalStore.DeleteAsync("redirect");
+      await ProtectedLocalStore.DeleteAsync("isAdmin");
+      await ProtectedLocalStore.DeleteAsync("userEmail");
+      await ProtectedLocalStore.DeleteAsync("userId");
+      await ProtectedLocalStore.DeleteAsync("loggedIn");
+      await ProtectedLocalStore.DeleteAsync("userReports");
+      await ProtectedLocalStore.DeleteAsync("reportAll");
+      await ProtectedLocalStore.DeleteAsync("userReportAllAppliance");
+
       loggedIn = false;
       userEmail = "";
       StateHasChanged();

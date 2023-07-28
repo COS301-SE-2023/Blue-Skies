@@ -22,6 +22,8 @@
     }
     else
     {
+        @if (reports.Count > 0)
+        {
         <div class="flex flex-col justify-center items-center px-10">
             @{
                 selectedDate = reports[selectedReport].dateCreated;
@@ -143,6 +145,22 @@
                 </Card>
             </div>
         </div>
+    
+    }else {
+        <div class="flex flex-col justify-center items-center px-10">
+            <div class="flex flex-col justify-center items-center">
+                <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br/>
+                <p class="text-center">You have no reports. Create a report to get started.</p>
+            </div>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Button style="pill" css="h-14">
+                <content>
+                    <p @onclick='() => NavigationManager.NavigateTo("/advanced")' class="text-sm font-semibold hover:text-white">Create a Report</p>
+                </content>
+            </Button>
+            </div>
+        </div>
+    }
     }
 </div>
 @code {
@@ -254,7 +272,7 @@
                 })!;
             if (allReportAllAppliance.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReportAllAppliancereportAllAppliance", allReportAllAppliance);
+                await ProtectedLocalStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
             }
         }
         else

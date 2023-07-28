@@ -164,6 +164,7 @@ private async Task HandleSubmit()
             else{
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
                 NavigationManager.NavigateTo("/" + redirect);
+                await ProtectedLocalStore.DeleteAsync("redirect");
             }
             } else {
                 await ProtectedLocalStore.SetAsync("userId", "");
