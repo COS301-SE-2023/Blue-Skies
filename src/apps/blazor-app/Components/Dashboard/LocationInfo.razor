@@ -13,10 +13,23 @@
                     <Image ImageName="Solarscore.png" css="w-60 h-60" alt="Solar Score" />
                 </div>
                 <div class="flex flex-col justify-start gap-10">
-                    <LocationItem Title="Address" ImageName="Point On Map.svg" Text="1234 Main Street" />
-                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="89%" />
+                    @{
+                        var location = "";
+                        var solarScore = "";
+                        var avgEnergyProduction = "";
+                        if (reportAll != null)
+                        {
+                            location = reportAll[selectedReport].location;
+                            solarScore = reportAll[selectedReport].solarScore + "%";
+                            avgEnergyProduction = Math.Round(reportAll[selectedReport].numberOfPanels *
+                            reportAll[selectedReport].daylightHours * 315 / 1000, 2) + " kw/h";
+                        }
+                    }
+                    <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
+                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@solarScore />
                     <div class="translate-x-1">
-                        <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg" Text="129 kw/h" />
+                        <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                            Text=@avgEnergyProduction />
                     </div>
                 </div>
             </div>
@@ -34,20 +47,20 @@
                     @{
                         var numPanels = 0;
                         var numBatteries = 0;
-                        if (reportAll.Count > 0)
+                        var systemSize = 0;
+                        if (reportAll != null)
                         {
-                            numPanels = reportAll[0].numberOfPanels;
-                            Console.WriteLine(numPanels);
-                            numBatteries = reportAll[0].numberOfBatteries;
-                            Console.WriteLine(numBatteries);
+                            systemSize = reportAll[selectedReport].inverterOutput;
+                            numPanels = reportAll[selectedReport].numberOfPanels;
+                            numBatteries = reportAll[selectedReport].numberOfBatteries;
                         }
                     }
                     <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
                     <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@numBatteries />
                 </div>
                 <div class="flex w-full justify-center items-center gap-1 mt-4">
-                    <p class="text-5xl text-primary-900 font-semibold">5</p>
-                    <p class="text-5xl text-gray-400 font-bold">kw</p>
+                    <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
+                    <p class="text-5xl text-gray-400 font-bold">w</p>
                 </div>
             </div>
         </Card>
@@ -57,17 +70,9 @@
 @code {
     [Parameter]
     public string? css { get; set; }
-    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
-
-
-    protected override async Task OnInitializedAsync()
-    {
-        var repAll = await ProtectedLocalStore.GetAsync<List<ReportAllModel>>("userReports");
-            if (repAll.Value != null)
-            {
-                reportAll = repAll.Value;    
-            }
-            Console.WriteLine(reportAll.Count + " is the count -" + reportAll[0].systemId);
-    }
+    [Parameter]
+    public List<ReportAllModel>? reportAll { get; set; }
+    [Parameter]
+    public int selectedReport { get; set; }
 
 }

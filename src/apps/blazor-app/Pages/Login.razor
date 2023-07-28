@@ -142,13 +142,18 @@ private async Task HandleSubmit()
             Console.WriteLine("Success");
             showError = "hidden";
             //Navigate to home page 
-            
-            UserModel data = await response.Content.ReadFromJsonAsync<UserModel>();
+            UserModel? data= await response.Content.ReadFromJsonAsync<UserModel>();
 
             await ProtectedLocalStore.SetAsync("loggedIn", true);
+            if (email != null)
+            {
             await ProtectedLocalStore.SetAsync("userEmail", email);
+            } else {
+                await ProtectedLocalStore.SetAsync("userEmail", "");
+            }
+            if (data != null)
+            {
             await ProtectedLocalStore.SetAsync("userId", data.userId);
-      
             if(data.userRole == 1){
                 await ProtectedLocalStore.SetAsync("isAdmin", true);
                 NavigationManager.NavigateTo("/admin/keys");              
@@ -157,6 +162,12 @@ private async Task HandleSubmit()
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
                 NavigationManager.NavigateTo("/");
             }
+            } else {
+                await ProtectedLocalStore.SetAsync("userId", "");
+                await ProtectedLocalStore.SetAsync("isAdmin", false);
+                await ProtectedLocalStore.SetAsync("loggedIn", false);
+            }
+      
         }else{
             Console.WriteLine("Failed");
             string message = await response.Content.ReadAsStringAsync();

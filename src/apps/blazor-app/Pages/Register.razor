@@ -123,7 +123,13 @@ private async Task HandleValidSubmit()
         showError = "hidden";
         Console.WriteLine("OK");
         await ProtectedLocalStore.SetAsync("loggedIn", true);
-        await ProtectedLocalStore.SetAsync("userEmail", email);
+        if (email != null)
+        {
+            await ProtectedLocalStore.SetAsync("userEmail", email);
+        } else
+        {
+            await ProtectedLocalStore.SetAsync("userEmail", "");
+        }
         await ProtectedLocalStore.SetAsync("isAdmin", false);
         NavigationManager.NavigateTo("/");
     }

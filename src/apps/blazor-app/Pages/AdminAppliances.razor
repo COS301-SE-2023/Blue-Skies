@@ -13,7 +13,7 @@
 <div class="slide-in-enter-active mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
-            <Heading >
+            <Heading>
                 <Superscript>
                     <h2>Mangage All</h2>
                 </Superscript>
@@ -30,14 +30,14 @@
             </div>
             <div @onclick="AddAppliance">
                 <Button style="pill">
-                   <content>Add</content>
+                    <content>Add</content>
                 </Button>
             </div>
 
         </div>
     </div>
 
-     <Toast @ref="successToast" Title="" Type="success">
+    <Toast @ref="successToast" Title="" Type="success">
         <ChildContent>
             <p></p>
         </ChildContent>
@@ -68,7 +68,7 @@
             </div>
         </ChildContent>
     </ModalPopup>
-    
+
     <div class="relative overflow-x-auto  mt-2">
         <table class="w-full  text-sm text-left ">
             <thead class="text-xs bg-primary-50  uppercase ">
@@ -90,7 +90,8 @@
                 @* For each appliance *@
                 @foreach (var appliance in appliances)
                 {
-                    <ApplianceEntry recordState="appliance.recordState != null ? true : false" appliance="appliance" OnSelect="AddDeleteArr" OnSave="SaveAppliance"/>   
+                    <ApplianceEntry recordState="appliance.recordState != null ? true : false" appliance="appliance"
+                        OnSelect="AddDeleteArr" OnSave="SaveAppliance" />
                 }
             </tbody>
         </table>
@@ -115,39 +116,46 @@
     }
 
     //Get All Appliances
-    private async Task deleteAppliances(){
+    private async Task deleteAppliances()
+    {
         ModalPopup.Dismiss();
-        foreach(int id in deleteArr){
+        foreach (int id in deleteArr)
+        {
             await DeleteAppliance(id);
         }
         deleteArr.Clear();
         await GetAppliances();
         Console.WriteLine("Delete");
     }
-    private void AddDeleteArr(int id){
-        if(deleteArr.Contains(id)){
+    private void AddDeleteArr(int id)
+    {
+        if (deleteArr.Contains(id))
+        {
             deleteArr.Remove(id);
-        }else{
+        }
+        else
+        {
             deleteArr.Add(id);
         }
         //Print deleteArr
-        foreach(int i in deleteArr){
+        foreach (int i in deleteArr)
+        {
             Console.WriteLine(i);
         }
     }
 
-        //Delete Appliance
+    //Delete Appliance
     private async Task DeleteAppliance(int id)
     {
         ModalPopup.Dismiss();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/appliance/delete");
-        var content = new StringContent("{\r\n  \"applianceId\": " +id+"\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n \"applianceId\": " + id + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully","error");
+            deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully", "error");
             await GetAppliances();
         }
         else
@@ -160,23 +168,26 @@
     {
         await GetAppliances();
     }
-    
-    private async Task GetAppliances(){
-          var client = new HttpClient();
+
+    private async Task GetAppliances()
+    {
+        var client = new HttpClient();
 
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/appliance/all");
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-           var data = await response.Content.ReadAsStringAsync();
-        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-
+            var data = await response.Content.ReadAsStringAsync();
+            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
         }
         else
         {
             Console.WriteLine("Failed");
         }
-        
+
     }
 
     private void AddAppliance()
@@ -186,40 +197,45 @@
 
     private async Task SaveAppliance(ApplianceModel appliance)
     {
-        if(appliance.applianceId == -1){
+        if (appliance.applianceId == -1)
+        {
             Console.WriteLine("Add Appliance");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
-            var content = new StringContent("{\r\n  \"type\": \"" + appliance.type+ "\",\r\n  \"powerUsage\": " + appliance.powerUsage +"\r\n}", null, "application/json");
+            var content = new StringContent("{\r\n \"type\": \"" + appliance.type + "\",\r\n \"powerUsage\": " + appliance.powerUsage
+            + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                successToast.Show("Appliance Added", "The appliance has been added successfully","success");
+                successToast.Show("Appliance Added", "The appliance has been added successfully", "success");
                 await GetAppliances();
             }
             else
             {
                 Console.WriteLine("Failed");
-                 Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
 
-        }else{
+        }
+        else
+        {
             Console.WriteLine("Update Appliance");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
-            var content = new StringContent("{\r\n    \"applianceId\": " + appliance.applianceId + ",\r\n  \"type\": \"" + appliance.type + "\",\r\n  \"powerUsage\": " + appliance.powerUsage+ "\r\n}", null, "application/json");
+            var content = new StringContent("{\r\n \"applianceId\": " + appliance.applianceId + ",\r\n \"type\": \"" +
+            appliance.type + "\",\r\n \"powerUsage\": " + appliance.powerUsage + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                successToast.Show("Appliance Updated", "The appliance has been updated successfully","success");
+                successToast.Show("Appliance Updated", "The appliance has been updated successfully", "success");
                 await GetAppliances();
             }
             else
             {
                 Console.WriteLine("Failed");
-                 Console.WriteLine(await response.Content.ReadAsStringAsync());
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
         }
     }

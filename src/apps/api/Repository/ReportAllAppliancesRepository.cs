@@ -4,11 +4,11 @@ using System.Text.Json;
 namespace Api.Repository;
 
 //Create class
-public class ReportAllRepository
+public class ReportAllApplianceRepository
 {
     private string express = "http://localhost:3333";
 
-    public ReportAllRepository()
+    public ReportAllApplianceRepository()
     {
         var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
         if (backendexpress != null)
@@ -17,32 +17,32 @@ public class ReportAllRepository
         }
     }
 
-    public async Task<List<ReportAll>> GetAllReportAll()
+    public async Task<List<ReportAllAppliance>> GetAllReportAllAppliance()
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/reportAll/all");
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/reportAllAppliance/all");
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var reports = JsonSerializer.Deserialize<List<ReportAll>>(data);
+                var reports = JsonSerializer.Deserialize<List<ReportAllAppliance>>(data);
                 if (reports != null)
                 {
-                    Console.WriteLine(".NET: get all reports success");
+                    Console.WriteLine(".NET: get all appliances reports success");
                     return reports;
                 }
 
                 Console.WriteLine(".NET: report is null error");
-                return new List<ReportAll>();
+                return new List<ReportAllAppliance>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error");
-                return new List<ReportAll>();
+                return new List<ReportAllAppliance>();
             }
         }
         catch (Exception e)
@@ -53,35 +53,35 @@ public class ReportAllRepository
     }
 
     //get report by reportId
-    public async Task<ReportAll> GetReportById(int reportId)
+    public async Task<List<ReportAllAppliance>> GetReportById(int reportId)
     {
         try
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                express + "/api/reportAll/" + reportId
+                express + "/api/reportAllAppliance/" + reportId
             );
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var reports = JsonSerializer.Deserialize<ReportAll>(data);
+                var reports = JsonSerializer.Deserialize<List<ReportAllAppliance>>(data);
                 if (reports != null)
                 {
-                    Console.WriteLine(".NET: get all reports success");
+                    Console.WriteLine(".NET: get all appliances reports success");
                     return reports;
                 }
 
                 Console.WriteLine(".NET: report is null error");
-                return new ReportAll();
+                return new List<ReportAllAppliance>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error");
-                return new ReportAll();
+                return new List<ReportAllAppliance>();
             }
         }
         catch (Exception e)
@@ -92,35 +92,35 @@ public class ReportAllRepository
     }
 
     //get report by userId
-    public async Task<List<ReportAll>> GetReportByUserId(int userId)
+    public async Task<List<ReportAllAppliance>> GetReportByUserId(int userId)
     {
         try
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                express + "/api/reportAll/user/" + userId
+                express + "/api/reportAllAppliance/user/" + userId
             );
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var reports = JsonSerializer.Deserialize<List<ReportAll>>(data);
+                var reports = JsonSerializer.Deserialize<List<ReportAllAppliance>>(data);
                 if (reports != null)
                 {
-                    Console.WriteLine(".NET: get all reports success");
+                    Console.WriteLine(".NET: get all appliances reports success");
                     return reports;
                 }
 
                 Console.WriteLine(".NET: report is null error");
-                return new List<ReportAll>();
+                return new List<ReportAllAppliance>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error");
-                return new List<ReportAll>();
+                return new List<ReportAllAppliance>();
             }
         }
         catch (Exception e)
