@@ -1,4 +1,5 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class="lg:w-4/12 flex items-center justify-center gap-4">
@@ -36,14 +37,15 @@
 <div class="hidden lg:flex w-full h-full px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-2">
         <h1 class="text-lg col-span-2 font-medium text-center mb-4 -mt-8 text-primary-900">Select Appliances</h1>
-        <Appliance ImageName="Fridge.svg" Name="Fridge" />
-        <Appliance ImageName="Microwave.svg" Name="Microwave" />
-        <Appliance ImageName="Kettle.svg" Name="Kettle" />
-        <Appliance ImageName="CCTV.svg" Name="CCTV" />
-        <Appliance ImageName="LED Lights.svg" Name="LED Lights" />
-        <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" />
-        <Appliance ImageName="Computer.svg" Name="Computer" />
-        <Appliance ImageName="TV.svg" Name="TV" />
+        @foreach (var appliance in appliances)
+        {
+            if (appliance.quantity == 0)
+            {
+                <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                    <Appliance css="hover:shadow transition-all duration-200" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                </div>
+            }
+        }
     </div>
     <div class="w-full flex flex-col justify-center items-center">
         <div class="flex justify-center items-center h-full">
@@ -95,15 +97,16 @@
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <h1 class="text-base mb-10 font-semibold text-primary-900">What do you want to run in a power outage?</h1>
-        <div class="flex gap-4 justify-evenly">
-            <Appliance ImageName="Fridge.svg" Name="Fridge" Count="1" />
-            <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
-            <Appliance ImageName="Kettle.svg" Name="Kettle" Count="0" />
-            <Appliance ImageName="CCTV.svg" Name="CCTV" Count="4" />
-            <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
-            <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
-            <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
-            <Appliance ImageName="TV.svg" Name="TV" Count="2" />
+        <div class="flex gap-4 scale-90 justify-start">
+            @foreach (var appliance in appliances)
+        {
+            if (appliance.quantity > 0)
+            {
+                <div @onclick="@(() => DecrementApplianceCount(appliance))" class="fade-in-enter-active">
+                    <Appliance ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                </div>
+            }
+        }
         </div>
     </div>
     <div class="w-4/12 justify-center flex">
@@ -138,16 +141,16 @@
             @switch (SystemSize)
             {
             case "5kw":
-            <Image ImageName="House 3.svg" alt="House" css="scale-105" />
+            <Image ImageName="House 3.svg" alt="House" css="scale-95" />
             break;
             case "8kw":
-            <Image ImageName="House 2.svg" alt="House" css="scale-105" />
+            <Image ImageName="House 2.svg" alt="House" css="scale-95" />
             break;
             case "12kw":
-            <Image ImageName="House 1.svg" alt="House" css="scale-105" />
+            <Image ImageName="House 1.svg" alt="House" css="scale-95" />
             break;
             default:
-            <Image ImageName="House 3.svg" alt="House" css="scale-105" />
+            <Image ImageName="House 3.svg" alt="House" css="scale-95" />
             break;
             }
         </div>
@@ -197,9 +200,19 @@
 @code {
     private string SystemSize = "5kw";
     private int PanelCount = 8;
+    [Parameter]
+    public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
 
     private void SetPanelCount(int count) {
         PanelCount = count;
+    }
+
+    private void IncrementApplianceCount(ApplianceModel appliance) {
+        appliance.quantity++;
+    }
+    private void DecrementApplianceCount(ApplianceModel appliance) {
+        appliance.quantity--;
+        Console.WriteLine(appliance.type + " " + appliance.quantity);
     }
 
     private void SetSystemSize(string size)

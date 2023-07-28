@@ -17,13 +17,7 @@
         <div class="w-full">
             <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome/>
-
-                @foreach (var appliance in appliances)
-                {
-                    <p>@appliance.type</p>
-                    <p>@appliance.quantity</p>
-                }
+                <BlazorApp.Section.BuildYourHome appliances="@appliances"/>      
             </div>
         </div>
         }
