@@ -1,4 +1,5 @@
 @using BlazorApp.Components.Base
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
     <Heading>
@@ -21,7 +22,7 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">89</p>
+                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
         </Card>
@@ -31,7 +32,7 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">9</p>
+                <p class="text-5xl text-primary-900 font-semibold">@dayLightHours</p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </Card>
@@ -65,3 +66,24 @@
         </Card>
     </div>
 </div>
+
+@code {
+    private int solarScore = -1;
+    private int dayLightHours = -1;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
+        if (ss.Success)
+        {
+            solarScore = ss.Value;
+        }
+        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculation>("basicCalculation");
+        if (dlh.Success)
+        {
+            BasicCalculation bc = dlh.Value;
+            dayLightHours = bc.daylightHours;
+        }
+    }
+}

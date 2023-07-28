@@ -65,7 +65,9 @@
         basicCalculation.daylightHours = temp;
         basicCalculation.location = location;
         basicCalculation.batteryLife = batteryLife;
+        int solarScore = 85;
         await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
+        await ProtectedSessionStore.SetAsync("solarScore",solarScore );
     }
     private async Task<List<ProductModel>> GetProducts()
     {
