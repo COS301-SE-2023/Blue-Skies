@@ -2,7 +2,7 @@
 @using BlazorApp.Components.Dashboard
 <div class="flex gap-4 ">
     <div>
-        <Image ImageName="@ImageName" alt="@ImageName"/>
+        <Image ImageName="@ImageName" alt="@ImageName" />
     </div>
     <div class="">
         <Heading>
@@ -16,11 +16,11 @@
 
 @code {
     [Parameter]
-    public string ImageName { get; set; }
+    public string? ImageName { get; set; }
 
     [Parameter]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [Parameter]
-    public string Text { get; set; }
+    public string? Text { get; set; }
 }

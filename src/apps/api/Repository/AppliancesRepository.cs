@@ -186,7 +186,6 @@ public class AppliancesRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine(data);
                 var app = JsonSerializer.Deserialize<Appliances>(data);
                 if (app != null)
                 {

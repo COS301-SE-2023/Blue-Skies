@@ -22,8 +22,12 @@
     else
     {
         <div class="flex flex-col justify-center items-center px-10">
-            <SelectCalculation />
-            <LocationInfo css="mt-8" />
+            @{
+                selectedDate = reports[selectedReport].dateCreated;
+            }
+            <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
+                dateCreated="selectedDate" />
+            <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" />
             <div class="mt-10 w-full">
                 <Card>
                     <Heading>
@@ -118,10 +122,15 @@
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
+    private List<string> userReportNames = new List<string>();
+    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
+    private int selectedReport;
+    private DateTime selectedDate;
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
@@ -133,6 +142,8 @@
         userId = usId.Value;
 
         await GetUserReports();
+        await GetReportAll();
+        await GetReportAllAppliance();
     }
 
     private async Task GetUserReports()
@@ -155,8 +166,61 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to get user reports");
         }
     }
 
+    private async Task GetReportAll()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/user/" + userId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reportAll = JsonSerializer.Deserialize<List<ReportAllModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (reportAll.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("reportAll", reportAll);
+            }
+            foreach (var report in reportAll)
+            {
+                userReportNames.Add(report.reportName!);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to get report all");
+        }
+    }
+
+    private async Task GetReportAllAppliance()
+    {
+        var client = new HttpClient();
+        int reportId = reportAll[selectedReport].reportId;
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/get/" + reportId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (reportAllAppliance.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("userReportAllAppliancereportAllAppliance", reportAllAppliance);
+            }
+            Console.WriteLine(reportAllAppliance.Count);
+        }
+        else
+        {
+            Console.WriteLine("Failed to get reportAllAppliance");
+        }
+    }
 }
