@@ -60,4 +60,33 @@ public class SolarScoreRepository
             throw new Exception("Error getting solar score");
         }
     }
+
+    //Get sun times
+    public async Task<string> GetSunTimes(Coordinates coordinates)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            express + "/api/solarscore/getsuntimes/"
+        );
+        var content = new StringContent(
+            "{\r\n    \"latitude\": "
+                + coordinates.latitude
+                + ",\r\n    \"longitude\": "
+                + coordinates.longitude
+                + "\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Got sun times";
+        }
+        else
+        {
+            throw new Exception("Error getting sun times");
+        }
+    }
 }
