@@ -13,6 +13,7 @@
     @if (!isLoaded) { }
     else if (!logIn)
     {
+        ProtectedLocalStore.SetAsync("redirect", "dashboard");
         NavigationManager.NavigateTo("/login");
     }
     else if (isAd)
