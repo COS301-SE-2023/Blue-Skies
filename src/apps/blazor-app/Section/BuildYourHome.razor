@@ -2,7 +2,7 @@
 @using BlazorApp.Models
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
-    <div class="lg:w-4/12 flex items-center justify-center gap-4">
+    <div class=" flex items-center justify-center lg:w-6/12 gap-4">
         <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
     </div>
     <div class="w-full flex flex-col justify-center items-center ">
@@ -35,16 +35,13 @@
 </div>
 
 <div class="hidden lg:flex w-full h-full px-4">
-    <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-2">
+    <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
         <h1 class="text-lg col-span-2 font-medium text-center mb-4 -mt-8 text-primary-900">Select Appliances</h1>
         @foreach (var appliance in appliances)
         {
-            if (appliance.quantity == 0)
-            {
-                <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                    <Appliance css="hover:shadow transition-all duration-200" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                </div>
-            }
+            <div class="fade-in-enter-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+            </div>
         }
     </div>
     <div class="w-full flex flex-col justify-center items-center">
@@ -95,15 +92,15 @@
 </div>
 
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
-    <div class="border-primary-500 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
+    <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <h1 class="text-base mb-10 font-semibold text-primary-900">What do you want to run in a power outage?</h1>
         <div class="flex gap-4 scale-90 justify-start">
             @foreach (var appliance in appliances)
         {
             if (appliance.quantity > 0)
             {
-                <div @onclick="@(() => DecrementApplianceCount(appliance))" class="fade-in-enter-active">
-                    <Appliance ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                <div @onclick="@(() => DecrementApplianceCount(appliance))" class="@fade">
+                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
                 </div>
             }
         }
@@ -202,17 +199,22 @@
     private int PanelCount = 8;
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
+    public string fade = "fade-in-enter-active";
 
     private void SetPanelCount(int count) {
         PanelCount = count;
     }
 
     private void IncrementApplianceCount(ApplianceModel appliance) {
+        fade = "fade-in-enter-active";
         appliance.quantity++;
     }
     private void DecrementApplianceCount(ApplianceModel appliance) {
-        appliance.quantity--;
+        fade = "fade-in-leave-active";
+        
         Console.WriteLine(appliance.type + " " + appliance.quantity);
+        Task.WaitAll();
+        appliance.quantity--;
     }
 
     private void SetSystemSize(string size)

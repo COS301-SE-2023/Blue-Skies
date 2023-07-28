@@ -117,7 +117,7 @@
     [JSInvokable]
     public void UpdateScrollPosition(int scrollY)
     {
-        if (scrollY > currentScrollPosition) isScrollingDown = true; else isScrollingDown = false;
+        if (scrollY > currentScrollPosition) isScrollingDown = true; else if (scrollY == 0) isScrollingDown = false;
 
         currentScrollPosition = scrollY;
         StateHasChanged();
