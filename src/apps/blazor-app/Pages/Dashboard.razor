@@ -49,15 +49,11 @@
                                     string iconName = appliance + ".svg";
                                     <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
                                 }
+                                if (reportAllAppliance.Count == 0)
+                                {
+                                    <p class="text-center">No appliances added</p>
+                                }
                             }
-                            @* <Appliance ImageName="Fridge.svg" Name="Fridge" Count="1" />
-                        <Appliance ImageName="Microwave.svg" Name="Microwave" Count="1" />
-                        <Appliance ImageName="Kettle.svg" Name="Kettle" Count="0" />
-                        <Appliance ImageName="CCTV.svg" Name="CCTV" Count="4" />
-                        <Appliance ImageName="LED Lights.svg" Name="LED Lights" Count="12" />
-                        <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" Count="1" />
-                        <Appliance ImageName="Computer.svg" Name="Computer" Count="2" />
-                        <Appliance ImageName="TV.svg" Name="TV" Count="2" /> *@
                         </div>
                     </div>
                     <div class="flex w-full mt-5">
@@ -181,17 +177,13 @@
     {
         reportAllAppliance.Clear();
         int reportId = reportAll[selectedReport].reportId;
-        Console.WriteLine("Count all: " + allReportAllAppliance.Count);
-        Console.WriteLine("Report id: " + reportId);
         foreach (var reportAllApp in allReportAllAppliance)
         {
-            Console.WriteLine("Report id in loop: " + reportAllApp.reportId);
             if (reportAllApp.reportId == reportId)
             {
                 reportAllAppliance.Add(reportAllApp);
             }
         }
-        Console.WriteLine("Count: " + reportAllAppliance.Count);
     }
 
     private async Task GetUserReports()

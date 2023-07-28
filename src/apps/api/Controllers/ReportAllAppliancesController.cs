@@ -38,7 +38,7 @@ public class ReportAllApplianceController : ControllerBase
         Console.WriteLine("reportId: " + id);
         try
         {
-            var data = await _reportAllApplianceRepository.GetReportById(id);
+            var data = await _reportAllApplianceRepository.GetReportAllApplianceById(id);
             if (data == null)
             {
                 return StatusCode(404, "Report with id: " + id + " not found");
