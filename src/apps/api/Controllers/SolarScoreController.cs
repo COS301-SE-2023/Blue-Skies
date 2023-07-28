@@ -47,4 +47,19 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet]
+    [Route("getsuntimes")]
+    public async Task<IActionResult> GetSumTimes([FromBody] Coordinates cord)
+    {
+        try
+        {
+            var sumTimes = await _solarScoreRepository.GetSunTimes(cord);
+            return Ok(sumTimes);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }
