@@ -2,8 +2,6 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
 
-//using IronPython.Hosting;
-// using Microsoft.Scripting.Hosting;
 
 namespace Api.Controllers;
 
@@ -54,7 +52,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            var sumTimes = await _solarScoreRepository.GetSunTimes(cord);
+            string sumTimes = await _solarScoreRepository.GetSunTimes(cord);
             return Ok(sumTimes);
         }
         catch (Exception e)
@@ -62,4 +60,6 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+
 }
