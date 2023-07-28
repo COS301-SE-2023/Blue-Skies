@@ -1,4 +1,4 @@
-#py GetSunTimes.py 2023 40.730610 -73.935242
+#py GetSunTimes.py 40.730610 -73.935242 2023
 
 import sys
 import requests
@@ -53,15 +53,18 @@ def calculate_average_daylight(latitude, longitude, year):
 
     return average_duration
 
-year = int(sys.argv[1])
-latitude = float(sys.argv[2])  
-longitude = float(sys.argv[3])  
+
+latitude = float(sys.argv[1])  
+longitude = float(sys.argv[2])  
+year = int(sys.argv[3])
 
 average_daylight = calculate_average_daylight(latitude, longitude, year)
 
 # Convert the average daylight duration to hours and minutes
 hours = average_daylight.seconds // 3600
 minutes = (average_daylight.seconds // 60) % 60
-
-print(f'Average Daylight Duration for {year}: {hours} hours and {minutes} minutes')
+minutes = minutes / 60
+minutes = round(minutes, 2)
+ans = hours + minutes
+print(ans)
 
