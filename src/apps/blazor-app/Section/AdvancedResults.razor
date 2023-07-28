@@ -47,3 +47,14 @@
         </Card>
     </div>
 </div>
+
+@code {
+    [Parameter]
+    public int solarScore { get; set; }
+    [Parameter]
+    public List<BasicCalculationModel> basicCalculation { get; set; }
+    [Parameter]
+    public List<SystemModel> systems { get; set; }
+    [Parameter]
+    public int selectedSystem { get; set; }
+}
