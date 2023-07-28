@@ -13,7 +13,6 @@ LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
 TIME_FRAME = int(sys.argv[4])
-
 # Load environment variables from .env file
 load_dotenv()
 

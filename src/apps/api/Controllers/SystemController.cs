@@ -37,7 +37,7 @@ public class SystemController : ControllerBase
   {
     try
     {
-      var data = await _systemsRepository.createSystems(
+      var data = await _systemsRepository.CreateSystems(
           system.inverterOutput,
           system.numberOfPanels,
           system.batterySize,
@@ -59,7 +59,7 @@ public class SystemController : ControllerBase
   {
     try
     {
-      var data = await _systemsRepository.updateSystems(
+      var data = await _systemsRepository.UpdateSystems(
           system.systemId,
           system.inverterOutput,
           system.numberOfPanels,
@@ -82,7 +82,7 @@ public class SystemController : ControllerBase
   {
     try
     {
-      var data = await _systemsRepository.deleteSystems(system.systemId);
+      var data = await _systemsRepository.DeleteSystems(system.systemId);
       if (data == false)
       {
         return StatusCode(404, "s with id: " + system.systemId + " not found");
@@ -102,7 +102,7 @@ public class SystemController : ControllerBase
   {
     try
     {
-      var data = await _systemsRepository.getSystemById(system.systemId);
+      var data = await _systemsRepository.GetSystemById(system.systemId);
       if (data == null)
       {
         return StatusCode(404, "System with id: " + system.systemId + " not found");

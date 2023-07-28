@@ -1,17 +1,16 @@
 @page "/admin/keys"
 @layout AdminLayout
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Admin
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
-
-
-<div class="mt-2">
+<div class="slide-in-enter-active mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
             <Heading>
@@ -107,14 +106,14 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    private List<APIKeyModel> keys = new List<APIKeyModel>();
+    private List<int> deleteArr = new List<int>();
+
     private void ShowModal()
     {
         ModalPopup.Show();
     }
 
-    private List<APIKeyModel> keys = new List<APIKeyModel>();
-
-    private List<int> deleteArr = new List<int>();
     private async Task DeleteKeys(){
         foreach(int id in deleteArr){
             await DeleteKey(id);
@@ -153,16 +152,9 @@
             Console.WriteLine("Failed to delete");
         }
     }
-    protected  void AfterInitializedAsync(){
-
-    }
     protected override async Task OnInitializedAsync()
     {
         await GetKeys();
-        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
-        if(!ans.Value){
-            NavigationManager.NavigateTo("/unauthorized");
-        }     
     }
 
     private async Task GetKeys(){
@@ -172,7 +164,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
         }
         else
         {

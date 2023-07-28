@@ -38,7 +38,7 @@ public class ReportAllController : ControllerBase
         Console.WriteLine("reportId: " + id);
         try
         {
-            var data = await _reportAllRepository.getReportById(id);
+            var data = await _reportAllRepository.GetReportById(id);
             if (data == null)
             {
                 return StatusCode(404, "Report with id: " + id + " not found");
@@ -58,7 +58,7 @@ public class ReportAllController : ControllerBase
     {
         try
         {
-            var data = await _reportAllRepository.getReportByUserId(id);
+            var data = await _reportAllRepository.GetReportByUserId(id);
             if (data == null)
             {
                 return StatusCode(404, "Report with id: " + id + " not found");
