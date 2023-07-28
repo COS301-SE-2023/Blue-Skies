@@ -9,6 +9,7 @@
     <div class="fade-in-enter-active">
         @if(!isLoaded){}
         else if (!logIn) {
+            ProtectedLocalStore.SetAsync("redirect", "advanced");
             NavigationManager.NavigateTo("/login");
         } else  if (isAd) {
             NavigationManager.NavigateTo("/admin/keys");

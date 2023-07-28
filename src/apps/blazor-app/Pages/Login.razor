@@ -102,11 +102,14 @@
     private bool isAd = false;
     private bool logIn = false;
     private bool isLoaded = false;
+    private string? redirect = "";
 
      protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        redirect = re.Value;
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
         isLoaded = true;
@@ -160,7 +163,7 @@ private async Task HandleSubmit()
             }
             else{
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
-                NavigationManager.NavigateTo("/");
+                NavigationManager.NavigateTo("/" + redirect);
             }
             } else {
                 await ProtectedLocalStore.SetAsync("userId", "");
