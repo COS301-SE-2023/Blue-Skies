@@ -1,25 +1,70 @@
 @page "/advanced"
 @layout MainLayout
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
-
+@using BlazorApp.Models;
+@using System.Text.Json
 
 <PageTitle>Advanced Calculations</PageTitle>
+    <div class="fade-in-enter-active">
+        @if(!isLoaded){}
+        else if (!logIn) {
+            NavigationManager.NavigateTo("/login");
+        } else  if (isAd) {
+            NavigationManager.NavigateTo("/admin/keys");
+        } else {
+        <div class="w-full">
+            <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
+            <div class="w-full">
+                <BlazorApp.Section.BuildYourHome/>
 
-<div class="w-full">
-    <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
-    <div class="w-full">
-        <BlazorApp.Section.BuildYourHome/>
+                @foreach (var appliance in appliances)
+                {
+                    <p>@appliance.type</p>
+                    <p>@appliance.quantity</p>
+                }
+            </div>
+        </div>
+        }
     </div>
-</div>
 
 @code {
+    private bool logIn = false;
+    private bool isAd = false;
+    private bool isLoaded = false;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
     protected override async Task OnInitializedAsync()
     {
-        var ans = await ProtectedSessionStore.GetAsync<bool>("loggedIn");
-        if (!ans.Value)
+        var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        logIn = loggedIn.Value;
+        isAd = isAdmin.Value;
+        isLoaded = true;
+        await GetAppliancesAsync();
+    }
+
+    private async Task GetAppliancesAsync()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Appliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            NavigationManager.NavigateTo("/login");
+            var data = await response.Content.ReadAsStringAsync();
+            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (appliances.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("reportAppliances", appliances);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
         }
     }
 }

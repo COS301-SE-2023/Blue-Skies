@@ -17,7 +17,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<ReportAppliances> createReportAppliance(
+    public async Task<ReportAppliances> CreateReportAppliance(
         int reportId,
         int applianceId,
         int numberOfAppliances
@@ -180,7 +180,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<ReportAppliances> getReportAppliance(int reportId, int applianceId)
+    public async Task<ReportAppliances> GetReportAppliance(int reportId, int applianceId)
     {
         try
         {
@@ -217,7 +217,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<ReportAppliances> updateNumberOfAppliances(
+    public async Task<ReportAppliances> UpdateNumberOfAppliances(
         int reportId,
         int applianceId,
         int numberOfAppliances
@@ -267,7 +267,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<ReportAppliances> updateReportId(int reportId, int newReportId)
+    public async Task<ReportAppliances> UpdateReportId(int reportId, int newReportId)
     {
         try
         {
@@ -307,7 +307,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<ReportAppliances> updateApplianceId(int applianceId, int newApplianceId)
+    public async Task<ReportAppliances> UpdateApplianceId(int applianceId, int newApplianceId)
     {
         try
         {
@@ -348,7 +348,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<bool> deleteReportId(int reportId)
+    public async Task<bool> DeleteReportId(int reportId)
     {
         try
         {
@@ -381,7 +381,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<bool> deleteApplianceId(int applianceId)
+    public async Task<bool> DeleteApplianceId(int applianceId)
     {
         try
         {
@@ -414,7 +414,7 @@ public class ReportAppliancesRepository
         }
     }
 
-    public async Task<bool> deleteReportAppliance(int reportId, int applianceId)
+    public async Task<bool> DeleteReportAppliance(int reportId, int applianceId)
     {
         try
         {

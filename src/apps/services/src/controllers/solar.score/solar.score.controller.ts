@@ -19,7 +19,7 @@ export default class SolarScoreController {
     try {
       const result = await this.executePython(
         'apps/services/src/controllers/solar.score/getImages.py',
-        [latitude, longitude, 2022, 3]
+        [latitude, longitude, currentYear - 1, 3]
       );
 
       res.json({ result: result });

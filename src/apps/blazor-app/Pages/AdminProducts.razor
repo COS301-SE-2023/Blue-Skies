@@ -5,12 +5,12 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json;
-@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
-<div class="mt-2">
+<div class="slide-in-enter-active mt-2">
     <div class="flex w-full justify-around p-4">
         <div class="">
             <Heading>
@@ -110,6 +110,7 @@
     private List<ProductModel> products = new List<ProductModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<int> deleteArr = new List<int>();
+
     private async Task DeleteProducts()
     {
         foreach (int id in deleteArr)
@@ -158,11 +159,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetProducts();
-        var ans = await ProtectedSessionStore.GetAsync<bool>("isAdmin");
-        if (!ans.Value)
-        {
-            NavigationManager.NavigateTo("/unauthorized");
-        }
+
     }
 
     private async Task GetProducts()
@@ -177,7 +174,7 @@
                 {
                     PropertyNameCaseInsensitive
                 = true
-                });
+                })!;
         }
         else
         {

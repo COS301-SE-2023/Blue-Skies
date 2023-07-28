@@ -1,8 +1,12 @@
 @using System.Net.Http
 @using System.Net.Http.Json
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+@inject ProtectedSessionStorage ProtectedSessionStorage
+
 
 <div class="mt-20 relative">
-    <div class="relative mt-2 rounded-full shadow-sm border border-primary-500">
+    <div class="relative mt-2 z-30 rounded-full shadow-sm border border-primary-500">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <span class="text-gray-500 translate-x-5 sm:text-sm">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,11 +20,11 @@
         </div>
         <input
             class="pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
-            type="text" @bind="searchQuery" @oninput="OnSearchInput" placeholder="Enter you address" name="address"
-            id="address" />
+            type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @oninput="OnSearchInput" @onblur="HideSuggestions" placeholder="Enter your address" />
+
     </div>
-    <div class="absolute  @(suggestions.Count == 0 ? "opacity-0" : "opacity-100") w-full bg-white top-full left-0">
-        <ul class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-30">
+    <div class="absolute z-20 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
+        <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-10">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {
@@ -34,19 +38,26 @@
                     <hr class="h-px bg-gray-200 border-0 " />
                     break;
                 } else {
-                    var address = suggestion.Place_Name.Substring(0, suggestion.Place_Name.IndexOf(","));
-                    var rest = suggestion.Place_Name.Substring(suggestion.Place_Name.IndexOf(",") + 1);
-                    <li class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300 delay-200 @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
-                        <p class="font-bold">
-                            @address
-                        </p>
-                        <p class="text-gray-500">
-                            @rest
-                        </p>
-                    </li>
+                    if (suggestion.Place_Name.Contains(",")) {
+                        var address = suggestion.Place_Name.Substring(0, suggestion.Place_Name.IndexOf(","));
+                        var rest = suggestion.Place_Name.Substring(suggestion.Place_Name.IndexOf(",") + 1);
+                        <li onclick="@(() => OnSuggestionClick(suggestion))" class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300  @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
+                            <p class="font-bold">
+                                @address
+                            </p>
+                            <p class="text-gray-500">
+                                @rest
+                            </p>
+                        </li>
+                    } else {
+                        <li class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300  @(suggestions.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
+                            <p class="font-bold">
+                                @suggestion.Place_Name
+                            </p>
+                        </li>
+                    }
                     <hr class="h-px bg-gray-200 border-0 " />
                 }
-                Console.WriteLine(i);
                 i += 100;
             }
         </ul>
@@ -55,12 +66,15 @@
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private HttpClient httpClient;
+    private HttpClient httpClient = new HttpClient();
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private string mapboxAccessToken = "";
 
 
+
+
+    
     protected async override void OnInitialized()
     {
         httpClient = new HttpClient();
@@ -74,11 +88,29 @@
         mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
+    private async void OnSuggestionClick(LocationSuggestion suggestion)
+    {
+        searchQuery = suggestion.Place_Name;
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
+        await ProtectedSessionStorage.SetAsync("location", suggestion);
+    }
+
+    private async Task HideSuggestions()
+    {
+        await Task.Delay(200); // Adding a slight delay to ensure the click event on a suggestion happens before hiding the list
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
+    }
+
+    private async Task ShowSuggestions()
+    {
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'block';");
+    }
+
     private async Task OnSearchInput(ChangeEventArgs e)
     {
         if(e.Value != null && e.Value.ToString() != "")
         {
-            searchQuery = e.Value.ToString();
+            searchQuery = e.Value.ToString()!;
             await GetLocationSuggestions();
         } else {
             suggestions = new List<LocationSuggestion>();
@@ -89,8 +121,7 @@
     {        
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
-        string requestUrl = $"{baseUrl}{System.Net.WebUtility.UrlEncode(searchQuery)}.json?country=za&limit=3&proximity=ip&access_token={mapboxAccessToken}";
-        Console.WriteLine(requestUrl);
+        string requestUrl = $"{baseUrl}{System.Net.WebUtility.UrlEncode(searchQuery)}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
 
         try
         {
@@ -110,18 +141,9 @@
 
     public class GeocodingResponse
     {
-        public List<LocationSuggestion> Features { get; set; }
+        public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
     }
 
-    public class LocationSuggestion
-    {
-        public string Place_Name { get; set; } = "";
-        public Geometry? Geometry { get; set; }
-    }
 
-    public class Geometry
-    {
-        public string? Type { get; set; }
-        public List<double>? Coordinates { get; set; }
-    }
+   
 }
