@@ -7,15 +7,15 @@
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-            <select @bind="SelectedReport"
+            <select @onchange="OnSelectedReportChanged"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                @for (int i = 0; i < userReports.Count; i++)
+                @for (int i = 0; i < userReports!.Count; i++)
                 {
-                    <option value="@i">@userReports[i].reportName</option>
+                    <option value="@i">@userReports[i]</option>
                 }
                 @if (userReports.Count == 0)
                 {
-                   <option value="0">No reports to select</option> 
+                    <option value="0">No reports to select</option>
                 }
             </select>
         </div>
@@ -23,13 +23,8 @@
     <Heading>
         <Superscript>Date Saved</Superscript>
         <Header>
-            @* <h1 class="text-lg">12 August 2023</h1> *@
             @{
-                var date = "";
-                if (userReports.Count > 0)
-                {
-                date = userReports[selectedReport].dateCreated.ToString("dd MMMM yyyy");
-                }
+                var date = dateCreated!.Value.ToString("dd MMMM yyyy");
             }
             <h1 class="text-lg">@date</h1>
         </Header>
@@ -42,64 +37,19 @@
 </Card>
 
 @code {
-    private List<ReportModel> userReports = new List<ReportModel>();
-    private ReportAllModel reportAll = new ReportAllModel();
-    int selectedReport = 0;
+    [Parameter]
+    public int selectedReport { get; set; }
+    [Parameter]
+    public EventCallback<int> selectedReportChanged { get; set; }
+    [Parameter]
+    public List<string>? userReports { get; set; }
+    [Parameter]
+    public DateTime? dateCreated { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-
-    protected override async Task OnInitializedAsync()
+    public Task OnSelectedReportChanged(ChangeEventArgs e)
     {
-        var reports = await ProtectedLocalStore.GetAsync<List<ReportModel>>("userReports");
-            if (reports.Value != null)
-            {
-                userReports = reports.Value;    
-            }
-            GetReportAll();
-    }
-
-    private int SelectedReport
-    {
-        get => selectedReport;
-        set 
-        {
-            if (selectedReport != value)
-            {
-                selectedReport = value;
-                UpdateReport(selectedReport);
-            }
-        }
-        
-    }
-
-    private async void UpdateReport(int selected)
-    {
-        selectedReport = selected;
-        await ProtectedLocalStore.SetAsync("selectedReport", selected);
-    }
-
-     private async void GetReportAll()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/get/" + userReports[selectedReport].reportId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            reportAll = JsonSerializer.Deserialize<ReportAllModel>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                });
-            if (reportAll != null)
-            {
-                await ProtectedLocalStore.SetAsync("userReports", reportAll);
-                Console.WriteLine(reportAll.systemId);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed");
-        }
+        selectedReport = Convert.ToInt32(e.Value);
+        return selectedReportChanged.InvokeAsync(selectedReport);
     }
 }
