@@ -28,6 +28,7 @@ public class UserController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
     //Update an user
     [HttpPatch]
     [Route("update")]
@@ -35,7 +36,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var data = await _usersRepository.updateUsers(
+            var data = await _usersRepository.UpdateUsers(
                 user.userId,
                 user.email,
                 user.password,
@@ -58,7 +59,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var data = await _usersRepository.deleteUsers(user.userId);
+            var data = await _usersRepository.DeleteUsers(user.userId);
             if (data == false)
             {
                 return StatusCode(404, "User with id: " + user.userId + " does not exist");
@@ -78,7 +79,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var data = await _usersRepository.getUserById(id);
+            var data = await _usersRepository.GetUserById(id);
             return Ok(data);
         }
         catch (Exception e)

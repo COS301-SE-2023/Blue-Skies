@@ -52,7 +52,7 @@ public class KeyController : ControllerBase
     {
         try
         {
-            var data = await _keysRepository.deleteKeys(key.keyId);
+            var data = await _keysRepository.DeleteKeys(key.keyId);
             if (data == false)
             {
                 return StatusCode(404, "Key with id: " + key.keyId + " does not exist");
@@ -72,7 +72,7 @@ public class KeyController : ControllerBase
     {
         try
         {
-            var data = await _keysRepository.updateKeys(
+            var data = await _keysRepository.UpdateKeys(
                 key.keyId,
                 key.owner,
                 key.APIKey,

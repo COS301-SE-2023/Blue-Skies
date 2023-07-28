@@ -52,7 +52,7 @@ public class AppliancesRepository
         }
     }
 
-    public async Task<Appliances> createAppliances(string type, int powerUsage)
+    public async Task<Appliances> CreateAppliances(string type, int powerUsage)
     {
         try
         {
@@ -95,7 +95,7 @@ public class AppliancesRepository
         }
     }
 
-    public async Task<Appliances> updateAppliances(int id, string type, int powerUsage)
+    public async Task<Appliances> UpdateAppliances(int id, string type, int powerUsage)
     {
         try
         {
@@ -141,7 +141,7 @@ public class AppliancesRepository
     }
 
     //Delete Appliance
-    public async Task<bool> deleteAppliances(int id)
+    public async Task<bool> DeleteAppliances(int id)
     {
         try
         {
@@ -176,7 +176,7 @@ public class AppliancesRepository
     }
 
     //Get Appliance by id
-    public async Task<Appliances> getApplianceById(int id)
+    public async Task<Appliances> GetApplianceById(int id)
     {
         try
         {
@@ -186,7 +186,6 @@ public class AppliancesRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine(data);
                 var app = JsonSerializer.Deserialize<Appliances>(data);
                 if (app != null)
                 {
