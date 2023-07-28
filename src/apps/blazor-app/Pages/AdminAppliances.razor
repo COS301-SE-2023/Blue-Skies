@@ -169,7 +169,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
            var data = await response.Content.ReadAsStringAsync();
-        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
         }
         else

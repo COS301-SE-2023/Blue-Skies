@@ -142,7 +142,8 @@ private async Task HandleSubmit()
             Console.WriteLine("Success");
             showError = "hidden";
             //Navigate to home page 
-            UserModel data= await response.Content.ReadFromJsonAsync<UserModel>();
+            
+            UserModel data = await response.Content.ReadFromJsonAsync<UserModel>();
 
             await ProtectedLocalStore.SetAsync("loggedIn", true);
             await ProtectedLocalStore.SetAsync("userEmail", email);
