@@ -38,8 +38,8 @@ public class UserController : ControllerBase
         {
             var data = await _usersRepository.UpdateUsers(
                 user.userId,
-                user.email,
-                user.password,
+                user.email!,
+                user.password!,
                 user.userRole,
                 user.dateCreated,
                 user.lastLoggedIn
