@@ -42,7 +42,7 @@ public class BasicCalculationController : ControllerBase
             var newBasicCalculation = await _basicCalculationsRepository.CreateBasicCalculation(
                 basicCalculation.systemId,
                 basicCalculation.daylightHours,
-                basicCalculation.location,
+                basicCalculation.location!,
                 basicCalculation.batteryLife
             );
             return Ok(newBasicCalculation);
