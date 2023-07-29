@@ -39,7 +39,7 @@
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var bCalc = await ProtectedLocalStore.GetAsync<BasicCalculationModel>("basicCalculations");
+        var bCalc = await ProtectedLocalStore.GetAsync<BasicCalculationModel>("basicCalculation");
         var sScore = await ProtectedLocalStore.GetAsync<int>("solarScore");
         solarScore = sScore.Value;
         basicCalculations = bCalc.Value!;
