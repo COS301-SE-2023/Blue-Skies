@@ -1,4 +1,7 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
     <Heading>
@@ -21,7 +24,7 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">89</p>
+                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
         </Card>
@@ -31,7 +34,7 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">9</p>
+                <p class="text-5xl text-primary-900 font-semibold">@dayLightHours</p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </Card>
@@ -41,27 +44,127 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">129</p>
+
+                <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                 <p class="text-5xl text-gray-400 font-bold">kw/h</p>
             </div>
         </Card>
         <Card css="border-2 flex flex-col gap-4 border-primary-300 p-4 w-80 h-80">
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
             <div class="flex justify-evenly">
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">5kw</p>
+                 <div onclick="@(() => SetSystemSize("5kw"))" class=" flex shadow-md transition-all duration-500  @(SystemSize == "5kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class=" font-semibold">5kw</p>
                 </div>
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">8kw</p>
+                <div onclick="@(() => SetSystemSize("8kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "8kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">8kw</p>
                 </div>
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">12kw</p>
+                <div onclick="@(() => SetSystemSize("12kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "12kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">12kw</p>
                 </div>
             </div>
             <div class="flex gap-2 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">8</p>
+                <p class="text-5xl text-primary-900 font-semibold">@PanelCount</p>
                 <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
             </div>
         </Card>
     </div>
 </div>
+
+@code {
+    private int solarScore = -1;
+    private int dayLightHours = -1;
+    private string SystemSize = "5kw";
+    private int PanelCount = 8;
+    private BasicCalculationModel basicCalculation = null;
+    private List<ProductModel> systems = new List<ProductModel>();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    public int selectedSystem = 0;
+    public double avgEnergyProduction = 0.0;
+    protected override async Task OnInitializedAsync()
+    {
+        var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
+        if (ss.Success)
+        {
+            solarScore = ss.Value;
+        }
+        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
+        if (dlh.Success)
+        {
+            basicCalculation = dlh.Value;
+            dayLightHours = basicCalculation.daylightHours;
+        }
+        else
+        {
+            Console.WriteLine("Unsuccess");
+        }
+
+        await GetProducts();
+        if (basicCalculation != null && systems != null)
+        {
+            double calc = systems[selectedSystem].numberOfPanels *
+                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+            avgEnergyProduction = Math.Round(calc, 2);
+        }
+        else
+        {
+            Console.WriteLine("Error");
+            Console.WriteLine(basicCalculation == null);
+            Console.WriteLine(systems == null);
+        }
+
+    }
+
+    private void SetPanelCount(int count)
+    {
+        PanelCount = count;
+    }
+
+    private void SetSystemSize(string size)
+    {
+        SystemSize = size;
+        switch (size)
+        {
+            case "5kw":
+                selectedSystem = 0;
+                SetPanelCount(8);
+                break;
+            case "8kw":
+                selectedSystem = 1;
+                SetPanelCount(14);
+                break;
+            case "12kw":
+                selectedSystem = 2;
+                SetPanelCount(20);
+                break;
+            default:
+                selectedSystem = 0;
+                SetPanelCount(8);
+                break;
+        }
+
+        double calc = systems[selectedSystem].numberOfPanels *
+                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+        avgEnergyProduction = Math.Round(calc, 2);
+    }
+
+    private async Task GetProducts()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive
+                                                                                                = true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
+}

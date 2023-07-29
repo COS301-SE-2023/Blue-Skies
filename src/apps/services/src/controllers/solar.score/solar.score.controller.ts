@@ -17,12 +17,31 @@ export default class SolarScoreController {
     const currentYear = new Date().getFullYear();
 
     try {
-      const result = await this.executePython(
-        'apps/services/src/controllers/solar.score/getImages.py',
-        [latitude, longitude, currentYear - 1, 3]
-      );
+      const result = await this.executePython('scripts/getImages.py', [
+        latitude,
+        longitude,
+        currentYear - 1,
+        3,
+      ]);
 
       res.json({ result: result });
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
+  public getSunTimes = async (req: Request, res: Response) => {
+    console.log('Get Sun Times Python script started');
+    const { latitude, longitude } = req.body;
+    const currentYear = new Date().getFullYear();
+    try {
+      const result = await this.executePython('scripts/GetSunTimes.py', [
+        latitude,
+        longitude,
+        currentYear,
+      ]);
+
+      const ans: number = parseFloat(result[0]);
+      res.json(ans);
     } catch (error) {
       res.status(500).json({ error: error });
     }
