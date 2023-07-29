@@ -14,5 +14,6 @@ public class BasicCalculationModel
     public int batteryLife { get; set; }
 
     //dateCreated
+
     public DateTime? dateCreated { get; set; }
 }

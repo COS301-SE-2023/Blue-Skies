@@ -22,7 +22,10 @@ public class ReportAllApplianceRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/reportAllAppliance/all");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/reportAllAppliance/all"
+            );
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -53,7 +56,7 @@ public class ReportAllApplianceRepository
     }
 
     //get report by reportId
-    public async Task<List<ReportAllAppliance>> GetReportById(int reportId)
+    public async Task<List<ReportAllAppliance>> GetReportAllApplianceById(int reportId)
     {
         try
         {
