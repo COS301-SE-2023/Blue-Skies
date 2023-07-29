@@ -35,8 +35,8 @@ public class KeyController : ControllerBase
     {
         try
         {
-            int suspended = keys.suspended ;
-            var key = await _keysRepository.CreateKey(keys.owner, keys.remainingCalls, suspended);
+            int suspended = keys.suspended;
+            var key = await _keysRepository.CreateKey(keys.owner!, keys.remainingCalls, suspended);
             return Ok(key);
         }
         catch (Exception e)
@@ -74,8 +74,8 @@ public class KeyController : ControllerBase
         {
             var data = await _keysRepository.UpdateKeys(
                 key.keyId,
-                key.owner,
-                key.APIKey,
+                key.owner!,
+                key.APIKey!,
                 key.remainingCalls,
                 key.suspended
             );

@@ -149,7 +149,7 @@
         barConfig.Data.Datasets.Add(dataset2);
 
         @* **************************************** Pie Chart Config ************************************************ *@
-        pieConfig = new PieConfig
+        pieConfig = new PieConfig(true)
             {
                 Options = new PieOptions
                 {
@@ -163,7 +163,7 @@
                     Legend = new Legend
                     {
                         Position = Position.Right
-                    }
+                    },
                 }
             };
 
@@ -287,13 +287,12 @@
 
                 PieDataset<int> dataset = new PieDataset<int>(new[] { remaining, threeMonths, month, week })
                     {
-                        BackgroundColor = new[]
-                    {
-ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
-ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
-ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
-ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
-}
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+                            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+                            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+                            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+                        }
                     };
                 if (pieConfig != null)
                 {
