@@ -2,6 +2,7 @@
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @using System.Text.Json
+@inject IJSRuntime JSRuntime
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class=" flex items-center justify-center lg:w-6/12 gap-4">
@@ -10,8 +11,9 @@
     <div class="w-full flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
-            <select @onchange="ApplyTemplate" aria-placeholder="Select a home size"
+            <select @onchange="ApplyTemplate" id="selectHome"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                <option disabled selected value="1">Select a home size</option>
                 <option value="2">2 Bedroom House</option>
                 <option value="3">3 Bedroom House</option>
                 <option value="4">4+ Bedroom House</option>
@@ -117,12 +119,12 @@
         <div class="flex flex-col my-auto gap-6 items-center>">
             <Button css="h-16 w-60" style="outline">
                 <content>
-                    <p>Reset</p>
+                    <p @onclick="ResetHome">Reset</p>
                 </content>
             </Button>
             <Button  css="h-16 w-60" style="pill">
                 <content>
-                    <p @onclick="saveCalculation">Save this calculation</p>
+                    <p @onclick="SaveCalculation">Save this calculation</p>
                 </content>
             </Button>
         </div>
@@ -190,12 +192,12 @@
     <div class="flex mt-10 mx-auto gap-6 items-center>">
         <Button css="h-16 w-full" style="outline">
             <content>
-                <p @onclick="resetHome">Reset</p>
+                <p @onclick="ResetHome">Reset</p>
             </content>
         </Button>
         <Button css="h-16 w-full" style="pill">
             <content>
-                <p @onclick="saveCalculation">Save this calculation</p>
+                <p @onclick="SaveCalculation">Save this calculation</p>
             </content>
         </Button>
     </div>
@@ -255,7 +257,6 @@
         selectedSystem = selection;
         selectedSystemChanged.InvokeAsync(selectedSystem);
     }
-    @*Apply template based off option selection*@
     private void ApplyTemplate(ChangeEventArgs e) {
         switch (e.Value)
         {
@@ -307,8 +308,9 @@
         }
     }
 
-private void resetHome(){
+    private async void ResetHome(){
     Console.WriteLine("Resetting"); 
+    await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
     appliances[0].quantity = 0;
     appliances[1].quantity = 0;
     appliances[2].quantity = 0;
@@ -318,9 +320,9 @@ private void resetHome(){
     appliances[6].quantity = 0;
     appliances[7].quantity = 0;
     selectedSystem = 0;
-    selectedSystemChanged.InvokeAsync(selectedSystem);
-}
-    private async void saveCalculation(){
+    await selectedSystemChanged.InvokeAsync(selectedSystem);
+    }
+    private async void SaveCalculation(){
         testBasicCalc.basicCalculationId = 1;
         testBasicCalc.systemId = 2;
         testBasicCalc.daylightHours = 9;
@@ -336,7 +338,7 @@ private void resetHome(){
         {
             successToast.Show("Saved", "Report successfuly saved.", "success");
             Console.WriteLine("Report created successfully");
-            int reportId = await getCreatedReportId();
+            int reportId = await GetCreatedReportId();
             foreach (var appliance in appliances)
             {
                 var request1 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
@@ -362,7 +364,7 @@ private void resetHome(){
         
     }
 
-    private async Task<int> getCreatedReportId(){
+    private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
         var response = await client.SendAsync(request);
