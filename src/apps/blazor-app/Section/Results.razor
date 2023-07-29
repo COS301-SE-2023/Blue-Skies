@@ -3,7 +3,7 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-<div class="mt-20 text-center">
+<div class="mt-24 text-center">
     <Heading>
         <Header>
             <h1 class="text-3xl">Your results in numbers</h1>
@@ -13,12 +13,12 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex px-4 flex-col lg:flex-row bg-red-300 justify-center mt-16">
-    <div class="">
-        <Image ImageName="Solarscore.png" alt="Solar Score" css="scale-90"/>
+<div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-16">
+    <div class="sm:flex-shrink-0  flex justify-center ">
+        <Image ImageName="Solarscore.png" alt="Solar Score" css="scale-75 xl:scale-90"/>
     </div>
-    <div class="grid grid-cols-1 mx-auto md:grid-cols-2 gap-10">
-        <Card css="border-2 border-primary-300 w-80 h-80 my-auto">
+    <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 w-72 h-72  my-auto">
             <div class="bg-gray-100 shadow-md rounded-3xl  p-4 w-20 ">
                 <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
             </div>
@@ -28,7 +28,7 @@
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
         </Card>
-        <Card css="border-2  border-primary-300 p-4 w-80 h-80 flex my-auto flex-col">
+        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72 flex  my-auto flex-col">
             <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
                 <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
             </div>
@@ -38,7 +38,7 @@
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </Card>
-        <Card css="border-2  border-primary-300 p-4 w-80 h-80">
+        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72  my-auto">
             <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
                 <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
             </div>
@@ -49,9 +49,9 @@
                 <p class="text-5xl text-gray-400 font-bold">kw/h</p>
             </div>
         </Card>
-        <Card css="border-2 flex flex-col gap-4 border-primary-300 p-4 w-80 h-80">
+        <Card css="border-2 scale-90 xl:scale-100 flex flex-col gap-4 border-primary-300 p-4 w-72 h-72  my-auto">
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
-            <div class="flex justify-evenly">
+            <div class="flex justify-evenly gap-4">
                  <div onclick="@(() => SetSystemSize("5kw"))" class=" flex shadow-md transition-all duration-500  @(SystemSize == "5kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                     <p class=" font-semibold">5kw</p>
                 </div>
