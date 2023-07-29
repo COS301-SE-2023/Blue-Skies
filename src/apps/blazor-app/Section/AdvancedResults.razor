@@ -19,9 +19,9 @@
             <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
                 <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
             </div>
-            <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1>
+            <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br/>
             <div class="flex gap-1 mt-3">
-                <p class="text-3xl text-primary-900 font-semibold">89</p>
+                <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-3xl text-gray-400 font-bold">%</p>
             </div>
         </Card>
@@ -31,7 +31,14 @@
             </div>
             <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-3xl text-primary-900 font-semibold">9</p>
+                @{
+                    var usableHours = 0;
+                    if (basicCalculation != null)
+                    {
+                        usableHours = basicCalculation.daylightHours;
+                    }
+                }
+                <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
                 <p class="text-3xl text-gray-400 font-bold">h</p>
             </div>
         </Card>
@@ -41,7 +48,16 @@
             </div>
             <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-3xl text-primary-900 font-semibold">129</p>
+                @{
+                    var avgEnergyProduction = 0.0;
+                    if (basicCalculation != null && systems != null)
+                    {
+                        double calc = systems[selectedSystem].numberOfPanels *
+                            basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+                        avgEnergyProduction = Math.Round(calc, 2);
+                    }
+                }
+                <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                 <p class="text-3xl text-gray-400 font-bold">kw/h</p>
             </div>
         </Card>
@@ -52,9 +68,9 @@
     [Parameter]
     public int solarScore { get; set; }
     [Parameter]
-    public List<BasicCalculationModel> basicCalculation { get; set; }
+    public BasicCalculationModel? basicCalculation { get; set; }
     [Parameter]
-    public List<SystemModel> systems { get; set; }
+    public List<SystemModel>? systems { get; set; }
     [Parameter]
     public int selectedSystem { get; set; }
 }
