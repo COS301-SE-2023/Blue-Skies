@@ -1,4 +1,4 @@
-public class BasicCalculation
+public class BasicCalculationModel
 {
     public int? basicCalculationId { get; set; }
 

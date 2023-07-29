@@ -44,7 +44,6 @@
         double longitude = cord[0];
 
         //await GetSolarScore(latitude, longitude);
-        List<ProductModel> products= await GetProducts();
         int systemId = 1;
         Console.WriteLine("Getting daylight hours");
         float dayLightHours = await getDayLightHours(latitude, longitude);
@@ -57,7 +56,7 @@
         int batteryLife = 10;
         string result = await CreateBasicCaculation(systemId, (int)dayLightHours, location, batteryLife);
         Console.WriteLine(result);
-        BasicCalculation basicCalculation = new BasicCalculation();
+        BasicCalculationModel basicCalculation = new BasicCalculationModel();
         basicCalculation.basicCalculationId = -1;
         basicCalculation.systemId = systemId;
         //Convert float to int
@@ -65,28 +64,12 @@
         basicCalculation.daylightHours = temp;
         basicCalculation.location = location;
         basicCalculation.batteryLife = batteryLife;
+        basicCalculation.dateCreated = DateTime.Now;
         int solarScore = 85;
         await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
     }
-    private async Task<List<ProductModel>> GetProducts()
-    {
-        List<ProductModel> products = new List<ProductModel>();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get products");
-        }
-
-        return products;
-    }
+    
 
     public async Task<string> GetSolarScore(double latitude, double longitude)
     {
