@@ -221,7 +221,7 @@ describe('Report Controller', () => {
         userId: '1',
       };
 
-      reportController.getAllReports(
+      reportController.getUserReports(
         mockRequest as Request,
         mockResponse as Response
       );
@@ -243,7 +243,7 @@ describe('Report Controller', () => {
         }
       );
 
-      reportController.getAllReports(
+      reportController.getUserReports(
         mockRequest as Request,
         mockResponse as Response
       );
@@ -267,7 +267,7 @@ describe('Report Controller', () => {
         }
       );
 
-      reportController.getAllReports(
+      reportController.getUserReports(
         mockRequest as Request,
         mockResponse as Response
       );
@@ -294,7 +294,7 @@ describe('Report Controller', () => {
         }
       );
 
-      reportController.getAllReports(
+      reportController.getUserReports(
         mockRequest as Request,
         mockResponse as Response
       );
