@@ -1,4 +1,6 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
+@using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
@@ -42,7 +44,8 @@
             </div>
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
             <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">129</p>
+
+                <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                 <p class="text-5xl text-gray-400 font-bold">kw/h</p>
             </div>
         </Card>
@@ -72,7 +75,11 @@
     private int dayLightHours = -1;
     private string SystemSize = "5kw";
     private int PanelCount = 8;
-
+    private BasicCalculationModel basicCalculation = null;
+    private List<ProductModel> systems = new List<ProductModel>();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    public int selectedSystem = 0;
+    public double avgEnergyProduction = 0.0;
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -80,15 +87,35 @@
         {
             solarScore = ss.Value;
         }
-        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculation>("basicCalculation");
+        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
         if (dlh.Success)
         {
-            BasicCalculation bc = dlh.Value;
-            dayLightHours = bc.daylightHours;
+            basicCalculation = dlh.Value;
+            dayLightHours = basicCalculation.daylightHours;
         }
+        else
+        {
+            Console.WriteLine("Unsuccess");
+        }
+
+        await GetProducts();
+        if (basicCalculation != null && systems != null)
+        {
+            double calc = systems[selectedSystem].numberOfPanels *
+                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+            avgEnergyProduction = Math.Round(calc, 2);
+        }
+        else
+        {
+            Console.WriteLine("Error");
+            Console.WriteLine(basicCalculation == null);
+            Console.WriteLine(systems == null);
+        }
+
     }
 
-     private void SetPanelCount(int count) {
+    private void SetPanelCount(int count)
+    {
         PanelCount = count;
     }
 
@@ -98,17 +125,46 @@
         switch (size)
         {
             case "5kw":
+                selectedSystem = 0;
                 SetPanelCount(8);
                 break;
             case "8kw":
+                selectedSystem = 1;
                 SetPanelCount(14);
                 break;
             case "12kw":
+                selectedSystem = 2;
                 SetPanelCount(20);
                 break;
             default:
+                selectedSystem = 0;
                 SetPanelCount(8);
                 break;
         }
+
+        double calc = systems[selectedSystem].numberOfPanels *
+                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+        avgEnergyProduction = Math.Round(calc, 2);
     }
+
+    private async Task GetProducts()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive
+                                                                                                = true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
 }
