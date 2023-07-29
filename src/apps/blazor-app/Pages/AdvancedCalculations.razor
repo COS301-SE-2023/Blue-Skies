@@ -17,7 +17,7 @@
         <div class="w-full">
             <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome appliances="@appliances"/>      
+                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculations" solarScore="solarScore"/>    
             </div>
         </div>
         }
@@ -29,14 +29,17 @@
     private bool isLoaded = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
-    private List<BasicCalculationModel> basicCalculations = new List<BasicCalculationModel>();
+    private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
+
+    private BasicCalculationModel basicCalculations = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
+    private int selectedSystem = 0;
     private int solarScore = 0;
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var bCalc = await ProtectedLocalStore.GetAsync<List<BasicCalculationModel>>("basicCalculations");
+        var bCalc = await ProtectedLocalStore.GetAsync<BasicCalculationModel>("basicCalculations");
         var sScore = await ProtectedLocalStore.GetAsync<int>("solarScore");
         solarScore = sScore.Value;
         basicCalculations = bCalc.Value!;
