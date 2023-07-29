@@ -101,15 +101,15 @@
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <h1 class="text-base mb-10 font-semibold text-primary-900">What do you want to run in a power outage?</h1>
-        <div class="flex gap-4 scale-90 justify-start">
+        <div class="flex gap-10 scale-90 justify-stretchs">
             @foreach (var appliance in appliances)
         {
             if (appliance.quantity > 0)
             {
-                <div @onclick="@(() => DecrementApplianceCount(appliance))" class="@fade">
-                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
                 </div>
-            }
+            } 
         }
         </div>
     </div>
@@ -215,7 +215,6 @@
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
-    public string fade = "fade-in-enter-active";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
     private BasicCalculationModel testBasicCalc = new BasicCalculationModel();
@@ -233,16 +232,20 @@
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private void IncrementApplianceCount(ApplianceModel appliance) {
-        fade = "fade-in-enter-active";
+        appliance.fade = "fade-in-active";
+        StateHasChanged();
         appliance.quantity++;
         updateApplianceStorage();
     }
-    private void DecrementApplianceCount(ApplianceModel appliance) {
-        fade = "fade-in-leave-active";
-        
-        Console.WriteLine(appliance.type + " " + appliance.quantity);
-        Task.WaitAll();
+    private async void DecrementApplianceCount(ApplianceModel appliance) {
+        if (appliance.quantity == 1) {
+            appliance.fade = "fade-out-active";
+            StateHasChanged();
+            await Task.Delay(300);
+        }
         appliance.quantity--;
+        appliance.fade = "fade-in-active";
+        StateHasChanged();
         updateApplianceStorage();
     }
     private async void updateApplianceStorage()
