@@ -1,4 +1,4 @@
-@using BlazorApp.Components.Base
+@using BlazorApp.Components
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @using System.Text.Json
@@ -190,7 +190,7 @@
     <div class="flex mt-10 mx-auto gap-6 items-center>">
         <Button css="h-16 w-full" style="outline">
             <content>
-                <p>Reset</p>
+                <p @onclick="resetHome">Reset</p>
             </content>
         </Button>
         <Button css="h-16 w-full" style="pill">
@@ -219,6 +219,8 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
     private BasicCalculationModel testBasicCalc = new BasicCalculationModel();
+    private Toast successToast { get; set; } = new Toast();
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -259,19 +261,65 @@
         {
             case "2":
                 selectedSystem = 0;
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 15;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 0;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
+
                 break;
             case "3":
                 selectedSystem = 1;
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 20;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 1;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
                 break;
             case "4":
                 selectedSystem = 2;
+                appliances[0].quantity = 2;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 30;
+                appliances[3].quantity = 2;
+                appliances[4].quantity = 2;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 1;
                 break;
             default:
                 selectedSystem = 0;
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 15;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 0;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
                 break;
         }
     }
 
+private void resetHome(){
+    Console.WriteLine("Resetting"); 
+    appliances[0].quantity = 0;
+    appliances[1].quantity = 0;
+    appliances[2].quantity = 0;
+    appliances[3].quantity = 0;
+    appliances[4].quantity = 0;
+    appliances[5].quantity = 0;
+    appliances[6].quantity = 0;
+    appliances[7].quantity = 0;
+    selectedSystem = 0;
+    selectedSystemChanged.InvokeAsync(selectedSystem);
+}
     private async void saveCalculation(){
         testBasicCalc.basicCalculationId = 1;
         testBasicCalc.systemId = 2;
@@ -286,6 +334,7 @@
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            successToast.Show("Saved", "Report successfuly saved.", "success");
             Console.WriteLine("Report created successfully");
             int reportId = await getCreatedReportId();
             foreach (var appliance in appliances)
