@@ -519,4 +519,94 @@ describe('Training Data Controller', () => {
       });
     });
   });
+
+  //getTrainingDataByArea
+  describe('getTrainingDataByArea', () => {
+    it('should call res.status(200) when the query is successful', () => {
+      const mockBody = {
+        areaId: '1',
+      };
+      mockRequest.params = mockBody;
+
+      trainingDataController.getTrainingDataByArea(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    it('should call res.status(400) when the query is unsuccessful', () => {
+      const mockBody = {
+        areaId: '1',
+      };
+      mockRequest.params = mockBody;
+
+      const mockError = new Error('some error');
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(mockError, null);
+        }
+      );
+
+      trainingDataController.getTrainingDataByArea(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: mockError.message,
+      });
+    });
+
+    it('should call res.status(500) when the query throws an error', () => {
+      const mockBody = {
+        areaId: '1',
+      };
+      mockRequest.params = mockBody;
+
+      const mockError = new Error('some error');
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw mockError;
+        }
+      );
+
+      trainingDataController.getTrainingDataByArea(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: mockError.message,
+      });
+    });
+
+    it('should call res.status(404) when the query returns no data', () => {
+      const mockBody = {
+        areaId: '1',
+      };
+      mockRequest.params = mockBody;
+
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          const rowCount = 0;
+          callback(null, rowCount);
+        }
+      );
+
+      trainingDataController.getTrainingDataByArea(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'No training data exists.',
+      });
+    });
+  });
 });
