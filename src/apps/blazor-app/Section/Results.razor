@@ -49,18 +49,18 @@
         <Card css="border-2 flex flex-col gap-4 border-primary-300 p-4 w-80 h-80">
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
             <div class="flex justify-evenly">
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">5kw</p>
+                 <div onclick="@(() => SetSystemSize("5kw"))" class=" flex shadow-md transition-all duration-500  @(SystemSize == "5kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class=" font-semibold">5kw</p>
                 </div>
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">8kw</p>
+                <div onclick="@(() => SetSystemSize("8kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "8kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">8kw</p>
                 </div>
-                <div class="bg-gray-100 flex shadow-md rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="text-primary-900 font-semibold">12kw</p>
+                <div onclick="@(() => SetSystemSize("12kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "12kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">12kw</p>
                 </div>
             </div>
             <div class="flex gap-2 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">8</p>
+                <p class="text-5xl text-primary-900 font-semibold">@PanelCount</p>
                 <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
             </div>
         </Card>
@@ -70,7 +70,8 @@
 @code {
     private int solarScore = -1;
     private int dayLightHours = -1;
-
+    private string SystemSize = "5kw";
+    private int PanelCount = 8;
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,6 +85,30 @@
         {
             BasicCalculation bc = dlh.Value;
             dayLightHours = bc.daylightHours;
+        }
+    }
+
+     private void SetPanelCount(int count) {
+        PanelCount = count;
+    }
+
+    private void SetSystemSize(string size)
+    {
+        SystemSize = size;
+        switch (size)
+        {
+            case "5kw":
+                SetPanelCount(8);
+                break;
+            case "8kw":
+                SetPanelCount(14);
+                break;
+            case "12kw":
+                SetPanelCount(20);
+                break;
+            default:
+                SetPanelCount(8);
+                break;
         }
     }
 }
