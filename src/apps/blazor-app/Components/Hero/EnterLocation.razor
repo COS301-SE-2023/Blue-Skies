@@ -37,9 +37,13 @@
     public async void saveBasicCalculation()
     {
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
-        LocationSuggestion locationSuggestion = locationTemp.Value;
+        LocationSuggestion locationSuggestion = locationTemp.Value!;
 
-        List<double> cord = locationSuggestion.Geometry.Coordinates;
+        List<double> cord = new List<double>();
+        if (locationSuggestion.Geometry != null)
+        {
+            cord = locationSuggestion.Geometry.Coordinates!;    
+        }
         double latitude = cord[1];
         double longitude = cord[0];
 

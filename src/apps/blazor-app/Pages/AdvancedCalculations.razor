@@ -9,6 +9,7 @@
     <div class="fade-in-enter-active">
         @if(!isLoaded){}
         else if (!logIn) {
+            ProtectedLocalStore.SetAsync("redirect", "advanced");
             NavigationManager.NavigateTo("/login");
         } else  if (isAd) {
             NavigationManager.NavigateTo("/admin/keys");
@@ -16,13 +17,7 @@
         <div class="w-full">
             <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome/>
-
-                @foreach (var appliance in appliances)
-                {
-                    <p>@appliance.type</p>
-                    <p>@appliance.quantity</p>
-                }
+                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculations" solarScore="solarScore"/>    
             </div>
         </div>
         }
@@ -34,14 +29,48 @@
     private bool isLoaded = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
+    private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
+
+    private BasicCalculationModel basicCalculations = new BasicCalculationModel();
+    private List<SystemModel> systems = new List<SystemModel>();
+    private int selectedSystem = 0;
+    private int solarScore = 0;
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var bCalc = await ProtectedLocalStore.GetAsync<BasicCalculationModel>("basicCalculation");
+        var sScore = await ProtectedLocalStore.GetAsync<int>("solarScore");
+        solarScore = sScore.Value;
+        basicCalculations = bCalc.Value!;
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
         await GetAppliancesAsync();
+        await GetSystemsAsync();
+    }
+
+    private async Task GetSystemsAsync(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (systems.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("systems", systems);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
     }
 
     private async Task GetAppliancesAsync()
