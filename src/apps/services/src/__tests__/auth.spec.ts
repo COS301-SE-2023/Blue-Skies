@@ -1,5 +1,6 @@
 import AuthController from '../controllers/auth/auth.controller';
 import { Request, Response } from 'express';
+import IUser from '../models/user.interface';
 import * as tedious from 'tedious';
 jest.mock('../main', () => jest.fn());
 
@@ -48,21 +49,6 @@ describe('AuthController', () => {
   });
 
   describe('registerUser', () => {
-    beforeAll(() => {
-      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
-        (query, callback) => {
-          // Simulate a successful query with mock data
-          if (query.includes('WHERE keyId = 1')) {
-            callback(null, 1);
-          } else {
-            callback(null, 0);
-          }
-          const rowCount = 2;
-
-          callback(null, rowCount);
-        }
-      );
-    });
     it('should register a user', () => {
       mockRequest = {
         body: {
@@ -135,27 +121,17 @@ describe('AuthController', () => {
 
   //checkEmail
   describe('checkEmail', () => {
-    beforeEach(() => {
-      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
-        (query, callback) => {
-          if (query.includes('WHERE keyId = 1')) {
-            callback(null, 1);
-          } else {
-            callback(null, 0);
-          }
-          const rowCount = 2;
-
-          callback(null, rowCount);
-        }
-      );
-    });
-    it('should check email', () => {
+    it('should return a 200 response', () => {
       mockRequest = {
         body: {
           email: 'test@gmail.com',
         },
       };
-
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
       authController.checkEmail(
         mockRequest as Request,
         mockResponse as Response
@@ -167,69 +143,58 @@ describe('AuthController', () => {
     });
 
     //500 error
-    it('should return a 401 error', () => {
+    it('should return a 500 error', () => {
       mockRequest = {
         body: {
           email: 'test@gmail.com',
         },
       };
-
-      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
-        throw new Error('Faild to check email');
-      });
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Failed to check email');
+        }
+      );
 
       authController.checkEmail(
         mockRequest as Request,
         mockResponse as Response
       );
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: 'Unauthorized',
-        details: 'Email already exists.',
+        error: 'Failed to check email',
+        details: 'Database connection error.',
       });
     });
 
-    it('should return 500 if there is an error', () => {
+    //400 error
+    it('should return a 400 error', () => {
       mockRequest = {
         body: {
           email: 'test@gmail.com',
         },
       };
-      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
-        throw new Error('An error occured');
-      });
-      // Call the getAllSystems method with the mock request and response
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Error checking email'));
+        }
+      );
+
       authController.checkEmail(
         mockRequest as Request,
         mockResponse as Response
       );
-
-      // Assert that the mock response was called with the correct data
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error checking email',
+      });
     });
   });
 
-  //updateLastLogin
-  describe('updateLastLogin', () => {
-    beforeEach(() => {
-      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
-        (query, callback) => {
-          if (query.includes('WHERE keyId = 1')) {
-            callback(null, 1);
-          } else {
-            callback(null, 0);
-          }
-          const rowCount = 2;
-
-          callback(null, rowCount);
-        }
-      );
-    });
-    it('should update last login', () => {
-      mockRequest = {
-        params: {
-          userId: '1',
-        },
+  //updateloggedIn
+  describe('updateLoggedIn', () => {
+    it('should return a 200 response', () => {
+      mockRequest.params = {
+        userId: '1',
       };
 
       authController.updateloggedIn(
@@ -241,52 +206,102 @@ describe('AuthController', () => {
         message: 'User last logged in field updated successfully.',
       });
     });
-  });
 
-  //login
-  describe('login', () => {
-    beforeEach(() => {
+    //404 error
+    it('should return a 404 error', () => {
+      mockRequest.params = {
+        userId: '0',
+      };
       (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
         (query, callback) => {
-          if (query.includes('WHERE keyId = 1')) {
-            callback(null, 1);
-          } else {
-            callback(null, 0);
-          }
-          const rowCount = 2;
-
-          callback(null, rowCount);
+          callback(new Error('Error'));
         }
       );
+      authController.updateloggedIn(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error',
+      });
     });
-    it('should return 500', () => {
+
+    //404 rowcount = 0
+    it('should return a 404 error if row count = 0', () => {
+      mockRequest.params = {
+        userId: '0',
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+      authController.updateloggedIn(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'User does not exist.',
+      });
+    });
+
+    //500 error
+    it('should return a 500 error', () => {
+      mockRequest.params = {
+        userId: '1',
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Failed to update last logged in');
+        }
+      );
+      authController.updateloggedIn(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to update last logged in',
+      });
+    });
+  });
+
+  //loginUser
+  describe('loginUser', () => {
+    //400
+    it('should return a 400 error', () => {
       mockRequest = {
         body: {
           email: 'test@gmail.com',
           password: 'test',
         },
       };
-      // Mock the tedious.Request constructor to simulate an error
       (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
         (query, callback) => {
-          callback(new Error('Test error'), 0);
+          callback(new Error('Error'));
         }
       );
       authController.loginUser(
         mockRequest as Request,
         mockResponse as Response
       );
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error',
+      });
     });
 
-    it('should return a 404 status code and error message if the user does not exist', () => {
+    //404
+    it('should return a 404 error', () => {
       mockRequest = {
         body: {
           email: 'test@gmail.com',
           password: 'test',
         },
       };
-      // Mock the tedious.Request constructor to simulate zero rowCount
       (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
         (query, callback) => {
           callback(null, 0);
@@ -296,9 +311,36 @@ describe('AuthController', () => {
         mockRequest as Request,
         mockResponse as Response
       );
-
       expect(mockResponse.status).toHaveBeenCalledWith(404);
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Invalid email',
+        details: 'User does not exist.',
+      });
     });
+
+    //500
+    it('should return a 500 error', () => {
+      mockRequest = {
+        body: {
+          email: 'test@gmail.com',
+          password: 'test',
+        },
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Failed to login user');
+        }
+      );
+      authController.loginUser(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to login user',
+      });
+    });
+
+    //200 with correct password
   });
 });
