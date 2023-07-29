@@ -22,7 +22,7 @@
                             location = reportAll[selectedReport].location;
                             solarScore = reportAll[selectedReport].solarScore + "%";
                             avgEnergyProduction = Math.Round(reportAll[selectedReport].numberOfPanels *
-                            reportAll[selectedReport].daylightHours * 315 / 1000, 2) + " kw/h";
+                            reportAll[selectedReport].daylightHours * reportAll[selectedReport].solarInput /1000, 2) + " kw/h";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
@@ -60,7 +60,7 @@
                 </div>
                 <div class="flex w-full justify-center items-center gap-1 mt-4">
                     <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
-                    <p class="text-5xl text-gray-400 font-bold">w</p>
+                    <p class="text-5xl text-gray-400 font-bold">kw</p>
                 </div>
             </div>
         </Card>

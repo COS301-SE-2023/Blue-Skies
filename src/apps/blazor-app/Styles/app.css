@@ -10,6 +10,10 @@ body {
 .fade-in-enter-active {
     animation: fadeIn .6s;
 }
+/* Fade-In Transition */
+.fade-in-active {
+    animation: fadeIn .3s;
+}
 
 /* Slide-In Transition */
 .slide-in-enter-active {
@@ -17,10 +21,13 @@ body {
     animation-delay: 50ms;
 }
 
-.fade-in-leave-active {
-    animation: fadeOut .6s;
+.fade-active {
+    animation: fade .6s;
 }
 
+.fade-out-active {
+    animation: fade-out .3s;
+}
 
 
 /* Fade-Out Transition */
@@ -34,9 +41,12 @@ body {
     to { opacity: 1; }
 }
 
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-  
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}  

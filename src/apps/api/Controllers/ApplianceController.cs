@@ -37,7 +37,7 @@ public class ApplianceController : ControllerBase
         try
         {
             var data = await _appliancesRepository.CreateAppliances(
-                appliance.type,
+                appliance.type!,
                 appliance.powerUsage
             );
             return Ok(data);
@@ -57,7 +57,7 @@ public class ApplianceController : ControllerBase
         {
             var data = await _appliancesRepository.UpdateAppliances(
                 appliance.applianceId,
-                appliance.type,
+                appliance.type!,
                 appliance.powerUsage
             );
             return Ok(data);
