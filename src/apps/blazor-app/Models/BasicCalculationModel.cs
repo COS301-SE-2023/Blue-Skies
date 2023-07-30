@@ -5,7 +5,7 @@ public class BasicCalculationModel
     public int systemId { get; set; }
 
     //daylightHours
-    public int daylightHours { get; set; }
+    public float daylightHours { get; set; }
 
     //location
     public string? location { get; set; }
