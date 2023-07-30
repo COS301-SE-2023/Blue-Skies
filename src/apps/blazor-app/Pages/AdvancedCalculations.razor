@@ -1,9 +1,11 @@
 @page "/advanced"
 @layout MainLayout
 @inject ProtectedLocalStorage ProtectedLocalStore;
+@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager;
 @using BlazorApp.Models;
 @using System.Text.Json
+@using BlazorApp.Components
 
 <PageTitle>Advanced Calculations</PageTitle>
     <div class="fade-in-enter-active">
@@ -12,7 +14,12 @@
             ProtectedLocalStore.SetAsync("redirect", "advanced");
             NavigationManager.NavigateTo("/login");
         } else  if (isAd) {
-            NavigationManager.NavigateTo("/admin/keys");
+            NavigationManager.NavigateTo("/admin/keys");  
+        } else if (solarScore == 0) {
+            deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error");
+            Console.WriteLine("Toast");
+            SpinWait.SpinUntil(() => false, 2000);
+            NavigationManager.NavigateTo("/solarScore");
         } else {
         <div class="w-full">
             <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
@@ -21,6 +28,12 @@
             </div>
         </div>
         }
+        <Toast @ref="successToast" Title="" Type="success">
+                <p></p>
+        </Toast>
+        <Toast @ref="deleteToast" Title="" Type="error">
+                <p></p>
+        </Toast>
     </div>
 
 @code {
@@ -35,12 +48,19 @@
     private List<SystemModel> systems = new List<SystemModel>();
     private int selectedSystem = 0;
     private int solarScore = 0;
+    private Toast successToast { get; set; } = new Toast();
+    private Toast deleteToast { get; set; } = new Toast();
+
+
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var bCalc = await ProtectedLocalStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        var sScore = await ProtectedLocalStore.GetAsync<int>("solarScore");
+        var bCalc = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
+        Console.WriteLine("Value" + bCalc.Value);
+        var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
+        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = sSystem.Value;
         solarScore = sScore.Value;
         basicCalculations = bCalc.Value!;
         logIn = loggedIn.Value;
