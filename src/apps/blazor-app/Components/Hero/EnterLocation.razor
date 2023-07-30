@@ -3,6 +3,9 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+
+
 <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
     <div class="text-center">
         <Heading>
@@ -32,6 +35,11 @@
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private double latitude = 0; 
+    private double longitude = 0; 
+    private readonly int zoom = 19; 
+    private readonly int width = 600;
+    private readonly int height = 500; 
 
 
     public async void saveBasicCalculation()
@@ -44,8 +52,12 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;    
         }
-        double latitude = cord[1];
-        double longitude = cord[0];
+        latitude = cord[0];
+        longitude = cord[1];
+        @* latitude = 28.356459;
+        longitude = -25.772081; *@
+        Console.WriteLine("Latitude: " + latitude.ToString());
+        Console.WriteLine("Longitude: " + longitude.ToString());
 
         //await GetSolarScore(latitude, longitude);
         int systemId = 1;
@@ -74,6 +86,8 @@
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
+        await DownloadImage();
+        NavigationManager.NavigateTo("/solarScore");
     }
     
 
@@ -149,5 +163,22 @@
         {
             return "Failed to create Basic Calculation";
         }
+    }
+
+    private byte[] imageBytes = new byte[0];
+
+    private async Task DownloadImage()
+    {
+        var googleMapsService = new GoogleMapsService(new HttpClient());
+        imageBytes = await googleMapsService.GetStaticMapImageAsync(latitude, longitude, zoom, width, height);
+
+        var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
+        if (File.Exists(imagePath))
+        {
+            File.Delete(imagePath);
+        }
+
+        await File.WriteAllBytesAsync(imagePath, imageBytes);
+
     }
 }
