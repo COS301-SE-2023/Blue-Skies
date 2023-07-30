@@ -1,21 +1,26 @@
-# python3 getImages.py -25.771 28.357 2022 3
+# python3 getImages.py -25.771 28.357 2022 3 solarScoreId
 
 import os
 import sys
 import concurrent.futures
 import ee
+import threading
 import requests
 from google.oauth2 import service_account
 from dotenv import load_dotenv
 from PIL import Image
+import json
 
 LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
 TIME_FRAME = int(sys.argv[4])
+SOLAR_SCORE_ID = sys.argv[5]
+
 # Load environment variables from .env file
 load_dotenv()
-
+file_lock = threading.Lock()
+API_PORT = os.getenv('API_PORT')
 # Retrieve the credentials from environment variables
 credentials = {
     'type': os.getenv('TYPE'),
@@ -58,10 +63,31 @@ def download_and_save_image(image, roi, imageName):
         'scale': 10
     })
 
-    image_path = f'{imageName}.png'
+    image_path = f'apps/api/assets/{imageName}-{SOLAR_SCORE_ID}.png'
     image = Image.open(requests.get(image_url, stream=True).raw)
+    new_image = f'{imageName}-{SOLAR_SCORE_ID}'
     image.save(image_path)
     print('Image', imageName, 'saved successfully.')
+    file_lock.acquire()
+    try:
+        print('Getting solar score for image')
+        url = API_PORT+ "/SolarScore/GetSolarScoreFromImage"
+
+        payload = json.dumps({
+        "imgName": new_image,
+        "solarScoreId": SOLAR_SCORE_ID
+        })
+        headers = {
+        'Content-Type': 'application/json'
+        }
+
+        response = requests.request("GET", url, headers=headers, data=payload)
+        print(response.text)
+    finally:
+        # Release the lock after saving the image
+        file_lock.release()
+    
+
 
 with concurrent.futures.ThreadPoolExecutor() as executor:
     for i in range(YEAR - TIME_FRAME + 1, YEAR + 1):
@@ -81,3 +107,7 @@ with concurrent.futures.ThreadPoolExecutor() as executor:
             imageName = stringYear + '-' + stringMonth
 
             executor.submit(download_and_save_image, image, roi, imageName)
+
+
+
+    
