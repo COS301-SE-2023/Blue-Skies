@@ -3,8 +3,6 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-@if (!isLoaded)
-{
 <div class="mt-24 text-center">
     <Heading>
         <Header>
@@ -110,7 +108,6 @@
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
 
-        Console.WriteLine("Made it here results");
         var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
         if (dlh.Success && dlh.Value != null)
         {
@@ -154,9 +151,7 @@
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        Console.WriteLine("1 -- 3");
         var response = await client.SendAsync(request);
-        Console.WriteLine("1 -- 4");
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();

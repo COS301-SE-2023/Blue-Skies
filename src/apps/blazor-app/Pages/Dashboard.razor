@@ -30,7 +30,10 @@
         {
             <div class="flex flex-col justify-center items-center px-10">
                 @{
+                    if (reports.Count > selectedReport)
+                    {
                     selectedDate = reports[selectedReport].dateCreated;
+                    }
                 }
                 <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
                     dateCreated="selectedDate" />
@@ -85,6 +88,8 @@
                             <div class="w-full">
                                 @{
                                     var imageName = "";
+                                    if (reportAll.Count > selectedReport)
+                                    {
                                     var sysSize = reportAll[selectedReport].systemSize;
                                     if (sysSize != null)
                                     {
@@ -100,6 +105,7 @@
                                         {
                                             imageName = "House 1.svg";
                                         }
+                                    }   
                                     }
                                 }
                                 <Image ImageName=@imageName alt="House" css="scale-90" />
@@ -151,7 +157,7 @@
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
-    private int selectedReport = -1;
+    private int selectedReport = 0;
     private DateTime selectedDate;
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
@@ -183,6 +189,8 @@
         reportAllAppliance.Clear();
         Console.WriteLine("selectedReport: " + selectedReport);
         Console.WriteLine("reportAll.Count: " + reportAll.Count);
+        if (reportAll.Count > 0)
+        {
         int reportId = reportAll[selectedReport].reportId;
         foreach (var reportAllApp in allReportAllAppliance)
         {
@@ -192,6 +200,7 @@
             }
         }
         updateCharts();
+        }
     }
 
     private async Task GetUserReports()
@@ -364,6 +373,9 @@
         {
             pieConfig.Data.Labels.Add(color);
         }
+        if (reportAll.Count > 0)
+        {
+            
         float hours = reportAll[selectedReport].daylightHours;
         float remaining = (float)Math.Round(13 - hours, 2);
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
@@ -377,6 +389,7 @@ ColorUtil.ColorHexString(156,163,175),
         if (pieConfig != null)
         {
             pieConfig.Data.Datasets.Add(pieDataset);
+        }
         }
         @* **************************************** Polar Area Chart Update Data
 ************************************************ *@

@@ -1,6 +1,6 @@
 public class BasicCalculation
 {
-    public int? basicCalculationId { get; set; }
+    public int basicCalculationId { get; set; }
 
     public int systemId { get; set; }
 

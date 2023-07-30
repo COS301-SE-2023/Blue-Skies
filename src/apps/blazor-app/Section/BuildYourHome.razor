@@ -2,6 +2,7 @@
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
@@ -226,6 +227,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");        
         userId = Convert.ToInt32(usId.Value);
         testBasicCalc.basicCalculationId = 1;
@@ -361,6 +363,27 @@
                     Console.WriteLine("Failed to create ReportAppliance");
                 }
             }
+            var request2 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
+                var content2 = new StringContent("{\r\n        \"systemId\": "
+                    + systems[selectedSystem].systemId
+                    + ",\r\n        \"dayLightHours\": "
+                    + basicCalc.daylightHours
+                    + ",\r\n        \"location\": \""
+                    + basicCalc.location
+                    + "\",\r\n        \"batteryLife\": "
+                    + basicCalc.batteryLife
+                    + "\r\n}", null, "application/json");
+                request2.Content = content2;
+                var response2 = await client.SendAsync(request2);
+                if(response2.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    Console.WriteLine("ReportAppliance created successfully");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to create ReportAppliance");
+                }
+            NavigationManager.NavigateTo("/dashboard");
         }
         else
         {
@@ -437,12 +460,6 @@
                     CutoutPercentage = 80
                 }
             };
-        updateCharts();
-    }
-
-    private void updateCharts()
-    {
-        @* **************************************** Pie Chart Update Data ************************************************ *@
         pieConfig.Data.Datasets.Clear();
 
         foreach (string color in new[] { "Runnable Hours", "Remaining" })

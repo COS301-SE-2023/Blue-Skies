@@ -22,9 +22,9 @@
             NavigationManager.NavigateTo("/solarScore");
         } else {
         <div class="w-full">
-            <div class="mb-20"><BlazorApp.Section.AdvancedResults/></div>
+            <div class="mb-20"><BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation" systems="systems"/></div>
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculations" solarScore="solarScore"/>    
+                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculation" solarScore="solarScore"/>    
             </div>
         </div>
         }
@@ -44,7 +44,7 @@
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
 
-    private BasicCalculationModel basicCalculations = new BasicCalculationModel();
+    private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
     private int selectedSystem = 0;
     private int solarScore = 0;
@@ -62,7 +62,7 @@
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
         solarScore = sScore.Value;
-        basicCalculations = bCalc.Value!;
+        basicCalculation = bCalc.Value!;
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
