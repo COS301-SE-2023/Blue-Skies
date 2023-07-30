@@ -47,7 +47,10 @@
 
 <div class="hidden lg:flex w-full h-full px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <h1 class="text-lg col-span-2 font-medium text-center mb-4 -mt-8 text-primary-900">Select Appliances</h1>
+        <div class="flex gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
+            <h1 class="text-lg font-medium text-center text-primary-900">Select Appliances</h1>
+            <Image ImageName="Info.svg" alt="Info" css="w-7" />
+        </div>
         @foreach (var appliance in appliances)
         {
             <div class="fade-in-enter-active" @onclick="@(() => IncrementApplianceCount(appliance))">
