@@ -57,6 +57,7 @@ describe('ReportApplianceController', () => {
         body: {
           reportId: 1,
           applianceId: 1,
+          numberOfAppliances: 1,
         },
       };
       reportApplianceController.createReportAppliance(
@@ -75,6 +76,7 @@ describe('ReportApplianceController', () => {
         body: {
           reportId: 1,
           applianceId: 1,
+          numberOfAppliances: 1,
         },
       };
       // Simulate an error being thrown
@@ -99,6 +101,7 @@ describe('ReportApplianceController', () => {
         body: {
           reportId: 1,
           applianceId: 1,
+          numberOfAppliances: 1,
         },
       };
       // Simulate an error being thrown
@@ -615,6 +618,108 @@ describe('ReportApplianceController', () => {
         }
       );
       reportApplianceController.updateApplianceId(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Report appliance does not exist.',
+      });
+    });
+  });
+
+  //updateNumberOfAppliancesId
+  describe('updatenumberOfAppliances', () => {
+    it('should return a 200 status code', () => {
+      mockRequest = {
+        params: {
+          reportId: '1',
+          applianceId: '1',
+        },
+        body: {
+          numberOfAppliances: '1',
+        },
+      };
+      reportApplianceController.updateNumberOfAppliances(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    //500
+    it('should return a 500 status code', () => {
+      mockRequest = {
+        params: {
+          reportId: '1',
+          applianceId: '1',
+        },
+        body: {
+          numberOfAppliances: '1',
+        },
+      };
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+      reportApplianceController.updateNumberOfAppliances(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error thrown',
+      });
+    });
+
+    //400
+    it('should return a 400 status code', () => {
+      mockRequest = {
+        params: {
+          reportId: '1',
+          applianceId: '1',
+        },
+        body: {
+          numberOfAppliances: '1',
+        },
+      };
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Report appliance not found.'), 0);
+        }
+      );
+      reportApplianceController.updateNumberOfAppliances(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Report appliance not found.',
+      });
+    });
+
+    //404
+    it('should return a 404 status code', () => {
+      mockRequest = {
+        params: {
+          reportId: '1',
+          applianceId: '1',
+        },
+        body: {
+          numberOfAppliances: '1',
+        },
+      };
+      // Simulate an error being thrown
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+      reportApplianceController.updateNumberOfAppliances(
         mockRequest as Request,
         mockResponse as Response
       );

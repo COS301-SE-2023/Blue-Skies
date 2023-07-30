@@ -1,2 +1,4 @@
-
 .DS_Store
+src/apps/machine-learning/DeepLearning_ImageClassification/assets
+src/apps/machine-learning/DeepLearning_ImageClassification/workspace
+src/apps/machine-learning/DeepLearning_ImageClassification/bin

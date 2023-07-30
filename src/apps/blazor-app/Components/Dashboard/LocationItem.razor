@@ -1,0 +1,26 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Dashboard
+<div class="flex gap-4 ">
+    <div>
+        <Image ImageName="@ImageName" alt="@ImageName" />
+    </div>
+    <div class="">
+        <Heading>
+            <Superscript>
+                <h1 class="text-md">@Title</h1>
+            </Superscript>
+        </Heading>
+        <p class="font-medium">@Text</p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? ImageName { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Text { get; set; }
+}

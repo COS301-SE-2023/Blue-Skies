@@ -1,53 +1,11 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Hero
 
 
-<div class="bg-white overflow-hidden h-fit w-full">
+<div class="bg-white h-fit w-full">
   <div class="relative isolate pt-14">
     <div class="grid gap-4 grid-cols-1 lg:grid-cols-2">
-      <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
-        <div class="text-center">
-          <Heading>
-            <Header>
-              <h1 class="text-4xl font-bold tracking-tight text-primary-950 sm:text-6xl">Discover Your Solar Score</h1>
-            </Header>
-            <Subscript>
-              <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">Uncover Your Solar Potential. Calculate Your Solar
-                Score Today.</p>
-            </Subscript>
-          </Heading>
-          <div>
-            <div class="relative mt-2 rounded-full shadow-sm">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-gray-500 translate-x-5 sm:text-sm">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M10.889 19.4174C15.7982 19.4174 19.7778 15.4377 19.7778 10.5285C19.7778 5.61934 15.7982 1.63965 10.889 1.63965C5.97975 1.63965 2.00006 5.61934 2.00006 10.5285C2.00006 15.4377 5.97975 19.4174 10.889 19.4174Z"
-                      stroke="#000F52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M22.0004 21.6395L17.1671 16.8062" stroke="#000F52" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </span>
-              </div>
-              <input type="text" name="address" id="address"
-                class="block w-full rounded-full h-16 border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 placeholder:absolute placeholder:left-20 placeholder:top-5"
-                placeholder="Enter you address">
-            </div>
-            @* <div id="pac-container"  class="w-full">
-              <input id="pac-input" type="text" placeholder="Enter a location" />
-            </div>
-            <div id="map"></div> *@
-          </div>
-          <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button style="pill" css="h-14">
-              <content>
-                <a href="#" class="text-sm font-semibold hover:text-white">Get Solar Score</a>
-              </content>
-            </Button>
-            <a href="#" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculations <span
-                aria-hidden="true">→</span></a>
-          </div>
-        </div>
-      </div>
+      <EnterLocation />
       <div class="mx-auto max-w-xl px-5 lg:px-0 py-32 sm:py-20 lg:py-28">
 
         <Image ImageName="Hero Image.jpg" css="absolute z-10 rounded-3xl" />

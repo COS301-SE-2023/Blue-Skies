@@ -106,7 +106,7 @@ public class KeysRepository
   }
 
   //Delete Key
-  public async Task<bool> deleteKeys(int id)
+  public async Task<bool> DeleteKeys(int id)
   {
     try
     {
@@ -141,7 +141,7 @@ public class KeysRepository
   }
 
   // Update Key
-  public async Task<Keys> updateKeys(
+  public async Task<Keys> UpdateKeys(
       int id,
       string owner,
       string APIKey,
