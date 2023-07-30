@@ -15,7 +15,7 @@ public class AuthRepository
       express = backendexpress;
     }
   }
-  public async Task<bool> updateLoggedin(int id)
+  public async Task<bool> UpdateLoggedin(int id)
   {
     try
     {
@@ -41,7 +41,7 @@ public class AuthRepository
     }
   }
 
-  public async Task<bool> checkemail(string email)
+  public async Task<bool> CheckEmail(string email)
   {
     try
     {
@@ -73,11 +73,11 @@ public class AuthRepository
     }
   }
 
-  public async Task<bool> register(string email, string password)
+  public async Task<bool> Register(string email, string password)
   {
     try
     {
-      string hashed = hashpassword(password);
+      string hashed = HashPassword(password);
       var client = new HttpClient();
       var request = new HttpRequestMessage(
           HttpMethod.Post,
@@ -111,11 +111,11 @@ public class AuthRepository
   }
 
   //Login a user
-  public async Task<Users> login(string email, string password)
+  public async Task<Users> Login(string email, string password)
   {
     try
     {
-      string hashed = hashpassword(password);
+      string hashed = HashPassword(password);
       Console.WriteLine(".NET: login password hashed");
       var client = new HttpClient();
       var request = new HttpRequestMessage(
@@ -143,7 +143,7 @@ public class AuthRepository
         {
           user = JsonSerializer.Deserialize<Users>(data);
           if (user == null) throw new Exception("Could not login user");
-          await updateLoggedin(user.userId);
+          await UpdateLoggedin(user.userId);
           Console.WriteLine(".NET: login successful");
           return user;
         }
@@ -167,7 +167,7 @@ public class AuthRepository
     }
   }
 
-  string hashpassword(string password)
+  string HashPassword(string password)
   {
     //Hash password
     int test = 123456789;

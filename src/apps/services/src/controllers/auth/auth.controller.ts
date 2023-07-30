@@ -123,7 +123,7 @@ export default class AuthController {
     } catch (error) {
       console.log('Express: ' + error.message);
       res.status(500).json({
-        error: error,
+        error: error.message,
         details: 'Database connection error.',
       });
     }

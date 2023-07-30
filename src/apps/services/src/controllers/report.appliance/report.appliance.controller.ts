@@ -4,10 +4,10 @@ import IReportAppliance from '../../models/report.appliance.interface';
 import { connection as conn } from '../../main';
 export default class ReportApplianceController {
   public createReportAppliance = (req: Request, res: Response) => {
-    const { reportId, applianceId } = req.body;
+    const { reportId, applianceId, numberOfAppliances } = req.body;
     const query =
-      `INSERT INTO [dbo].[reportAppliances] (applianceId, reportId)` +
-      ` VALUES ('${applianceId}', ${reportId})`;
+      `INSERT INTO [dbo].[reportAppliances] (applianceId, reportId, numberOfAppliances)` +
+      ` VALUES ('${applianceId}', ${reportId}, ${numberOfAppliances})`;
 
     try {
       const request = new tedious.Request(
@@ -62,6 +62,7 @@ export default class ReportApplianceController {
         const reportAppliance: IReportAppliance = {
           reportId: columns[0].value,
           applianceId: columns[1].value,
+          numberOfAppliances: columns[2].value,
         };
 
         reportAppliances.push(reportAppliance);
@@ -104,6 +105,7 @@ export default class ReportApplianceController {
         const reportAppliance: IReportAppliance = {
           reportId: columns[0].value,
           applianceId: columns[1].value,
+          numberOfAppliances: columns[2].value,
         };
         reportAppliances.push(reportAppliance);
       });
@@ -145,6 +147,7 @@ export default class ReportApplianceController {
         const reportAppliance: IReportAppliance = {
           reportId: columns[0].value,
           applianceId: columns[1].value,
+          numberOfAppliances: columns[2].value,
         };
         reportAppliances.push(reportAppliance);
       });
@@ -186,8 +189,46 @@ export default class ReportApplianceController {
         appliance = {
           reportId: columns[0].value,
           applianceId: columns[1].value,
+          numberOfAppliances: columns[2].value,
         };
       });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  };
+
+  public updateNumberOfAppliances = (req: Request, res: Response) => {
+    const { reportId, applianceId } = req.params;
+    const { numberOfAppliances } = req.body;
+    const query =
+      `UPDATE [dbo].[reportAppliances] SET numberOfAppliances = '${numberOfAppliances}'` +
+      `WHERE reportId = ${reportId} AND applianceId = ${applianceId}`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Report appliance does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json({
+              message: 'Report appliance updated successfully.',
+            });
+          }
+        }
+      );
 
       conn.execSql(request);
     } catch (error) {
