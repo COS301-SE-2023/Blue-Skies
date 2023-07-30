@@ -1,0 +1,126 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Models
+
+
+
+<tr class="border-b border-gray-200 ">
+    <td class="px-6  py-4">
+        <input @onchange="HandleSelection" type="checkbox" class="form-checkbox h-5 w-5  " />
+    </td>   
+    
+    @if (recordState)
+        {
+        <td  class="px-6 py-4 ">
+            @if(product != null) {<Input css="w-full"  type="text" placeholder="@product.systemSize" @bind-InputValue="systemSize"/>}
+        </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.numberOfPanels.ToString()" @bind-InputValue="numberOfPanels"/>}
+        </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.inverterOutput.ToString()" @bind-InputValue="inverterOutput"/>}
+        </td>
+        <td  class="px-6 py-4  whitespace-nowrap   ">
+            @if(product != null) {<Input css="w-full" type="number" placeholder="@product.solarInput.ToString()" @bind-InputValue="solarInput"/>}
+        </td>
+        <td class="px-6 py-4 flex gap-3">
+        <div onclick="@(() => toggleRecordState("save"))">
+            <Button style="pill">
+                <content>Save</content>
+            </Button>
+        </div>
+        <div onclick="@(() => toggleRecordState())">
+            <Button style="pill-danger">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </td>
+        }
+        else {
+        <td  class="px-6 py-4 whitespace-nowrap   ">
+            <p>@if(product != null) {@product.systemSize}</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(product != null) {@product.numberOfPanels }</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(product != null) {@product.inverterOutput } W/h</p>
+        </td>
+        <td  class="px-6 py-4   whitespace-nowrap   ">
+            <p>@if(product != null) {@product.solarInput } W/h</p>
+        </td>
+        <td onclick="@(() => toggleRecordState())" class="px-6 py-4 flex gap-3">
+            <Button style="pill">
+                <content>Edit</content>
+            </Button>
+        </td>
+        }
+</tr>
+
+
+@code {
+    public string? systemSize { get; set; } 
+    public string? numberOfPanels { get; set; }
+    public string? inverterOutput { get; set; }
+    public string? solarInput { get; set; }
+    public string? numberOfBatteries { get; set; }
+    public string? batterySize { get; set; }
+
+    [Parameter]
+    public bool recordState { get; set; } = false;
+
+    [Parameter]
+    public ProductModel? product { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnSelect { get; set; }
+    [Parameter]
+    public EventCallback<ProductModel> OnSave { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (product != null)
+        {
+            systemSize = product.systemSize;
+            numberOfPanels = product.numberOfPanels.ToString();
+            inverterOutput = product.inverterOutput.ToString();
+            solarInput = product.solarInput.ToString();
+            numberOfBatteries = product.numberOfBatteries.ToString();
+            batterySize = product.batterySize.ToString();
+        }
+    }
+
+    public async void toggleRecordState(string action = "")
+    {
+        if (action == "save")
+        {
+           await HandleSave();
+        }
+        recordState = !recordState;
+    }
+
+    private async Task HandleSelection(ChangeEventArgs e)
+    {
+        @if (e.Value != null && product != null)
+        {
+            await OnSelect.InvokeAsync(product.systemId);
+        }
+    }
+
+    private async Task HandleSave()
+    {
+        if (product != null)
+        {
+            var returnProduct = new ProductModel
+            {
+                systemId = product.systemId,
+                systemSize = systemSize,
+                numberOfPanels = Convert.ToInt32(numberOfPanels),
+                inverterOutput = Convert.ToInt32(inverterOutput),
+                solarInput = Convert.ToInt32(solarInput),
+                numberOfBatteries = Convert.ToInt32(numberOfBatteries),
+                batterySize = Convert.ToInt32(batterySize)
+            };
+            await OnSave.InvokeAsync(returnProduct);
+        }
+    }
+}

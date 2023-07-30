@@ -1,0 +1,164 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Hero
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore
+<div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
+    <div class="text-center">
+        <Heading>
+            <Header>
+                <h1 class="text-4xl font-bold tracking-tight text-primary-950 sm:text-6xl">Discover Your Solar Score
+                </h1>
+            </Header>
+            <Subscript>
+                <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">Uncover Your Solar Potential. Calculate Your Solar
+                    Score Today.</p>
+            </Subscript>
+        </Heading>
+        <div>
+            <AutoComplete />
+        </div>
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Button style="pill" css="h-14">
+                <content>
+                    <p @onclick="saveBasicCalculation" class="text-sm font-semibold hover:text-white">Get Solar Score</p>
+                </content>
+            </Button>
+            <a href="/advanced" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculations <span
+                    aria-hidden="true"></span></a>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+
+    public async void saveBasicCalculation()
+    {
+        var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
+        LocationSuggestion locationSuggestion = locationTemp.Value;
+
+        List<double> cord = locationSuggestion.Geometry.Coordinates;
+        double latitude = cord[1];
+        double longitude = cord[0];
+
+        //await GetSolarScore(latitude, longitude);
+        List<ProductModel> products= await GetProducts();
+        int systemId = 1;
+        Console.WriteLine("Getting daylight hours");
+        float dayLightHours = await getDayLightHours(latitude, longitude);
+        Console.WriteLine("Got daylight hours: "+ dayLightHours);
+        string location = "";
+        if (locationSuggestion != null)
+        {
+            location = locationSuggestion.Place_Name;
+        }
+        int batteryLife = 10;
+        string result = await CreateBasicCaculation(systemId, (int)dayLightHours, location, batteryLife);
+        Console.WriteLine(result);
+        BasicCalculation basicCalculation = new BasicCalculation();
+        basicCalculation.basicCalculationId = -1;
+        basicCalculation.systemId = systemId;
+        //Convert float to int
+        int temp = (int)dayLightHours;
+        basicCalculation.daylightHours = temp;
+        basicCalculation.location = location;
+        basicCalculation.batteryLife = batteryLife;
+        int solarScore = 85;
+        await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
+        await ProtectedSessionStore.SetAsync("solarScore",solarScore );
+    }
+    private async Task<List<ProductModel>> GetProducts()
+    {
+        List<ProductModel> products = new List<ProductModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get products");
+        }
+
+        return products;
+    }
+
+    public async Task<string> GetSolarScore(double latitude, double longitude)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/SolarScore/getSolarScore"
+        );
+        var content = new StringContent(
+            "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Got solar Score";
+        }
+        else
+        {
+            throw new Exception("Error getting solar score");
+        }
+    }
+
+    public async Task<float> getDayLightHours(double latitude, double longitude)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsuntimes");
+        var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            //convert data to double 
+            float ans = float.Parse(data);
+            return ans;
+        }
+        else
+        {
+            return 0f;
+        }
+    }
+
+    public async Task<string> CreateBasicCaculation(int systemId, int dayLightHours, string location, int batteryLife)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
+        var content = new StringContent(
+            "{\r\n    \"systemId\": "
+                + systemId
+                + ",\r\n  \"daylightHours\": "
+                + dayLightHours
+                + ",\r\n  \"location\": \""
+                + location
+                + "\",\r\n  \"batteryLife\": "
+                + batteryLife
+                + "\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Created Basic Calculation";
+        }
+        else
+        {
+            return "Failed to create Basic Calculation";
+        }
+    }
+}

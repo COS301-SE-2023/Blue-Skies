@@ -3,6 +3,7 @@
 import os
 import sys
 import concurrent.futures
+import threading
 import ee
 import requests
 from google.oauth2 import service_account
@@ -49,6 +50,8 @@ upperRight = [LONGITUDE + halfWidth, LATITUDE + halfHeight]
 upperLeft = [LONGITUDE - halfWidth, LATITUDE + halfHeight]
 roi = ee.Geometry.Polygon([lowerLeft, lowerRight, upperRight, upperLeft])
 
+file_lock = threading.Lock()
+
 def download_and_save_image(image, roi, imageName):
     image_url = image.getThumbURL({
         'region': roi,
@@ -59,9 +62,17 @@ def download_and_save_image(image, roi, imageName):
     })
 
     image_path = f'{imageName}.png'
-    image = Image.open(requests.get(image_url, stream=True).raw)
-    image.save(image_path)
-    print('Image', imageName, 'saved successfully.')
+    
+    # Acquire the lock before saving the image
+    file_lock.acquire()
+    
+    try:
+        image = Image.open(requests.get(image_url, stream=True).raw)
+        image.save(image_path)
+        print('Image', imageName, 'saved successfully.')
+    finally:
+        # Release the lock after saving the image
+        file_lock.release()
 
 with concurrent.futures.ThreadPoolExecutor() as executor:
     for i in range(YEAR - TIME_FRAME + 1, YEAR + 1):
