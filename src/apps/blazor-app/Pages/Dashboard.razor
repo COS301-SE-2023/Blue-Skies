@@ -165,8 +165,11 @@
         await GetUserReports();
         await GetReportAll();
         await GetReportAllAppliance();
+        if (reportAll.Count > 0)
+        {
         updateAppliances();
         renderCharts();
+        }
     }
 
 
@@ -174,6 +177,8 @@
     private void updateAppliances()
     {
         reportAllAppliance.Clear();
+        Console.WriteLine("selectedReport: " + selectedReport);
+        Console.WriteLine("reportAll.Count: " + reportAll.Count);
         int reportId = reportAll[selectedReport].reportId;
         foreach (var reportAllApp in allReportAllAppliance)
         {
