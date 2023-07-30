@@ -1,6 +1,7 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
@@ -263,6 +264,7 @@
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
+        ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private void ApplyTemplate(ChangeEventArgs e) {

@@ -105,6 +105,9 @@
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
+        var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = selectedSys.Value;
+
         Console.WriteLine("Made it here results");
         var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
         if (dlh.Success && dlh.Value != null)
