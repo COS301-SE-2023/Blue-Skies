@@ -222,7 +222,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var usId = await ProtectedLocalStore.GetAsync<int>("userId");
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId");        
         userId = Convert.ToInt32(usId.Value);
         testBasicCalc.basicCalculationId = 1;
         testBasicCalc.systemId = 2;
