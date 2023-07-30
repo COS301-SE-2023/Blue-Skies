@@ -74,9 +74,9 @@ public class BasicCalculationRepository
             var content = new StringContent(
                 "{\r\n        \"systemId\": 2,\r\n        \"dayLightHours\": "
                     + daylightHours
-                    + ",\r\n        \"location\": \""
+                    + ",\r\n        \"location\": "
                     + location
-                    + "\",\r\n        \"batteryLife\": "
+                    + ",\r\n        \"batteryLife\": "
                     + batteryLife
                     + "\r\n}",
                 null,
@@ -120,6 +120,72 @@ public class BasicCalculationRepository
         {
             Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Connection Error");
+        }
+    }
+
+    public async Task<BasicCalculation> UpdateBasicCalculation(
+        int basicCalculationId,
+        int systemId,
+        int daylightHours,
+        string location,
+        int batteryLife
+    )
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Patch,
+                express + "/api/basicCalculation/update/" + basicCalculationId
+            );
+            Console.WriteLine(
+                "{\r\n        \"systemId\": "
+                    + systemId
+                    + ",\r\n        \"dayLightHours\": \""
+                    + daylightHours
+                    + "\",\r\n        \"location\": \""
+                    + location
+                    + "\",\r\n        \"batteryLife\": "
+                    + batteryLife
+                    + "\r\n}"
+            );
+            var content = new StringContent(
+                "{\r\n        \"systemId\": "
+                    + systemId
+                    + ",\r\n        \"dayLightHours\": "
+                    + daylightHours
+                    + ",\r\n        \"location\": \""
+                    + location
+                    + "\",\r\n        \"batteryLife\": "
+                    + batteryLife
+                    + "\r\n}",
+                null,
+                "application/json"
+            );
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                BasicCalculation basicCalculation = new BasicCalculation();
+                basicCalculation.basicCalculationId = -1;
+                basicCalculation.systemId = systemId;
+                basicCalculation.daylightHours = daylightHours;
+                basicCalculation.location = location;
+                basicCalculation.batteryLife = batteryLife;
+                basicCalculation.dateCreated = DateTime.Now;
+                Console.WriteLine(".NET: Updated basic calculation");
+                return basicCalculation;
+            }
+            else
+            {
+                Console.WriteLine(".NET: Basic Calculation key not updated");
+                throw new Exception("Could not update Basic Calculation");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
+            throw new Exception("Database Error: " + e.Message);
         }
     }
 }

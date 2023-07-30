@@ -52,4 +52,27 @@ public class BasicCalculationController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+     //Update a basic calculation
+    [HttpPatch("update")]
+    public async Task<IActionResult> UpdateBasicCalculation(
+        [FromBody] BasicCalculation basicCalculation
+    )
+    {
+        try
+        {
+            var newBasicCalculation = await _basicCalculationsRepository.UpdateBasicCalculation(
+                basicCalculation.basicCalculationId,
+                basicCalculation.systemId,
+                basicCalculation.daylightHours,
+                basicCalculation.location!,
+                basicCalculation.batteryLife
+            );
+            return Ok(newBasicCalculation);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }
