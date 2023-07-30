@@ -72,6 +72,8 @@
         int solarScore = 85;
         await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
+        await ProtectedSessionStore.SetAsync("latitude", latitude);
+        await ProtectedSessionStore.SetAsync("longitude", longitude);
     }
     
 
