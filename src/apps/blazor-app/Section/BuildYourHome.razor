@@ -4,6 +4,7 @@
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.PolarAreaChart
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class=" flex items-center justify-center lg:w-6/12 gap-4">
@@ -80,11 +81,16 @@
             <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@systems[selectedSystem].numberOfPanels />
             <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@systems[selectedSystem].numberOfBatteries />
         </div>
+        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
+        <div class="flex items-center text-left gap-2">
+            <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+            <p class="">Usable Sunlight</p>
+        </div>
         <div class="flex relative flex-col justify-center w-full">
             <Chart Config="pieConfig"></Chart>
-            <div class="flex w-full justify-center absolute top-1/3 left-0 items-center gap-1 mt-4">
-                    <p class="text-5xl text-primary-900 font-semibold">5</p>
-                    <p class="text-5xl text-gray-400 font-bold">h</p>
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                <p class="text-5xl text-primary-900 font-semibold">@testBasicCalc.daylightHours</p>
+                <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
     </div>
@@ -212,13 +218,20 @@
     private BasicCalculationModel testBasicCalc = new BasicCalculationModel();
     private Toast successToast { get; set; } = new Toast();
     private PieConfig pieConfig = new PieConfig();
-
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
 
     protected override async Task OnInitializedAsync()
     {
-        renderCharts();
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         userId = Convert.ToInt32(usId.Value);
+        testBasicCalc.basicCalculationId = 1;
+        testBasicCalc.systemId = 2;
+        testBasicCalc.daylightHours = 12.99F;
+        testBasicCalc.location = "1 lynwood rd, Lynwood, 0086";
+        testBasicCalc.batteryLife = 16;
+        testBasicCalc.dateCreated = DateTime.Now;
+        renderCharts();
+
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
@@ -318,12 +331,6 @@
     await selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private async void SaveCalculation(){
-        testBasicCalc.basicCalculationId = 1;
-        testBasicCalc.systemId = 2;
-        testBasicCalc.daylightHours = 9;
-        testBasicCalc.location = "1 lynwood rd, Lynwood, 0086";
-        testBasicCalc.batteryLife = 16;
-        testBasicCalc.dateCreated = DateTime.Now;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
         var content = new StringContent("{\r\n  \"reportName\": \"" + "Test" + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + testBasicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
@@ -385,6 +392,7 @@
     }
 
     private void renderCharts() {
+        @* **************************************** Pie Chart Config ************************************************ *@
         pieConfig = new PieConfig(true) {
                 Options = new PieOptions
                 {
@@ -396,7 +404,7 @@
                     },
                     Title = new OptionsTitle
                     {
-                        Display = true,
+                        Display = false,
                         Text = "Running Hours",
                         FontSize = 20,
                         Position = Position.Bottom,
@@ -424,23 +432,32 @@
                     CutoutPercentage = 80
                 }
             };
-            
+        updateCharts();
+    }
+
+    private void updateCharts()
+    {
+        @* **************************************** Pie Chart Update Data ************************************************ *@
+        pieConfig.Data.Datasets.Clear();
 
         foreach (string color in new[] { "Runnable Hours", "Remaining" })
         {
             pieConfig.Data.Labels.Add(color);
         }
+        float hours = testBasicCalc.daylightHours;
+        float remaining = (float) Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
+            {
+                BackgroundColor = new[] {
+                ColorUtil.ColorHexString(56,113,193),
+                ColorUtil.ColorHexString(156,163,175),
+            },
+            };
 
-        PieDataset<int> dataset = new PieDataset<int>(new[] { 5, 7,})
-        {
-            BackgroundColor = new[] {
-                ColorUtil.ColorHexString(255, 193, 8), // Slice 1 aka "Red"
-                ColorUtil.ColorHexString(217, 217, 217), // Slice 2 aka "Yellow"
-            }
-        };
         if (pieConfig != null)
         {
-            pieConfig.Data.Datasets.Add(dataset);
+            pieConfig.Data.Datasets.Add(pieDataset);
         }
     }
+
 }
