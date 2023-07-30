@@ -1,10 +1,13 @@
 @page "/dashboard"
 @layout MainLayout
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject NavigationManager NavigationManager
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
 @using BlazorApp.Models
 @using System.Text.Json
 @using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.PolarAreaChart
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
 
@@ -48,10 +51,13 @@
                                 updateAppliances();
                                 for (int i = 0; i < reportAllAppliance.Count; i++)
                                 {
+                                    if (reportAllAppliance[i].numberOfAppliances != 0)
+                                    {
                                     var appliance = reportAllAppliance[i].type;
                                     var count = reportAllAppliance[i].numberOfAppliances;
                                     string iconName = appliance + ".svg";
                                     <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                    }
                                 }
                                 if (reportAllAppliance.Count == 0)
                                 {
@@ -68,11 +74,11 @@
                                 <p class="">Usable Sunlight</p>
                             </div>
                             <div class="flex relative flex-col justify-center w-full">
-                                <Chart Config="pieConfig"></Chart>
-                                <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-4">
-                                        <p class="text-5xl text-primary-900 font-semibold">5</p>
+                                    <Chart Config="pieConfig"></Chart>
+                                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                        <p class="text-5xl text-primary-900 font-semibold">@reportAll[selectedReport].daylightHours</p>
                                         <p class="text-5xl text-gray-400 font-bold">h</p>
-                                </div>
+                                    </div>
                             </div>
                         </div>
                         <div class="w-full">
@@ -99,43 +105,13 @@
                         </div>
                         <div class="w-full flex flex-col gap-4 justify-start items-center">
                             <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                            <div class="flex items-center text-left gap-2">
+                            @* <div class="flex items-center text-left gap-2">
                                 <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
                                 <p class="">High Energy Consumption</p>
+                            </div> *@
+                            <div class="flex relative flex-col justify-center w-full">
+                                <Chart Config="polarAreaConfig"></Chart>
                             </div>
-                            <svg width="222" height="222" viewBox="0 0 222 222" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M111 221.372C171.751 221.372 221 172.123 221 111.372C221 50.6203 171.751 1.37158 111 1.37158C50.2487 1.37158 1 50.6203 1 111.372C1 172.123 50.2487 221.372 111 221.372Z"
-                                    stroke="#C1C7CD" />
-                                <path
-                                    d="M111 199.372C159.601 199.372 199 159.973 199 111.372C199 62.7705 159.601 23.3716 111 23.3716C62.3989 23.3716 23 62.7705 23 111.372C23 159.973 62.3989 199.372 111 199.372Z"
-                                    stroke="#C1C7CD" />
-                                <path
-                                    d="M111 177.372C147.451 177.372 177 147.822 177 111.372C177 74.9208 147.451 45.3716 111 45.3716C74.5492 45.3716 45 74.9208 45 111.372C45 147.822 74.5492 177.372 111 177.372Z"
-                                    stroke="#C1C7CD" />
-                                <path
-                                    d="M111 155.372C135.301 155.372 155 135.672 155 111.372C155 87.0711 135.301 67.3716 111 67.3716C86.6995 67.3716 67 87.0711 67 111.372C67 135.672 86.6995 155.372 111 155.372Z"
-                                    stroke="#C1C7CD" />
-                                <path
-                                    d="M111 133.372C123.15 133.372 133 123.522 133 111.372C133 99.2213 123.15 89.3716 111 89.3716C98.8497 89.3716 89 99.2213 89 111.372C89 123.522 98.8497 133.372 111 133.372Z"
-                                    stroke="#C1C7CD" />
-                                <path
-                                    d="M199.159 72.7442C204.354 84.601 207.104 97.3839 207.244 110.328C207.385 123.272 204.912 136.112 199.976 148.079C195.039 160.045 187.739 170.893 178.512 179.973C169.286 189.053 158.323 196.178 146.278 200.923L111 111.372L199.159 72.7442Z"
-                                    fill="#3871C1" stroke="white" />
-                                <path
-                                    d="M18.9185 83.3527C24.9017 63.6895 37.0222 46.4579 53.5057 34.1805C69.9892 21.903 89.97 15.2246 110.523 15.1228L111 111.372L18.9185 83.3527Z"
-                                    fill="#3871C1" stroke="white" />
-                                <path
-                                    d="M110.624 36.9282C125.07 36.9282 139.201 41.1528 151.277 49.0818C163.353 57.0108 172.846 68.2981 178.589 81.5541L110.624 110.996L110.624 36.9282Z"
-                                    fill="#75CDF7" stroke="white" />
-                                <path
-                                    d="M137.866 179.871C125.643 184.706 112.354 186.2 99.3632 184.202C86.3721 182.204 74.1468 176.784 63.9421 168.5L110.624 110.996L137.866 179.871Z"
-                                    fill="#A0D3FE" stroke="white" />
-                                <path
-                                    d="M88.5619 137.905C83.2326 133.555 79.3119 127.723 77.2951 121.146C75.2782 114.569 75.2556 107.542 77.2301 100.952L110.57 110.942L88.5619 137.905Z"
-                                    fill="#E0EEFE" stroke="white" />
-                            </svg>
                         </div>
                     </div>
                 </Card>
@@ -174,6 +150,7 @@
     private int selectedReport;
     private DateTime selectedDate;
     private PieConfig pieConfig = new PieConfig();
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
 
     protected override async Task OnInitializedAsync()
     {
@@ -188,8 +165,11 @@
         await GetUserReports();
         await GetReportAll();
         await GetReportAllAppliance();
+        updateAppliances();
         renderCharts();
     }
+
+
 
     private void updateAppliances()
     {
@@ -202,6 +182,7 @@
                 reportAllAppliance.Add(reportAllApp);
             }
         }
+        updateCharts();
     }
 
     private async Task GetUserReports()
@@ -281,6 +262,7 @@
     }
 
     private void renderCharts() {
+        @* **************************************** Pie Chart Config ************************************************ *@
         pieConfig = new PieConfig(true) {
                 Options = new PieOptions
                 {
@@ -310,7 +292,7 @@
                     {
                         Enabled = true,
                         Mode = InteractionMode.Index,
-                        Intersect = false
+                        Intersect = false,
                     },
                     Hover = new Hover
                     {
@@ -320,23 +302,209 @@
                     CutoutPercentage = 80
                 }
             };
-            
+
+        @* **************************************** Polar Area Chart Config ************************************************ *@
+        polarAreaConfig = new PolarAreaConfig() {
+                Options = new PolarAreaOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 1.5,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 2000,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            Display = false,
+                        }
+                    }
+                    
+                }
+            };
+        updateCharts();
+    }
+
+    private void updateCharts()
+    {
+        @* **************************************** Pie Chart Update Data ************************************************ *@
+        pieConfig.Data.Datasets.Clear();
 
         foreach (string color in new[] { "Runnable Hours", "Remaining" })
         {
             pieConfig.Data.Labels.Add(color);
         }
-
-        PieDataset<int> dataset = new PieDataset<int>(new[] { 5, 7,})
+        float hours =  reportAll[selectedReport].daylightHours;
+        float remaining = (float) Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining,})
         {
             BackgroundColor = new[] {
-                ColorUtil.ColorHexString(56, 113, 193),
-                ColorUtil.ColorHexString(217, 217, 217),
+                ColorUtil.ColorHexString(56,113,193),
+                ColorUtil.ColorHexString(156,163,175),
             },
         };
+
         if (pieConfig != null)
         {
-            pieConfig.Data.Datasets.Add(dataset);
+            pieConfig.Data.Datasets.Add(pieDataset);
+        }
+        @* **************************************** Polar Area Chart Update Data ************************************************ *@
+        polarAreaConfig.Data.Datasets.Clear();
+        foreach (var appliance in reportAllAppliance)
+        {
+            polarAreaConfig.Data.Labels.Add(appliance.type);
+        }
+        int countData = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                countData++;
+            }
+        }
+        int[] powerUsageData = new int[countData];
+        int counter = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage;
+                counter++;
+            }
+        }
+        PolarAreaDataset<int> polarDataset;
+        switch (counter){
+            case 0:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 1:
+            polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 2:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 3:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 4:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                Console.WriteLine("4");
+                break;
+            case 5:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 6:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 7:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 8:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18), // orange
+                        ColorUtil.ColorHexString(255,193,8), // yellow
+                        ColorUtil.ColorHexString(56,113,193),// l blue
+                        ColorUtil.ColorHexString(0,15,82), // blue
+                    }
+                };
+                break;  
+                default:
+                    polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+                        }
+                    };
+                break;
+        }
+        if (polarAreaConfig != null)
+        {
+            polarAreaConfig.Data.Datasets.Add(polarDataset);
         }
     }
 }
