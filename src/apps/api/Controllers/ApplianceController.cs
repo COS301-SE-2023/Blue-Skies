@@ -36,8 +36,8 @@ public class ApplianceController : ControllerBase
     {
         try
         {
-            var data = await _appliancesRepository.createAppliances(
-                appliance.type,
+            var data = await _appliancesRepository.CreateAppliances(
+                appliance.type!,
                 appliance.powerUsage
             );
             return Ok(data);
@@ -55,9 +55,9 @@ public class ApplianceController : ControllerBase
     {
         try
         {
-            var data = await _appliancesRepository.updateAppliances(
+            var data = await _appliancesRepository.UpdateAppliances(
                 appliance.applianceId,
-                appliance.type,
+                appliance.type!,
                 appliance.powerUsage
             );
             return Ok(data);
@@ -75,7 +75,7 @@ public class ApplianceController : ControllerBase
     {
         try
         {
-            var data = await _appliancesRepository.deleteAppliances(appliance.applianceId);
+            var data = await _appliancesRepository.DeleteAppliances(appliance.applianceId);
             if (data == false)
             {
                 return StatusCode(
@@ -98,7 +98,7 @@ public class ApplianceController : ControllerBase
     {
         try
         {
-            var data = await _appliancesRepository.getApplianceById(id);
+            var data = await _appliancesRepository.GetApplianceById(id);
             return Ok(data);
         }
         catch (Exception e)
