@@ -19,7 +19,6 @@ jest.mock('tedious', () => ({
   Request: jest.fn().mockImplementation((query, callback) => {
     callback(null, 1);
   }),
-  ColumnValue: jest.fn(),
 }));
 
 describe('Test the appliance path', () => {
