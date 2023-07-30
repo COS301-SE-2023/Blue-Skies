@@ -21,7 +21,4 @@ export default interface IReportAll {
   batterySize: number;
   numberOfBatteries: number;
   solarInput: number;
-  applianceId: number;
-  type: string;
-  powerUsage: number;
 }

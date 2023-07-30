@@ -12,40 +12,47 @@ jest.mock('../../main', () => jest.fn());
 jest.mock('../../controllers/report/report.controller', () => {
     return jest.fn().mockImplementation(() => {
         return {
-        createReport: jest
+          createReport: jest
             .fn()
             .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
+              res.status(200).json({
                 message: 'Report is created.',
-            });
+              });
             }),
-        getAllReports: jest
+          getAllReports: jest
             .fn()
             .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
+              res.status(200).json({
                 message: 'All reports are retrieved.',
-            });
+              });
             }),
-        getReport: jest
+          getUserReports: jest
             .fn()
             .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
+              res.status(200).json({
+                message: 'All reports are retrieved.',
+              });
+            }),
+          getReport: jest
+            .fn()
+            .mockImplementation((req: Request, res: Response) => {
+              res.status(200).json({
                 message: 'Report is retrieved.',
-            });
+              });
             }),
-        updateReport: jest
+          updateReport: jest
             .fn()
             .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
+              res.status(200).json({
                 message: 'Report is updated.',
-            });
+              });
             }),
-        deleteReport: jest
+          deleteReport: jest
             .fn()
             .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
+              res.status(200).json({
                 message: 'Report is deleted.',
-            });
+              });
             }),
         };
     });

@@ -12,6 +12,7 @@ reportRouter.get('/', (req, res) => {
 const reportController = new ReportController();
 reportRouter.post('/create', bodyParser.json(), reportController.createReport);
 reportRouter.get('/all', reportController.getAllReports);
+reportRouter.get('/getUserReports/:userId', reportController.getUserReports);
 reportRouter.get('/:reportId', reportController.getReport);
 reportRouter.patch(
   '/update/:reportId',

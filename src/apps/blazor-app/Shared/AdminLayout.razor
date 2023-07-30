@@ -1,8 +1,15 @@
 @inherits LayoutComponentBase
 @using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage ProtectedLocalStore
 
 <PageTitle>Blue Skies</PageTitle>
 
+@if (!isLoaded) {}
+else if(!isAd){
+    NavigationManager.NavigateTo("/unauthorized");
+} else 
+{
 <div class="flex w-full h-full flex-row">
     <div class=" h-[100vh] p-4 border-1">
         <Image ImageName="Logo-small.svg" alt="Blue Skies Logo" css="w-20 h-20 mx-auto mt-8" />
@@ -23,7 +30,7 @@
                 <Image ImageName="Chart 2.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Statistics</p>
             </a>
-            <a href="/">
+            <a onclick="@(() => logout())" href="/">
                 <Image ImageName="Logout.svg" alt="Blue Skies Logo" css="w-8 h-8 mx-auto mt-8" />
                 <p class="mt-2">Logout</p>
             </a>
@@ -33,12 +40,28 @@
             @Body
     </div>
 </div>
+}
 
 @code {
     public string keys { get; set; } = "bg-slate-200 h-28 w-28 rounded-3xl";
     public string appliances { get; set; } = "h-28 w-28 rounded-3xl";
     public string products { get; set; } = "h-28 w-28 rounded-3xl";
     public string stats { get; set; } = "h-28 w-28 rounded-3xl";
+
+    private bool isLoaded = false;
+    private bool isAd = false;
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
+        isLoaded = true;
+    }
+    public async void logout() {
+        await ProtectedLocalStore.SetAsync("loggedIn", false);
+        await ProtectedLocalStore.SetAsync("userEmail", "");
+        NavigationManager.NavigateTo("/");
+        await ProtectedLocalStore.SetAsync("isAdmin", false);
+    }
 
     public void ChangePage(string page) {
         keys = "h-28 w-28 rounded-3xl";

@@ -5,3 +5,48 @@
 body {
     font-family: 'Montserrat', sans-serif;
 }
+
+/* Fade-In Transition */
+.fade-in-enter-active {
+    animation: fadeIn .6s;
+}
+/* Fade-In Transition */
+.fade-in-active {
+    animation: fadeIn .3s;
+}
+
+/* Slide-In Transition */
+.slide-in-enter-active {
+    animation: slideIn .6s;
+    animation-delay: 50ms;
+}
+
+.fade-active {
+    animation: fade .6s;
+}
+
+.fade-out-active {
+    animation: fade-out .3s;
+}
+
+
+/* Fade-Out Transition */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(1%); }
+    to { opacity: 1;}
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10%); }
+    to { opacity: 1; }
+}
+
+@keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}  

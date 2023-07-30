@@ -1,0 +1,510 @@
+@page "/dashboard"
+@layout MainLayout
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject NavigationManager NavigationManager
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Dashboard
+@using BlazorApp.Models
+@using System.Text.Json
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.PolarAreaChart
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject NavigationManager NavigationManager
+
+<PageTitle>Dashboard - Blue Skies</PageTitle>
+
+<div class="fade-in-enter-active">
+    @if (!isLoaded) { }
+    else if (!logIn)
+    {
+        ProtectedLocalStore.SetAsync("redirect", "dashboard");
+        NavigationManager.NavigateTo("/login");
+    }
+    else if (isAd)
+    {
+        NavigationManager.NavigateTo("/admin/keys");
+    }
+    else
+    {
+        @if (reports.Count > 0)
+        {
+        <div class="flex flex-col justify-center items-center px-10">
+            @{
+                selectedDate = reports[selectedReport].dateCreated;
+            }
+            <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
+                dateCreated="selectedDate" />
+            <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" />
+            <div class="mt-10 w-full">
+                <Card>
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Appliances</h1>
+                        </Header>
+                        <Subscript>
+                            <p>What do you want to run in a power outage?</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                        <div class="flex gap-4 justify-evenly scale-90">
+                            @{
+                                updateAppliances();
+                                for (int i = 0; i < reportAllAppliance.Count; i++)
+                                {
+                                    if (reportAllAppliance[i].numberOfAppliances != 0)
+                                    {
+                                    var appliance = reportAllAppliance[i].type;
+                                    var count = reportAllAppliance[i].numberOfAppliances;
+                                    string iconName = appliance + ".svg";
+                                    <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                    }
+                                }
+                                if (reportAllAppliance.Count == 0)
+                                {
+                                    <p class="text-center">No appliances added</p>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="flex w-full mt-5">
+                        <div class="w-full flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
+                            <div class="flex items-center text-left gap-2">
+                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                <p class="">Usable Sunlight</p>
+                            </div>
+                            <div class="flex relative flex-col justify-center w-full">
+                                    <Chart Config="pieConfig"></Chart>
+                                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                        <p class="text-5xl text-primary-900 font-semibold">@reportAll[selectedReport].daylightHours</p>
+                                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="w-full">
+                            @{
+                                var imageName = "";
+                                var sysSize = reportAll[selectedReport].systemSize;
+                                if (sysSize != null)
+                                {
+                                    if (sysSize.Equals("Small"))
+                                    {
+                                        imageName = "House 3.svg";
+                                    }
+                                    else if (sysSize.Equals("Medium"))
+                                    {
+                                        imageName = "House 2.svg";
+                                    }
+                                    else if (sysSize.Equals("Large"))
+                                    {
+                                        imageName = "House 1.svg";
+                                    }
+                                }
+                            }
+                            <Image ImageName=@imageName alt="House" css="scale-90" />
+                        </div>
+                        <div class="w-full flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                            @* <div class="flex items-center text-left gap-2">
+                                <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
+                                <p class="">High Energy Consumption</p>
+                            </div> *@
+                            <div class="flex relative flex-col justify-center w-full">
+                                <Chart Config="polarAreaConfig"></Chart>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            </div>
+        </div>
+    
+    }else {
+        <div class="flex flex-col justify-center items-center px-10">
+            <div class="flex flex-col justify-center items-center">
+                <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br/>
+                <p class="text-center">You have no reports. Create a report to get started.</p>
+            </div>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Button style="pill" css="h-14">
+                <content>
+                    <p @onclick='() => NavigationManager.NavigateTo("/advanced")' class="text-sm font-semibold hover:text-white">Create a Report</p>
+                </content>
+            </Button>
+            </div>
+        </div>
+    }
+    }
+</div>
+@code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private List<ReportModel> reports = new List<ReportModel>();
+    private List<string> userReportNames = new List<string>();
+    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
+    private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+
+    private bool isLoaded = false;
+    private bool logIn = false;
+    private bool isAd = false;
+    private int userId = -1;
+    private int selectedReport;
+    private DateTime selectedDate;
+    private PieConfig pieConfig = new PieConfig();
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId");
+        logIn = loggedIn.Value;
+        isAd = isAdmin.Value;
+        isLoaded = true;
+        userId = usId.Value;
+
+        await GetUserReports();
+        await GetReportAll();
+        await GetReportAllAppliance();
+        updateAppliances();
+        renderCharts();
+    }
+
+
+
+    private void updateAppliances()
+    {
+        reportAllAppliance.Clear();
+        int reportId = reportAll[selectedReport].reportId;
+        foreach (var reportAllApp in allReportAllAppliance)
+        {
+            if (reportAllApp.reportId == reportId)
+            {
+                reportAllAppliance.Add(reportAllApp);
+            }
+        }
+        updateCharts();
+    }
+
+    private async Task GetUserReports()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (reports.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("userReports", reports);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to get user reports");
+        }
+    }
+
+    private async Task GetReportAll()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/user/" + userId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reportAll = JsonSerializer.Deserialize<List<ReportAllModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (reportAll.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("reportAll", reportAll);
+            }
+            foreach (var report in reportAll)
+            {
+                userReportNames.Add(report.reportName!);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to get report all");
+        }
+    }
+
+    private async Task GetReportAllAppliance()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (allReportAllAppliance.Count > 0)
+            {
+                await ProtectedLocalStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+    }
+
+    private void renderCharts() {
+        @* **************************************** Pie Chart Config ************************************************ *@
+        pieConfig = new PieConfig(true) {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 3,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Running Hours",
+                        FontSize = 20,
+                        Position = Position.Bottom,
+                        LineHeight = 4,
+                    },
+                    Circumference = 3,
+                    Rotation = -9.341,
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 2000,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false,
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    CutoutPercentage = 80
+                }
+            };
+
+        @* **************************************** Polar Area Chart Config ************************************************ *@
+        polarAreaConfig = new PolarAreaConfig() {
+                Options = new PolarAreaOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 1.5,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 2000,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            Display = false,
+                        }
+                    }
+                    
+                }
+            };
+        updateCharts();
+    }
+
+    private void updateCharts()
+    {
+        @* **************************************** Pie Chart Update Data ************************************************ *@
+        pieConfig.Data.Datasets.Clear();
+
+        foreach (string color in new[] { "Runnable Hours", "Remaining" })
+        {
+            pieConfig.Data.Labels.Add(color);
+        }
+        float hours =  reportAll[selectedReport].daylightHours;
+        float remaining = (float) Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining,})
+        {
+            BackgroundColor = new[] {
+                ColorUtil.ColorHexString(56,113,193),
+                ColorUtil.ColorHexString(156,163,175),
+            },
+        };
+
+        if (pieConfig != null)
+        {
+            pieConfig.Data.Datasets.Add(pieDataset);
+        }
+        @* **************************************** Polar Area Chart Update Data ************************************************ *@
+        polarAreaConfig.Data.Datasets.Clear();
+        foreach (var appliance in reportAllAppliance)
+        {
+            polarAreaConfig.Data.Labels.Add(appliance.type);
+        }
+        int countData = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                countData++;
+            }
+        }
+        int[] powerUsageData = new int[countData];
+        int counter = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage;
+                counter++;
+            }
+        }
+        PolarAreaDataset<int> polarDataset;
+        switch (counter){
+            case 0:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 1:
+            polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 2:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 3:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 4:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                Console.WriteLine("4");
+                break;
+            case 5:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 6:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 7:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                    }
+                };
+                break;
+            case 8:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(246,135,18),
+                        ColorUtil.ColorHexString(255,193,8),
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(0,15,82),
+                        ColorUtil.ColorHexString(246,135,18), // orange
+                        ColorUtil.ColorHexString(255,193,8), // yellow
+                        ColorUtil.ColorHexString(56,113,193),// l blue
+                        ColorUtil.ColorHexString(0,15,82), // blue
+                    }
+                };
+                break;  
+                default:
+                    polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+                        }
+                    };
+                break;
+        }
+        if (polarAreaConfig != null)
+        {
+            polarAreaConfig.Data.Datasets.Add(polarDataset);
+        }
+    }
+}

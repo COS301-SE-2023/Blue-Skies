@@ -35,8 +35,8 @@ public class KeyController : ControllerBase
     {
         try
         {
-            int suspended = keys.suspended ;
-            var key = await _keysRepository.CreateKey(keys.owner, keys.remainingCalls, suspended);
+            int suspended = keys.suspended;
+            var key = await _keysRepository.CreateKey(keys.owner!, keys.remainingCalls, suspended);
             return Ok(key);
         }
         catch (Exception e)
@@ -52,7 +52,7 @@ public class KeyController : ControllerBase
     {
         try
         {
-            var data = await _keysRepository.deleteKeys(key.keyId);
+            var data = await _keysRepository.DeleteKeys(key.keyId);
             if (data == false)
             {
                 return StatusCode(404, "Key with id: " + key.keyId + " does not exist");
@@ -72,10 +72,10 @@ public class KeyController : ControllerBase
     {
         try
         {
-            var data = await _keysRepository.updateKeys(
+            var data = await _keysRepository.UpdateKeys(
                 key.keyId,
-                key.owner,
-                key.APIKey,
+                key.owner!,
+                key.APIKey!,
                 key.remainingCalls,
                 key.suspended
             );

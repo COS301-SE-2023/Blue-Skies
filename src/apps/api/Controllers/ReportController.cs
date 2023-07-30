@@ -30,6 +30,25 @@ public class ReportController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("getUserReports/{userId}")]
+    public async Task<IActionResult> GetAllReports([FromRoute] int userId)
+    {
+        try
+        {
+            var data = await _reportsRepository.GetUserReports(userId);
+            if (data == null)
+            {
+                return StatusCode(404, "Report with userId: " + userId + " not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     //Create a new report
     [HttpPost]
     [Route("create")]
@@ -37,7 +56,7 @@ public class ReportController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.createReports(
+            var data = await _reportsRepository.CreateReports(
                 report.reportName ?? "default",
                 report.userId,
                 report.basicCalculationId,
@@ -59,14 +78,13 @@ public class ReportController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.updateReports(
+            var data = await _reportsRepository.UpdateReports(
                 report.reportId,
                 report.reportName ?? "default",
                 report.userId,
                 report.basicCalculationId,
                 report.solarScore,
-                report.runningTime,
-                report.dateCreated
+                report.runningTime
             );
             return Ok(data);
         }
@@ -79,14 +97,14 @@ public class ReportController : ControllerBase
     //delete a report
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> DeleteReport([FromBody] Reports report)
+    public async Task<IActionResult> DeleteReport([FromBody] ReportAll report)
     {
         try
         {
-            var data = await _reportsRepository.deleteReports(report.reportId);
+            var data = await _reportsRepository.DeleteReports(report.reportId);
             if (data == false)
             {
-                return StatusCode(404, "s with id: " + report.reportId + " not found");
+                return StatusCode(404, "Report with id: " + report.reportId + " not found");
             }
             return Ok("Deleted report with id: " + report.reportId + " successfully");
         }
@@ -98,15 +116,15 @@ public class ReportController : ControllerBase
 
     //get a report by id
     [HttpGet]
-    [Route("get")]
-    public async Task<IActionResult> GetReport([FromBody] Reports report)
+    [Route("get/{id}")]
+    public async Task<IActionResult> GetReport([FromRoute] int id)
     {
         try
         {
-            var data = await _reportsRepository.getReportById(report.reportId);
+            var data = await _reportsRepository.GetReportById(id);
             if (data == null)
             {
-                return StatusCode(404, "Report with id: " + report.reportId + " not found");
+                return StatusCode(404, "Report with id: " + id + " not found");
             }
             return Ok(data);
         }
