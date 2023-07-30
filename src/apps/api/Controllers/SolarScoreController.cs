@@ -61,5 +61,21 @@ public class SolarScoreController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("GetSolarScoreFromImage")]
+    public async Task<IActionResult> GetSolarScoreFromImage()
+    {
+        try
+        {
+            var pred = await _solarScoreRepository.GetSolarScoreFromImage("assets/-33.451-18.734-2022_06_24-111.03205300743699.png");
+            return Ok(pred);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+
 
 }
