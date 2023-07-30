@@ -42,12 +42,12 @@ public class SolarScoreRepository
         }
     }
 
-    public async Task<string> GetSolarScore(Coordinates coordinates)
+    public async Task<string> GetImages(Coordinates coordinates, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            express + "/api/solarscore/getimages/"
+            express + "/api/solarscore/getimages/" + solarScoreId
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": "
@@ -143,7 +143,7 @@ class ImageClassifier
     {
 
         var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../apps/api"));
-        Console.WriteLine(projectDirectory);
+        //Console.WriteLine(projectDirectory);
         var assetsRelativePath = Path.Combine(projectDirectory, "assets");
 
         MLContext mlContext = new MLContext();
@@ -163,7 +163,7 @@ class ImageClassifier
         // Make predictions
         var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
         ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(preProcessedData, reuseRowObject: true).First();
-        Console.WriteLine("LabelAsKey: " + image.LabelAsKey);
+        // Console.WriteLine("LabelAsKey: " + image.LabelAsKey);
         // Console.WriteLine("ImagePath: " + image.ImagePath);
         // Console.WriteLine("Label: " + image.Label);
         //Console.WriteLine("Image: " + image.Image.ToString());
@@ -174,7 +174,7 @@ class ImageClassifier
 
     private static IEnumerable<ImageData> LoadSingleImage(string imageFilePath, string assetsRelativePath)
     {
-        Console.WriteLine("Loading image: " + imageFilePath);
+        //Console.WriteLine("Loading image: " + imageFilePath);
         if (!File.Exists(imageFilePath))
         {
             Console.WriteLine("Image file not found.");

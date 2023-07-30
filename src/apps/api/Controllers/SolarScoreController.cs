@@ -32,12 +32,12 @@ public class SolarScoreController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getsolarscore")]
-    public async Task<IActionResult> GetSolarScore([FromBody] Coordinates cord)
+    [Route("getimages/{solarScoreId}")]
+    public async Task<IActionResult> GetImages([FromBody] Coordinates cord, [FromRoute] string solarScoreId)
     {
         try
         {
-            var score = await _solarScoreRepository.GetSolarScore(cord);
+            var score = await _solarScoreRepository.GetImages(cord, solarScoreId);
             return Ok(score);
         }
         catch (Exception e)
@@ -63,11 +63,12 @@ public class SolarScoreController : ControllerBase
 
     [HttpGet]
     [Route("GetSolarScoreFromImage")]
-    public async Task<IActionResult> GetSolarScoreFromImage()
+    public async Task<IActionResult> GetSolarScoreFromImage([FromBody] solarScore ss)
     {
         try
         {
-            var pred = await _solarScoreRepository.GetSolarScoreFromImage("assets/-33.451-18.734-2022_06_24-111.03205300743699.png");
+            var pred = await _solarScoreRepository.GetSolarScoreFromImage("assets/" + ss.imgName + ".png");
+            Console.WriteLine(pred);
             return Ok(pred);
         }
         catch (Exception e)

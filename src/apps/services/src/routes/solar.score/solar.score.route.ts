@@ -13,7 +13,7 @@ solarScoreRouter.get('/', (req, res) => {
 const solarScoreController = new SolarScoreController();
 
 solarScoreRouter.get(
-  '/getimages',
+  '/getimages/:solarScoreId',
   bodyParser.json(),
   solarScoreController.getLocationImages
 );
@@ -24,4 +24,24 @@ solarScoreRouter.get(
   '/getsuntimes',
   bodyParser.json(),
   solarScoreController.getSunTimes
+);
+
+//createSolarScore
+solarScoreRouter.post(
+  '/create',
+  bodyParser.json(),
+  solarScoreController.createSolarScore
+);
+
+//getSolarScore
+solarScoreRouter.get(
+  '/getSolarScore/:solarScoreId',
+  solarScoreController.getSolarScore
+);
+
+//deleteSolarScore
+solarScoreRouter.delete(
+  '/deleteSolarScore/:solarScoreId',
+  bodyParser.json(),
+  solarScoreController.deleteSolarScore
 );
