@@ -1,58 +1,26 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
-import { Request, Response } from 'express';
-import { basicCalculationRouter } from '../../routes/basic.calculation/basic.calculation.router';
-
+import bodyParser from 'body-parser';
+import router from '../../routes';
+import IBasicCalculation from '../../models/basic.calculation.interface';
 const app = express(); // an instance of an express app, a 'fake' express app
-app.use('/basicCalculation', basicCalculationRouter); // routes
+app.use(bodyParser.json());
+app.use('/', router); // routes
 //mock the main file
-jest.mock('../../main', () => jest.fn());
+jest.mock('../../main', () => {
+  return {
+    connection: {
+      execSql: jest.fn(),
+    },
+  };
+});
 
-//mock the Controller
-jest.mock(
-  '../../controllers/basic.calculation/basic.calculation.controller',
-  () => {
-    return jest.fn().mockImplementation(() => {
-      return {
-        createBasicCalculation: jest
-          .fn()
-          .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
-              message: 'BasicCalculation is created.',
-            });
-          }),
-        getAllBasicCalculations: jest
-          .fn()
-          .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
-              message: 'All basicCalculations are retrieved.',
-            });
-          }),
-        getBasicCalculation: jest
-          .fn()
-          .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
-              message: 'BasicCalculation is retrieved.',
-            });
-          }),
-        updateBasicCalculation: jest
-          .fn()
-          .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
-              message: 'BasicCalculation is updated.',
-            });
-          }),
-        deleteBasicCalculation: jest
-          .fn()
-          .mockImplementation((req: Request, res: Response) => {
-            res.status(200).json({
-              message: 'BasicCalculation is deleted.',
-            });
-          }),
-      };
-    });
-  }
-);
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    callback(null, 1);
+  }),
+  ColumnValue: jest.fn(),
+}));
 
 describe('basicCalculationRouter', () => {
   // / path
@@ -64,33 +32,53 @@ describe('basicCalculationRouter', () => {
     );
   });
 
-  it('should have a route to create a basicCalculation', async () => {
-    const response = await request(app).post('/basicCalculation/create');
+  //create
+  it('should have a route to create a basic calculation', async () => {
+    //systemId, dayLightHours, location, batteryLife
+    const response = await request(app).post('/basicCalculation/create').send({
+      systemId: 1,
+      dayLightHours: 12,
+      location: 'test',
+      batteryLife: 12,
+    });
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('BasicCalculation is created.');
+    expect(response.body.message).toBe(
+      'Basic calculation created successfully.'
+    );
   });
-
-  it('should have a route to get all basicCalculations', async () => {
+  //all
+  it('should have a route to get all basic calculations', async () => {
     const response = await request(app).get('/basicCalculation/all');
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('All basicCalculations are retrieved.');
+    expect(response.body).toEqual([] as IBasicCalculation[]);
   });
-
-  it('should have a route to get a basicCalculation', async () => {
+  //:basicCalculationId
+  it('should have a route to get a basic calculation', async () => {
     const response = await request(app).get('/basicCalculation/1');
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('BasicCalculation is retrieved.');
   });
-
-  it('should have a route to update a basicCalculation', async () => {
-    const response = await request(app).patch('/basicCalculation/update/1');
+  //update
+  it('should have a route to update a basic calculation', async () => {
+    const response = await request(app)
+      .patch('/basicCalculation/update/1')
+      .send({
+        systemId: 1,
+        dayLightHours: 12,
+        location: 'test',
+        batteryLife: 12,
+      });
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('BasicCalculation is updated.');
+    expect(response.body.message).toBe(
+      'Basic Calculation updated successfully.'
+    );
   });
 
-  it('should have a route to delete a basicCalculation', async () => {
+  //delete
+  it('should have a route to delete a basic calculation', async () => {
     const response = await request(app).delete('/basicCalculation/delete/1');
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe('BasicCalculation is deleted.');
+    expect(response.body.message).toBe(
+      'Basic calculation deleted successfully.'
+    );
   });
 });
