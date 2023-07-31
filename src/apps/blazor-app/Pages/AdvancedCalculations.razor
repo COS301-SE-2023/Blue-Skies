@@ -54,17 +54,20 @@
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        logIn = loggedIn.Value;
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        isAd = isAdmin.Value;
+        isLoaded = true;
         var bCalc = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        Console.WriteLine("Value" + bCalc.Value);
+        Console.WriteLine("Value" + bCalc);
         var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
         solarScore = sScore.Value;
         basicCalculation = bCalc.Value!;
-        logIn = loggedIn.Value;
-        isAd = isAdmin.Value;
-        isLoaded = true;
+        
+        
+        
         await GetAppliancesAsync();
         await GetSystemsAsync();
     }
