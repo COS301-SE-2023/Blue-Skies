@@ -59,7 +59,8 @@ public class BasicCalculationController : ControllerBase
         [FromBody] BasicCalculation basicCalculation
     )
     {
-        try
+    Console.WriteLine("here");
+    try
         {
             Console.WriteLine(basicCalculation.daylightHours);
             var newBasicCalculation = await _basicCalculationsRepository.UpdateBasicCalculation(
@@ -70,6 +71,27 @@ public class BasicCalculationController : ControllerBase
                 basicCalculation.batteryLife
             );
             return Ok(newBasicCalculation);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    //Get created basic calculations
+    [HttpGet("getCreated")]
+    public async Task<IActionResult> GetCreatedBasicCalculations(
+        [FromBody] BasicCalculation basicCalculation
+    )
+    {
+        try
+        {
+            var basicCalculations = await _basicCalculationsRepository.GetCreatedBasicCaluculation(
+                basicCalculation.systemId,
+                basicCalculation.daylightHours!,
+                basicCalculation.location!
+            );
+            return Ok(basicCalculations);
         }
         catch (Exception e)
         {
