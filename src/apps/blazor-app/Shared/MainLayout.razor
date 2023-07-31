@@ -1,9 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies</PageTitle>
 
 <div class="page"> 
     <main>
+        @if(isLoading) {
+            <BlazorApp.Section.LoadingScreen/>
+        }
+
         <NavMenu />
 
         <div class="mt-36 w-full">
@@ -17,5 +22,31 @@
 </div>
 
 @code {
-    
+    private bool isLoading = false;
+
+     protected override void OnInitialized()
+    {
+        // Subscribe to events
+        loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
+        loadingService.HideLoadingScreenRequested += HideLoadingScreen;
+    }
+
+    public void ShowLoadingScreen()
+    {
+        isLoading = true;
+        Console.WriteLine("Loading screen requested - MainLayout.razor");
+        StateHasChanged();
+    }
+
+    public void HideLoadingScreen()
+    {
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;
+        loadingService.HideLoadingScreenRequested -= HideLoadingScreen;
+    }
 }
