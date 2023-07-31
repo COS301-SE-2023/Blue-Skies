@@ -45,7 +45,7 @@ export default class SolarScoreController {
   };
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
-    const py = spawn('python', [script, ...parameters]);
+    const py = spawn('python3', [script, ...parameters]);
 
     const result = await new Promise((resolve, reject) => {
       let output: string[];
