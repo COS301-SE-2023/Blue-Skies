@@ -4,13 +4,8 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
 
-@if(loading) {
-    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
-        <img src="assets/Loader.gif" class="m-auto scale-50" />
-    </div>
-}
-else {
     <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
         <div class="text-center">
             <Heading>
@@ -39,7 +34,6 @@ else {
             </div>
         </div>
     </div>
-}
 
 
 @code {
@@ -59,7 +53,8 @@ else {
     }
     public async void saveBasicCalculation()
     {
-        loading = true;
+        
+        ShowLoadingScreen();
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
 
@@ -240,5 +235,16 @@ else {
 
         await File.WriteAllBytesAsync(imagePath, imageBytes);
         await ProtectedSessionStore.SetAsync("loading", false);
+    }
+
+    private void ShowLoadingScreen()
+    {
+        Console.WriteLine("Showing loading screen - EnterLocation.razor");
+        loadingService.ShowLoadingScreen();
+    }
+
+    private void HideLoadingScreen()
+    {
+        loadingService.HideLoadingScreen();
     }
 }
