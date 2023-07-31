@@ -59,7 +59,7 @@ public class BasicCalculationRepository
     //Create a basic calculation
     public async Task<BasicCalculation> CreateBasicCalculation(
         int systemId,
-        int daylightHours,
+        string daylightHours,
         string location,
         int batteryLife
     )
@@ -72,30 +72,19 @@ public class BasicCalculationRepository
                 express + "/api/basicCalculation/create"
             );
             var content = new StringContent(
-                "{\r\n        \"systemId\": 2,\r\n        \"dayLightHours\": "
+                "{\r\n        \"systemId\": "
+                    + systemId
+                    + ",\r\n        \"dayLightHours\": \""
                     + daylightHours
-                    + ",\r\n        \"location\": "
+                    + "\",\r\n        \"location\": \""
                     + location
-                    + ",\r\n        \"batteryLife\": "
+                    + "\",\r\n        \"batteryLife\": "
                     + batteryLife
                     + "\r\n}",
                 null,
                 "application/json"
             );
-            // var content = new StringContent(
-            //     "{\r\n        \"systemId\": "
-            //         + systemId
-            //         + ",\r\n        \"dayLightHours\": "
-            //         + daylightHours
-            //         + ",\r\n        \"location\": \""
-            //         + location
-            //         + "\",\r\n        \"batteryLife\": "
-            //         + batteryLife
-            //         + "\r\n}",
-            //     null,
-            //     "application/json"
-            // );
-            request.Content = content;
+      request.Content = content;
             var response = await client.SendAsync(request);
             // response.EnsureSuccessStatusCode();
             // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -126,7 +115,7 @@ public class BasicCalculationRepository
     public async Task<BasicCalculation> UpdateBasicCalculation(
         int basicCalculationId,
         int systemId,
-        int daylightHours,
+        string daylightHours,
         string location,
         int batteryLife
     )
@@ -138,23 +127,12 @@ public class BasicCalculationRepository
                 HttpMethod.Patch,
                 express + "/api/basicCalculation/update/" + basicCalculationId
             );
-            Console.WriteLine(
+            var content = new StringContent(
                 "{\r\n        \"systemId\": "
                     + systemId
                     + ",\r\n        \"dayLightHours\": \""
                     + daylightHours
                     + "\",\r\n        \"location\": \""
-                    + location
-                    + "\",\r\n        \"batteryLife\": "
-                    + batteryLife
-                    + "\r\n}"
-            );
-            var content = new StringContent(
-                "{\r\n        \"systemId\": "
-                    + systemId
-                    + ",\r\n        \"dayLightHours\": "
-                    + daylightHours
-                    + ",\r\n        \"location\": \""
                     + location
                     + "\",\r\n        \"batteryLife\": "
                     + batteryLife
