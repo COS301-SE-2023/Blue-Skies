@@ -36,6 +36,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public string? parent { get; set; }
+    
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0; 
     private double longitude = 0; 
@@ -54,8 +57,6 @@
         }
         latitude = cord[0];
         longitude = cord[1];
-        @* latitude = 28.356459;
-        longitude = -25.772081; *@
         Console.WriteLine("Latitude: " + latitude.ToString());
         Console.WriteLine("Longitude: " + longitude.ToString());
 
@@ -75,7 +76,11 @@
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await DownloadImage();
-        NavigationManager.NavigateTo("/solarScore");
+        if(parent == "solarScore")   {
+            StateHasChanged();
+        } else {
+            NavigationManager.NavigateTo("/solarScore");
+        }
     }
     
 
