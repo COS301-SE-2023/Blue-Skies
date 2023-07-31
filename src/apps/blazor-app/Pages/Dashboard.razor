@@ -14,7 +14,7 @@
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
 <div class="fade-in-enter-active">
-    @if (!isLoaded) { }
+    @if (!isLoaded) {}
     else if (!logIn)
     {
         ProtectedLocalStore.SetAsync("redirect", "dashboard");
@@ -169,7 +169,6 @@
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
-        isLoaded = true;
         userId = usId.Value;
 
         await GetUserReports();
@@ -181,14 +180,9 @@
             renderCharts();
         }
     }
-
-
-
     private void updateAppliances()
     {
         reportAllAppliance.Clear();
-        Console.WriteLine("selectedReport: " + selectedReport);
-        Console.WriteLine("reportAll.Count: " + reportAll.Count);
         if (reportAll.Count > 0)
         {
         int reportId = reportAll[selectedReport].reportId;
@@ -234,6 +228,7 @@
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            Console.WriteLine("Successfully got report all");
             var data = await response.Content.ReadAsStringAsync();
             reportAll = JsonSerializer.Deserialize<List<ReportAllModel>>(data, new JsonSerializerOptions
                 {
@@ -248,6 +243,8 @@
             {
                 userReportNames.Add(report.reportName!);
             }
+        isLoaded = true;
+
         }
         else
         {

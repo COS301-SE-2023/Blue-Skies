@@ -36,9 +36,7 @@
     </div>
 
 @code {
-    [Parameter]
-    public string? parent { get; set; }
-    
+    public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0; 
     private double longitude = 0; 
@@ -47,9 +45,14 @@
     private readonly int height = 500; 
     public bool loading = false;
 
-
+    protected override async Task OnInitializedAsync()
+    {
+        var par = await ProtectedSessionStore.GetAsync<string>("parent");
+        parent = par.Value!;
+    }
     public async void saveBasicCalculation()
     {
+        await ProtectedSessionStore.SetAsync("loading", true);
         loading = true;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
@@ -61,8 +64,6 @@
         }
         latitude = cord[0];
         longitude = cord[1];
-        Console.WriteLine("Latitude: " + latitude.ToString());
-        Console.WriteLine("Longitude: " + longitude.ToString());
 
         //await GetSolarScore(latitude, longitude);
         int systemId = 2;
@@ -79,15 +80,15 @@
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
-        await DownloadImage();
-        if(parent == "solarScore")   {
+        await ProtectedSessionStore.SetAsync("parent", "");
+        if(parent.Equals("solarScore")) {
             StateHasChanged();
         } else {
             NavigationManager.NavigateTo("/solarScore");
         }
+        await DownloadImage();
     }
     
-
     public async Task<string> GetSolarScore(double latitude, double longitude)
     {
         var client = new HttpClient();
@@ -207,6 +208,6 @@
         }
 
         await File.WriteAllBytesAsync(imagePath, imageBytes);
-
+        await ProtectedSessionStore.SetAsync("loading", false);
     }
 }
