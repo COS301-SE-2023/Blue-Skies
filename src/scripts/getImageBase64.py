@@ -66,7 +66,7 @@ def download_and_pass_image(image, roi, imageName):
     
     file_lock.acquire()
     try:
-        #print('Getting solar score for image')
+        print('Getting solar score for image')
         url = API_PORT + "/SolarScore/GetSolarScoreFromImage"
 
         payload = json.dumps({

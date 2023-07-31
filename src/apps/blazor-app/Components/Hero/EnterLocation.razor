@@ -80,20 +80,13 @@ else {
         string solarScoreId = "";
         for (int i = 0; i < 20; i++)
         {
-  
-        // Generating a random number.
             int randValue = rand.Next(0, 26);
-    
-            // Generating random character by converting
-            // the random number into character.
             char letter = Convert.ToChar(randValue + 65);
-    
-            // Appending the letter to string.
             solarScoreId = solarScoreId + letter;
         }
         await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
-        GetImages(latitude, longitude, solarScoreId);
+        GetImages(longitude, latitude, solarScoreId);
 
         Console.WriteLine("Got daylight hours: "+ dayLightHours);
         string location = "";
@@ -104,18 +97,23 @@ else {
         int batteryLife = 10;
         string result = await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife);
         //Convert float to int
-        int solarScore = 85;
+        int solarScore = 50;
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
+        Console.WriteLine("Get Images");
+        
         if(parent.Equals("solarScore")) {
             await DownloadImage();
         } else {
+            
             NavigationManager.NavigateTo("/solarScore");
             await DownloadImage();
         }
+        
         loading = false;
+
         
     }
     
