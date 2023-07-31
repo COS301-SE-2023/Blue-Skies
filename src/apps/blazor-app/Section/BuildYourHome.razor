@@ -400,16 +400,16 @@
                     Console.WriteLine("Failed to create ReportAppliance");
                 }
             }
-            updateBasicCalculation();
-            NavigationManager.NavigateTo("/dashboard");
+            await updateBasicCalculation();
         }
         else
         {
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
+            NavigationManager.NavigateTo("/dashboard");
     }
-    private async void updateBasicCalculation(){
+    private async Task updateBasicCalculation(){
         var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
                 var content = new StringContent("{\r\n        \"basicCalculationId\": "
@@ -425,7 +425,6 @@
                     + "\r\n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
-                Console.WriteLine("status code" + response.StatusCode);
                 if(response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     Console.WriteLine("Basic Calculation updated successfully");
