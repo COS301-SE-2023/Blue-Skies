@@ -49,7 +49,7 @@ public class AdminStatsRepository
 
             if (systems == null || basicCalculations == null)
             {
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllSystemUsage");
                 throw new Exception("Database Connection Error");
             }
 

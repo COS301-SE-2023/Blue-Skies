@@ -45,7 +45,7 @@ public class BasicCalculationRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllBasicCalculations");
                 return new List<BasicCalculation>();
             }
         }
