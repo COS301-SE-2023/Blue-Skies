@@ -1,11 +1,11 @@
 public class BasicCalculation
 {
-    public int? basicCalculationId { get; set; }
+    public int basicCalculationId { get; set; }
 
     public int systemId { get; set; }
 
     //daylightHours
-    public int daylightHours { get; set; }
+    public string? daylightHours { get; set; }
 
     //location
     public string? location { get; set; }

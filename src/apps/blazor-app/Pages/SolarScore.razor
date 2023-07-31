@@ -2,34 +2,48 @@
 @layout MainLayout
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 @inject ProtectedLocalStorage ProtectedLocalStore;
+@inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
+@using System.Text.Json;
+@using BlazorApp.Components.Hero;
+@using BlazorApp.Section;
 
 <PageTitle>Solar Score</PageTitle>
 
-<div class="fade-in-enter-active">
-@if (!isLoaded) {}
-else if (isAd) {
+
+@if (isAd) {
     NavigationManager.NavigateTo("/admin/keys");
-} else {      
-<div class="w-full">
-    <div class="mb-20"><BlazorApp.Section.Results/></div>
-    <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
-    <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
+} 
+else {      
+<div class="fade-in-enter-active">
+    <div class="w-full">
+        @if (solarScore != 0)
+        {
+        <div class="mb-20"><BlazorApp.Section.Results/></div>
+        } else {
+            <EnterLocation/>
+        }
+        <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
+        <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
+    </div>
 </div>
 }
-</div>
 
 
 @code {
     private bool isAd = false;
-    private bool isLoaded = false;
+    private bool loading = true;
+    private int solarScore = 0;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     protected override async Task OnInitializedAsync()
     {
         var selected = await ProtectedLocalStore.GetAsync<bool>("SelectedAddress");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var score = await ProtectedSessionStore.GetAsync<int>("solarScore");
+        var load = await ProtectedSessionStore.GetAsync<bool>("loading");
+        await ProtectedSessionStore.SetAsync("parent", "solarScore");
+        solarScore = score.Value;
         isAd = isAdmin.Value;
-        isLoaded = true;
     }
-
    
 }
