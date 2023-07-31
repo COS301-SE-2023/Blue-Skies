@@ -47,18 +47,20 @@
                 </div>
             </div>
         </Card>
-        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 p-4 w-80 h-80  my-auto">
-            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
-                <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
-            </div>
-            <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
-            <div class="flex gap-1 mt-3">
-
+        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 p-4 w-80 h-80  my-auto">
+            <div class="my-auto">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                    <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+                <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                     <p class="text-5xl text-gray-400 font-bold">kw/h</p>
                 </div>
-            </Card>
-            <Card css="border-2 scale-90 xl:scale-100 flex flex-col gap-4 border-primary-300 p-4 w-80 h-80  my-auto">
+            </div>
+        </Card>
+        <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-80 h-80">
+            <div class="my-auto flex flex-col gap-4 p-2">
                 <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
                 <div class="flex justify-evenly gap-4">
                     @{
@@ -70,7 +72,7 @@
                             small = systems[0].inverterOutput + "kw";
                             medium = systems[1].inverterOutput + "kw";
                             large = systems[2].inverterOutput + "kw";
-                        } 
+                        }
                     }
                     <div onclick="@(() => SetSystemSize(0))"
                         class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
@@ -96,10 +98,11 @@
                     <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
-            </Card>
-        </div>
+            </div>
+        </Card>
     </div>
-    }
+</div>
+}
 
 @code {
     private int solarScore = -1;
