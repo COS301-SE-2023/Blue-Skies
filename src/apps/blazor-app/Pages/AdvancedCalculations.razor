@@ -18,7 +18,6 @@
         } else if (solarScore == 0) {
             deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error");
             Console.WriteLine("Toast");
-            SpinWait.SpinUntil(() => false, 2000);
             NavigationManager.NavigateTo("/solarScore");
         } else {
         <div class="w-full">
