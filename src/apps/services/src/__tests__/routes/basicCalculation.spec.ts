@@ -49,6 +49,14 @@ jest.mock(
               message: 'BasicCalculation is deleted.',
             });
           }),
+
+        getCreatedBasicCalculation: jest
+          .fn()
+          .mockImplementation((req: Request, res: Response) => {
+            res.status(200).json({
+              message: 'BasicCalculation is retrieved.',
+            });
+          }),
       };
     });
   }
