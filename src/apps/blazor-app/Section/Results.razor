@@ -117,8 +117,10 @@
     public bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
+        //get solarScoreId
+        
         await GetSystems();
-        isLoaded = true;
+        
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
@@ -145,7 +147,7 @@
         {
             Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
-        //get solarScoreId
+        isLoaded = true;
         var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
         if (solarScoreIdTemp.Success)
         {
@@ -156,6 +158,7 @@
         {
             Console.WriteLine("Unsuccess");
         }
+        
 
         
     }
@@ -216,6 +219,7 @@
                         prev = solarScores.Count;
                         count = 0;
                         CalculateSolarScore();
+                        await ProtectedSessionStore.SetAsync("solarScore",solarScore);
                         StateHasChanged();
                     }                   
             }else{
@@ -255,7 +259,11 @@
             float ans = (score / (float)total) * 100;
             Console.WriteLine("ans: " +ans);
             solarScore = (int)ans;
+            
         }
     }
-
+//running Hours = (num batteries * battery storage)  / (sum of all appliances)  
+// % = (running hours / non-daylight hours) * 100
 }
+
+

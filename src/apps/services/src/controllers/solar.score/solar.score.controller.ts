@@ -29,7 +29,7 @@ export default class SolarScoreController {
     const currentYear = new Date().getFullYear();
 
     try {
-      const result = this.executePython('scripts/getImageBase64.py', [
+      const result = await this.executePython('scripts/getImageBase64.py', [
         latitude,
         longitude,
         currentYear - 1,
@@ -37,7 +37,7 @@ export default class SolarScoreController {
         solarScoreId,
       ]);
 
-      res.json({ result: 'Got Solar Score' });
+      res.json({ result: result });
     } catch (error) {
       res.status(500).json({ error: error });
     }
