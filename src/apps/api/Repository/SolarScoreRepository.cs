@@ -32,6 +32,22 @@ public class SolarScoreRepository
             throw new Exception("Error getting mapbox key");
         }
     }
+    public async Task<string> GetGoogleMapsKey()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/googlemapskey");
+        var response = await client.SendAsync(request);
+        // response.EnsureSuccessStatusCode();
+        // Console.WriteLine(await response.Content.ReadAsStringAsync());
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            throw new Exception("Error getting google maps key");
+        }
+    }
 
     public async Task<string> GetSolarScore(Coordinates coordinates)
     {

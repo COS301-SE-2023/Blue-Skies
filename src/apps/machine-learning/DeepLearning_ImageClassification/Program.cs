@@ -12,22 +12,22 @@ namespace DeepLearning_ImageClassification
     {
         static void Main(string[] args)
         {
-            var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/apps/machine-learning/DeepLearning_ImageClassification"));
-            string path = Path.Combine(projectDirectory, "assets/Average/-27.535-30.748-2021_01_23-140.92942726614885.png");
-            Console.WriteLine(Predict(path));
+            // var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/apps/machine-learning/DeepLearning_ImageClassification"));
+            // string path = Path.Combine(projectDirectory, "assets/Average/-22.661-29.687-2020_05_01-185.06008263392823.png");
+            // Console.WriteLine(Predict(path));
+            TrainModel();
         }
 
         public static string Predict(string imageFilePath)
         {
             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/apps/machine-learning/DeepLearning_ImageClassification"));
             var assetsRelativePath = Path.Combine(projectDirectory, "assets");
-            var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
 
             MLContext mlContext = new MLContext();
 
             // Load the model
             DataViewSchema modelSchema;
-            ITransformer trainedModel = mlContext.Model.Load("model.zip", out modelSchema);
+            ITransformer trainedModel = mlContext.Model.Load(projectDirectory + "../../../api/model.zip", out modelSchema);
 
             // Preprocess the input image
             IEnumerable<ImageData> images = LoadSingleImage(imageFilePath, assetsRelativePath);
@@ -100,7 +100,7 @@ namespace DeepLearning_ImageClassification
 
             Console.WriteLine("Loading saved model");
             DataViewSchema modelSchema;
-            ITransformer savedTrainedModel = mlContext.Model.Load("model.zip", out modelSchema);
+            ITransformer savedTrainedModel = mlContext.Model.Load(projectDirectory + "../../../api/model.zip", out modelSchema);
 
             Console.WriteLine("Classifying images with loaded model");
             ClassifySingleImage(mlContext, testSet, savedTrainedModel);
@@ -114,7 +114,7 @@ namespace DeepLearning_ImageClassification
 
         public static void TrainModel()
         {
-            Console.WriteLine("Our project Directory:");
+            Console.WriteLine("Our project Directory:");  
             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/apps/machine-learning/DeepLearning_ImageClassification"));
             Console.WriteLine(projectDirectory);
             var workspaceRelativePath = Path.Combine(projectDirectory, "workspace");
@@ -166,8 +166,8 @@ namespace DeepLearning_ImageClassification
                 TestOnTrainSet = false,
                 ReuseTrainSetBottleneckCachedValues = true,
                 ReuseValidationSetBottleneckCachedValues = true,
-                Epoch = 200,
-                LearningRate = 0.05f,
+                Epoch = 2000,
+                LearningRate = 0.001f,
                 BatchSize = 50
             };
 
@@ -179,8 +179,9 @@ namespace DeepLearning_ImageClassification
             ITransformer trainedModel = trainingPipeline.Fit(trainSet);
 
             Console.WriteLine("Saving model");
-            Console.WriteLine("Model will be saved to: " + Path.Combine(workspaceRelativePath, "model.zip"));
-            mlContext.Model.Save(trainedModel, imageData.Schema, "model.zip");
+            Console.WriteLine("Model will be saved to: " + Path.Combine(projectDirectory, "../../../api/model.zip"));
+            mlContext.Model.Save(trainedModel, imageData.Schema, projectDirectory + "../../../api/model.zip");
+
 
             Console.ReadKey();
         }
