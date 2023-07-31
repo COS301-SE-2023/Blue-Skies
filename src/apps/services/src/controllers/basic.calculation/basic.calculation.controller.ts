@@ -22,7 +22,6 @@ export default class BasicCalculationController {
             console.log(rowCount);
             return res.status(200).json({
               message: 'Basic calculation created successfully.',
-              BasicCalculationController: res.json,
             });
           }
         }
@@ -64,7 +63,7 @@ export default class BasicCalculationController {
         const basicCalculation: IBasicCalculation = {
           basicCalculationId: columns[0].value,
           systemId: columns[1].value,
-          daylightHours: columns[2].value + "",
+          daylightHours: columns[2].value + '',
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
@@ -110,7 +109,7 @@ export default class BasicCalculationController {
         basicCalculation = {
           basicCalculationId: columns[0].value,
           systemId: columns[1].value,
-          daylightHours: columns[2].value + "",
+          daylightHours: columns[2].value + '',
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
@@ -154,7 +153,7 @@ export default class BasicCalculationController {
         basicCalculation = {
           basicCalculationId: columns[0].value,
           systemId: columns[1].value,
-          daylightHours: columns[2].value + "",
+          daylightHours: columns[2].value + '',
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
