@@ -99,7 +99,7 @@
         <div class="flex relative flex-col justify-center w-full">
             <Chart Config="pieConfig"></Chart>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                <p class="text-5xl text-primary-900 font-semibold">@testBasicCalc.daylightHours</p>
+                <p class="text-5xl text-primary-900 font-semibold">@basicCalc.daylightHours</p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -225,7 +225,6 @@
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
-    private BasicCalculationModel testBasicCalc = new BasicCalculationModel();
     private Toast successToast { get; set; } = new Toast();
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
@@ -235,12 +234,6 @@
         Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");        
         userId = Convert.ToInt32(usId.Value);
-        testBasicCalc.basicCalculationId = 1;
-        testBasicCalc.systemId = 2;
-        testBasicCalc.daylightHours = 12.99F;
-        testBasicCalc.location = "1 lynwood rd, Lynwood, 0086";
-        testBasicCalc.batteryLife = 16;
-        testBasicCalc.dateCreated = DateTime.Now;
         renderCharts();
 
     }
@@ -345,7 +338,8 @@
     private async void SaveCalculation(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
-        var content = new StringContent("{\r\n  \"reportName\": \"" + "Test" + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + testBasicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
+        Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
+        var content = new StringContent("{\r\n  \"reportName\": \"" + "Test" + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + basicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -368,12 +362,15 @@
                     Console.WriteLine("Failed to create ReportAppliance");
                 }
             }
-            var request2 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
-                var content2 = new StringContent("{\r\n        \"systemId\": "
+            var request2 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/update");
+            Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
+                var content2 = new StringContent("{\r\n        \"basicCalculationId\": "
+                    + basicCalc.basicCalculationId
+                    + ",\r\n        \"systemId\": "
                     + systems[selectedSystem].systemId
-                    + ",\r\n        \"dayLightHours\": "
+                    + ",\r\n        \"dayLightHours\": \""
                     + basicCalc.daylightHours
-                    + ",\r\n        \"location\": \""
+                    + "\",\r\n        \"location\": \""
                     + basicCalc.location
                     + "\",\r\n        \"batteryLife\": "
                     + basicCalc.batteryLife
@@ -382,11 +379,11 @@
                 var response2 = await client.SendAsync(request2);
                 if(response2.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    Console.WriteLine("ReportAppliance created successfully");
+                    Console.WriteLine("Basic Calculation updated successfully");
                 }
                 else
                 {
-                    Console.WriteLine("Failed to create ReportAppliance");
+                    Console.WriteLine("Failed to update Basic Calculation");
                 }
             NavigationManager.NavigateTo("/dashboard");
         }
@@ -471,7 +468,7 @@
         {
             pieConfig.Data.Labels.Add(color);
         }
-        float hours = testBasicCalc.daylightHours;
+        float hours = basicCalc.daylightHours;
         float remaining = (float) Math.Round(13 - hours, 2);
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {

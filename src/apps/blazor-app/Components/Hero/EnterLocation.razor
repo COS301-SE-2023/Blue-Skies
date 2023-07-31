@@ -60,7 +60,7 @@
         Console.WriteLine("Longitude: " + longitude.ToString());
 
         //await GetSolarScore(latitude, longitude);
-        int systemId = 1;
+        int systemId = 2;
         Console.WriteLine("Getting daylight hours");
         float dayLightHours = await getDayLightHours(latitude, longitude);
         Console.WriteLine("Got daylight hours: "+ dayLightHours);
@@ -70,7 +70,7 @@
             location = locationSuggestion.Place_Name;
         }
         int batteryLife = 10;
-        string result = await CreateBasicCaculation(systemId, (int)dayLightHours, location, batteryLife);
+        string result = await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife);
         Console.WriteLine(result);
         BasicCalculationModel basicCalculation = new BasicCalculationModel();
         basicCalculation.basicCalculationId = -1;
@@ -86,7 +86,7 @@
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
-        await DownloadImage();
+        @* await DownloadImage(); *@
         NavigationManager.NavigateTo("/solarScore");
     }
     
@@ -136,16 +136,25 @@
         }
     }
 
-    public async Task<string> CreateBasicCaculation(int systemId, int dayLightHours, string location, int batteryLife)
+    public async Task<string> CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
+        Console.WriteLine("{\r\n    \"systemId\": "
+                + systemId
+                + ",\r\n  \"daylightHours\": \""
+                + dayLightHours
+                + "\",\r\n  \"location\": \""
+                + location
+                + "\",\r\n  \"batteryLife\": "
+                + batteryLife
+                + "\r\n}");
         var content = new StringContent(
             "{\r\n    \"systemId\": "
                 + systemId
-                + ",\r\n  \"daylightHours\": "
+                + ",\r\n  \"daylightHours\": \""
                 + dayLightHours
-                + ",\r\n  \"location\": \""
+                + "\",\r\n  \"location\": \""
                 + location
                 + "\",\r\n  \"batteryLife\": "
                 + batteryLife
