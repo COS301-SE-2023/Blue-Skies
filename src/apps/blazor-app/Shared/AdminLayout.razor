@@ -57,10 +57,10 @@ else if(!isAd){
         isLoaded = true;
     }
     public async void logout() {
-        await ProtectedLocalStore.SetAsync("loggedIn", false);
-        await ProtectedLocalStore.SetAsync("userEmail", "");
+        await ProtectedLocalStore.DeleteAsync("userEmail");
+        await ProtectedLocalStore.DeleteAsync("isAdmin");
+        await ProtectedLocalStore.DeleteAsync("loggedIn");
         NavigationManager.NavigateTo("/");
-        await ProtectedLocalStore.SetAsync("isAdmin", false);
     }
 
     public void ChangePage(string page) {

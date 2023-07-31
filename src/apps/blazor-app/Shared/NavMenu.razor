@@ -1,6 +1,7 @@
 ﻿@using BlazorApp.Components.Base
 @inject IJSRuntime JSRuntime
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 @{
   if (isScrollingDown) width = loggedIn ? "shadow w-14 h-14 hover:w-60" : "shadow w-14 h-14 hover:w-36"; else width = loggedIn ? "w-60 h-14  -translate-y-20" : "w-36 h-14 -translate-y-20";
@@ -153,6 +154,26 @@
       await ProtectedLocalStore.DeleteAsync("userReports");
       await ProtectedLocalStore.DeleteAsync("reportAll");
       await ProtectedLocalStore.DeleteAsync("userReportAllAppliance");
+      
+      //systems
+      await ProtectedLocalStore.DeleteAsync("systems");
+      //advancedCalculationAppliances
+      await ProtectedLocalStore.DeleteAsync("advancedCalculationAppliances");
+      //selectedSystem
+      await ProtectedLocalStore.DeleteAsync("selectedSystem");
+      //location
+      await ProtectedSessionStore.DeleteAsync("location");
+      //SelectedAddress
+      await ProtectedLocalStore.DeleteAsync("selectedAddress");
+      await ProtectedSessionStore.DeleteAsync("latitude");
+      await ProtectedSessionStore.DeleteAsync("longitude");
+      //solarScore
+      await ProtectedSessionStore.DeleteAsync("solarScore");
+      //basicCalculation
+      await ProtectedSessionStore.DeleteAsync("basicCalculation");
+      //selectedSystem
+      await ProtectedSessionStore.DeleteAsync("selectedSystem");
+      await ProtectedSessionStore.DeleteAsync("parent");
 
       loggedIn = false;
       userEmail = "";

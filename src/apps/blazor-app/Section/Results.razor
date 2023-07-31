@@ -2,7 +2,12 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
 
+    @if (!isLoaded)
+    {
+        Console.WriteLine("Loading");
+    } else {
 <div class="mt-24 text-center">
     <Heading>
         <Header>
@@ -13,9 +18,9 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-16">
+<div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     <div class="sm:flex-shrink-0  flex justify-center ">
-        <Image ImageName="Solarscore.png" alt="Solar Score" css="scale-75 xl:scale-90"/>
+        <Map css="scale-90"/>
     </div>
     <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <Card css="border-2 scale-90 xl:scale-100 border-primary-300 w-72 h-72  my-auto">
@@ -45,109 +50,107 @@
             <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
             <div class="flex gap-1 mt-3">
 
-                <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                <p class="text-5xl text-gray-400 font-bold">kw/h</p>
-            </div>
-        </Card>
-        <Card css="border-2 scale-90 xl:scale-100 flex flex-col gap-4 border-primary-300 p-4 w-72 h-72  my-auto">
-            <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
-            <div class="flex justify-evenly gap-4">
-                 <div onclick="@(() => SetSystemSize("5kw"))" class=" flex shadow-md transition-all duration-500  @(SystemSize == "5kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class=" font-semibold">5kw</p>
+                    <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                    <p class="text-5xl text-gray-400 font-bold">kw/h</p>
                 </div>
-                <div onclick="@(() => SetSystemSize("8kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "8kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="font-semibold">8kw</p>
+            </Card>
+            <Card css="border-2 scale-90 xl:scale-100 flex flex-col gap-4 border-primary-300 p-4 w-72 h-72  my-auto">
+                <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
+                <div class="flex justify-evenly gap-4">
+                    @{
+                        var small = "";
+                        var medium = "";
+                        var large = "";
+                        if (systems!.Count > 0)
+                        {
+                            small = systems[0].inverterOutput + "kw";
+                            medium = systems[1].inverterOutput + "kw";
+                            large = systems[2].inverterOutput + "kw";
+                        } 
+                    }
+                    <div onclick="@(() => SetSystemSize(0))"
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class=" font-semibold">@small</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(1))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class="font-semibold">@medium</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(2))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class="font-semibold">@large</p>
+                    </div>
                 </div>
-                <div onclick="@(() => SetSystemSize("12kw"))" class="flex shadow-md transition-all duration-500 @(SystemSize == "12kw" ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="font-semibold">12kw</p>
+                <div class="flex gap-2 mt-3">
+                @{
+                    var selectedPanels = 0;
+                    if (systems.Count > 0)
+                    {
+                        selectedPanels = systems[selectedSystem].numberOfPanels;
+                    }
+                }
+                    <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
+                    <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
-            </div>
-            <div class="flex gap-2 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">@PanelCount</p>
-                <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
-            </div>
-        </Card>
+            </Card>
+        </div>
     </div>
-</div>
+    }
 
 @code {
     private int solarScore = -1;
     private float dayLightHours = -1F;
-    private string SystemSize = "5kw";
-    private int PanelCount = 8;
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
-    private List<ProductModel> systems = new List<ProductModel>();
+    public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    public int selectedSystem = 0;
+    public int selectedSystem = 2;
     public double avgEnergyProduction = 0.0;
+    public bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
+        await GetSystems();
+        isLoaded = true;
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        if (ss.Success)
-        {
-            solarScore = ss.Value;
-        }
+        solarScore = ss.Value;
+
+        var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = selectedSys.Value;
+
         var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
         if (dlh.Success && dlh.Value != null)
         {
             basicCalculation = dlh.Value;
-            dayLightHours = basicCalculation.daylightHours;
+            dayLightHours = float.Parse(basicCalculation.daylightHours!);
         }
         else
         {
             Console.WriteLine("Unsuccess");
         }
-
-        await GetProducts();
-        if (basicCalculation != null && systems != null)
+        Console.WriteLine("Systems: " + systems!.Count);
+        if (basicCalculation != null && systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels *
-                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
         {
-            Console.WriteLine("Error");
-            Console.WriteLine(basicCalculation == null);
-            Console.WriteLine(systems == null);
+            Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
 
     }
-
-    private void SetPanelCount(int count)
+    private void SetSystemSize(int selection)
     {
-        PanelCount = count;
-    }
-
-    private void SetSystemSize(string size)
-    {
-        SystemSize = size;
-        switch (size)
+        selectedSystem = selection;
+        ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
+        if (systems!.Count > 0)
         {
-            case "5kw":
-                selectedSystem = 0;
-                SetPanelCount(8);
-                break;
-            case "8kw":
-                selectedSystem = 1;
-                SetPanelCount(14);
-                break;
-            case "12kw":
-                selectedSystem = 2;
-                SetPanelCount(20);
-                break;
-            default:
-                selectedSystem = 0;
-                SetPanelCount(8);
-                break;
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(
+            basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
+            avgEnergyProduction = Math.Round(calc, 2);
         }
-
-        double calc = systems[selectedSystem].numberOfPanels *
-                               basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
-        avgEnergyProduction = Math.Round(calc, 2);
     }
 
-    private async Task GetProducts()
+    private async Task GetSystems()
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
@@ -155,16 +158,15 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive
-                                                                                                = true
+                    PropertyNameCaseInsensitive = true
                 })!;
         }
         else
         {
             Console.WriteLine("Failed");
         }
+        return;
     }
-
 }

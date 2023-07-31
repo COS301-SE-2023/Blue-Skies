@@ -10,6 +10,14 @@ export default class SolarScoreController {
       res.status(500).json({ error: error });
     }
   };
+  public getGoogleApiKey = async (req: Request, res: Response) => {
+    try {
+      const key: string = process.env.GOOGLE_API_KEY;
+      res.status(200).json(key);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
@@ -48,7 +56,7 @@ export default class SolarScoreController {
   };
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
-    const py = spawn('python', [script, ...parameters]);
+    const py = spawn('python3', [script, ...parameters]);
 
     const result = await new Promise((resolve, reject) => {
       let output: string[];
