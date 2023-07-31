@@ -18,7 +18,7 @@ def get_one_day_per_month(latitude, longitude, year):
 
     with ThreadPoolExecutor() as executor:
         futures = []
-        for month in range(1, 13):
+        for month in range(1, 6):
             start_date = datetime(year, month, 1)
             selected_date = start_date + timedelta(days=14)
             future = executor.submit(get_sunrise_sunset, latitude, longitude, selected_date.strftime('%Y-%m-%d'))

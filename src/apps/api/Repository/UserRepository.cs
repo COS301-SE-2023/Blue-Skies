@@ -39,7 +39,7 @@ public class UsersRepository
             }
             else
             {
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllUsers");
                 return new List<Users>();
             }
         }

@@ -2,6 +2,7 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStorage
 @layout MainLayout
 
 <PageTitle>Blue Skies - Home</PageTitle>
@@ -34,6 +35,7 @@
   protected override async Task OnInitializedAsync()
   {
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+    await ProtectedSessionStorage.SetAsync("parent", "index");
     isAd = isAdmin.Value;
     isLoaded = true;
   }
