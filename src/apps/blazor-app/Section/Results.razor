@@ -13,7 +13,7 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex px-4 flex-col lg:flex-row bg-red-300 justify-center mt-16">
+<div class="flex px-4 flex-col lg:flex-row justify-center mt-16">
     <div class="">
         <Image ImageName="Solarscore.png" alt="Solar Score" css="scale-90"/>
     </div>
@@ -71,7 +71,7 @@
 </div>
 
 @code {
-    private int solarScore = -1;
+    private int solarScore = 0;
     private int dayLightHours = -1;
     private string SystemSize = "5kw";
     private int PanelCount = 8;
@@ -80,13 +80,10 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 0;
     public double avgEnergyProduction = 0.0;
+    public string solarScoreId = "";
+    public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     protected override async Task OnInitializedAsync()
     {
-        var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        if (ss.Success)
-        {
-            solarScore = ss.Value;
-        }
         var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
         if (dlh.Success)
         {
@@ -111,7 +108,19 @@
             Console.WriteLine(basicCalculation == null);
             Console.WriteLine(systems == null);
         }
+        //get solarScoreId
+        var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
+        if (solarScoreIdTemp.Success)
+        {
+            solarScoreId = solarScoreIdTemp.Value;
+            GetSolarScores(solarScoreId);
+        }
+        else
+        {
+            Console.WriteLine("Unsuccess");
+        }
 
+        
     }
 
     private void SetPanelCount(int count)
@@ -164,6 +173,73 @@
         else
         {
             Console.WriteLine("Failed");
+        }
+    }
+
+    //get solar Score 
+    private async Task GetSolarScores(string solarScoreId)
+    {
+        int count = 0;
+        int max = 10;
+        int prev = solarScores.Count;
+        while(solarScores.Count < 12){
+            Console.WriteLine("Waiting");
+            //Sleep 2 seconds
+            await Task.Delay(2000);
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/solarscore/get");
+            var content = new StringContent("{\r\n    \"solarScoreId\": \"" + solarScoreId + "\"\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.IsSuccessStatusCode){
+                Console.WriteLine("Success");
+                var data = await response.Content.ReadAsStringAsync();
+                solarScores = JsonSerializer.Deserialize<List<SolarScoreModel>>(data);
+                    if(prev == solarScores.Count){
+                        count++;
+                    }else{
+                        prev = solarScores.Count;
+                        count = 0;
+                        CalculateSolarScore();
+                        StateHasChanged();
+                    }                   
+            }else{
+                Console.WriteLine("Failed");
+                solarScores = new List<SolarScoreModel>();
+            }
+            Console.WriteLine(solarScores.Count);
+
+            if(count >= max){
+                break;
+            }
+
+        }
+
+        Console.WriteLine("Done");
+        
+    }
+
+    public void CalculateSolarScore(){
+        if(solarScores.Count > 0){
+            int score = 0;
+            
+            foreach(var solarScore in solarScores){
+                int add = 1;
+                if(solarScore.score.Equals("Good")){
+                    add = 3;
+                }else if(solarScore.score.Equals("Average")){
+                   add = 2;
+                }
+                score += add;
+
+            }
+            Console.WriteLine("score: " +score);
+            int total = solarScores.Count * 3;
+            Console.WriteLine("solarScores.Count: " +total);
+
+            float ans = (score / (float)total) * 100;
+            Console.WriteLine("ans: " +ans);
+            solarScore = (int)ans;
         }
     }
 

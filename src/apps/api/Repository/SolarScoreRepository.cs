@@ -153,6 +153,11 @@ public class SolarScoreRepository
             List<SolarScore> ss = JsonSerializer.Deserialize<List<SolarScore>>(data);
             return ss;
         }
+        else if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            List<SolarScore> ss = new List<SolarScore>();
+            return ss;
+        }
         else
         {
             throw new Exception("Error getting solar score");

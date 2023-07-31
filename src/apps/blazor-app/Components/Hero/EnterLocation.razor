@@ -46,11 +46,28 @@
         }
         double latitude = cord[1];
         double longitude = cord[0];
+        Random rand = new Random();
+        string solarScoreId = "";
+        for (int i = 0; i < 20; i++)
+        {
+  
+        // Generating a random number.
+            int randValue = rand.Next(0, 26);
+    
+            // Generating random character by converting
+            // the random number into character.
+            char letter = Convert.ToChar(randValue + 65);
+    
+            // Appending the letter to string.
+            solarScoreId = solarScoreId + letter;
+        }
+        await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
-        //await GetSolarScore(latitude, longitude);
+        GetImages(latitude, longitude, solarScoreId);
         int systemId = 1;
         Console.WriteLine("Getting daylight hours");
-        float dayLightHours = await getDayLightHours(latitude, longitude);
+        //float dayLightHours = await getDayLightHours(latitude, longitude);
+        float dayLightHours = 10f;
         Console.WriteLine("Got daylight hours: "+ dayLightHours);
         string location = "";
         if (locationSuggestion != null)
@@ -72,15 +89,16 @@
         int solarScore = 85;
         await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
+   
     }
     
 
-    public async Task<string> GetSolarScore(double latitude, double longitude)
+    public async Task<string> GetImages(double latitude, double longitude, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            API_PORT + "/SolarScore/getSolarScore"
+            API_PORT + "/SolarScore/getimages/" + solarScoreId
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
