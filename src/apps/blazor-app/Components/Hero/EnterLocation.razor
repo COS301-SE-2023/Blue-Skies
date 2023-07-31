@@ -5,12 +5,15 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 
-@if(loading) {
-    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
+@if (loading)
+{
+    <div
+        class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
         <img src="assets/Loader.gif" class="m-auto scale-50" />
     </div>
 }
-else {
+else
+{
     <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
         <div class="text-center">
             <Heading>
@@ -27,7 +30,7 @@ else {
                 <AutoComplete />
             </div>
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-                <div @onclick="saveBasicCalculation" >
+                <div @onclick="saveBasicCalculation">
                     <Button style="pill" css="h-14">
                         <content>
                             <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
@@ -45,11 +48,11 @@ else {
 @code {
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private double latitude = 0; 
-    private double longitude = 0; 
-    private readonly int zoom = 19; 
+    private double latitude = 0;
+    private double longitude = 0;
+    private readonly int zoom = 19;
     private readonly int width = 600;
-    private readonly int height = 500; 
+    private readonly int height = 500;
     public bool loading = false;
 
     protected override async Task OnInitializedAsync()
@@ -66,7 +69,7 @@ else {
         List<double> cord = new List<double>();
         if (locationSuggestion.Geometry != null)
         {
-            cord = locationSuggestion.Geometry.Coordinates!;    
+            cord = locationSuggestion.Geometry.Coordinates!;
         }
         latitude = cord[0];
         longitude = cord[1];
@@ -80,22 +83,22 @@ else {
         string solarScoreId = "";
         for (int i = 0; i < 20; i++)
         {
-  
-        // Generating a random number.
+
+            // Generating a random number.
             int randValue = rand.Next(0, 26);
-    
+
             // Generating random character by converting
             // the random number into character.
             char letter = Convert.ToChar(randValue + 65);
-    
+
             // Appending the letter to string.
             solarScoreId = solarScoreId + letter;
         }
         await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
-        await GetImages(latitude, longitude, solarScoreId);        
+        await GetImages(latitude, longitude, solarScoreId);
 
-        Console.WriteLine("Got daylight hours: "+ dayLightHours);
+        Console.WriteLine("Got daylight hours: " + dayLightHours);
         string location = "";
         if (locationSuggestion != null)
         {
@@ -105,32 +108,35 @@ else {
         string result = await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife);
         //Convert float to int
         int solarScore = 85;
-        await ProtectedSessionStore.SetAsync("solarScore",solarScore );
+        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
-        if(parent.Equals("solarScore")) {
-            await DownloadImage();
-        } else {
+        if (parent.Equals("solarScore"))
+        {
+            @* await DownloadImage(); *@
+        }
+        else
+        {
             NavigationManager.NavigateTo("/solarScore");
-            await DownloadImage();
+            @* await DownloadImage(); *@
         }
         loading = false;
-        
+
     }
-    
+
 
     public async Task<string> GetImages(double latitude, double longitude, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            API_PORT + "/SolarScore/getimages/" + solarScoreId
+        HttpMethod.Get,
+        API_PORT + "/SolarScore/getimages/" + solarScoreId
         );
         var content = new StringContent(
-            "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -148,14 +154,15 @@ else {
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsuntimes");
-        var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null,
+        "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
-            //convert data to double 
+            //convert data to double
             float ans = float.Parse(data);
             return ans;
         }
@@ -170,17 +177,17 @@ else {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
         var content = new StringContent(
-            "{\r\n    \"systemId\": "
-                + systemId
-                + ",\r\n  \"daylightHours\": \""
-                + dayLightHours
-                + "\",\r\n  \"location\": \""
-                + location
-                + "\",\r\n  \"batteryLife\": "
-                + batteryLife
-                + "\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"systemId\": "
+        + systemId
+        + ",\r\n \"daylightHours\": \""
+        + dayLightHours
+        + "\",\r\n \"location\": \""
+        + location
+        + "\",\r\n \"batteryLife\": "
+        + batteryLife
+        + "\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -195,19 +202,20 @@ else {
         }
     }
 
-    private async void getCreatedBasicCalculationId( int systemId, string dayLightHours, string location){
+    private async void getCreatedBasicCalculationId(int systemId, string dayLightHours, string location)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
         var content = new StringContent(
-            "{\r\n    \"systemId\": "
-                + systemId
-                + ",\r\n  \"daylightHours\": \""
-                + dayLightHours
-                + "\",\r\n  \"location\": \""
-                + location
-                + "\"\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"systemId\": "
+        + systemId
+        + ",\r\n \"daylightHours\": \""
+        + dayLightHours
+        + "\",\r\n \"location\": \""
+        + location
+        + "\"\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -215,7 +223,10 @@ else {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;    
+            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
             await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
             Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
         }
