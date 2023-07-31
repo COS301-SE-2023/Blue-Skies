@@ -1,7 +1,7 @@
 @page "/advanced"
 @layout MainLayout
 @inject ProtectedLocalStorage ProtectedLocalStore;
-@inject ProtectedSessionStorage ProtectedSessionStore
+@inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
 @using BlazorApp.Models;
 @using System.Text.Json
@@ -39,6 +39,7 @@
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
+    private bool loading = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
@@ -66,8 +67,8 @@
         solarScore = sScore.Value;
         basicCalculation = bCalc.Value!;
         
-        
-        
+        var load = await ProtectedSessionStore.GetAsync<bool>("load");
+        loading = load.Value;
         await GetAppliancesAsync();
         await GetSystemsAsync();
     }
