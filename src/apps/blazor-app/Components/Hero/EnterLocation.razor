@@ -40,8 +40,6 @@
     private readonly int zoom = 19; 
     private readonly int width = 600;
     private readonly int height = 500; 
-
-
     public async void saveBasicCalculation()
     {
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
@@ -61,9 +59,7 @@
 
         //await GetSolarScore(latitude, longitude);
         int systemId = 2;
-        Console.WriteLine("Getting daylight hours");
         float dayLightHours = await getDayLightHours(latitude, longitude);
-        Console.WriteLine("Got daylight hours: "+ dayLightHours);
         string location = "";
         if (locationSuggestion != null)
         {
@@ -71,18 +67,8 @@
         }
         int batteryLife = 10;
         string result = await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife);
-        Console.WriteLine(result);
-        BasicCalculationModel basicCalculation = new BasicCalculationModel();
-        basicCalculation.basicCalculationId = -1;
-        basicCalculation.systemId = systemId;
         //Convert float to int
-        int temp = (int)dayLightHours;
-        basicCalculation.daylightHours = temp;
-        basicCalculation.location = location;
-        basicCalculation.batteryLife = batteryLife;
-        basicCalculation.dateCreated = DateTime.Now;
         int solarScore = 85;
-        await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
@@ -140,15 +126,6 @@
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
-        Console.WriteLine("{\r\n    \"systemId\": "
-                + systemId
-                + ",\r\n  \"daylightHours\": \""
-                + dayLightHours
-                + "\",\r\n  \"location\": \""
-                + location
-                + "\",\r\n  \"batteryLife\": "
-                + batteryLife
-                + "\r\n}");
         var content = new StringContent(
             "{\r\n    \"systemId\": "
                 + systemId
@@ -164,6 +141,7 @@
         );
         request.Content = content;
         var response = await client.SendAsync(request);
+        getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
         if (response.IsSuccessStatusCode)
         {
             return "Created Basic Calculation";
@@ -171,6 +149,40 @@
         else
         {
             return "Failed to create Basic Calculation";
+        }
+    }
+
+    private async void getCreatedBasicCalculationId( int systemId, string dayLightHours, string location){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
+        var content = new StringContent(
+            "{\r\n    \"systemId\": "
+                + systemId
+                + ",\r\n  \"daylightHours\": \""
+                + dayLightHours
+                + "\",\r\n  \"location\": \""
+                + location
+                + "\"\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        var basicCalc = new BasicCalculationModel();
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;    
+            await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
+            Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
+        }
+        else
+        {
+            Console.WriteLine("Failed to get basic calculation");
         }
     }
 

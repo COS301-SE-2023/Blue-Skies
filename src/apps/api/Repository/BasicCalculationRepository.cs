@@ -84,7 +84,7 @@ public class BasicCalculationRepository
                 null,
                 "application/json"
             );
-      request.Content = content;
+            request.Content = content;
             var response = await client.SendAsync(request);
             // response.EnsureSuccessStatusCode();
             // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -127,6 +127,15 @@ public class BasicCalculationRepository
                 HttpMethod.Patch,
                 express + "/api/basicCalculation/update/" + basicCalculationId
             );
+            Console.WriteLine("{\r\n        \"systemId\": "
+                    + systemId
+                    + ",\r\n        \"dayLightHours\": \""
+                    + daylightHours
+                    + "\",\r\n        \"location\": \""
+                    + location
+                    + "\",\r\n        \"batteryLife\": "
+                    + batteryLife
+                    + "\r\n}");
             var content = new StringContent(
                 "{\r\n        \"systemId\": "
                     + systemId
@@ -163,6 +172,59 @@ public class BasicCalculationRepository
         catch (Exception e)
         {
             Console.WriteLine(".NET: Database Connection Error: " + e.Message);
+            throw new Exception("Database Error: " + e.Message);
+        }
+    }
+
+    //get basic Calculation by record
+    public async Task<BasicCalculation> GetCreatedBasicCaluculation(
+        int systemId,
+        string dayLightHours,
+        string location
+    )
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/basicCalculation/getCreated"
+            );
+            var content = new StringContent(
+                "{\r\n        \"systemId\": "
+                    + systemId
+                    + ",\r\n        \"dayLightHours\": \""
+                    + dayLightHours
+                    + "\",\r\n        \"location\": \""
+                    + location
+                    + "\"\r\n}",
+                null,
+                "application/json"
+            );
+            request.Content = content;
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var basicCalculation = JsonSerializer.Deserialize<BasicCalculation>(data);
+                if (basicCalculation != null)
+                {
+                    Console.WriteLine(".NET: Basic Calculation found by record");
+                    return basicCalculation;
+                }
+                Console.WriteLine(".NET: Basic Calculation not found");
+                return new BasicCalculation();
+            }
+            else
+            {
+                Console.WriteLine(".NET: Error getting Basic Calculation");
+                throw new Exception("Error getting Basic Calculation");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }

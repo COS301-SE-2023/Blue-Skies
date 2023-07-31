@@ -99,7 +99,14 @@
         <div class="flex relative flex-col justify-center w-full">
             <Chart Config="pieConfig"></Chart>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                <p class="text-5xl text-primary-900 font-semibold">@basicCalc.daylightHours</p>
+            @{
+                var dlh = 0.00;
+                if (basicCalc != null)
+                {
+                    dlh = float.Parse(basicCalc.daylightHours!);
+                }
+            }
+                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -240,9 +247,12 @@
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Solar Score: " + solarScore);
-        var usId = await ProtectedLocalStore.GetAsync<int>("userId");        
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
+        var bas = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
+        basicCalc = bas.Value!;  
+        Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);     
         userId = Convert.ToInt32(usId.Value);
-        renderCharts();
+        @* renderCharts(); *@
 
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
@@ -370,9 +380,20 @@
                     Console.WriteLine("Failed to create ReportAppliance");
                 }
             }
-            var request2 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/update");
-            Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
-                var content2 = new StringContent("{\r\n        \"basicCalculationId\": "
+            updateBasicCalculation();
+            NavigationManager.NavigateTo("/dashboard");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create report");
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+    }
+
+    private async void updateBasicCalculation(){
+        var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
+                var content = new StringContent("{\r\n        \"basicCalculationId\": "
                     + basicCalc.basicCalculationId
                     + ",\r\n        \"systemId\": "
                     + systems[selectedSystem].systemId
@@ -383,9 +404,10 @@
                     + "\",\r\n        \"batteryLife\": "
                     + basicCalc.batteryLife
                     + "\r\n}", null, "application/json");
-                request2.Content = content2;
-                var response2 = await client.SendAsync(request2);
-                if(response2.StatusCode == System.Net.HttpStatusCode.OK)
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                Console.WriteLine("status code" + response.StatusCode);
+                if(response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     Console.WriteLine("Basic Calculation updated successfully");
                 }
@@ -393,15 +415,6 @@
                 {
                     Console.WriteLine("Failed to update Basic Calculation");
                 }
-            NavigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
-            Console.WriteLine("Failed to create report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
-        }
-
-        
     }
 
     private async Task<int> GetCreatedReportId(){
@@ -429,8 +442,7 @@
         }
     }
 
-    private void renderCharts() {
-        @* **************************************** Pie Chart Config ************************************************ *@
+    @* private void renderCharts() {
         pieConfig = new PieConfig(true) {
                 Options = new PieOptions
                 {
@@ -476,7 +488,9 @@
         {
             pieConfig.Data.Labels.Add(color);
         }
-        float hours = basicCalc.daylightHours;
+        if (basicCalc != null)
+        { 
+        float hours = float.Parse(basicCalc.daylightHours!);
         float remaining = (float) Math.Round(13 - hours, 2);
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {
@@ -490,6 +504,7 @@
         {
             pieConfig.Data.Datasets.Add(pieDataset);
         }
-    }
+        }
+    }  *@
 
 }
