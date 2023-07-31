@@ -21,7 +21,7 @@ export default class SolarScoreController {
     const currentYear = new Date().getFullYear();
 
     try {
-      const result = await this.executePython('scripts/getImages.py', [
+      const result = await this.executePython('scripts/getImageBase64.py', [
         latitude,
         longitude,
         currentYear - 1,
