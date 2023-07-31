@@ -72,7 +72,7 @@
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
-        @* await DownloadImage(); *@
+        await DownloadImage();
         NavigationManager.NavigateTo("/solarScore");
     }
     

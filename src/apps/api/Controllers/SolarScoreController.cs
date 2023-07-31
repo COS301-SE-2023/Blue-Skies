@@ -30,6 +30,20 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    [HttpGet]
+    [Route("googlemapskey")]
+    public async Task<IActionResult> GetGoogleMapsKey()
+    {
+        try
+        {
+            var key = await _solarScoreRepository.GetGoogleMapsKey();
+            return Ok(key);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 
     [HttpGet]
     [Route("getsolarscore")]
