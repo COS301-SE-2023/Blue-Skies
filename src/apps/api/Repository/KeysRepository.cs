@@ -44,7 +44,7 @@ public class KeysRepository
       else
       {
         //return empty list
-        Console.WriteLine(".NET: Database Connection Error");
+        Console.WriteLine(".NET: Database Connection Error in function GetAllKeys");
         return new List<Keys>();
       }
     }

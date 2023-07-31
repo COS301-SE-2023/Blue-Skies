@@ -11,10 +11,10 @@
     </Heading>
 </div>
 <div class="flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
-    <div class="mx-auto">
-        <Image ImageName="Solarscore.png" css="w-72 h-72" alt="Solar Score" />
+    <div class="w-80">
+        <Map/>
     </div>
-    <div class="flex flex-col px-2 sm:flex-row mx-auto gap-4">
+    <div class="flex flex-col px-2 sm:flex-row gap-5">
         <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto">
             <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
                 <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
@@ -35,7 +35,7 @@
                     var usableHours = 0.0F;
                     if (basicCalculation != null)
                     {
-                        usableHours = basicCalculation.daylightHours;
+                        usableHours = float.Parse(basicCalculation.daylightHours!);
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
@@ -52,8 +52,8 @@
                     var avgEnergyProduction = 0.0;
                     if (basicCalculation != null && systems != null)
                     {
-                        double calc = systems[selectedSystem].numberOfPanels *
-                            basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+                        double calc = systems[selectedSystem].numberOfPanels * float.Parse(
+                            basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
                         avgEnergyProduction = Math.Round(calc, 2);
                     }
                 }

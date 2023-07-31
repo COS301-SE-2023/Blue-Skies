@@ -193,6 +193,20 @@ for feature in features:
 
             image_requests.append(imageRequest(roi, start_date, end_date, latitude, longitude))
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
-    for image_request in image_requests:
-        executor.submit(image_request.download_and_save_image)
+# Function to download and save an image for an image request
+def process_image_request(image_request):
+    image_request.download_and_save_image()
+
+# Limit the number of threads to 10
+max_threads = 10
+with concurrent.futures.ThreadPoolExecutor(max_workers=max_threads) as executor:
+    # Submit the image requests to the executor
+    future_to_request = {executor.submit(process_image_request, image_request): image_request for image_request in image_requests}
+    
+    # Wait for all threads to complete
+    for future in concurrent.futures.as_completed(future_to_request):
+        image_request = future_to_request[future]
+        try:
+            future.result()  # Get the result of the thread
+        except Exception as e:
+            print(f"An error occurred for image request: {image_request}. Error: {e}")
