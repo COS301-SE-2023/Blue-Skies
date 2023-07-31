@@ -103,7 +103,7 @@
                 var dlh = 0.00;
                 if (basicCalc != null)
                 {
-                    dlh = float.Parse(basicCalc.daylightHours!);
+                    dlh = Math.Round(float.Parse(basicCalc.daylightHours!), 2);
                 }
             }
                 <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
@@ -281,7 +281,6 @@
     {
         await ProtectedLocalStore.SetAsync("advancedCalculationAppliances", appliances);
     }
-
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -338,7 +337,6 @@
                 break;
         }
     }
-
     private async void ResetHome(){
     Console.WriteLine("Resetting"); 
     await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
@@ -389,7 +387,6 @@
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
     }
-
     private async void updateBasicCalculation(){
         var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
@@ -442,7 +439,7 @@
         }
     }
 
-    @* private void renderCharts() {
+     private void renderCharts() {
         pieConfig = new PieConfig(true) {
                 Options = new PieOptions
                 {
@@ -505,6 +502,6 @@
             pieConfig.Data.Datasets.Add(pieDataset);
         }
         }
-    }  *@
+    }
 
 }
