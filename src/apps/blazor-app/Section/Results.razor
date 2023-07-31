@@ -82,13 +82,13 @@
                     </div>
                 </div>
                 <div class="flex gap-2 mt-3">
-                    @{
-                        var selectedPanels = 0;
-                        if (systems.Count > 0)
-                        {
-                            selectedPanels = systems[selectedSystem].numberOfPanels;
-                        }
+                @{
+                    var selectedPanels = 0;
+                    if (systems.Count > 0)
+                    {
+                        selectedPanels = systems[selectedSystem].numberOfPanels;
                     }
+                }
                     <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
