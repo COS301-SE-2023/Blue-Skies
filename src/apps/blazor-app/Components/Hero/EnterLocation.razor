@@ -3,39 +3,63 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
-<div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
-    <div class="text-center">
-        <Heading>
-            <Header>
-                <h1 class="text-4xl font-bold tracking-tight text-primary-950 sm:text-6xl">Discover Your Solar Score
-                </h1>
-            </Header>
-            <Subscript>
-                <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">Uncover Your Solar Potential. Calculate Your Solar
-                    Score Today.</p>
-            </Subscript>
-        </Heading>
-        <div>
-            <AutoComplete />
-        </div>
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button style="pill" css="h-14">
-                <content>
-                    <p @onclick="saveBasicCalculation" class="text-sm font-semibold hover:text-white">Get Solar Score</p>
-                </content>
-            </Button>
-            <a href="/advanced" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculations <span
-                    aria-hidden="true"></span></a>
+@inject NavigationManager NavigationManager
+
+@if(loading) {
+    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
+        <img src="assets/Loader.gif" class="m-auto scale-50" />
+    </div>
+}
+else {
+    <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
+        <div class="text-center">
+            <Heading>
+                <Header>
+                    <h1 class="text-4xl font-bold tracking-tight text-primary-950 sm:text-6xl">Discover Your Solar Score
+                    </h1>
+                </Header>
+                <Subscript>
+                    <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">Uncover Your Solar Potential. Calculate Your Solar
+                        Score Today.</p>
+                </Subscript>
+            </Heading>
+            <div>
+                <AutoComplete />
+            </div>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+                <div @onclick="saveBasicCalculation" >
+                    <Button style="pill" css="h-14">
+                        <content>
+                            <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
+                        </content>
+                    </Button>
+                </div>
+                <a href="/advanced" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculations <span
+                        aria-hidden="true"></span></a>
+            </div>
         </div>
     </div>
-</div>
+}
+
 
 @code {
+    public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private double latitude = 0; 
+    private double longitude = 0; 
+    private readonly int zoom = 19; 
+    private readonly int width = 600;
+    private readonly int height = 500; 
+    public bool loading = false;
 
-
+    protected override async Task OnInitializedAsync()
+    {
+        var par = await ProtectedSessionStore.GetAsync<string>("parent");
+        parent = par.Value!;
+    }
     public async void saveBasicCalculation()
     {
+        loading = true;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
 
@@ -44,13 +68,26 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;    
         }
-        double latitude = cord[1];
-        double longitude = cord[0];
+        latitude = cord[0];
+        longitude = cord[1];
 
-        //await GetSolarScore(latitude, longitude);
-        int systemId = 1;
+
+        int systemId = 2;
         Console.WriteLine("Getting daylight hours");
         float dayLightHours = await getDayLightHours(latitude, longitude);
+
+        Random rand = new Random();
+        string solarScoreId = "";
+        for (int i = 0; i < 20; i++)
+        {
+            int randValue = rand.Next(0, 26);
+            char letter = Convert.ToChar(randValue + 65);
+            solarScoreId = solarScoreId + letter;
+        }
+        await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
+
+        GetImages(longitude, latitude, solarScoreId);
+
         Console.WriteLine("Got daylight hours: "+ dayLightHours);
         string location = "";
         if (locationSuggestion != null)
@@ -58,29 +95,35 @@
             location = locationSuggestion.Place_Name;
         }
         int batteryLife = 10;
-        string result = await CreateBasicCaculation(systemId, (int)dayLightHours, location, batteryLife);
-        Console.WriteLine(result);
-        BasicCalculationModel basicCalculation = new BasicCalculationModel();
-        basicCalculation.basicCalculationId = -1;
-        basicCalculation.systemId = systemId;
+        string result = await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife);
         //Convert float to int
-        int temp = (int)dayLightHours;
-        basicCalculation.daylightHours = temp;
-        basicCalculation.location = location;
-        basicCalculation.batteryLife = batteryLife;
-        basicCalculation.dateCreated = DateTime.Now;
-        int solarScore = 85;
-        await ProtectedSessionStore.SetAsync("basicCalculation", basicCalculation);
+        int solarScore = 50;
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
+        await ProtectedSessionStore.SetAsync("latitude", latitude);
+        await ProtectedSessionStore.SetAsync("longitude", longitude);
+        await ProtectedSessionStore.SetAsync("parent", "");
+        Console.WriteLine("Get Images");
+        
+        if(parent.Equals("solarScore")) {
+            await DownloadImage();
+        } else {
+            
+            NavigationManager.NavigateTo("/solarScore");
+            await DownloadImage();
+        }
+        
+        loading = false;
+
+        
     }
     
 
-    public async Task<string> GetSolarScore(double latitude, double longitude)
+    public async Task<string> GetImages(double latitude, double longitude, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            API_PORT + "/SolarScore/getSolarScore"
+            API_PORT + "/SolarScore/getimages/" + solarScoreId
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
@@ -120,16 +163,16 @@
         }
     }
 
-    public async Task<string> CreateBasicCaculation(int systemId, int dayLightHours, string location, int batteryLife)
+    public async Task<string> CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
         var content = new StringContent(
             "{\r\n    \"systemId\": "
                 + systemId
-                + ",\r\n  \"daylightHours\": "
+                + ",\r\n  \"daylightHours\": \""
                 + dayLightHours
-                + ",\r\n  \"location\": \""
+                + "\",\r\n  \"location\": \""
                 + location
                 + "\",\r\n  \"batteryLife\": "
                 + batteryLife
@@ -139,6 +182,7 @@
         );
         request.Content = content;
         var response = await client.SendAsync(request);
+        getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
         if (response.IsSuccessStatusCode)
         {
             return "Created Basic Calculation";
@@ -147,5 +191,52 @@
         {
             return "Failed to create Basic Calculation";
         }
+    }
+
+    private async void getCreatedBasicCalculationId( int systemId, string dayLightHours, string location){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
+        var content = new StringContent(
+            "{\r\n    \"systemId\": "
+                + systemId
+                + ",\r\n  \"daylightHours\": \""
+                + dayLightHours
+                + "\",\r\n  \"location\": \""
+                + location
+                + "\"\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        var basicCalc = new BasicCalculationModel();
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;    
+            await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
+            Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
+        }
+        else
+        {
+            Console.WriteLine("Failed to get basic calculation");
+        }
+    }
+
+    private byte[] imageBytes = new byte[0];
+
+    private async Task DownloadImage()
+    {
+        var googleMapsService = new GoogleMapsService(new HttpClient());
+        imageBytes = await googleMapsService.GetStaticMapImageAsync(latitude, longitude, zoom, width, height);
+
+        var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
+        if (File.Exists(imagePath))
+        {
+            File.Delete(imagePath);
+        }
+
+        await File.WriteAllBytesAsync(imagePath, imageBytes);
+        await ProtectedSessionStore.SetAsync("loading", false);
     }
 }

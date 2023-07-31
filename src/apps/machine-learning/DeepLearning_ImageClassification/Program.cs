@@ -13,7 +13,7 @@ namespace DeepLearning_ImageClassification
         static void Main(string[] args)
         {
             var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../../src/apps/machine-learning/DeepLearning_ImageClassification"));
-            string path = Path.Combine(projectDirectory, "assets/Average/-27.535-30.748-2021_01_23-140.92942726614885.png");
+            string path = Path.Combine(projectDirectory, "assets/Average/-33.451-18.734-2022_02_14-184.23431646311923.png");
             Console.WriteLine(Predict(path));
         }
 
@@ -40,6 +40,10 @@ namespace DeepLearning_ImageClassification
             // Make predictions
             var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
             ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(preProcessedData, reuseRowObject: true).First();
+            Console.WriteLine("LabelAsKey: " + image.LabelAsKey);
+            Console.WriteLine("ImagePath: " + image.ImagePath);
+            Console.WriteLine("Label: " + image.Label);
+            //Console.WriteLine("Image: " + image.Image.ToString());
             ModelOutput prediction = predictionEngine.Predict(image);
 
             return prediction.PredictedLabel;
@@ -189,8 +193,7 @@ namespace DeepLearning_ImageClassification
         {
             PredictionEngine<ModelInput, ModelOutput> predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
 
-            ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(data,reuseRowObject:true).First();
-
+            ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(data, reuseRowObject: true).First();
             ModelOutput prediction = predictionEngine.Predict(image);
 
             Console.WriteLine("Classifying single image");
@@ -261,7 +264,7 @@ namespace DeepLearning_ImageClassification
     class ModelInput
     {
         public byte[] Image { get; set; }
-        
+
         public UInt32 LabelAsKey { get; set; }
 
         public string ImagePath { get; set; }

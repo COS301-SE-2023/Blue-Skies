@@ -63,7 +63,7 @@ export default class BasicCalculationController {
         const basicCalculation: IBasicCalculation = {
           basicCalculationId: columns[0].value,
           systemId: columns[1].value,
-          daylightHours: columns[2].value,
+          daylightHours: columns[2].value + '',
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
@@ -76,6 +76,50 @@ export default class BasicCalculationController {
       res.status(500).json({
         error: 'Failed to retrieve basic calculations.',
         details: 'Database connection error.',
+      });
+    }
+  };
+
+  public getCreatedBasicCalculation = (req: Request, res: Response) => {
+    const { systemId, dayLightHours, location } = req.body;
+    let basicCalculation: IBasicCalculation;
+    const query = `SELECT * FROM [dbo].[basicCalculations] WHERE systemId = ${systemId} AND dayLightHours = '${dayLightHours}' AND location = '${location}'`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'Basic calculation does not exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json(basicCalculation);
+          }
+        }
+      );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        basicCalculation = {
+          basicCalculationId: columns[0].value,
+          systemId: columns[1].value,
+          daylightHours: columns[2].value + '',
+          location: columns[3].value,
+          batteryLife: columns[4].value,
+          dateCreated: columns[5].value,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
       });
     }
   };
@@ -109,7 +153,7 @@ export default class BasicCalculationController {
         basicCalculation = {
           basicCalculationId: columns[0].value,
           systemId: columns[1].value,
-          daylightHours: columns[2].value,
+          daylightHours: columns[2].value + '',
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,

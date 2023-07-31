@@ -41,11 +41,57 @@ public class BasicCalculationController : ControllerBase
             Console.WriteLine(basicCalculation.systemId);
             var newBasicCalculation = await _basicCalculationsRepository.CreateBasicCalculation(
                 basicCalculation.systemId,
-                basicCalculation.daylightHours,
+                basicCalculation.daylightHours!,
                 basicCalculation.location!,
                 basicCalculation.batteryLife
             );
             return Ok(newBasicCalculation);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    //Update a basic calculation
+    [HttpPatch("update")]
+    public async Task<IActionResult> UpdateBasicCalculation(
+        [FromBody] BasicCalculation basicCalculation
+    )
+    {
+    Console.WriteLine("here");
+    try
+        {
+            Console.WriteLine(basicCalculation.daylightHours);
+            var newBasicCalculation = await _basicCalculationsRepository.UpdateBasicCalculation(
+                basicCalculation.basicCalculationId,
+                basicCalculation.systemId,
+                basicCalculation.daylightHours!,
+                basicCalculation.location!,
+                basicCalculation.batteryLife
+            );
+            return Ok(newBasicCalculation);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    //Get created basic calculations
+    [HttpGet("getCreated")]
+    public async Task<IActionResult> GetCreatedBasicCalculations(
+        [FromBody] BasicCalculation basicCalculation
+    )
+    {
+        try
+        {
+            var basicCalculations = await _basicCalculationsRepository.GetCreatedBasicCaluculation(
+                basicCalculation.systemId,
+                basicCalculation.daylightHours!,
+                basicCalculation.location!
+            );
+            return Ok(basicCalculations);
         }
         catch (Exception e)
         {

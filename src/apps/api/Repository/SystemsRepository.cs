@@ -42,7 +42,7 @@ public class SystemsRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllSystems");
                 return new List<Systems>();
             }
         }

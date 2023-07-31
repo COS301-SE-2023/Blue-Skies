@@ -1,10 +1,18 @@
 @using BlazorApp.Components
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.PolarAreaChart
 
+@if(loading) {
+    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
+        <img src="assets/Loader.gif" class="m-auto scale-50" />
+    </div>
+} else {
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class=" flex items-center justify-center lg:w-6/12 gap-4">
         <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
@@ -46,7 +54,15 @@
 
 <div class="hidden lg:flex w-full h-full px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <h1 class="text-lg col-span-2 font-medium text-center mb-4 -mt-8 text-primary-900">Select Appliances</h1>
+        <div class="flex gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
+            <h1 class="text-lg font-medium text-center text-primary-900">Select Appliances</h1>
+            <div class="group">
+                <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                <div class="absolute hidden fade-in-enter-active w-full -top-20 left-64  group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                    <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+                </div>
+            </div>
+        </div>
         @foreach (var appliance in appliances)
         {
             <div class="fade-in-enter-active" @onclick="@(() => IncrementApplianceCount(appliance))">
@@ -68,7 +84,7 @@
                 case 2:
                     <Image ImageName="House 1.svg" alt="House" css="scale-105" />
                     break;
-                default:
+                default:        
                     <Image ImageName="House 3.svg" alt="House" css="scale-105" />
                     break;
             }
@@ -80,11 +96,23 @@
             <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@systems[selectedSystem].numberOfPanels />
             <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@systems[selectedSystem].numberOfBatteries />
         </div>
+        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
+        <div class="flex items-center text-left gap-2">
+            <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+            <p class="">Usable Sunlight</p>
+        </div>
         <div class="flex relative flex-col justify-center w-full">
             <Chart Config="pieConfig"></Chart>
-            <div class="flex w-full justify-center absolute top-1/3 left-0 items-center gap-1 mt-4">
-                    <p class="text-5xl text-primary-900 font-semibold">5</p>
-                    <p class="text-5xl text-gray-400 font-bold">h</p>
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+            @{
+                var dlh = 0.00;
+                if (basicCalc != null)
+                {
+                    dlh = Math.Round(float.Parse(basicCalc.daylightHours!), 2);
+                }
+            }
+                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
     </div>
@@ -92,7 +120,15 @@
 
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-        <h1 class="text-base mb-10 font-semibold text-primary-900">What do you want to run in a power outage?</h1>
+        <div class="flex gap-4 justify-start mb-10">
+            <h1 class="text-base font-semibold text-primary-900">What do you want to run in a power outage?</h1>
+            <div class="group relative">
+                <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                <div class="opacity-0 fade-in-enter-active w-full group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                    <p class="text-gray-900">Click on the appliances to remove them from your calculation.</p>
+                </div>
+            </div>
+        </div>
         <div class="flex gap-10 scale-90 justify-stretchs">
             @foreach (var appliance in appliances)
         {
@@ -114,13 +150,33 @@
             </Button>
             <Button  css="h-16 w-60" style="pill">
                 <content>
-                    <p @onclick="SaveCalculation">Save this calculation</p>
+                    <p @onclick="ModalPopup.Show">Save this calculation</p>
                 </content>
             </Button>
         </div>
     </div>
 </div>
-
+<ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+        <ChildContent>
+            <p>Add a nickname for this calculation:</p>
+            <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="SaveCalculation">
+                    <Button >
+                        <content>
+                            Save
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
+}
 @* Mobile Viewport *@
 <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
     <div class="w-full px-4 flex flex-col justify-center items-center gap-4">
@@ -206,19 +262,27 @@
     public int selectedSystem { get; set; }
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
+    public bool loading = false;
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
-    private BasicCalculationModel testBasicCalc = new BasicCalculationModel();
     private Toast successToast { get; set; } = new Toast();
     private PieConfig pieConfig = new PieConfig();
-
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private string? calculationName { get; set; }
+    
 
     protected override async Task OnInitializedAsync()
     {
-        renderCharts();
-        var usId = await ProtectedLocalStore.GetAsync<int>("userId");
+        Console.WriteLine("Solar Score: " + solarScore);
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
+        var bas = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
+        basicCalc = bas.Value!;  
+        Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);     
         userId = Convert.ToInt32(usId.Value);
+        @* renderCharts(); *@
+
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
@@ -246,10 +310,10 @@
     {
         await ProtectedLocalStore.SetAsync("advancedCalculationAppliances", appliances);
     }
-
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
+        ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private void ApplyTemplate(ChangeEventArgs e) {
@@ -302,7 +366,6 @@
                 break;
         }
     }
-
     private async void ResetHome(){
     Console.WriteLine("Resetting"); 
     await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
@@ -318,15 +381,11 @@
     await selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private async void SaveCalculation(){
-        testBasicCalc.basicCalculationId = 1;
-        testBasicCalc.systemId = 2;
-        testBasicCalc.daylightHours = 9;
-        testBasicCalc.location = "1 lynwood rd, Lynwood, 0086";
-        testBasicCalc.batteryLife = 16;
-        testBasicCalc.dateCreated = DateTime.Now;
+        loading = true;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
-        var content = new StringContent("{\r\n  \"reportName\": \"" + "Test" + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + testBasicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
+        Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
+        var content = new StringContent("{\r\n  \"reportName\": \"" + calculationName + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + basicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -349,14 +408,40 @@
                     Console.WriteLine("Failed to create ReportAppliance");
                 }
             }
+            await updateBasicCalculation();
         }
         else
         {
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
-
-        
+        loading = false;
+        NavigationManager.NavigateTo("/dashboard");
+    }
+    private async Task updateBasicCalculation(){
+        var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
+                var content = new StringContent("{\r\n        \"basicCalculationId\": "
+                    + basicCalc.basicCalculationId
+                    + ",\r\n        \"systemId\": "
+                    + systems[selectedSystem].systemId
+                    + ",\r\n        \"dayLightHours\": \""
+                    + basicCalc.daylightHours
+                    + "\",\r\n        \"location\": \""
+                    + basicCalc.location
+                    + "\",\r\n        \"batteryLife\": "
+                    + basicCalc.batteryLife
+                    + "\r\n}", null, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    Console.WriteLine("Basic Calculation updated successfully");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to update Basic Calculation");
+                }
     }
 
     private async Task<int> GetCreatedReportId(){
@@ -396,7 +481,7 @@
                     },
                     Title = new OptionsTitle
                     {
-                        Display = true,
+                        Display = false,
                         Text = "Running Hours",
                         FontSize = 20,
                         Position = Position.Bottom,
@@ -424,23 +509,29 @@
                     CutoutPercentage = 80
                 }
             };
-            
+        pieConfig.Data.Datasets.Clear();
 
         foreach (string color in new[] { "Runnable Hours", "Remaining" })
         {
             pieConfig.Data.Labels.Add(color);
         }
+        if (basicCalc != null)
+        { 
+        float hours = float.Parse(basicCalc.daylightHours!);
+        float remaining = (float) Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
+            {
+                BackgroundColor = new[] {
+                ColorUtil.ColorHexString(56,113,193),
+                ColorUtil.ColorHexString(156,163,175),
+            },
+            };
 
-        PieDataset<int> dataset = new PieDataset<int>(new[] { 5, 7,})
-        {
-            BackgroundColor = new[] {
-                ColorUtil.ColorHexString(255, 193, 8), // Slice 1 aka "Red"
-                ColorUtil.ColorHexString(217, 217, 217), // Slice 2 aka "Yellow"
-            }
-        };
         if (pieConfig != null)
         {
-            pieConfig.Data.Datasets.Add(dataset);
+            pieConfig.Data.Datasets.Add(pieDataset);
         }
-    }
+        }
+    }  
+
 }
