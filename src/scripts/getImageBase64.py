@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import json
 import base64
 
+# python3 getImageBase64.py -25.771 28.357 2022 1 1
 LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
@@ -21,7 +22,17 @@ file_lock = threading.Lock()
 API_PORT = os.getenv('API_PORT')
 # Retrieve the credentials from environment variables
 credentials = {
-    # ... (your existing credentials here)
+    'type': os.getenv('TYPE'),
+    'project_id': os.getenv('PROJECT_ID'),
+    'private_key_id': os.getenv('PRIVATE_KEY_ID'),
+    'private_key': os.getenv('PRIVATE_KEY'),
+    'client_email': os.getenv('CLIENT_EMAIL'),
+    'client_id': os.getenv('CLIENT_ID'),
+    'auth_uri': os.getenv('AUTH_URI'),
+    'token_uri': os.getenv('TOKEN_URI'),
+    'auth_provider_x509_cert_url': os.getenv('AUTH_PROVIDER_X509_CERT_URL'),
+    'client_x509_cert_url': os.getenv('CLIENT_X509_CERT_URL'),
+    'universe_domain': os.getenv('UNIVERSE_DOMAIN')
 }
 
 # Authenticate with Earth Engine using the environment variables
@@ -52,7 +63,7 @@ def download_and_pass_image(image, roi, imageName):
     })
 
     image_base64 = base64.b64encode(requests.get(image_url).content).decode('utf-8')
-
+    
     file_lock.acquire()
     try:
         print('Getting solar score for image')
@@ -66,8 +77,7 @@ def download_and_pass_image(image, roi, imageName):
         headers = {
             'Content-Type': 'application/json'
         }
-
-        response = requests.request("POST", url, headers=headers, data=payload)
+        response = requests.request("GET", url, headers=headers, data=payload)
         print(response.text)
     finally:
         # Release the lock after passing the image

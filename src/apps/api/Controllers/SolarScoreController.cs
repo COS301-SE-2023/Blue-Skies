@@ -3,12 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
 
 
-public class solarScore
-{
-    public string imgName { get; set; }
-    public string solarScoreId { get; set; }
-    public string base64Image { get; set; }
-}
 
 namespace Api.Controllers;
 
@@ -74,6 +68,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
+            Console.WriteLine(ss.imgName);
             // Decode base64 image back to binary data
             byte[] imageBytes = Convert.FromBase64String(ss.base64Image);
 
@@ -83,11 +78,12 @@ public class SolarScoreController : ControllerBase
             // Save the image to the temporary file
             System.IO.File.WriteAllBytes(tempImagePath, imageBytes);
 
+            // Console.WriteLine(tempImagePath);
             // Call ImageClassifier to get the prediction
             var prediction = await _solarScoreRepository.GetSolarScoreFromImage(tempImagePath);
 
             // Delete the temporary image file
-            File.Delete(tempImagePath);
+            System.IO.File.Delete(tempImagePath);
 
             Console.WriteLine(prediction);
             return Ok(prediction);
