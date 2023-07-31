@@ -41,7 +41,7 @@ public class AppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllAppliances");
                 return new List<Appliances>();
             }
         }

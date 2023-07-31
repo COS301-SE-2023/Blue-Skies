@@ -9,10 +9,15 @@
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.PolarAreaChart
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
-
+@if(loading) {
+    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
+        <img src="assets/Loader.gif" class="m-auto scale-50" />
+    </div>
+}else{
 <div class="fade-in-enter-active">
     @if (!isLoaded) {}
     else if (!logIn)
@@ -145,6 +150,7 @@
         }
     }
 </div>
+}
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
@@ -154,6 +160,7 @@
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
 
     private bool isLoaded = false;
+    private bool loading = true;
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
@@ -167,6 +174,7 @@
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
+        var load = await ProtectedSessionStore.GetAsync<bool>("loading");
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         userId = usId.Value;
@@ -178,6 +186,10 @@
         {
             updateAppliances();
             renderCharts();
+        }
+        if (load.Value == false)
+        {
+            loading = load.Value;
         }
     }
     private void updateAppliances()
