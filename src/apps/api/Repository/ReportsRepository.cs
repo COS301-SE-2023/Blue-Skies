@@ -41,7 +41,7 @@ public class ReportsRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllReports");
                 return new List<Reports>();
             }
         }
@@ -76,7 +76,7 @@ public async Task<List<Reports>> GetUserReports(int userId)
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllReports");
                 return new List<Reports>();
             }
         }
