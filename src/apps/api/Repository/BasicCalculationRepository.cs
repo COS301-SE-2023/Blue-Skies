@@ -127,15 +127,6 @@ public class BasicCalculationRepository
                 HttpMethod.Patch,
                 express + "/api/basicCalculation/update/" + basicCalculationId
             );
-            Console.WriteLine("{\r\n        \"systemId\": "
-                    + systemId
-                    + ",\r\n        \"dayLightHours\": \""
-                    + daylightHours
-                    + "\",\r\n        \"location\": \""
-                    + location
-                    + "\",\r\n        \"batteryLife\": "
-                    + batteryLife
-                    + "\r\n}");
             var content = new StringContent(
                 "{\r\n        \"systemId\": "
                     + systemId

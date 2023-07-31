@@ -42,9 +42,7 @@ else {
 }
 
 @code {
-    [Parameter]
-    public string? parent { get; set; }
-    
+    public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0; 
     private double longitude = 0; 
@@ -53,7 +51,11 @@ else {
     private readonly int height = 500; 
     public bool loading = false;
 
-
+    protected override async Task OnInitializedAsync()
+    {
+        var par = await ProtectedSessionStore.GetAsync<string>("parent");
+        parent = par.Value!;
+    }
     public async void saveBasicCalculation()
     {
         loading = true;
@@ -67,8 +69,6 @@ else {
         }
         latitude = cord[0];
         longitude = cord[1];
-        Console.WriteLine("Latitude: " + latitude.ToString());
-        Console.WriteLine("Longitude: " + longitude.ToString());
 
         //await GetSolarScore(latitude, longitude);
         int systemId = 2;
@@ -85,15 +85,18 @@ else {
         await ProtectedSessionStore.SetAsync("solarScore",solarScore );
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
-        await DownloadImage();
-        if(parent == "solarScore")   {
+        await ProtectedSessionStore.SetAsync("parent", "");
+        Console.WriteLine("Parent: " + parent);
+        if(parent.Equals("solarScore")) {
+            Console.WriteLine("Ran solar score");
             StateHasChanged();
         } else {
+            Console.WriteLine("Ran index");
             NavigationManager.NavigateTo("/solarScore");
         }
+        await DownloadImage();
     }
     
-
     public async Task<string> GetSolarScore(double latitude, double longitude)
     {
         var client = new HttpClient();
