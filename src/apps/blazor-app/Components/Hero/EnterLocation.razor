@@ -174,11 +174,7 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;    
+            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;    
             await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
             Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
         }
