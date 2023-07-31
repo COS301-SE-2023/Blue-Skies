@@ -1,5 +1,14 @@
 using System.Net;
 using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using Microsoft.ML;
+using static Microsoft.ML.DataOperationsCatalog;
+using Microsoft.ML.Vision;
+using Microsoft.ML.Data;
+using Microsoft.Extensions.ML;
 
 namespace Api.Repository;
 
@@ -49,12 +58,12 @@ public class SolarScoreRepository
         }
     }
 
-    public async Task<string> GetSolarScore(Coordinates coordinates)
+    public async Task<string> GetImages(Coordinates coordinates, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            express + "/api/solarscore/getimages/"
+            express + "/api/solarscore/getimages/" + solarScoreId
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": "
@@ -107,6 +116,152 @@ public class SolarScoreRepository
             throw new Exception("Error getting sun times");
         }
     }
+    public async Task<string> GetSolarScoreFromImage(string image)
+    {
+        // ImageClassifier imageClassifier = new ImageClassifier();
+        var prediction = ImageClassifier.Predict(image);
+        return prediction;
+    }
+
+    //create solar score
+    public async Task<string> CreateSolarScore(string solarScoreId, string solarScore)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/solarscore/create");
+        var content = new StringContent("{\r\n    \"solarScoreId\" : \"" + solarScoreId + "\",\r\n    \"solarScore\": \"" + solarScore + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Created solar score";
+        }
+        else
+        {
+            throw new Exception("Error creating solar score");
+        }
+    }
+
+    //delete solar score
+    public async Task<string> DeleteSolarScore(string solarScoreId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, express + "/api/solarscore/delete/" + solarScoreId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Deleted solar score";
+        }
+        else
+        {
+            throw new Exception("Error deleting solar score");
+        }
+    }
+
+    //GetSolarScore
+    public async Task<List<SolarScore>> GetSolarScore(string solarScoreId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/get/" + solarScoreId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            List<SolarScore> ss = JsonSerializer.Deserialize<List<SolarScore>>(data);
+            return ss;
+        }
+        else if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            List<SolarScore> ss = new List<SolarScore>();
+            return ss;
+        }
+        else
+        {
+            throw new Exception("Error getting solar score");
+        }
+    }
+
+}
 
 
+class ModelInput
+{
+    public byte[] Image { get; set; }
+
+    public UInt32 LabelAsKey { get; set; }
+
+    public string ImagePath { get; set; }
+
+    public string Label { get; set; }
+}
+
+class ModelOutput
+{
+    public string ImagePath { get; set; }
+
+    public string Label { get; set; }
+
+    public string PredictedLabel { get; set; }
+}
+
+class ImageData
+{
+    public string ImagePath { get; set; }
+
+    public string Label { get; set; }
+}
+
+class ImageClassifier
+{
+    public static string Predict(string imageFilePath)
+    {
+
+        var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../apps/api"));
+        //Console.WriteLine(projectDirectory);
+        var assetsRelativePath = Path.Combine(projectDirectory, "assets");
+
+        MLContext mlContext = new MLContext();
+
+        // Load the model
+        DataViewSchema modelSchema;
+        ITransformer trainedModel = mlContext.Model.Load(projectDirectory + "/model.zip", out modelSchema);
+
+        // Preprocess the input image
+        IEnumerable<ImageData> images = LoadSingleImage(imageFilePath, assetsRelativePath);
+        IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
+        IDataView preProcessedData = mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "Label", outputColumnName: "LabelAsKey")
+                            .Append(mlContext.Transforms.LoadRawImageBytes(outputColumnName: "Image", imageFolder: assetsRelativePath, inputColumnName: "ImagePath"))
+                            .Fit(imageData)
+                            .Transform(imageData);
+
+        // Make predictions
+        var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
+        ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(preProcessedData, reuseRowObject: true).First();
+        // Console.WriteLine("LabelAsKey: " + image.LabelAsKey);
+        // Console.WriteLine("ImagePath: " + image.ImagePath);
+        // Console.WriteLine("Label: " + image.Label);
+        //Console.WriteLine("Image: " + image.Image.ToString());
+        ModelOutput prediction = predictionEngine.Predict(image);
+
+        return prediction.PredictedLabel;
+    }
+
+    private static IEnumerable<ImageData> LoadSingleImage(string imageFilePath, string assetsRelativePath)
+    {
+        //Console.WriteLine("Loading image: " + imageFilePath);
+        if (!File.Exists(imageFilePath))
+        {
+            Console.WriteLine("Image file not found.");
+            yield break; // Use yield break to end the iteration without returning any value.
+        }
+
+        // We will use the filename as a dummy label since the actual label is not available.
+        string label = Path.GetFileName(imageFilePath);
+        string imagePathRelativeToAssets = Path.GetRelativePath(assetsRelativePath, imageFilePath);
+
+        yield return new ImageData()
+        {
+            ImagePath = imagePathRelativeToAssets,
+            Label = label
+        };
+    }
 }
