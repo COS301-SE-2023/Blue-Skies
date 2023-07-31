@@ -5,12 +5,12 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 
-@if(loading) {
+@* @if(loading) {
     <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
         <img src="assets/Loader.gif" class="m-auto scale-50" />
     </div>
 }
-else {
+else { *@
     <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
         <div class="text-center">
             <Heading>
@@ -39,7 +39,7 @@ else {
             </div>
         </div>
     </div>
-}
+@* } *@
 
 @code {
     public string parent = "index";
@@ -58,6 +58,7 @@ else {
     }
     public async void saveBasicCalculation()
     {
+        await ProtectedSessionStore.SetAsync("loading", true);
         loading = true;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
@@ -86,12 +87,9 @@ else {
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
-        Console.WriteLine("Parent: " + parent);
         if(parent.Equals("solarScore")) {
-            Console.WriteLine("Ran solar score");
             StateHasChanged();
         } else {
-            Console.WriteLine("Ran index");
             NavigationManager.NavigateTo("/solarScore");
         }
         await DownloadImage();
@@ -216,6 +214,6 @@ else {
         }
 
         await File.WriteAllBytesAsync(imagePath, imageBytes);
-
+        await ProtectedSessionStore.SetAsync("loading", false);
     }
 }
