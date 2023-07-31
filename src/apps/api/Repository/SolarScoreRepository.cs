@@ -107,6 +107,58 @@ public class SolarScoreRepository
         return prediction;
     }
 
+    //create solar score
+    public async Task<string> CreateSolarScore(string solarScoreId, string solarScore)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/solarscore/create");
+        var content = new StringContent("{\r\n    \"solarScoreId\" : \"" + solarScoreId + "\",\r\n    \"solarScore\": \"" + solarScore + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Created solar score";
+        }
+        else
+        {
+            throw new Exception("Error creating solar score");
+        }
+    }
+
+    //delete solar score
+    public async Task<string> DeleteSolarScore(string solarScoreId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, express + "/api/solarscore/delete/" + solarScoreId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return "Deleted solar score";
+        }
+        else
+        {
+            throw new Exception("Error deleting solar score");
+        }
+    }
+
+    //GetSolarScore
+    public async Task<List<SolarScore>> GetSolarScore(string solarScoreId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/get/" + solarScoreId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            List<SolarScore> ss = JsonSerializer.Deserialize<List<SolarScore>>(data);
+            return ss;
+        }
+        else
+        {
+            throw new Exception("Error getting solar score");
+        }
+    }
+
 }
 
 

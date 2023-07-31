@@ -34,14 +34,11 @@ solarScoreRouter.post(
 );
 
 //getSolarScore
-solarScoreRouter.get(
-  '/getSolarScore/:solarScoreId',
-  solarScoreController.getSolarScore
-);
+solarScoreRouter.get('/get/:solarScoreId', solarScoreController.getSolarScore);
 
 //deleteSolarScore
 solarScoreRouter.delete(
-  '/deleteSolarScore/:solarScoreId',
+  '/delete/:solarScoreId',
   bodyParser.json(),
   solarScoreController.deleteSolarScore
 );

@@ -62,13 +62,12 @@ public class SolarScoreController : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpPost]
     [Route("GetSolarScoreFromImage")]
-    public async Task<IActionResult> GetSolarScoreFromImage([FromBody] solarScore ss)
+    public async Task<IActionResult> GetSolarScoreFromImage([FromBody] SolarScore ss)
     {
         try
         {
-            Console.WriteLine(ss.imgName);
             // Decode base64 image back to binary data
             byte[] imageBytes = Convert.FromBase64String(ss.base64Image);
 
@@ -85,7 +84,9 @@ public class SolarScoreController : ControllerBase
             // Delete the temporary image file
             System.IO.File.Delete(tempImagePath);
 
-            Console.WriteLine(prediction);
+            Console.WriteLine(ss.imgName + ": " + prediction);
+            string pred = prediction.ToString();
+            string ans = await _solarScoreRepository.CreateSolarScore(ss.solarScoreId, pred);
             return Ok(prediction);
         }
         catch (Exception e)
@@ -94,5 +95,34 @@ public class SolarScoreController : ControllerBase
         }
     }
 
+    [HttpDelete]
+    [Route("delete")]
+    public async Task<IActionResult> DeleteSolarScore([FromBody] SolarScore ss)
+    {
+        try
+        {
+            string ans = await _solarScoreRepository.DeleteSolarScore(ss.solarScoreId);
+            return Ok(ans);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Route("get")]
+    public async Task<IActionResult> GetSolarScore([FromBody] SolarScore ss)
+    {
+        try
+        {
+            List<SolarScore> ans = await _solarScoreRepository.GetSolarScore(ss.solarScoreId);
+            return Ok(ans);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 
 }

@@ -66,7 +66,7 @@ def download_and_pass_image(image, roi, imageName):
     
     file_lock.acquire()
     try:
-        print('Getting solar score for image')
+        #print('Getting solar score for image')
         url = API_PORT + "/SolarScore/GetSolarScoreFromImage"
 
         payload = json.dumps({
@@ -77,8 +77,8 @@ def download_and_pass_image(image, roi, imageName):
         headers = {
             'Content-Type': 'application/json'
         }
-        response = requests.request("GET", url, headers=headers, data=payload)
-        print(response.text)
+        response = requests.request("POST", url, headers=headers, data=payload)
+        print(imageName + ";" + response.text)
     finally:
         # Release the lock after passing the image
         file_lock.release()
