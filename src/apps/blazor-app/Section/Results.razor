@@ -2,6 +2,7 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
 
     
 <div class="mt-24 text-center">
@@ -133,6 +134,7 @@
         }
 
     }
+
 
     private void SetSystemSize(int selection)
     {
