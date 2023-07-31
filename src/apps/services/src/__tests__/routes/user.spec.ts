@@ -1,55 +1,26 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
-import { Request, Response } from 'express';
-import { userRouter } from '../../routes/user/user.router';
-
+import bodyParser from 'body-parser';
+import router from '../../routes';
+import IUser from '../../models/user.interface';
 const app = express(); // an instance of an express app, a 'fake' express app
-app.use('/user', userRouter); // routes
-
+app.use(bodyParser.json());
+app.use('/', router); // routes
 //mock the main file
-jest.mock('../../main', () => jest.fn());
-
-//mock the controller
-jest.mock('../../controllers/user/user.controller', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      createUser: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          res.status(200).json({
-            message: 'User is created.',
-          });
-        }),
-
-      getAllUsers: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          res.status(200).json({
-            message: 'All users are retrieved.',
-          });
-        }),
-      getUser: jest.fn().mockImplementation((req: Request, res: Response) => {
-        res.status(200).json({
-          message: 'User is retrieved.',
-        });
-      }),
-      updateUser: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          res.status(200).json({
-            message: 'User is updated.',
-          });
-        }),
-      deleteUser: jest
-        .fn()
-        .mockImplementation((req: Request, res: Response) => {
-          res.status(200).json({
-            message: 'User is deleted.',
-          });
-        }),
-    };
-  });
+jest.mock('../../main', () => {
+  return {
+    connection: {
+      execSql: jest.fn(),
+    },
+  };
 });
+
+jest.mock('tedious', () => ({
+  Request: jest.fn().mockImplementation((query, callback) => {
+    callback(null, 1);
+  }),
+  ColumnValue: jest.fn(),
+}));
 
 describe('Test the user path', () => {
   it('Test the user router', async () => {
@@ -59,35 +30,34 @@ describe('Test the user path', () => {
       message: 'Welcome to the user router!',
     });
   });
-  it('Update a specific user', async () => {
-    const response = await request(app).patch('/user/update/1');
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'User is updated.',
-    });
-  });
-  it('Delete a user', async () => {
-    const response = await request(app).delete('/user/delete/1');
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'User is deleted.',
-    });
-  });
-  //Get all users
-  it('Get All users', async () => {
+
+  //all
+  it('Test the user router get all', async () => {
     const response = await request(app).get('/user/all');
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'All users are retrieved.',
-    });
+    expect(response.body).toEqual([] as IUser[]);
   });
 
-  //Get user
-  it('Get a specific user', async () => {
+  //:userId
+  it('Test the user router get by id', async () => {
     const response = await request(app).get('/user/1');
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'User is retrieved.',
+  });
+
+  //update/:userId
+  it('Test the user router update', async () => {
+    const response = await request(app).patch('/user/update/1').send({
+      email: 'test@gmail.com',
+      password: 'test',
+      userRole: 0,
     });
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  //delete/:userId
+  it('Test the user router delete', async () => {
+    const response = await request(app).delete('/user/delete/1');
+    expect(response.statusCode).toBe(200);
   });
 });
