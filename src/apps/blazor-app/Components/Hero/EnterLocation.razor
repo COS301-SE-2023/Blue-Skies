@@ -93,9 +93,7 @@ else {
         }
         await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
-        GetImages(latitude, longitude, solarScoreId);
-        int systemId = 1;
-        
+        GetImages(latitude, longitude, solarScoreId);        
 
         Console.WriteLine("Got daylight hours: "+ dayLightHours);
         string location = "";
