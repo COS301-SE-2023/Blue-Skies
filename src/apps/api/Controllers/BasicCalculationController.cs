@@ -41,7 +41,7 @@ public class BasicCalculationController : ControllerBase
             Console.WriteLine(basicCalculation.systemId);
             var newBasicCalculation = await _basicCalculationsRepository.CreateBasicCalculation(
                 basicCalculation.systemId,
-                basicCalculation.daylightHours,
+                basicCalculation.daylightHours!,
                 basicCalculation.location!,
                 basicCalculation.batteryLife
             );
@@ -53,7 +53,7 @@ public class BasicCalculationController : ControllerBase
         }
     }
 
-     //Update a basic calculation
+    //Update a basic calculation
     [HttpPatch("update")]
     public async Task<IActionResult> UpdateBasicCalculation(
         [FromBody] BasicCalculation basicCalculation
@@ -61,10 +61,11 @@ public class BasicCalculationController : ControllerBase
     {
         try
         {
+            Console.WriteLine(basicCalculation.daylightHours);
             var newBasicCalculation = await _basicCalculationsRepository.UpdateBasicCalculation(
                 basicCalculation.basicCalculationId,
                 basicCalculation.systemId,
-                basicCalculation.daylightHours,
+                basicCalculation.daylightHours!,
                 basicCalculation.location!,
                 basicCalculation.batteryLife
             );
