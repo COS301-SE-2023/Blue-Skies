@@ -57,7 +57,7 @@
                         var small = "";
                         var medium = "";
                         var large = "";
-                        if (systems.Count > 0)
+                        if (systems!.Count > 0)
                         {
                             small = systems[0].inverterOutput + "kw";
                             medium = systems[1].inverterOutput + "kw";
@@ -95,9 +95,9 @@
 @code {
     private int solarScore = -1;
     private float dayLightHours = -1F;
-    private string SystemSize = "5kw";
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
-    private List<SystemModel> systems = new List<SystemModel>();
+    [Parameter]
+    public List<SystemModel>? systems { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 0;
     public double avgEnergyProduction = 0.0;
@@ -113,18 +113,16 @@
         if (dlh.Success && dlh.Value != null)
         {
             basicCalculation = dlh.Value;
-            dayLightHours = basicCalculation.daylightHours;
+            dayLightHours = float.Parse(basicCalculation.daylightHours!);
         }
         else
         {
             Console.WriteLine("Unsuccess");
         }
-        await GetSystems();
-
-        if (basicCalculation != null && systems.Count > 0)
+        if (basicCalculation != null && systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels *
-            basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+            Console.WriteLine("Day light hours: " + basicCalculation.daylightHours);
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
@@ -140,30 +138,13 @@
     {
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
-        if (systems.Count > 0)
+        if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels *
-            basicCalculation.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(
+            basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }
 
-    private async Task GetSystems()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed");
-        }
-    }
+    
 }
