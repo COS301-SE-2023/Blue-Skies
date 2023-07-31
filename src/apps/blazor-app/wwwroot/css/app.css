@@ -627,10 +627,6 @@ video {
   top: 50%;
 }
 
-.top-1\/3 {
-  top: 33.333333%;
-}
-
 .top-2 {
   top: 0.5rem;
 }
@@ -645,6 +641,10 @@ video {
 
 .top-full {
   top: 100%;
+}
+
+.top-1\/3 {
+  top: 33.333333%;
 }
 
 .isolate {
@@ -856,6 +856,10 @@ video {
   margin-top: 2rem;
 }
 
+.mt-16 {
+  margin-top: 4rem;
+}
+
 .block {
   display: block;
 }
@@ -973,10 +977,6 @@ video {
   height: 100vh;
 }
 
-.h-32 {
-  height: 8rem;
-}
-
 .w-1\/2 {
   width: 50%;
 }
@@ -1041,6 +1041,10 @@ video {
   width: 1.25rem;
 }
 
+.w-5\/12 {
+  width: 41.666667%;
+}
+
 .w-6 {
   width: 1.5rem;
 }
@@ -1092,14 +1096,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-5\/12 {
-  width: 41.666667%;
-}
-
-.w-32 {
-  width: 8rem;
 }
 
 .max-w-2xl {
@@ -1499,10 +1495,6 @@ video {
   border-top-width: 2px;
 }
 
-.border-b-2 {
-  border-bottom-width: 2px;
-}
-
 .border-blue-500 {
   --tw-border-opacity: 1;
   border-color: rgb(59 130 246 / var(--tw-border-opacity));
@@ -1551,11 +1543,6 @@ video {
 .border-yellow-accent-500 {
   --tw-border-opacity: 1;
   border-color: rgb(255 193 8 / var(--tw-border-opacity));
-}
-
-.border-primary-950 {
-  --tw-border-opacity: 1;
-  border-color: rgb(20 34 61 / var(--tw-border-opacity));
 }
 
 .bg-black {
@@ -1643,6 +1630,11 @@ video {
   background-color: rgb(254 226 226 / var(--tw-bg-opacity));
 }
 
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
 .bg-red-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
@@ -1665,11 +1657,6 @@ video {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-red-400 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
 }
 
 .bg-gradient-to-br {
@@ -2632,6 +2619,10 @@ body {
     margin-top: 5rem;
   }
 
+  .md\:mt-16 {
+    margin-top: 4rem;
+  }
+
   .md\:flex {
     display: flex;
   }
@@ -2646,6 +2637,10 @@ body {
 
   .md\:w-\[80\%\] {
     width: 80%;
+  }
+
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .md\:items-center {
@@ -2848,6 +2843,12 @@ body {
   .xl\:scale-100 {
     --tw-scale-x: 1;
     --tw-scale-y: 1;
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  }
+
+  .xl\:scale-90 {
+    --tw-scale-x: .9;
+    --tw-scale-y: .9;
     transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
   }
 
