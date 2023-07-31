@@ -105,6 +105,8 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
     public double avgEnergyProduction = 0.0;
+    public string solarScoreId = "";
+    public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
@@ -136,7 +138,19 @@
         {
             Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
+        //get solarScoreId
+        var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
+        if (solarScoreIdTemp.Success)
+        {
+            solarScoreId = solarScoreIdTemp.Value;
+            GetSolarScores(solarScoreId);
+        }
+        else
+        {
+            Console.WriteLine("Unsuccess");
+        }
 
+        
     }
     private void SetSystemSize(int selection)
     {
@@ -169,4 +183,72 @@
         }
         return;
     }
+
+    //get solar Score 
+    private async Task GetSolarScores(string solarScoreId)
+    {
+        int count = 0;
+        int max = 10;
+        int prev = solarScores.Count;
+        while(solarScores.Count < 12){
+            Console.WriteLine("Waiting");
+            //Sleep 2 seconds
+            await Task.Delay(2000);
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/solarscore/get");
+            var content = new StringContent("{\r\n    \"solarScoreId\": \"" + solarScoreId + "\"\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.IsSuccessStatusCode){
+                Console.WriteLine("Success");
+                var data = await response.Content.ReadAsStringAsync();
+                solarScores = JsonSerializer.Deserialize<List<SolarScoreModel>>(data);
+                    if(prev == solarScores.Count){
+                        count++;
+                    }else{
+                        prev = solarScores.Count;
+                        count = 0;
+                        CalculateSolarScore();
+                        StateHasChanged();
+                    }                   
+            }else{
+                Console.WriteLine("Failed");
+                solarScores = new List<SolarScoreModel>();
+            }
+            Console.WriteLine(solarScores.Count);
+
+            if(count >= max){
+                break;
+            }
+
+        }
+
+        Console.WriteLine("Done");
+        
+    }
+
+    public void CalculateSolarScore(){
+        if(solarScores.Count > 0){
+            int score = 0;
+            
+            foreach(var solarScore in solarScores){
+                int add = 1;
+                if(solarScore.score.Equals("Good")){
+                    add = 3;
+                }else if(solarScore.score.Equals("Average")){
+                   add = 2;
+                }
+                score += add;
+
+            }
+            Console.WriteLine("score: " +score);
+            int total = solarScores.Count * 3;
+            Console.WriteLine("solarScores.Count: " +total);
+
+            float ans = (score / (float)total) * 100;
+            Console.WriteLine("ans: " +ans);
+            solarScore = (int)ans;
+        }
+    }
+
 }
