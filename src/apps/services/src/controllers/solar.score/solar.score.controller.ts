@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { spawn } from 'child_process';
-
+import * as tedious from 'tedious';
+import { connection as conn } from '../../main';
+import ISolarScore from '../../models/solar.score.interface';
 export default class SolarScoreController {
   public getMapBoxApiKey = async (req: Request, res: Response) => {
     try {
@@ -10,18 +12,29 @@ export default class SolarScoreController {
       res.status(500).json({ error: error });
     }
   };
+  public getGoogleApiKey = async (req: Request, res: Response) => {
+    try {
+      const key: string = process.env.GOOGLE_API_KEY;
+      res.status(200).json(key);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
   public getLocationImages = async (req: Request, res: Response) => {
     console.log('Python script started');
     const { latitude, longitude } = req.body;
+    //solarScoreId from req.params
+    const solarScoreId = req.params.solarScoreId;
     //Get current year
     const currentYear = new Date().getFullYear();
 
     try {
-      const result = await this.executePython('scripts/getImages.py', [
+      const result = await this.executePython('scripts/getImageBase64.py', [
         latitude,
         longitude,
         currentYear - 1,
-        3,
+        1,
+        solarScoreId,
       ]);
 
       res.json({ result: result });
@@ -48,7 +61,7 @@ export default class SolarScoreController {
   };
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
-    const py = spawn('python', [script, ...parameters]);
+    const py = spawn('python3', [script, ...parameters]);
 
     const result = await new Promise((resolve, reject) => {
       let output: string[];
@@ -72,5 +85,100 @@ export default class SolarScoreController {
     });
 
     return result;
+  };
+
+  public createSolarScore = async (req: Request, res: Response) => {
+    const { solarScoreId, solarScore } = req.body;
+    const query = `INSERT INTO [dbo].[solarScore] (solarScoreId, solarScore) VALUES ('${solarScoreId}', '${solarScore}')`;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json({
+              message: 'Report created successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
+
+  public getSolarScore = async (req: Request, res: Response) => {
+    const { solarScoreId } = req.params;
+    const query = `SELECT * FROM [dbo].[solarScore] WHERE solarScoreId = '${solarScoreId}'`;
+    const solarScores: ISolarScore[] = [];
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No Calculations left',
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json(solarScores);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        const solarScore: ISolarScore = {
+          solarScoreId: columns[0].value,
+          score: columns[1].value,
+        };
+        solarScores.push(solarScore);
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
+
+  public deleteSolarScore = async (req: Request, res: Response) => {
+    const { solarScoreId } = req.params;
+    const query = `DELETE FROM [dbo].[solarScore] WHERE solarScoreId = '${solarScoreId}'`;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No Calculations left',
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json({
+              message: 'Report deleted successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
   };
 }

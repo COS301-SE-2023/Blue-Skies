@@ -93,7 +93,7 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAllReportAppliances");
                 return new List<ReportAppliances>();
             }
         }
@@ -131,7 +131,7 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetAppliancesInReport");
                 return new List<ReportAppliances>();
             }
         }
@@ -169,7 +169,7 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error");
+                Console.WriteLine(".NET: Database Connection Error in function GetReportsWithAppliance");
                 return new List<ReportAppliances>();
             }
         }

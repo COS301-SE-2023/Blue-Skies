@@ -188,7 +188,7 @@
     private async Task GetSystemUsage()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/adminstats/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/AdminStats/all");
         var response = await client.SendAsync(request);
         List<SystemUsage>? systems = null;
         if (response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
@@ -198,14 +198,13 @@
             {
                 systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive =
-                    true
+                        PropertyNameCaseInsensitive = true
                     })!;
             }
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to retrieve system usage");
         }
 
         if (systems != null && systems.Count > 0 && radarConfig != null)
