@@ -96,7 +96,7 @@ else
         }
         await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
-        await GetImages(latitude, longitude, solarScoreId);
+        @* await GetImages(latitude, longitude, solarScoreId); *@
 
         Console.WriteLine("Got daylight hours: " + dayLightHours);
         string location = "";
@@ -114,12 +114,12 @@ else
         await ProtectedSessionStore.SetAsync("parent", "");
         if (parent.Equals("solarScore"))
         {
-            @* await DownloadImage(); *@
+            await DownloadImage();
         }
         else
         {
             NavigationManager.NavigateTo("/solarScore");
-            @* await DownloadImage(); *@
+            await DownloadImage();
         }
         loading = false;
 
