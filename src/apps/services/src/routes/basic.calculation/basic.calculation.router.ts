@@ -20,6 +20,11 @@ basicCalculationRouter.get(
   basicCalculationController.getAllBasicCalculations
 );
 basicCalculationRouter.get(
+  '/getCreated',
+  bodyParser.json(),
+  basicCalculationController.getCreatedBasicCalculation
+);
+basicCalculationRouter.get(
   '/:basicCalculationId',
   basicCalculationController.getBasicCalculation
 );
