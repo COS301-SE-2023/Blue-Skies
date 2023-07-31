@@ -156,16 +156,16 @@ private async Task HandleSubmit()
             }
             if (data != null)
             {
-            await ProtectedLocalStore.SetAsync("userId", data.userId);
-            if(data.userRole == 1){
-                await ProtectedLocalStore.SetAsync("isAdmin", true);
-                NavigationManager.NavigateTo("/admin/keys");              
-            }
-            else{
-                await ProtectedLocalStore.SetAsync("isAdmin", false);
-                NavigationManager.NavigateTo("/" + redirect);
-                await ProtectedLocalStore.DeleteAsync("redirect");
-            }
+                await ProtectedLocalStore.SetAsync("userId", data.userId);
+                if(data.userRole == 1){
+                    await ProtectedLocalStore.SetAsync("isAdmin", true);
+                    NavigationManager.NavigateTo("/admin/keys");              
+                }
+                else{
+                    await ProtectedLocalStore.SetAsync("isAdmin", false);
+                    await ProtectedLocalStore.DeleteAsync("redirect");
+                    NavigationManager.NavigateTo("/" + redirect);
+                }
             } else {
                 await ProtectedLocalStore.SetAsync("userId", "");
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
