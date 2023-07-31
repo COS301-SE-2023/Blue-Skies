@@ -5,7 +5,12 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 
-
+@if(loading) {
+    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
+        <img src="assets/Loader.gif" class="m-auto scale-50" />
+    </div>
+}
+else {
     <div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
         <div class="text-center">
             <Heading>
@@ -34,6 +39,8 @@
             </div>
         </div>
     </div>
+}
+
 
 @code {
     public string parent = "index";
@@ -52,7 +59,6 @@
     }
     public async void saveBasicCalculation()
     {
-        await ProtectedSessionStore.SetAsync("loading", true);
         loading = true;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
@@ -82,11 +88,13 @@
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
         if(parent.Equals("solarScore")) {
-            StateHasChanged();
+            await DownloadImage();
         } else {
             NavigationManager.NavigateTo("/solarScore");
+            await DownloadImage();
         }
-        await DownloadImage();
+        loading = false;
+        
     }
     
     public async Task<string> GetSolarScore(double latitude, double longitude)
