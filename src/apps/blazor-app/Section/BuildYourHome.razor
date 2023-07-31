@@ -145,12 +145,32 @@
             </Button>
             <Button  css="h-16 w-60" style="pill">
                 <content>
-                    <p @onclick="SaveCalculation">Save this calculation</p>
+                    <p @onclick="ModalPopup.Show">Save this calculation</p>
                 </content>
             </Button>
         </div>
     </div>
 </div>
+<ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+        <ChildContent>
+            <p>Add a nickname for this calculation:</p>
+            <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="SaveCalculation">
+                    <Button >
+                        <content>
+                            Save
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
 
 @* Mobile Viewport *@
 <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
@@ -243,6 +263,8 @@
     private Toast successToast { get; set; } = new Toast();
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private string? calculationName { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -355,7 +377,7 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
         Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
-        var content = new StringContent("{\r\n  \"reportName\": \"" + "Test" + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + basicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n  \"reportName\": \"" + calculationName + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + basicCalc.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -439,7 +461,7 @@
         }
     }
 
-     private void renderCharts() {
+    private void renderCharts() {
         pieConfig = new PieConfig(true) {
                 Options = new PieOptions
                 {
@@ -502,6 +524,6 @@
             pieConfig.Data.Datasets.Add(pieDataset);
         }
         }
-    }
+    }  
 
 }
