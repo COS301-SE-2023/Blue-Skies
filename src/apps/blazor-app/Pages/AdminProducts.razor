@@ -7,6 +7,7 @@
 @using System.Text.Json;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
@@ -35,18 +36,6 @@
             </div>
         </div>
     </div>
-
-    <Toast @ref="successToast" Title="Successful" Type="success">
-        <ChildContent>
-            <p></p>
-        </ChildContent>
-    </Toast>
-
-    <Toast @ref="deleteToast" Title="Deleted" Type="error">
-        <ChildContent>
-            <p></p>
-        </ChildContent>
-    </Toast>
 
     <ModalPopup @ref="ModalPopup" Title="Delete Solar Product?">
         <ChildContent>
@@ -103,8 +92,6 @@
 </div>
 
 @code {
-    private Toast successToast { get; set; } = new Toast();
-    private Toast deleteToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
     private List<ProductModel> products = new List<ProductModel>();
@@ -149,7 +136,8 @@
         {
             await GetProducts();
             Console.WriteLine("Deleted Solar Product");
-            deleteToast.Show("Deleted", "Successfully deleted product", "success");
+            @* deleteToast.Show("Deleted", "Successfully deleted product", "success"); *@
+            toastService.ShowToast("Product Deleted", "Successfully deleted product", "success");
         }
         else
         {
@@ -195,7 +183,6 @@
                 solarInput = 0,
                 recordState = true
             });
-        @* add api call *@
     }
 
     private async Task SaveProduct(ProductModel product)
@@ -215,7 +202,8 @@
             {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
-                successToast.Show("Added", "Successfully added product", "success");
+                @* successToast.Show("Added", "Successfully added product", "success"); *@
+                toastService.ShowToast("Product Added", "Successfully added product", "success");
             }
             else
             {
@@ -239,7 +227,8 @@
             {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
-                successToast.Show("Updated", "Successfully updated product", "success");
+                @* successToast.Show("Updated", "Successfully updated product", "success"); *@
+                toastService.ShowToast("Product Updated", "Successfully updated product", "success");
             }
             else
             {

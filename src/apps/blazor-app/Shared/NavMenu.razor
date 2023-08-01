@@ -62,8 +62,8 @@
     <!-- Background backdrop, show/hide based on slide-over state. -->
     <div class="fixed inset-0 z-10"></div>
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-      <div class="flex flex-col items-center justify-between w-full bg-red-500">
-        <div class="flex justify-between w-full bg-blue-300">
+      <div class="flex px-2 flex-col items-center justify-between w-full ">
+        <div class="flex justify-between w-full ">
           <a href="/" class="-m-1.5 p-1.5">
             <span class="sr-only">BlueSkies</span>
             <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
@@ -75,10 +75,17 @@
             </svg>
           </button>
         </div>
-        
-        <a href="/">Home</a>
-        <a href="/solarscore">Solar Score</a>
-        <a href="/advanced">Advanced</a>
+        <div class="flex flex-col w-full mt-5">
+          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/">Home</a>
+          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore">Solar Score</a>
+          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced">Advanced</a>
+          @if(loggedIn == true){
+            <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
+            }else{
+                <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
+          }
+          <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" onclick="@(() => logout())" >Logout</p>
+        </div>
         
       </div>
     </div>
@@ -91,6 +98,8 @@
 @code {
     [Parameter]
     public bool isDashboard { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsScrollingDownChanged { get; set; }
     private string width = "";
     private bool loggedIn = false;
     private string userEmail = "";
@@ -104,8 +113,8 @@
     }
 
     private int currentScrollPosition;
-    private bool isScrollingDown = false;
-
+    [Parameter]
+    public bool isScrollingDown { get; set; } = false;
 
     protected override async void OnAfterRender(bool firstRender)
     {
@@ -121,6 +130,7 @@
         if (scrollY > currentScrollPosition) isScrollingDown = true; else if (scrollY == 0) isScrollingDown = false;
 
         currentScrollPosition = scrollY;
+        IsScrollingDownChanged.InvokeAsync(isScrollingDown);
         StateHasChanged();
     }
 
