@@ -7,6 +7,7 @@
 @using System.Text.Json;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
@@ -35,18 +36,6 @@
             </div>
         </div>
     </div>
-
-    <Toast @ref="successToast" Title="Successful" Type="success">
-        <ChildContent>
-            <p></p>
-        </ChildContent>
-    </Toast>
-
-    <Toast @ref="deleteToast" Title="Deleted" Type="error">
-        <ChildContent>
-            <p></p>
-        </ChildContent>
-    </Toast>
 
     <ModalPopup @ref="ModalPopup" Title="Delete Account?">
         <ChildContent>
@@ -101,8 +90,6 @@
 @code {
     @inject IJSRuntime JSRuntime;
 
-    private Toast successToast { get; set; } = new Toast();
-    private Toast deleteToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
@@ -120,7 +107,9 @@
         }
         deleteArr.Clear();
         await GetKeys();
-        deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error");
+        @* deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error"); *@
+        toastService.ShowToast("Record Deleted", "The record entry was successfuly deleted.", "error");
+
     }
     private void AddDeleteArr(int id){
         if(deleteArr.Contains(id)){
@@ -175,7 +164,8 @@
     private void AddKey()
     {
         keys.Add(new APIKeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
-        successToast.Show("Added", "A new record entry was added.", "success"); 
+        @* successToast.Show("Added", "A new record entry was added.", "success");  *@
+        toastService.ShowToast("Record Added", "A new record entry was added.", "success");
     }
 
     private async Task ToggleSuspend(APIKeyModel key) {
@@ -198,7 +188,8 @@
 
     private async Task SaveKey(APIKeyModel key)
     {
-        successToast.Show("Saved", "The record entry was successfuly saved.", "success");
+        @* successToast.Show("Saved", "The record entry was successfuly saved.", "success"); *@
+        toastService.ShowToast("Record Saved", "The record entry was successfuly saved.", "success");
         if(key.keyId == -1){
             Console.WriteLine("Add API Key");
             var client = new HttpClient();

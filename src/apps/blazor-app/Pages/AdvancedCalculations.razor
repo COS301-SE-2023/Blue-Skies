@@ -6,6 +6,7 @@
 @using BlazorApp.Models;
 @using System.Text.Json
 @using BlazorApp.Components
+@inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
     <div class="fade-in-enter-active">
@@ -16,8 +17,9 @@
         } else  if (isAd) {
             NavigationManager.NavigateTo("/admin/keys");  
         } else if (solarScore == 0) {
-            deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error");
-            Console.WriteLine("Toast");
+            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+
             NavigationManager.NavigateTo("/solarScore");
         } else {
         <div class="w-full">
@@ -27,12 +29,6 @@
             </div>
         </div>
         }
-        <Toast @ref="successToast" Title="" Type="success">
-                <p></p>
-        </Toast>
-        <Toast @ref="deleteToast" Title="" Type="error">
-                <p></p>
-        </Toast>
     </div>
 
 @code {
@@ -48,8 +44,6 @@
     private List<SystemModel> systems = new List<SystemModel>();
     private int selectedSystem = 0;
     private int solarScore = 0;
-    private Toast successToast { get; set; } = new Toast();
-    private Toast deleteToast { get; set; } = new Toast();
 
 
     protected override async Task OnInitializedAsync()
