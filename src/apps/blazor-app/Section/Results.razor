@@ -102,7 +102,7 @@
 
 @code {
     private int solarScore = -1;
-    private float dayLightHours = -1F;
+    private float dayLightHours = 12.04F;
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
@@ -148,7 +148,7 @@
         if (solarScoreIdTemp.Success)
         {
             solarScoreId = solarScoreIdTemp.Value!;
-            await GetSolarScores(solarScoreId);
+            @* await GetSolarScores(solarScoreId); *@
         }
         else
         {
