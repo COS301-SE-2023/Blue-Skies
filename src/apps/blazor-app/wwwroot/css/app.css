@@ -563,10 +563,6 @@ video {
   bottom: 0px;
 }
 
-.-bottom-10 {
-  bottom: -2.5rem;
-}
-
 .-bottom-40 {
   bottom: -10rem;
 }
@@ -587,10 +583,6 @@ video {
   bottom: 0px;
 }
 
-.bottom-10 {
-  bottom: 2.5rem;
-}
-
 .left-0 {
   left: 0px;
 }
@@ -601,6 +593,10 @@ video {
 
 .left-64 {
   left: 16rem;
+}
+
+.left-9 {
+  left: 2.25rem;
 }
 
 .right-0 {
@@ -629,6 +625,10 @@ video {
 
 .top-2 {
   top: 0.5rem;
+}
+
+.top-28 {
+  top: 7rem;
 }
 
 .top-3 {
@@ -1177,6 +1177,11 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.translate-y-0 {
+  --tw-translate-y: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .translate-y-1 {
   --tw-translate-y: 0.25rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -1458,11 +1463,6 @@ video {
 
 .rounded-xl {
   border-radius: 0.75rem;
-}
-
-.rounded-b {
-  border-bottom-right-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
 }
 
 .rounded-r-2xl {
@@ -2190,6 +2190,10 @@ video {
   transition-delay: 200ms;
 }
 
+.delay-300 {
+  transition-delay: 300ms;
+}
+
 .delay-\[250ms\] {
   transition-delay: 250ms;
 }
@@ -2241,6 +2245,14 @@ body {
   animation: fade-out .3s;
 }
 
+.toast-slide-in {
+  animation: toastSlideIn .3s;
+}
+
+.toast-slide-out {
+  animation: toastSlideOut .3s;
+}
+
 /* Fade-Out Transition */
 
 @keyframes fadeIn {
@@ -2251,6 +2263,28 @@ body {
 
   to {
     opacity: 1;
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
   }
 }
 
