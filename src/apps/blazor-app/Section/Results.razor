@@ -162,10 +162,10 @@
     {
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
-        if (systems!.Count > 0)
+        if (systems!.Count > 0 && basicCalculation.daylightHours != null)
         {
             double calc = systems[selectedSystem].numberOfPanels * float.Parse(
-            basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
+            basicCalculation.daylightHours) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }

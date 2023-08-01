@@ -13,8 +13,13 @@ public class GoogleMapsService
         _httpClient = httpClient;
     }
 
-    public async Task<byte[]> GetStaticMapImageAsync(double longitude, double latitude, int zoom, int width, int height)
-
+    public async Task<byte[]> GetStaticMapImageAsync(
+        double longitude,
+        double latitude,
+        int zoom,
+        int width,
+        int height
+    )
     {
         var request = new HttpRequestMessage(
             HttpMethod.Get,
