@@ -22,7 +22,7 @@
                 <AutoComplete />
             </div>
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-                <div @onclick="saveBasicCalculation" >
+                <div @onclick="saveBasicCalculation">
                     <Button style="pill" css="h-14">
                         <content>
                             <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
@@ -39,11 +39,11 @@
 @code {
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private double latitude = 0; 
-    private double longitude = 0; 
-    private readonly int zoom = 19; 
+    private double latitude = 0;
+    private double longitude = 0;
+    private readonly int zoom = 19;
     private readonly int width = 600;
-    private readonly int height = 500; 
+    private readonly int height = 500;
     public bool loading = false;
 
     protected override async Task OnInitializedAsync()
@@ -61,7 +61,7 @@
         List<double> cord = new List<double>();
         if (locationSuggestion.Geometry != null)
         {
-            cord = locationSuggestion.Geometry.Coordinates!;    
+            cord = locationSuggestion.Geometry.Coordinates!;
         }
         latitude = cord[0];
         longitude = cord[1];
@@ -75,15 +75,17 @@
         string solarScoreId = "";
         for (int i = 0; i < 20; i++)
         {
+
             int randValue = rand.Next(0, 26);
             char letter = Convert.ToChar(randValue + 65);
+
             solarScoreId = solarScoreId + letter;
         }
         await ProtectedSessionStore.SetAsync("solarScoreId", solarScoreId);
 
         GetImages(longitude, latitude, solarScoreId);
 
-        Console.WriteLine("Got daylight hours: "+ dayLightHours);
+        Console.WriteLine("Got daylight hours: " + dayLightHours);
         string location = "";
         if (locationSuggestion != null)
         {
@@ -106,24 +108,21 @@
             NavigationManager.NavigateTo("/solarScore");
             await DownloadImage();
         }
-        
         loading = false;
-
-        
     }
-    
+
 
     public async Task<string> GetImages(double latitude, double longitude, string solarScoreId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            API_PORT + "/SolarScore/getimages/" + solarScoreId
+        HttpMethod.Get,
+        API_PORT + "/SolarScore/getimages/" + solarScoreId
         );
         var content = new StringContent(
-            "{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -141,14 +140,15 @@
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsuntimes");
-        var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null,
+        "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
-            //convert data to double 
+            //convert data to double
             float ans = float.Parse(data);
             return ans;
         }
@@ -163,17 +163,17 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
         var content = new StringContent(
-            "{\r\n    \"systemId\": "
-                + systemId
-                + ",\r\n  \"daylightHours\": \""
-                + dayLightHours
-                + "\",\r\n  \"location\": \""
-                + location
-                + "\",\r\n  \"batteryLife\": "
-                + batteryLife
-                + "\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"systemId\": "
+        + systemId
+        + ",\r\n \"daylightHours\": \""
+        + dayLightHours
+        + "\",\r\n \"location\": \""
+        + location
+        + "\",\r\n \"batteryLife\": "
+        + batteryLife
+        + "\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -188,19 +188,20 @@
         }
     }
 
-    private async void getCreatedBasicCalculationId( int systemId, string dayLightHours, string location){
+    private async void getCreatedBasicCalculationId(int systemId, string dayLightHours, string location)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
         var content = new StringContent(
-            "{\r\n    \"systemId\": "
-                + systemId
-                + ",\r\n  \"daylightHours\": \""
-                + dayLightHours
-                + "\",\r\n  \"location\": \""
-                + location
-                + "\"\r\n}",
-            null,
-            "application/json"
+        "{\r\n \"systemId\": "
+        + systemId
+        + ",\r\n \"daylightHours\": \""
+        + dayLightHours
+        + "\",\r\n \"location\": \""
+        + location
+        + "\"\r\n}",
+        null,
+        "application/json"
         );
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -208,7 +209,10 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;    
+            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
             await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
             Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
         }
