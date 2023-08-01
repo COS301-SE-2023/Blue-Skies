@@ -227,7 +227,7 @@
     private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.GetStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        @* imageBytes = await googleMapsService.GetStaticMapImageAsync(latitude, longitude, zoom, width, height); *@
 
         var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
         if (File.Exists(imagePath))
