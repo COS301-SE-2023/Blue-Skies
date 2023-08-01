@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 <PageTitle>Blue Skies</PageTitle>
 
@@ -29,12 +30,12 @@
         // Subscribe to events
         loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
         loadingService.HideLoadingScreenRequested += HideLoadingScreen;
+        toastService.ShowToastRequested += ShowToast;
     }
 
     public void ShowLoadingScreen()
     {
         isLoading = true;
-        Console.WriteLine("Loading screen requested - MainLayout.razor");
         StateHasChanged();
     }
 
@@ -44,9 +45,16 @@
         StateHasChanged();
     }
 
+    public void ShowToast(string message, string type) {
+        Console.WriteLine("Messaffe: " + message + " Type: " + type);
+        isLoading = true;
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
         loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;
         loadingService.HideLoadingScreenRequested -= HideLoadingScreen;
+        toastService.ShowToastRequested -= ShowToast;
     }
 }
