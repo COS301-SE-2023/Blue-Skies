@@ -1,6 +1,6 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 <div class="my-12 px-4">
 
@@ -13,7 +13,7 @@
                 <h1 class="text-3xl">Get solar as easy as 1, 2, 3</h1>
             </Header>
             <Subscript>
-                <p class="text-primary-700 max-w-xl">The next step is to create an account and do the more in-depth calculation. This will allow you to see which solar system would work best for your needs. Even if solar isn't viable for your area, you can use this calculation to determine how many batteries you would need, even if they need to be charged by Eskom power!</p>
+                <p class="text-primary-700 max-w-xl">Embracing complete independence for your home and brightening your days with solar power, is only a few steps away!</p>
             </Subscript>
         </Heading>
     </div>
@@ -33,7 +33,12 @@
                             calculations</h1>
                     </Header>
                     <Subscript>
-                        <p class="font-normal">Create an account and sign up to use our more advanced calculation tool. This tool allows you to add appliances to see how much power you use and thus how many batteries would be needed</p>
+                        <p class="font-normal">Access our advanced calculation tool! Add appliances, determine your power usage, and needs for your setup.
+
+
+
+
+</p>
                     </Subscript>
                 </Heading>
             </div>
@@ -128,7 +133,7 @@
  private void ShowLoadingScreen()
 {
     Console.WriteLine("Showing loading screen - EnterLocation.razor");
-    loadingService.ShowLoadingScreen();
+    toastService.ShowToast("Hello World","Danger");
 }
 
 void Register()
