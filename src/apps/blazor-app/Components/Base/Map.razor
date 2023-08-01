@@ -2,16 +2,22 @@
 @using BlazorApp.Data
 @using System.Runtime.InteropServices;
 
+@{
+    secondImageCss += " " + scale;
+}
 
 <div class="relative @css">
     <Image ImageName="map_image.png" alt="Map" css="w-full h-full object-cover brightness-75 contrast-125 saturate-[.1] rounded-2xl" />
     <div class="w-[40%] h-[40%] rounded-3xl border-[6px] border-yellow-accent-500 z-10  absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-clip">
-        <Image ImageName="map_image.png" alt="Map" css="w-full translate-x-2 h-full object-cover scale-[2.5] brightness-90  saturate-[1.3]" />
+        <Image ImageName="map_image.png" alt="Map" css="@secondImageCss" />
     </div>
 </div>
 
 @code {
+    private string? secondImageCss = "w-full translate-x-2 h-full object-cover  brightness-90  saturate-[1.3]";
     [Parameter]
     public string? css { get; set; }
+    [Parameter]
+    public string? scale { get; set; } = "scale-[2.5]";
 }
 
