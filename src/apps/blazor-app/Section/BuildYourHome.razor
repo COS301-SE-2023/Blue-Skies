@@ -7,6 +7,7 @@
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
@@ -262,7 +263,6 @@
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
-    private Toast successToast { get; set; } = new Toast();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     @* private PieConfig? pieConfig; *@
@@ -386,7 +386,9 @@
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            successToast.Show("Saved", "Report successfuly saved.", "success");
+            @* successToast.Show("Saved", "Report successfuly saved.", "success"); *@
+            toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
+
             Console.WriteLine("Report created successfully");
             int reportId = await GetCreatedReportId();
             foreach (var appliance in appliances)

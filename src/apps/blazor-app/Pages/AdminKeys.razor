@@ -7,6 +7,7 @@
 @using System.Text.Json;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
@@ -120,7 +121,9 @@
         }
         deleteArr.Clear();
         await GetKeys();
-        deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error");
+        @* deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error"); *@
+        toastService.ShowToast("Record Deleted", "The record entry was successfuly deleted.", "error");
+
     }
     private void AddDeleteArr(int id){
         if(deleteArr.Contains(id)){
@@ -175,7 +178,8 @@
     private void AddKey()
     {
         keys.Add(new APIKeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
-        successToast.Show("Added", "A new record entry was added.", "success"); 
+        @* successToast.Show("Added", "A new record entry was added.", "success");  *@
+        toastService.ShowToast("Record Added", "A new record entry was added.", "success");
     }
 
     private async Task ToggleSuspend(APIKeyModel key) {
@@ -198,7 +202,8 @@
 
     private async Task SaveKey(APIKeyModel key)
     {
-        successToast.Show("Saved", "The record entry was successfuly saved.", "success");
+        @* successToast.Show("Saved", "The record entry was successfuly saved.", "success"); *@
+        toastService.ShowToast("Record Saved", "The record entry was successfuly saved.", "success");
         if(key.keyId == -1){
             Console.WriteLine("Add API Key");
             var client = new HttpClient();

@@ -132,7 +132,8 @@
 //Go to Sign Up Page
  private async void ShowLoadingScreen()
 {
-    toastService.ShowToast("Hello World","Danger");
+    toastService.ShowToast("Hello", "Please wait while we load the calculator", "info");
+    await Task.Delay(3000);
 
 }
 
