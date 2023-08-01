@@ -13,7 +13,7 @@ public class GoogleMapsService
         _httpClient = httpClient;
     }
 
-    public async Task<byte[]> GetStaticMapImageAsync(double latitude, double longitude, int zoom, int width, int height)
+    public async Task<byte[]> GetStaticMapImageAsync(double longitude, double latitude, int zoom, int width, int height)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/googlemapskey");
         var response = await _httpClient.SendAsync(request);
@@ -22,8 +22,8 @@ public class GoogleMapsService
         }
         apiKey = apiKey.Trim('"');
 
-        Console.WriteLine($"Getting map image for {latitude}, {longitude}");
-        var url = $"https://maps.googleapis.com/maps/api/staticmap?center={longitude},{latitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&markers=color:red|{latitude},{longitude}&key={apiKey}";
+        Console.WriteLine($"Getting map image for {longitude}, {latitude}");
+        var url = $"https://maps.googleapis.com/maps/api/staticmap?center={latitude},{longitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&markers=color:red|{longitude},{longitude}&key={apiKey}";
         return await _httpClient.GetByteArrayAsync(url);
     }
 }
