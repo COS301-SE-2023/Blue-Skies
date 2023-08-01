@@ -80,6 +80,7 @@ public class SolarScoreController : ControllerBase
     [Route("GetSolarScoreFromImage")]
     public async Task<IActionResult> GetSolarScoreFromImage([FromBody] SolarScore ss)
     {
+        Console.WriteLine("Calculating solar score from image");
         try
         {
             // Decode base64 image back to binary data

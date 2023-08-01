@@ -26,7 +26,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/", () => "Hello World");
+app.MapGet("/", () => "Welcome to the Blue-Skies API!");
 // var predictionHandler =
 //     async (PredictionEnginePool<ModelInput, ModelOutput> predictionEnginePool, ModelInput input) =>
 //         await Task.FromResult(predictionEnginePool.Predict(modelName: "DeepLearning_ImageClassification", input));
