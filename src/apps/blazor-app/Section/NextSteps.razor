@@ -1,6 +1,6 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 <div class="my-12 px-4">
 
@@ -133,7 +133,7 @@
  private void ShowLoadingScreen()
 {
     Console.WriteLine("Showing loading screen - EnterLocation.razor");
-    loadingService.ShowLoadingScreen();
+    toastService.ShowToast("Hello World","Danger");
 }
 
 void Register()
