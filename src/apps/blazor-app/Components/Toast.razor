@@ -1,13 +1,6 @@
-@{
-    if (_show)
-    {
-        show = "opacity-100 bottom-10";
-    }
-    else
-    {
-        show = "opacity-0 -bottom-10";
-    }
+@inject BlazorApp.Data.ToastService toastService
 
+@{
     switch(Type)
     {
         case "success": {
@@ -25,8 +18,7 @@
             break;
     }
 }
-<div class="transition-all w-2/3 left-1/2 -translate-x-1/2 duration-300 p-10 z-40  absolute rounded-b px-4 py-3 shadow-md
-@show"role="alert">
+<div class="toast-slide w-fit h-full p-4 @show rounded-lg shadow-md ">
 <div class="flex z-30 justify-between">
     <div class="py-1 flex gap-2">
         @switch (Type)
@@ -86,7 +78,7 @@
 </div>
 
 @code {
-    public string? show { get; set; } = "hidden";
+    public string? show { get; set; } = "";
     [Parameter]
     public string? Title { get; set; }
     [Parameter]
@@ -116,8 +108,9 @@
 
         _show = true;
     }
+
     public void Dismiss()
     {
-        _show = false;
+        toastService.HideToast();
     }
 }

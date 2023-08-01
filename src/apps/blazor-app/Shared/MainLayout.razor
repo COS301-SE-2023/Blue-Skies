@@ -1,6 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
+@using BlazorApp.Components
 
 <PageTitle>Blue Skies</PageTitle>
 
@@ -10,7 +11,17 @@
             <BlazorApp.Section.LoadingScreen/>
         }
 
-        <NavMenu />
+
+        <NavMenu @bind-isScrollingDown="isScrollingDown"/>
+
+        @if(isToastVisible) {
+            string move = isScrollingDown ? "-translate-y-20" : "translate-y-0";
+            <div class="@move @animation flex-col w-full gap-4 transition-all p-2 duration-300 delay-300 h-20 flex z-50 fixed top-28 left-9">
+                <Toast Type="info" Title="Yes uit works!">
+                    <p>Hello</p>
+                </Toast>
+            </div>
+        }
 
         <div class="mt-36 w-full">
             @Body
@@ -24,6 +35,10 @@
 
 @code {
     private bool isLoading = false;
+    private bool isToastVisible = false;
+    private bool isScrollingDown = false;
+    private string animation = "toast-slide-in";
+
 
      protected override void OnInitialized()
     {
@@ -31,10 +46,12 @@
         loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
         loadingService.HideLoadingScreenRequested += HideLoadingScreen;
         toastService.ShowToastRequested += ShowToast;
+        toastService.HideToastRequested += HideToast;
     }
 
     public void ShowLoadingScreen()
     {
+
         isLoading = true;
         StateHasChanged();
     }
@@ -46,8 +63,16 @@
     }
 
     public void ShowToast(string message, string type) {
-        Console.WriteLine("Messaffe: " + message + " Type: " + type);
-        isLoading = true;
+        animation = "toast-slide-in";
+        isToastVisible = true;
+        StateHasChanged();
+    }
+
+    public async void HideToast() {
+        animation = "toast-slide-out";
+        StateHasChanged();
+        await Task.Delay(300);
+        isToastVisible = false;
         StateHasChanged();
     }
 
@@ -56,5 +81,6 @@
         loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;
         loadingService.HideLoadingScreenRequested -= HideLoadingScreen;
         toastService.ShowToastRequested -= ShowToast;
+        toastService.HideToastRequested -= HideToast;
     }
 }

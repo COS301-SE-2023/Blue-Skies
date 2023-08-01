@@ -91,6 +91,8 @@
 @code {
     [Parameter]
     public bool isDashboard { get; set; } = false;
+    [Parameter]
+    public EventCallback<bool> IsScrollingDownChanged { get; set; }
     private string width = "";
     private bool loggedIn = false;
     private string userEmail = "";
@@ -104,8 +106,8 @@
     }
 
     private int currentScrollPosition;
-    private bool isScrollingDown = false;
-
+    [Parameter]
+    public bool isScrollingDown { get; set; } = false;
 
     protected override async void OnAfterRender(bool firstRender)
     {
@@ -121,6 +123,7 @@
         if (scrollY > currentScrollPosition) isScrollingDown = true; else if (scrollY == 0) isScrollingDown = false;
 
         currentScrollPosition = scrollY;
+        IsScrollingDownChanged.InvokeAsync(isScrollingDown);
         StateHasChanged();
     }
 
