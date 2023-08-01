@@ -118,8 +118,10 @@ public class SolarScoreRepository
     }
     public async Task<string> GetSolarScoreFromImage(string image)
     {
+        Console.WriteLine("Image: " + image);
         // ImageClassifier imageClassifier = new ImageClassifier();
         var prediction = ImageClassifier.Predict(image);
+        Console.WriteLine("Prediction: " + prediction);
         return prediction;
     }
 
@@ -214,17 +216,19 @@ class ImageClassifier
 {
     public static string Predict(string imageFilePath)
     {
-
+        Console.WriteLine("Predicting...");
         var projectDirectory = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../apps/api"));
         //Console.WriteLine(projectDirectory);
         var assetsRelativePath = Path.Combine(projectDirectory, "assets");
 
         MLContext mlContext = new MLContext();
-
+        Console.WriteLine("MLContext created");
+        Console.WriteLine(projectDirectory + "/model.zip");
         // Load the model
         DataViewSchema modelSchema;
+        Console.WriteLine("Loading model");
         ITransformer trainedModel = mlContext.Model.Load(projectDirectory + "/model.zip", out modelSchema);
-
+        Console.WriteLine("Model loaded");
         // Preprocess the input image
         IEnumerable<ImageData> images = LoadSingleImage(imageFilePath, assetsRelativePath);
         IDataView imageData = mlContext.Data.LoadFromEnumerable(images);
@@ -233,6 +237,7 @@ class ImageClassifier
                             .Fit(imageData)
                             .Transform(imageData);
 
+        Console.WriteLine("Preprocessed data");
         // Make predictions
         var predictionEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(trainedModel);
         ModelInput image = mlContext.Data.CreateEnumerable<ModelInput>(preProcessedData, reuseRowObject: true).First();
@@ -241,7 +246,7 @@ class ImageClassifier
         // Console.WriteLine("Label: " + image.Label);
         //Console.WriteLine("Image: " + image.Image.ToString());
         ModelOutput prediction = predictionEngine.Predict(image);
-
+        Console.WriteLine("Prediction made");
         return prediction.PredictedLabel;
     }
 

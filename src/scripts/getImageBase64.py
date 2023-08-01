@@ -63,10 +63,10 @@ def download_and_pass_image(image, roi, imageName):
     })
 
     image_base64 = base64.b64encode(requests.get(image_url).content).decode('utf-8')
-    
+
     file_lock.acquire()
     try:
-        #print('Getting solar score for image')
+        print('Getting solar score for image')
         url = API_PORT + "/SolarScore/GetSolarScoreFromImage"
 
         payload = json.dumps({
