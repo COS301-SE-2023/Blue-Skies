@@ -9,6 +9,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<BlobStorageService>();
 builder.Services.AddScoped<LoadingService>();
+builder.Services.AddScoped<ToastService>();
 
 var app = builder.Build();
 
