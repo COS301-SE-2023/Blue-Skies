@@ -23,38 +23,44 @@
         <Map css="scale-90"/>
     </div>
     <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
-        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 w-72 h-72  my-auto">
-            <div class="bg-gray-100 shadow-md rounded-3xl  p-4 w-20 ">
-                <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
-            </div>
-            <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
-            <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
-                <p class="text-5xl text-gray-400 font-bold">%</p>
-            </div>
-        </Card>
-        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72 flex  my-auto flex-col">
-            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
-                <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
-            </div>
-            <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
-            <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">@dayLightHours</p>
-                <p class="text-5xl text-gray-400 font-bold">h</p>
+        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-80 h-80">
+            <div class="my-auto">
+                <div class="bg-gray-100 shadow-md rounded-3xl  p-4 w-20 ">
+                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
+                <div class="flex gap-1 mt-3">
+                    <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
+                    <p class="text-5xl text-gray-400 font-bold">%</p>
+                </div>
             </div>
         </Card>
-        <Card css="border-2 scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72  my-auto">
-            <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
-                <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
+        <Card css="border-2 flex scale-90 xl:scale-100 border-primary-300 p-4 w-80 h-80 flex  my-auto flex-col">
+            <div class="my-auto">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                    <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+                <div class="flex gap-1 mt-3">
+                    <p class="text-5xl text-primary-900 font-semibold">@dayLightHours</p>
+                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                </div>
             </div>
-            <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
-            <div class="flex gap-1 mt-3">
-
+        </Card>
+        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 p-4 w-80 h-80  my-auto">
+            <div class="my-auto">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-4 w-20 ">
+                    <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+                <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                     <p class="text-5xl text-gray-400 font-bold">kw/h</p>
                 </div>
-            </Card>
-            <Card css="border-2 scale-90 xl:scale-100 flex flex-col gap-4 border-primary-300 p-4 w-72 h-72  my-auto">
+            </div>
+        </Card>
+        <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-80 h-80">
+            <div class="my-auto flex flex-col gap-4 p-2">
                 <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
                 <div class="flex justify-evenly gap-4">
                     @{
@@ -66,7 +72,7 @@
                             small = systems[0].inverterOutput + "kw";
                             medium = systems[1].inverterOutput + "kw";
                             large = systems[2].inverterOutput + "kw";
-                        } 
+                        }
                     }
                     <div onclick="@(() => SetSystemSize(0))"
                         class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
@@ -92,10 +98,11 @@
                     <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
-            </Card>
-        </div>
+            </div>
+        </Card>
     </div>
-    }
+</div>
+}
 
 @code {
     private int solarScore = -1;
@@ -110,8 +117,10 @@
     public bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
+        //get solarScoreId
+        
         await GetSystems();
-        isLoaded = true;
+        
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
@@ -138,7 +147,7 @@
         {
             Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
-        //get solarScoreId
+        isLoaded = true;
         var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
         if (solarScoreIdTemp.Success)
         {
@@ -149,6 +158,7 @@
         {
             Console.WriteLine("Unsuccess");
         }
+        
 
         
     }
@@ -209,6 +219,7 @@
                         prev = solarScores.Count;
                         count = 0;
                         CalculateSolarScore();
+                        await ProtectedSessionStore.SetAsync("solarScore",solarScore);
                         StateHasChanged();
                     }                   
             }else{
@@ -248,7 +259,11 @@
             float ans = (score / (float)total) * 100;
             Console.WriteLine("ans: " +ans);
             solarScore = (int)ans;
+            
         }
     }
-
+//running Hours = (num batteries * battery storage)  / (sum of all appliances)  
+// % = (running hours / non-daylight hours) * 100
 }
+
+

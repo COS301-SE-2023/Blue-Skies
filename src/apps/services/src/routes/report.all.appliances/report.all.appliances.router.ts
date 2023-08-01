@@ -10,5 +10,11 @@ reportAllApplianceRouter.get('/', (req, res) => {
 });
 
 const reportAllController = new ReportAllApplianceController();
-reportAllApplianceRouter.get('/all', reportAllController.getAllReportAllAppliance);
-reportAllApplianceRouter.get('/:reportId', reportAllController.getReportAllAppliance);
+reportAllApplianceRouter.get(
+  '/all',
+  reportAllController.getAllReportAllAppliance
+);
+reportAllApplianceRouter.get(
+  '/:reportId',
+  reportAllController.getReportAllAppliance
+);

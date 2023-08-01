@@ -1,5 +1,4 @@
 using Azure.Storage.Blobs;
-using Microsoft.Extensions.Configuration;
 
 namespace BlazorApp.Data
 {
