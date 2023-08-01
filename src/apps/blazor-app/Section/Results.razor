@@ -4,10 +4,6 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 
-    @if (!isLoaded)
-    {
-        Console.WriteLine("Loading");
-    } else {
 <div class="mt-24 text-center">
     <Heading>
         <Header>
@@ -102,7 +98,7 @@
         </Card>
     </div>
 </div>
-}
+
 
 @code {
     private int solarScore = -1;
@@ -138,7 +134,7 @@
             Console.WriteLine("Unsuccess");
         }
         Console.WriteLine("Systems: " + systems!.Count);
-        if (basicCalculation != null && systems!.Count > 0)
+        if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
             double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
@@ -151,8 +147,8 @@
         var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
         if (solarScoreIdTemp.Success)
         {
-            solarScoreId = solarScoreIdTemp.Value;
-            GetSolarScores(solarScoreId);
+            solarScoreId = solarScoreIdTemp.Value!;
+            await GetSolarScores(solarScoreId);
         }
         else
         {
@@ -212,7 +208,7 @@
             if(response.IsSuccessStatusCode){
                 Console.WriteLine("Success");
                 var data = await response.Content.ReadAsStringAsync();
-                solarScores = JsonSerializer.Deserialize<List<SolarScoreModel>>(data);
+                solarScores = JsonSerializer.Deserialize<List<SolarScoreModel>>(data)!;
                     if(prev == solarScores.Count){
                         count++;
                     }else{
@@ -244,7 +240,7 @@
             
             foreach(var solarScore in solarScores){
                 int add = 1;
-                if(solarScore.score.Equals("Good")){
+                if(solarScore.score!.Equals("Good")){
                     add = 3;
                 }else if(solarScore.score.Equals("Average")){
                    add = 2;
