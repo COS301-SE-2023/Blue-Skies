@@ -6,13 +6,9 @@
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
 @using ChartJs.Blazor.PieChart
-@using ChartJs.Blazor.PolarAreaChart
+@inject BlazorApp.Data.LoadingService loadingService
 
-@if(loading) {
-    <div class="fixed fade-in-enter-active cursor-wait transition-all duration-400 top-0 bg-white bottom-0 z-40  w-screen h-screen flex">
-        <img src="assets/Loader.gif" class="m-auto scale-50" />
-    </div>
-} else {
+
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class=" flex items-center justify-center lg:w-6/12 gap-4">
         <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
@@ -102,7 +98,7 @@
             <p class="">Usable Sunlight</p>
         </div>
         <div class="flex relative flex-col justify-center w-full">
-            <Chart Config="pieConfig"></Chart>
+            @* <Chart Config="pieConfig" /> *@
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
             @{
                 var dlh = 0.00;
@@ -176,7 +172,7 @@
             </div>
         </ChildContent>
     </ModalPopup>
-}
+
 @* Mobile Viewport *@
 <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
     <div class="w-full px-4 flex flex-col justify-center items-center gap-4">
@@ -267,10 +263,9 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
     private Toast successToast { get; set; } = new Toast();
-    private PieConfig pieConfig = new PieConfig();
-    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
+    @* private PieConfig? pieConfig; *@
     
 
     protected override async Task OnInitializedAsync()
@@ -380,7 +375,8 @@
     await selectedSystemChanged.InvokeAsync(selectedSystem);
     }
     private async void SaveCalculation(){
-        loading = true;
+        ModalPopup.Dismiss();
+        ShowLoadingScreen();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
         Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);
@@ -414,7 +410,6 @@
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
-        loading = false;
         NavigationManager.NavigateTo("/dashboard");
     }
     private async Task updateBasicCalculation(){
@@ -468,69 +463,33 @@
         }
     }
 
-    private void renderCharts() {
-        pieConfig = new PieConfig(true) {
+    @* private void renderCharts() {
+         pieConfig = new PieConfig(true)
+            {
                 Options = new PieOptions
                 {
                     Responsive = true,
-                    AspectRatio = 1.5,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
                     Title = new OptionsTitle
                     {
-                        Display = false,
-                        Text = "Running Hours",
+                        Display = true,
+                        Text = "Active Users",
                         FontSize = 20,
-                        Position = Position.Bottom,
-                        LineHeight = 4,
                     },
-                    Circumference = 3,
-                    Rotation = -9.341,
-                    Animation = new ArcAnimation
+                    Legend = new Legend
                     {
-                        AnimateRotate = true,
-                        Duration = 2000,
-
+                        Position = Position.Right
                     },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    CutoutPercentage = 80
                 }
             };
-        pieConfig.Data.Datasets.Clear();
 
-        foreach (string color in new[] { "Runnable Hours", "Remaining" })
+        foreach (string color in new[] { "Remaining", "Past 3 months", "Past month", "Past week" })
         {
             pieConfig.Data.Labels.Add(color);
         }
-        if (basicCalc != null)
-        { 
-        float hours = float.Parse(basicCalc.daylightHours!);
-        float remaining = (float) Math.Round(13 - hours, 2);
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-            {
-                BackgroundColor = new[] {
-                ColorUtil.ColorHexString(56,113,193),
-                ColorUtil.ColorHexString(156,163,175),
-            },
-            };
+    } *@
 
-        if (pieConfig != null)
-        {
-            pieConfig.Data.Datasets.Add(pieDataset);
-        }
-        }
-    }  
+    private void ShowLoadingScreen() {
+        loadingService.ShowLoadingScreen();
+    }
 
 }

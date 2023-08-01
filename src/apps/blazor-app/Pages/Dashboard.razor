@@ -10,6 +10,7 @@
 @using ChartJs.Blazor.PolarAreaChart
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -113,9 +114,9 @@
                             <div class="w-full flex flex-col gap-4 justify-start items-center">
                                 <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
                                 @* <div class="flex items-center text-left gap-2">
-                        <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
-                        <p class="">High Energy Consumption</p>
-                        </div> *@
+                                    <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
+                                    <p class="">High Energy Consumption</p>
+                                    </div> *@
                                 <div class="flex relative flex-col justify-center w-full">
                                     <Chart Config="polarAreaConfig"></Chart>
                                 </div>
@@ -180,6 +181,7 @@
             updateAppliances();
             renderCharts();
         }
+        loadingService.HideLoadingScreen();
     }
     private void updateAppliances()
     {
@@ -389,8 +391,7 @@ ColorUtil.ColorHexString(156,163,175),
             pieConfig.Data.Datasets.Add(pieDataset);
         }
         }
-        @* **************************************** Polar Area Chart Update Data
-************************************************ *@
+        @* **************************************** Polar Area Chart Update Data ************************************************ *@
         polarAreaConfig.Data.Datasets.Clear();
         foreach (var appliance in reportAllAppliance)
         {

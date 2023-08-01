@@ -132,6 +132,115 @@ describe('Basic Calculation Controller', () => {
     });
   });
 
+  //getCreatedBasicCalculation
+  describe('getCreatedBasicCalculation', () => {
+    it('should return a basic calculation', () => {
+      //systemId, dayLightHours, location
+      mockRequest = {
+        body: {
+          systemId: 1,
+          dayLightHours: 1,
+          location: 'Test Location',
+        },
+      };
+
+      basicCalculationController.getCreatedBasicCalculation(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+    });
+
+    //400 error
+    it('should return 400 if error', () => {
+      //systemId, dayLightHours, location
+      mockRequest = {
+        body: {
+          systemId: 1,
+          dayLightHours: 1,
+          location: 'Test Location',
+        },
+      };
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Query failed'));
+        }
+      );
+
+      basicCalculationController.getCreatedBasicCalculation(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Query failed',
+      });
+    });
+
+    //500 error
+    it('should return 500 if error', () => {
+      //systemId, dayLightHours, location
+      mockRequest = {
+        body: {
+          systemId: 1,
+          dayLightHours: 1,
+          location: 'Test Location',
+        },
+      };
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+
+      basicCalculationController.getCreatedBasicCalculation(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Error thrown',
+      });
+    });
+
+    //404 error
+    it('should return 404 if error', () => {
+      //systemId, dayLightHours, location
+      mockRequest = {
+        body: {
+          systemId: 1,
+          dayLightHours: 1,
+          location: 'Test Location',
+        },
+      };
+
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+
+      basicCalculationController.getCreatedBasicCalculation(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Basic calculation does not exist.',
+      });
+    });
+  });
+
   // Get All Basic Calculations
 
   describe('getAllBasicCalculations', () => {
