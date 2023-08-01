@@ -17,8 +17,8 @@
         @if(isToastVisible) {
             string move = isScrollingDown ? "-translate-y-20" : "translate-y-0";
             <div class="@move @animation flex-col w-full gap-4 transition-all p-2 duration-300 delay-300 h-20 flex z-50 fixed top-28 left-9">
-                <Toast Type="info" Title="Yes uit works!">
-                    <p>Hello</p>
+                <Toast Type="@type" Title="@title">
+                    <p>@message</p>
                 </Toast>
             </div>
         }
@@ -38,6 +38,10 @@
     private bool isToastVisible = false;
     private bool isScrollingDown = false;
     private string animation = "toast-slide-in";
+    private string title = "";
+    private string message = "";
+    private string type = "";
+
 
 
      protected override void OnInitialized()
@@ -62,7 +66,11 @@
         StateHasChanged();
     }
 
-    public void ShowToast(string message, string type) {
+    public void ShowToast(string title, string message, string type) {
+        this.title = title;
+        this.message = message;
+        this.type = type;
+
         animation = "toast-slide-in";
         isToastVisible = true;
         StateHasChanged();

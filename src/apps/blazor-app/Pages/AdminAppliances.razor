@@ -7,6 +7,7 @@
 @using System.Text.Json;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -155,7 +156,8 @@
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully", "error");
+            @* deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully", "error"); *@
+            toastService.ShowToast("Appliance Deleted", "The appliance has been deleted successfully", "error");
             await GetAppliances();
         }
         else
@@ -208,7 +210,8 @@
             var response = await client.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                successToast.Show("Appliance Added", "The appliance has been added successfully", "success");
+                @* successToast.Show("Appliance Added", "The appliance has been added successfully", "success"); *@
+                toastService.ShowToast("Appliance Added", "The appliance has been added successfully", "success");
                 await GetAppliances();
             }
             else
@@ -229,7 +232,8 @@
             var response = await client.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                successToast.Show("Appliance Updated", "The appliance has been updated successfully", "success");
+                @* successToast.Show("Appliance Updated", "The appliance has been updated successfully", "success"); *@
+                toastService.ShowToast("Appliance Updated", "The appliance has been updated successfully", "success");
                 await GetAppliances();
             }
             else
