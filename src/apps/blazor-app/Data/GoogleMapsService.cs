@@ -13,17 +13,28 @@ public class GoogleMapsService
         _httpClient = httpClient;
     }
 
-    public async Task<byte[]> GetStaticMapImageAsync(double latitude, double longitude, int zoom, int width, int height)
+    public async Task<byte[]> GetStaticMapImageAsync(
+        double latitude,
+        double longitude,
+        int zoom,
+        int width,
+        int height
+    )
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/googlemapskey");
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/SolarScore/googlemapskey"
+        );
         var response = await _httpClient.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK){
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
             apiKey = await response.Content.ReadAsStringAsync();
         }
         apiKey = apiKey.Trim('"');
 
         Console.WriteLine($"Getting map image for {latitude}, {longitude}");
-        var url = $"https://maps.googleapis.com/maps/api/staticmap?center={longitude},{latitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&markers=color:red|{latitude},{longitude}&key={apiKey}";
+        var url =
+            $"https://maps.googleapis.com/maps/api/staticmap?center={longitude},{latitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
         return await _httpClient.GetByteArrayAsync(url);
     }
 }
