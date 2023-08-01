@@ -1,11 +1,13 @@
 import express from 'express'; // import express
 import request from 'supertest'; // import supertest
+import bodyParser from 'body-parser';
+import router from '../../routes';
 import ISystem from '../../models/system.interface';
-import { systemRouter } from '../../routes/system/system.router';
 
 const app = express(); // an instance of an express app, a 'fake' express app
-app.use('/system', systemRouter); // routes
-
+app.use(bodyParser.json());
+app.use('/', router); // routes
+//mock the main file
 jest.mock('../../main', () => {
   return {
     connection: {
@@ -14,19 +16,9 @@ jest.mock('../../main', () => {
   };
 });
 
-// Mock the dependencies and modules
 jest.mock('tedious', () => ({
   Request: jest.fn().mockImplementation((query, callback) => {
-    // Simulate a successful query with mock data
-    // Simulate a successful query with mock data
-    if (query.includes('WHERE keyId = 1')) {
-      callback(null, 1);
-    } else {
-      callback(null, 0);
-    }
-    const rowCount = 2;
-
-    callback(null, rowCount);
+    callback(null, 1);
   }),
   ColumnValue: jest.fn(),
 }));
@@ -57,13 +49,14 @@ describe('Test the system path', () => {
   //Get all systems
   it('Get all systems', async () => {
     const response = await request(app).get('/system/all');
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([] as ISystem[]);
   });
 
   //Get a system
   it('Get a system', async () => {
     const response = await request(app).get('/system/1');
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(200);
   });
 
   //Update a system
@@ -76,6 +69,18 @@ describe('Test the system path', () => {
       solarInput: 1,
     };
     const response = await request(app).patch('/system/update/1').send(body);
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      message: 'System updated successfully.',
+    });
+  });
+
+  //Delete a system
+  it('Delete a system', async () => {
+    const response = await request(app).delete('/system/delete/1');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+      message: 'System deleted successfully.',
+    });
   });
 });
