@@ -9,7 +9,7 @@
 @inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-    <div class="fade-in-enter-active">
+    <div class="fade-in-active">
         @if(!isLoaded){}
         else if (!logIn) {
             ProtectedLocalStore.SetAsync("redirect", "advanced");
@@ -54,7 +54,6 @@
         isAd = isAdmin.Value;
         isLoaded = true;
         var bCalc = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        Console.WriteLine("Value" + bCalc);
         var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
