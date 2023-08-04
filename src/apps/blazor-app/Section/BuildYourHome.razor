@@ -273,8 +273,7 @@
         Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
         var bas = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        basicCalc = bas.Value!;  
-        Console.WriteLine("BasicCalculationId: " + basicCalc.basicCalculationId);     
+        basicCalc = bas.Value!;
         userId = Convert.ToInt32(usId.Value);
         @* renderCharts(); *@
 

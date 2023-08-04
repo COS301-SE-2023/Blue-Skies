@@ -20,11 +20,14 @@ The evaluation will incorporate a trained AI model to detect the average sunligh
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification.pdf">Functional Requirements</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Software%20Requirements%20Specification%20Version%202.pdf">Functional Requirements Version 2</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Architectural%20Requirements.pdf">Architecture Requirements<a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Architectural%20Requirements%20Version%202.pdf">Architecture Requirements Version 2<a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Coding%20Standards.pdf">Coding Standards</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/User%20Manual.pdf">User Manual</a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Technical%20Installation%20Manual.pdf">Technical Installation Manual</a><br>
 
 ## Github Project Board
-<a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a>
+<a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a><br>
+<a href="https://boundless-gaura-8c7.notion.site/Blue-Skies-Project-Overview-7745bc1e3c35451ab73a56739ea14242">Scrum Board</a>
 
 ## Description of each member
 | Picture        | Roles | Description  | Socials |
