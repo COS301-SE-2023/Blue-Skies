@@ -1,5 +1,3 @@
-# python3 getImageBase64.py -25.771 28.357 2022 3 solarScoreId
-
 import os
 import sys
 import concurrent.futures

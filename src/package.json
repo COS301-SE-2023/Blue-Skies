@@ -8,7 +8,7 @@
     "start:app": "nx serve blazor-app",
     "start:api": "nx serve api",
     "start:express": "nx serve services",
-    "start:tailwind": "cd apps/blazor-app && npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch",
+    "start:tailwind": "cd apps/blazor-app & npx tailwindcss -i ./Styles/app.css -o ./wwwroot/css/app.css --watch",
     "dev": "concurrently --kill-others \"yarn start:express\" \"yarn start:api\" \"yarn start:app\" \"yarn start:tailwind\""
   },
   "private": true,
