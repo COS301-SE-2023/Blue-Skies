@@ -1,17 +1,16 @@
 @page "/dashboard"
-@using System
 @layout MainLayout
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+@using System
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
 @using BlazorApp.Models
 @using System.Text.Json
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.PolarAreaChart
-@inject ProtectedLocalStorage ProtectedLocalStore
-@inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -37,7 +36,7 @@
                     selectedDate = reports[selectedReport].dateCreated;
                     }
                 }
-                <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
+                <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports"
                     dateCreated="selectedDate" />
                 <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" />
                 <div class="mt-10 w-full">
@@ -151,7 +150,6 @@
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
-    private List<string> userReportNames = new List<string>();
     private List<ReportAllModel> reportAll = new List<ReportAllModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
@@ -170,6 +168,7 @@
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
+       
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         userId = usId.Value;
@@ -184,6 +183,7 @@
         }
         loadingService.HideLoadingScreen(); 
     }
+
     private void updateAppliances()
     {
         reportAllAppliance.Clear();
@@ -242,10 +242,6 @@
             if (reportAll.Count > 0)
             {
                 await ProtectedLocalStore.SetAsync("reportAll", reportAll);
-            }
-            foreach (var report in reportAll)
-            {
-                userReportNames.Add(report.reportName!);
             }
         isLoaded = true;
 
@@ -464,7 +460,6 @@ ColorUtil.ColorHexString(56,113,193),
 ColorUtil.ColorHexString(0,15,82),
 }
                     };
-                Console.WriteLine("4");
                 break;
             case 5:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
