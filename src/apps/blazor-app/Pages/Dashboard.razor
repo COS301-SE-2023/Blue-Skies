@@ -91,22 +91,22 @@
                                     var imageName = "";
                                     if (reportAll.Count > selectedReport)
                                     {
-                                    var sysSize = reportAll[selectedReport].systemSize;
-                                    if (sysSize != null)
-                                    {
-                                        if (sysSize.Equals("Small"))
+                                        var sysSize = reportAll[selectedReport].systemSize;
+                                        if (sysSize != null)
                                         {
-                                            imageName = "House 3.svg";
-                                        }
-                                        else if (sysSize.Equals("Medium"))
-                                        {
-                                            imageName = "House 2.svg";
-                                        }
-                                        else if (sysSize.Equals("Large"))
-                                        {
-                                            imageName = "House 1.svg";
-                                        }
-                                    }   
+                                            if (sysSize.Equals("Small"))
+                                            {
+                                                imageName = "House 3.svg";
+                                            }
+                                            else if (sysSize.Equals("Medium"))
+                                            {
+                                                imageName = "House 2.svg";
+                                            }
+                                            else
+                                            {
+                                                imageName = "House 1.svg";
+                                            }
+                                        }   
                                     }
                                 }
                                 <Image ImageName=@imageName alt="House" css="scale-90" />
@@ -373,11 +373,10 @@
             pieConfig.Data.Labels.Add(color);
         }
         if (reportAll.Count > 0)
-        {
-            
-        float hours = reportAll[selectedReport].daylightHours;
-        float remaining = (float)Math.Round(13 - hours, 2);
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
+        { 
+            float hours = reportAll[selectedReport].daylightHours;
+            float remaining = (float)Math.Round(13 - hours, 2);
+            PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {
                 BackgroundColor = new[] {
                     ColorUtil.ColorHexString(56,113,193),
@@ -389,8 +388,11 @@
                 pieConfig.Data.Datasets.Add(pieDataset);
             }
         }
+
+
         @* **************************************** Polar Area Chart Update Data ************************************************ *@
         polarAreaConfig.Data.Datasets.Clear();
+        polarAreaConfig.Data.Labels.Clear();
         int countData = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)
         {
@@ -399,6 +401,7 @@
                 countData++;
             }
         }
+        
         int[] powerUsageData = new int[countData];
         int counter = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)
