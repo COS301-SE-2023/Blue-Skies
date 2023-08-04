@@ -145,7 +145,7 @@
             Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
         isLoaded = true;
-        var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
+        @* var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
         if (solarScoreIdTemp.Success && solarScoreIdTemp.Value != null)
         {
             solarScoreId = solarScoreIdTemp.Value!;
@@ -154,7 +154,9 @@
         else
         {
             Console.WriteLine("Failed to get solarScoreId");
-        }
+        } *@
+        //solarScore generate a random number between 0 and 100
+        solarScore = new Random().Next(0, 100);
         
 
         
