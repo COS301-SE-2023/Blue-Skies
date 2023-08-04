@@ -115,6 +115,7 @@
     public string solarScoreId = "";
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
+
     protected override async Task OnInitializedAsync()
     {
         //get solarScoreId
@@ -135,9 +136,8 @@
         }
         else
         {
-            Console.WriteLine("Unsuccess");
+            Console.WriteLine("Failed to get daylight hours");
         }
-        Console.WriteLine("Systems: " + systems!.Count);
         if (basicCalculation != null && systems!.Count > 0)
         {
             double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
@@ -149,14 +149,14 @@
         }
         isLoaded = true;
         var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
-        if (solarScoreIdTemp.Success)
+        if (solarScoreIdTemp.Success && solarScoreIdTemp.Value != null)
         {
             solarScoreId = solarScoreIdTemp.Value;
             GetSolarScores(solarScoreId);
         }
         else
         {
-            Console.WriteLine("Unsuccess");
+            Console.WriteLine("Failed to get solarScoreId");
         }
         
 
@@ -226,7 +226,6 @@
                 Console.WriteLine("Failed");
                 solarScores = new List<SolarScoreModel>();
             }
-            Console.WriteLine(solarScores.Count);
 
             if(count >= max){
                 break;
