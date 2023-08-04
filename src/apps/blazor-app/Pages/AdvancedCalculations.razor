@@ -9,7 +9,7 @@
 @inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-    <div class="fade-in-enter-active">
+    <div class="fade-in-active">
         @if(!isLoaded){}
         else if (!logIn) {
             ProtectedLocalStore.SetAsync("redirect", "advanced");

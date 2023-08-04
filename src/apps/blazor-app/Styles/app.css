@@ -7,10 +7,6 @@ body {
 }
 
 /* Fade-In Transition */
-.fade-in-enter-active {
-    animation: fadeIn .6s;
-}
-/* Fade-In Transition */
 .fade-in-active {
     animation: fadeIn .3s;
 }
