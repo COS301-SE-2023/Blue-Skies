@@ -1,3 +1,5 @@
 .DS_Store
 src/apps/machine-learning/DeepLearning_ImageClassification/assets
 src/apps/machine-learning/DeepLearning_ImageClassification/bin
+src/apps/machine-learning/assets
+src/apps/machine-learning/DeepLearning_ImageClassification/.vs
