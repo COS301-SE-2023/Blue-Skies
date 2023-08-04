@@ -4,7 +4,7 @@
 @inject IJSRuntime JSRuntime
 @using System.Text.Json
 @using BlazorApp.Models
-
+@inject IJSRuntime JS
 <Card css="flex w-full justify-evenly">
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
@@ -33,7 +33,7 @@
     </Heading>
     <Button style="pill" css="h-14">
         <content>
-            <a href="#" class="text-sm font-semibold hover:text-white">Generate Report</a>
+            <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
         </content>
     </Button>
 </Card>
@@ -81,6 +81,11 @@
             }
         }
         await ProtectedSessionStore.DeleteAsync("createdReport");
+    }
+
+    //GenerateReport
+    private async void GenerateReport(){
+        await JSRuntime.InvokeVoidAsync("GenerateReport");
     }
 
 }
