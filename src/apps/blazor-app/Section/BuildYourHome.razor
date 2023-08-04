@@ -391,6 +391,7 @@
 
             Console.WriteLine("Report created successfully");
             int reportId = await GetCreatedReportId();
+            await ProtectedSessionStore.SetAsync("createdReport", reportId);
             foreach (var appliance in appliances)
             {
                 var request1 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
@@ -411,7 +412,6 @@
         else
         {
             Console.WriteLine("Failed to create report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         NavigationManager.NavigateTo("/dashboard");
     }
