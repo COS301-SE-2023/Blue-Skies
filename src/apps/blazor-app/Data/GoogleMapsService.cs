@@ -13,8 +13,13 @@ public class GoogleMapsService
         _httpClient = httpClient;
     }
 
-    public async Task<byte[]> GetStaticMapImageAsync(double longitude, double latitude, int zoom, int width, int height)
-
+    public async Task<byte[]> GetStaticMapImageAsync(
+        double longitude,
+        double latitude,
+        int zoom,
+        int width,
+        int height
+    )
     {
         var request = new HttpRequestMessage(
             HttpMethod.Get,
@@ -29,7 +34,7 @@ public class GoogleMapsService
 
         Console.WriteLine($"Getting map image for {latitude}, {longitude}");
         var url =
-            $"https://maps.googleapis.com/maps/api/staticmap?center={longitude},{latitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
+            $"https://maps.googleapis.com/maps/api/staticmap?center={longitude},{latitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&markers=color:red|{latitude},{longitude}&key={apiKey}";
         return await _httpClient.GetByteArrayAsync(url);
     }
 }
