@@ -266,6 +266,7 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     @* private PieConfig? pieConfig; *@
+    float runningHoursPercentage = 0f;
     
 
     protected override async Task OnInitializedAsync()
@@ -443,7 +444,6 @@
                     Console.WriteLine("Failed to update Basic Calculation");
                 }
     }
-
     private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
@@ -468,8 +468,6 @@
             return -1;
         }
     }
-
- 
     private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
@@ -489,7 +487,7 @@
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nondaylightHours = 24 -float.Parse(basicCalc.daylightHours!);
-        float runningHoursPercentage = (runningHours / nondaylightHours) * 100;
+        runningHoursPercentage = (runningHours / nondaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
             runningHoursPercentage = 100;
