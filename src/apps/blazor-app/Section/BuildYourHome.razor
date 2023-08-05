@@ -414,6 +414,7 @@
         }
         NavigationManager.NavigateTo("/dashboard");
     }
+
     private async Task updateBasicCalculation(){
         var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
@@ -427,6 +428,8 @@
                     + basicCalc.location
                     + "\",\r\n        \"batteryLife\": "
                     + basicCalc.batteryLife
+                    + ",\r\n        \"image\": \""
+                    + basicCalc.image
                     + "\r\n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
