@@ -157,7 +157,7 @@
         } *@
         //solarScore generate a random number between 0 and 100
         solarScore = new Random().Next(0, 100);
-        
+        await ProtectedSessionStore.SetAsync("solarScore",solarScore);
 
         
     }

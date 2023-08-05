@@ -276,7 +276,7 @@
         basicCalc = bas.Value!;
         userId = Convert.ToInt32(usId.Value);
         @* renderCharts(); *@
-
+        CalculateRunningHours();
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
@@ -288,6 +288,7 @@
         StateHasChanged();
         appliance.quantity++;
         updateApplianceStorage();
+        CalculateRunningHours();
     }
     private async void DecrementApplianceCount(ApplianceModel appliance) {
         if (appliance.quantity == 1) {
@@ -299,6 +300,7 @@
         appliance.fade = "fade-in-active";
         StateHasChanged();
         updateApplianceStorage();
+         CalculateRunningHours();
     }
     private async void updateApplianceStorage()
     {
@@ -465,7 +467,38 @@
         }
     }
 
-    @* private void renderCharts() {
+ 
+    private void ShowLoadingScreen() {
+        loadingService.ShowLoadingScreen();
+    }
+
+    //Calculate running hours
+    private void CalculateRunningHours() {
+        //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
+        // % = (running hours / non-daylight hours) * 100
+        int numBatteries = systems[selectedSystem].numberOfBatteries;
+        int batteryStorage = systems[selectedSystem].batterySize;
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+
+            sumOfAppliances += appliance.quantity * appliance.powerUsage;
+        }
+
+        float runningHours = sumOfAppliances / (numBatteries * batteryStorage);
+        Console.WriteLine("runningHours: " + runningHours);
+        float nondaylightHours = 24 -float.Parse(basicCalc.daylightHours!);
+        Console.WriteLine("daylightHours: " + nondaylightHours);
+        float runningHoursPercentage = (runningHours / nondaylightHours) * 100;
+        if(runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);
+    }
+
+       @* private void renderCharts() {
          pieConfig = new PieConfig(true)
             {
                 Options = new PieOptions
@@ -490,8 +523,5 @@
         }
     } *@
 
-    private void ShowLoadingScreen() {
-        loadingService.ShowLoadingScreen();
-    }
 
 }
