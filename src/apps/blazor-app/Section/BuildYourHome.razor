@@ -1,4 +1,5 @@
 @using BlazorApp.Components
+@using BlazorApp.Components.Base
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -221,16 +222,40 @@
                 fill="#BEBEBE" />
         </svg>
     </div>
-    <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 justify-center">
-        <h1 class="text-base col-span-2 font-medium text-center mb-2 -mt-6 text-primary-900">Select Appliances</h1>
-        <Appliance ImageName="Fridge.svg" Name="Fridge" />
-        <Appliance ImageName="Microwave.svg" Name="Microwave" />
-        <Appliance ImageName="Kettle.svg" Name="Kettle" />
-        <Appliance ImageName="CCTV.svg" Name="CCTV" />
-        <Appliance ImageName="LED Lights.svg" Name="LED Lights" />
-        <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" />
-        <Appliance ImageName="Computer.svg" Name="Computer" />
-        <Appliance ImageName="TV.svg" Name="TV" />
+    <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
+    <div class="flex justify-center items-center  my-7">
+            <Tabs @bind-Items="tabs"></Tabs>
+    </div>
+    <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+        @if(tabs[0].active) {
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                    </div>
+                } else {
+                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                    </div>
+                }
+            }
+        } else {
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                    </div>
+                } else {
+                    <div class="fade-in-active">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                    </div>
+                }
+            }
+        }
     </div>
     <div class="flex mt-10 mx-auto gap-6 items-center>">
         <Button css="h-16 w-full" style="outline">
@@ -265,7 +290,11 @@
     private int userId = -1;
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
-    @* private PieConfig? pieConfig; *@
+    private List<TabItemModel> tabs = new List<TabItemModel>
+    {
+        new TabItemModel("Add", true),
+        new TabItemModel("Remove", false)
+    };
     float runningHoursPercentage = 0f;
     
 
@@ -390,7 +419,6 @@
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            @* successToast.Show("Saved", "Report successfuly saved.", "success"); *@
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
             Console.WriteLine("Report created successfully");
