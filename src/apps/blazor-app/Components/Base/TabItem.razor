@@ -1,0 +1,10 @@
+<div class="w-full p-1 text-center transition-all duration-200 rounded-lg @(Active ? "bg-primary-400" : "bg-primary-100") ">
+    <p class="@(Active ? "text-white" : "text-primary-950") text-center font-medium transition-all duration-200">@Title</p>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; } = "default";
+    [Parameter]
+    public bool Active { get; set; } = false;
+}
