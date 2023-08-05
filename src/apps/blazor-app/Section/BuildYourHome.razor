@@ -311,6 +311,7 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
+        CalculateRunningHours();
     }
     private void ApplyTemplate(ChangeEventArgs e) {
         switch (e.Value)
@@ -363,18 +364,19 @@
         }
     }
     private async void ResetHome(){
-    Console.WriteLine("Resetting"); 
-    await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
-    appliances[0].quantity = 0;
-    appliances[1].quantity = 0;
-    appliances[2].quantity = 0;
-    appliances[3].quantity = 0;
-    appliances[4].quantity = 0;
-    appliances[5].quantity = 0;
-    appliances[6].quantity = 0;
-    appliances[7].quantity = 0;
-    selectedSystem = 0;
-    await selectedSystemChanged.InvokeAsync(selectedSystem);
+        Console.WriteLine("Resetting"); 
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
+        appliances[0].quantity = 0;
+        appliances[1].quantity = 0;
+        appliances[2].quantity = 0;
+        appliances[3].quantity = 0;
+        appliances[4].quantity = 0;
+        appliances[5].quantity = 0;
+        appliances[6].quantity = 0;
+        appliances[7].quantity = 0;
+        selectedSystem = 0;
+        await selectedSystemChanged.InvokeAsync(selectedSystem);
+        CalculateRunningHours();
     }
     private async void SaveCalculation(){
         ModalPopup.Dismiss();
@@ -476,20 +478,17 @@
     private void CalculateRunningHours() {
         //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
         // % = (running hours / non-daylight hours) * 100
-        int numBatteries = systems[selectedSystem].numberOfBatteries;
-        int batteryStorage = systems[selectedSystem].batterySize;
+        int numBatteries = systems[selectedSystem].numberOfBatteries; 
+        int batteryStorage = systems[selectedSystem].batterySize *1000; // kwh
         float sumOfAppliances = 0f;
 
         foreach (var appliance in appliances)
         {
-
-            sumOfAppliances += appliance.quantity * appliance.powerUsage;
+            sumOfAppliances += appliance.quantity * appliance.powerUsage ;
         }
 
-        float runningHours = sumOfAppliances / (numBatteries * batteryStorage);
-        Console.WriteLine("runningHours: " + runningHours);
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nondaylightHours = 24 -float.Parse(basicCalc.daylightHours!);
-        Console.WriteLine("daylightHours: " + nondaylightHours);
         float runningHoursPercentage = (runningHours / nondaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
