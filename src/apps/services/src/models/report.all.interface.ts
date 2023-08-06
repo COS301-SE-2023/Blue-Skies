@@ -21,4 +21,6 @@ export default interface IReportAll {
   batterySize: number;
   numberOfBatteries: number;
   solarInput: number;
+  image: string;
+  batteryLife: number;
 }
