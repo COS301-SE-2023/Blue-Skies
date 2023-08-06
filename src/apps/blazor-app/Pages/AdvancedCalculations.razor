@@ -39,7 +39,6 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
     private int selectedSystem = 0;
@@ -53,14 +52,13 @@
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         isAd = isAdmin.Value;
         isLoaded = true;
-        var bCalc = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        Console.WriteLine("Value" + bCalc);
+        var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
         var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
         solarScore = sScore.Value;
-        basicCalculation = bCalc.Value!;
-        
+        await getBasicCalculation(bCalcId.Value);
+
         var load = await ProtectedSessionStore.GetAsync<bool>("load");
         loading = load.Value;
         await GetAppliancesAsync();
@@ -112,5 +110,27 @@
         {
             Console.WriteLine("Failed");
         }
+    }
+
+    private async Task getBasicCalculation(int id)
+    {
+        Console.WriteLine("Getting created basic calculation id");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/get/" + id);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            basicCalculation = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            Console.WriteLine("Got basic calculation");
+        }
+        else
+        {
+            Console.WriteLine("Failed to get basic calculation");
+        }
+        return;
     }
 }

@@ -301,8 +301,6 @@
     {
         Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
-        var bas = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        basicCalc = bas.Value!;
         userId = Convert.ToInt32(usId.Value);
         @* renderCharts(); *@
         CalculateRunningHours();
@@ -446,7 +444,6 @@
         }
         NavigationManager.NavigateTo("/dashboard");
     }
-
     private async Task updateBasicCalculation(){
         var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
@@ -501,8 +498,6 @@
     private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
-
-    //Calculate running hours
     private void CalculateRunningHours() {
         //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
         // % = (running hours / non-daylight hours) * 100
@@ -516,7 +511,7 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nondaylightHours = 24 -float.Parse(basicCalc.daylightHours!);
+        float nondaylightHours = 24 - float.Parse(basicCalc.daylightHours!);
         runningHoursPercentage = (runningHours / nondaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
