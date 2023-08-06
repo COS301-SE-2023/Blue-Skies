@@ -5,7 +5,7 @@
 @using System.Text.Json
 @using BlazorApp.Models
 @inject IJSRuntime JS
-<Card css="flex w-full justify-evenly">
+<Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
@@ -31,7 +31,7 @@
             <h1 class="text-lg">@date</h1>
         </Header>
     </Heading>
-    <Button style="pill" css="h-14">
+    <Button style="pill" css="h-14 max-w-sm">
         <content>
             <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
         </content>
