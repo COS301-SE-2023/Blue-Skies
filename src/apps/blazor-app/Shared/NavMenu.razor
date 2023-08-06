@@ -1,4 +1,5 @@
 ﻿@using BlazorApp.Components.Base
+@using BlazorApp.Components
 @using System
 @inject IJSRuntime JSRuntime
 @inject ProtectedLocalStorage ProtectedLocalStore
@@ -67,10 +68,29 @@
         </a>
       </div>
       @if(currentPage == "dashboard"){
-        
+        <ModalPopup @ref="ModalPopup" Title="Delete Record?">
+          <ChildContent>
+            <p>Are you sure that you want to delete this record?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="Delete">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+      </ModalPopup>
+
         <div class="fixed toast-slide-in top-5 left-3 flex flex-col-reverse justify-start items-start gap-4 z-30 transition-all duration-300 delay-300 @(isScrollingDown? "translate-y-0" : "translate-y-24")">
-          <a onclick="@(() => Delete())" href="/">
-            <div class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
+          
+            <div @onclick="ShowModal" class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
               <div class="scale-75">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path class="group-hover:fill-red-accent-500 transition-colors duration-300" d="M3 6.38597C3 5.90152 3.34538 5.50879 3.77143 5.50879L6.43567 5.50832C6.96502 5.49306 7.43202 5.11033 7.61214 4.54412C7.61688 4.52923 7.62232 4.51087 7.64185 4.44424L7.75665 4.05256C7.8269 3.81241 7.8881 3.60318 7.97375 3.41617C8.31209 2.67736 8.93808 2.16432 9.66147 2.03297C9.84457 1.99972 10.0385 1.99986 10.2611 2.00002H13.7391C13.9617 1.99986 14.1556 1.99972 14.3387 2.03297C15.0621 2.16432 15.6881 2.67736 16.0264 3.41617C16.1121 3.60318 16.1733 3.81241 16.2435 4.05256L16.3583 4.44424C16.3778 4.51087 16.3833 4.52923 16.388 4.54412C16.5682 5.11033 17.1278 5.49353 17.6571 5.50879H20.2286C20.6546 5.50879 21 5.90152 21 6.38597C21 6.87043 20.6546 7.26316 20.2286 7.26316H3.77143C3.34538 7.26316 3 6.87043 3 6.38597Z" fill="#1C274C"/>
@@ -81,7 +101,7 @@
               </div>
               <p class="">Delete</p>
             </div>
-          </a>
+          
 
           <a onclick="@(() => Edit())" href="/">
             <div class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
@@ -148,8 +168,11 @@
     private string userEmail = "";
     private bool collapseNavMenu = false;
     private string currentPage = "";
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private ReportModel report = new ReportModel();
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     private void ToggleNavMenu()
     {
@@ -181,6 +204,8 @@
     protected override async Task OnInitializedAsync()
     {
       var result = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+      var repId = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+      report = repId!.Value;
 
       if (result.Success)
       {
@@ -234,13 +259,32 @@
       StateHasChanged();
     }
 
+    private void ShowModal()
+    {
+        ModalPopup.Show();
+    }
+
     private async void Edit(){
         await ProtectedSessionStore.SetAsync("edit", true);
         navigationManager.NavigateTo("/advanced");
     }
 
-    private void Delete(){
-     
+    private async Task Delete(){
+        ModalPopup.Dismiss();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
+        var content = new StringContent("{\r\n  \"reportId\": " + report.reportId +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            
+            Console.WriteLine("Delete");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete"); 
+        }
     }
 
 } 
