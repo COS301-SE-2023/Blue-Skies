@@ -8,7 +8,9 @@
         <div class="grid grid-cols-1 gap-4">
             @foreach (AccordionItemModel item in items)
             {
-                <AccordionItem item="item" @OnClick="SetActive(item)" />
+                <div onclick="@(() => SetActive(item))" class="">
+                    <AccordionItem item="@item" />
+                </div>
             }
         </div>
         break;
@@ -16,7 +18,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl p-5 mx-auto">
             @foreach (AccordionItemModel item in items)
             {
-                <AccordionItem item="@item" />
+                <div onclick="@(() => SetActive(item))" class="">
+                    <AccordionItem item="@item"  />
+                </div>
             }
         </div>
         break;
@@ -36,17 +40,24 @@
 
     private void SetActive(AccordionItemModel item)
     {
-        Console.WriteLine("Accordion item Clicked:" + item.id + " - Accordion.razor, line 39");
         foreach (AccordionItemModel i in items)
         {
-            if (i.id == item.id)
+            if (i == item)
             {
-                i.active = true;
+                if (i.active)
+                {
+                    i.active = false;
+                }
+                else
+                {
+                    i.active = true;
+                }
             }
             else
             {
                 i.active = false;
             }
+            StateHasChanged();
         }
     }
 }
