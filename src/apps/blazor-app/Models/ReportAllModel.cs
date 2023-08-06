@@ -22,4 +22,6 @@ public class ReportAllModel
     public int batterySize { get; set; }
     public int numberOfBatteries { get; set; }
     public int solarInput { get; set; }
+    public string? image { get; set; }
+    public int batteryLife { get; set; }
 }

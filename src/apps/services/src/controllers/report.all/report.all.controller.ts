@@ -51,6 +51,8 @@ export default class ReportAllController {
           batterySize: columns[19].value,
           numberOfBatteries: columns[20].value,
           solarInput: columns[21].value,
+          image: columns[22].value,
+          batteryLife: columns[23].value,
         };
 
         reportAlls.push(reportAll);
@@ -112,6 +114,8 @@ export default class ReportAllController {
           batterySize: columns[19].value,
           numberOfBatteries: columns[20].value,
           solarInput: columns[21].value,
+          image: columns[22].value,
+          batteryLife: columns[23].value,
         };
       });
 
@@ -172,6 +176,8 @@ export default class ReportAllController {
           batterySize: columns[19].value,
           numberOfBatteries: columns[20].value,
           solarInput: columns[21].value,
+          image: columns[22].value,
+          batteryLife: columns[23].value,
         };
         reportAlls.push(reportAll);
       });
