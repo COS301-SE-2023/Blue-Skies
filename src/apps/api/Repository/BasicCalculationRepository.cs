@@ -45,7 +45,9 @@ public class BasicCalculationRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error in function GetAllBasicCalculations");
+                Console.WriteLine(
+                    ".NET: Database Connection Error in function GetAllBasicCalculations"
+                );
                 return new List<BasicCalculation>();
             }
         }
@@ -53,6 +55,43 @@ public class BasicCalculationRepository
         {
             Console.WriteLine(".NET: Database Connection Error: " + e.Message);
             throw new Exception("Database Connection Error");
+        }
+    }
+
+    public async Task<BasicCalculation> GetBasicCalculation(int id)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/basicCalculation/" + id
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                //Console.WriteLine(data);
+                var basicCalculation = JsonSerializer.Deserialize<BasicCalculation>(data);
+                if (basicCalculation != null)
+                {
+                    Console.WriteLine(".NET: basicCalculation found by id");
+                    return basicCalculation;
+                }
+                Console.WriteLine(".NET: basicCalculation not found");
+                return new BasicCalculation();
+            }
+            else
+            {
+                Console.WriteLine(".NET: Error getting basicCalculation");
+                throw new Exception("Error getting basicCalculation");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(".NET: Database Error: " + e.Message);
+            throw new Exception("Database Error: " + e.Message);
         }
     }
 

@@ -1,5 +1,6 @@
 @using BlazorApp.Components.Base
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
 @inject IJSRuntime JSRuntime
@@ -42,7 +43,7 @@
     [Parameter]
     public EventCallback<int> selectedReportChanged { get; set; }
     [Parameter]
-    public List<string>? userReports { get; set; }
+    public List<ReportModel>? userReports { get; set; }
     [Parameter]
     public DateTime? dateCreated { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");

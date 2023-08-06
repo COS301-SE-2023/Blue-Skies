@@ -44,13 +44,22 @@
     private readonly int zoom = 19;
     private readonly int width = 600;
     private readonly int height = 500;
-    public bool loading = false;
+    private byte[] imageBytes = new byte[0];
+    private BasicCalculationModel basicCalc = new BasicCalculationModel();
+    int systemId = 2;
+    int batteryLife = 10;
+    string location = "";
+    float dayLightHours = 5f;
+
+
+
 
     protected override async Task OnInitializedAsync()
     {
         var par = await ProtectedSessionStore.GetAsync<string>("parent");
         parent = par.Value!;
     }
+
     public async void saveBasicCalculation()
     {
 
@@ -67,9 +76,7 @@
         longitude = cord[1];
 
 
-        int systemId = 2;
-        Console.WriteLine("Getting daylight hours");
-        float dayLightHours = await getDayLightHours(latitude, longitude);
+        dayLightHours = await getDayLightHours(latitude, longitude);
 
         Random rand = new Random();
         string solarScoreId = "";
@@ -85,37 +92,29 @@
 
         @* GetImages(longitude, latitude, solarScoreId); *@
 
-        Console.WriteLine("Got daylight hours: " + dayLightHours);
-        string location = "";
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
-        int batteryLife = 10;
         //Convert float to int
         int solarScore = 50;
         await ProtectedSessionStore.SetAsync("solarScore", solarScore);
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
-        Console.WriteLine("Get Images");
+
         await DownloadImage();
-        
-        if(parent.Equals("solarScore")) {
-            await DownloadImage();
-            string img = Convert.ToBase64String(File.ReadAllBytes("wwwroot/assets/map_image.png"));
-            await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
-        } else {
-            Console.WriteLine("Navigating to solar score");
+        Console.WriteLine("Finished downloading image");
+
+        if(parent.Equals("index")) {
+            await ProtectedSessionStore.DeleteAsync("parent");
             NavigationManager.NavigateTo("/solarScore");
-            await DownloadImage();
-            string img = Convert.ToBase64String(File.ReadAllBytes("wwwroot/assets/map_image.png"));
-            await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
+        } else {
+            await ProtectedSessionStore.DeleteAsync("parent");
+            StateHasChanged();
         }
-
-        loading = false;
+        HideLoadingScreen();
     }
-
 
     public async Task<string> GetImages(double latitude, double longitude, string solarScoreId)
     {
@@ -185,13 +184,11 @@
         "application/json"
         );
         request.Content = content;
-        Console.WriteLine("Sending request");
         var response = await client.SendAsync(request);
-        Console.WriteLine("Got response");
         if (response.IsSuccessStatusCode)
         {
-            await getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
             Console.WriteLine("Created Basic Calculation");
+            await getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
         }
         else
         {
@@ -202,6 +199,7 @@
 
     private async Task getCreatedBasicCalculationId(int systemId, string dayLightHours, string location)
     {
+        Console.WriteLine("Getting created basic calculation id");
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
         var content = new StringContent(
@@ -217,7 +215,6 @@
         );
         request.Content = content;
         var response = await client.SendAsync(request);
-        var basicCalc = new BasicCalculationModel();
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
@@ -225,8 +222,7 @@
                 {
                     PropertyNameCaseInsensitive = true
                 })!;
-            await ProtectedSessionStore.SetAsync("basicCalculation", basicCalc);
-            Console.WriteLine("Got basic calculation id: " + basicCalc.basicCalculationId);
+            Console.WriteLine("Got basic calculation");
         }
         else
         {
@@ -235,21 +231,15 @@
         return;
     }
 
-    private byte[] imageBytes = new byte[0];
-
     private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.GetStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
 
-        var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
-        if (File.Exists(imagePath))
-        {
-            File.Delete(imagePath);
-        }
-
-        await File.WriteAllBytesAsync(imagePath, imageBytes);
-        await ProtectedSessionStore.SetAsync("loading", false);
+        string img = Convert.ToBase64String(imageBytes);
+        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
+        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
+        return;
     }
 
     private void ShowLoadingScreen()
