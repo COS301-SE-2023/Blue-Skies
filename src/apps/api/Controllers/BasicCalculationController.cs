@@ -43,7 +43,8 @@ public class BasicCalculationController : ControllerBase
                 basicCalculation.systemId,
                 basicCalculation.daylightHours!,
                 basicCalculation.location!,
-                basicCalculation.batteryLife
+                basicCalculation.batteryLife,
+                basicCalculation.image!
             );
             return Ok(newBasicCalculation);
         }
@@ -59,8 +60,8 @@ public class BasicCalculationController : ControllerBase
         [FromBody] BasicCalculation basicCalculation
     )
     {
-    Console.WriteLine("here");
-    try
+        Console.WriteLine("here");
+        try
         {
             Console.WriteLine(basicCalculation.daylightHours);
             var newBasicCalculation = await _basicCalculationsRepository.UpdateBasicCalculation(
@@ -68,7 +69,8 @@ public class BasicCalculationController : ControllerBase
                 basicCalculation.systemId,
                 basicCalculation.daylightHours!,
                 basicCalculation.location!,
-                basicCalculation.batteryLife
+                basicCalculation.batteryLife,
+                basicCalculation.image!
             );
             return Ok(newBasicCalculation);
         }

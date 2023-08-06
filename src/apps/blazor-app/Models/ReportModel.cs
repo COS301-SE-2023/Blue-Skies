@@ -14,4 +14,5 @@ public class ReportModel
   public int runningTime { get; set; }
   //dateCreated
   public DateTime dateCreated { get; set; }
+  public string? image { get; set; }
 }
