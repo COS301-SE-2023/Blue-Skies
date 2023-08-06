@@ -4,11 +4,11 @@ import IBasicCalculation from '../../models/basic.calculation.interface';
 import { connection as conn } from '../../main';
 export default class BasicCalculationController {
   public createBasicCalculation = (req: Request, res: Response) => {
-    const { systemId, dayLightHours, location, batteryLife } = req.body;
+    const { systemId, dayLightHours, location, batteryLife, image } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const query =
-      `INSERT INTO [dbo].[basicCalculations] (systemId, dayLightHours, location, batteryLife, dateCreated)` +
-      ` VALUES ('${systemId}', '${dayLightHours}', '${location}', '${batteryLife}', '${dateCreated}')`;
+      `INSERT INTO [dbo].[basicCalculations] (systemId, dayLightHours, location, batteryLife, dateCreated, image)` +
+      ` VALUES ('${systemId}', '${dayLightHours}', '${location}', '${batteryLife}', '${dateCreated}', '${image}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,6 +67,7 @@ export default class BasicCalculationController {
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
+          image: columns[6].value,
         };
         basicCalculations.push(basicCalculation);
       });
@@ -113,6 +114,7 @@ export default class BasicCalculationController {
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
+          image: columns[6].value,
         };
       });
 
@@ -157,6 +159,7 @@ export default class BasicCalculationController {
           location: columns[3].value,
           batteryLife: columns[4].value,
           dateCreated: columns[5].value,
+          image: columns[6].value,
         };
       });
 
@@ -170,10 +173,10 @@ export default class BasicCalculationController {
 
   public updateBasicCalculation = (req: Request, res: Response) => {
     const { basicCalculationId } = req.params;
-    const { systemId, dayLightHours, location, batteryLife } = req.body;
+    const { systemId, dayLightHours, location, batteryLife, image } = req.body;
     const query =
       `UPDATE [dbo].[basicCalculations] SET systemId = '${systemId}', dayLightHours = '${dayLightHours}',` +
-      ` location = '${location}', batteryLife = ${batteryLife} WHERE basicCalculationId = ${basicCalculationId}`;
+      ` location = '${location}', batteryLife = ${batteryLife}, image = '${image}' WHERE basicCalculationId = ${basicCalculationId}`;
 
     try {
       const request = new tedious.Request(
