@@ -1,4 +1,5 @@
 @using BlazorApp.Components
+@using BlazorApp.Components.Base
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -96,7 +97,6 @@
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
         <div class="flex items-center text-left gap-2">
             <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
-            <p class="">Usable Sunlight</p>
         </div>
         <div class="flex relative flex-col justify-center w-full">
             @* <Chart Config="pieConfig" /> *@
@@ -117,12 +117,12 @@
 
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-        <div class="flex gap-4 justify-start mb-10">
+        <div class="flex gap-4 justify-start mb-10 relative">
             <h1 class="text-base font-semibold text-primary-900">What do you want to run in a power outage?</h1>
-            <div class="group relative">
+            <div class="group">
                 <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                <div class="opacity-0 fade-in-enter-active w-full group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                    <p class="text-gray-900">Click on the appliances to remove them from your calculation.</p>
+                <div class="absolute hidden fade-in-active w-full -top-10 left-[38%] max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                    <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
                 </div>
             </div>
         </div>
@@ -221,16 +221,40 @@
                 fill="#BEBEBE" />
         </svg>
     </div>
-    <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 justify-center">
-        <h1 class="text-base col-span-2 font-medium text-center mb-2 -mt-6 text-primary-900">Select Appliances</h1>
-        <Appliance ImageName="Fridge.svg" Name="Fridge" />
-        <Appliance ImageName="Microwave.svg" Name="Microwave" />
-        <Appliance ImageName="Kettle.svg" Name="Kettle" />
-        <Appliance ImageName="CCTV.svg" Name="CCTV" />
-        <Appliance ImageName="LED Lights.svg" Name="LED Lights" />
-        <Appliance ImageName="Washing Machine.svg" Name="Washing Machine" />
-        <Appliance ImageName="Computer.svg" Name="Computer" />
-        <Appliance ImageName="TV.svg" Name="TV" />
+    <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
+    <div class="flex justify-center items-center  my-7">
+            <Tabs @bind-Items="tabs"></Tabs>
+    </div>
+    <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+        @if(tabs[0].active) {
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                    </div>
+                } else {
+                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                    </div>
+                }
+            }
+        } else {
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                    </div>
+                } else {
+                    <div class="fade-in-active">
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                    </div>
+                }
+            }
+        }
     </div>
     <div class="flex mt-10 mx-auto gap-6 items-center>">
         <Button css="h-16 w-full" style="outline">
@@ -265,7 +289,12 @@
     private int userId = -1;
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
-    @* private PieConfig? pieConfig; *@
+    private List<TabItemModel> tabs = new List<TabItemModel>
+    {
+        new TabItemModel("Add", true),
+        new TabItemModel("Remove", false)
+    };
+    float runningHoursPercentage = 0f;
     
 
     protected override async Task OnInitializedAsync()
@@ -276,7 +305,7 @@
         basicCalc = bas.Value!;
         userId = Convert.ToInt32(usId.Value);
         @* renderCharts(); *@
-
+        CalculateRunningHours();
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
@@ -288,6 +317,7 @@
         StateHasChanged();
         appliance.quantity++;
         updateApplianceStorage();
+        CalculateRunningHours();
     }
     private async void DecrementApplianceCount(ApplianceModel appliance) {
         if (appliance.quantity == 1) {
@@ -299,6 +329,7 @@
         appliance.fade = "fade-in-active";
         StateHasChanged();
         updateApplianceStorage();
+         CalculateRunningHours();
     }
     private async void updateApplianceStorage()
     {
@@ -309,6 +340,7 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
+        CalculateRunningHours();
     }
     private void ApplyTemplate(ChangeEventArgs e) {
         switch (e.Value)
@@ -361,18 +393,19 @@
         }
     }
     private async void ResetHome(){
-    Console.WriteLine("Resetting"); 
-    await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
-    appliances[0].quantity = 0;
-    appliances[1].quantity = 0;
-    appliances[2].quantity = 0;
-    appliances[3].quantity = 0;
-    appliances[4].quantity = 0;
-    appliances[5].quantity = 0;
-    appliances[6].quantity = 0;
-    appliances[7].quantity = 0;
-    selectedSystem = 0;
-    await selectedSystemChanged.InvokeAsync(selectedSystem);
+        Console.WriteLine("Resetting"); 
+        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
+        appliances[0].quantity = 0;
+        appliances[1].quantity = 0;
+        appliances[2].quantity = 0;
+        appliances[3].quantity = 0;
+        appliances[4].quantity = 0;
+        appliances[5].quantity = 0;
+        appliances[6].quantity = 0;
+        appliances[7].quantity = 0;
+        selectedSystem = 0;
+        await selectedSystemChanged.InvokeAsync(selectedSystem);
+        CalculateRunningHours();
     }
     private async void SaveCalculation(){
         ModalPopup.Dismiss();
@@ -385,7 +418,6 @@
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            @* successToast.Show("Saved", "Report successfuly saved.", "success"); *@
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
             Console.WriteLine("Report created successfully");
@@ -442,7 +474,6 @@
                     Console.WriteLine("Failed to update Basic Calculation");
                 }
     }
-
     private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
@@ -467,8 +498,34 @@
             return -1;
         }
     }
+    private void ShowLoadingScreen() {
+        loadingService.ShowLoadingScreen();
+    }
 
-    @* private void renderCharts() {
+    //Calculate running hours
+    private void CalculateRunningHours() {
+        //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
+        // % = (running hours / non-daylight hours) * 100
+        int numBatteries = systems[selectedSystem].numberOfBatteries; 
+        int batteryStorage = systems[selectedSystem].batterySize *1000; // kwh
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+            sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+        }
+
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float nondaylightHours = 24 -float.Parse(basicCalc.daylightHours!);
+        runningHoursPercentage = (runningHours / nondaylightHours) * 100;
+        if(runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);
+    }
+
+       @* private void renderCharts() {
          pieConfig = new PieConfig(true)
             {
                 Options = new PieOptions
@@ -493,8 +550,5 @@
         }
     } *@
 
-    private void ShowLoadingScreen() {
-        loadingService.ShowLoadingScreen();
-    }
 
 }
