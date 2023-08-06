@@ -102,14 +102,18 @@
         await ProtectedSessionStore.SetAsync("latitude", latitude);
         await ProtectedSessionStore.SetAsync("longitude", longitude);
         await ProtectedSessionStore.SetAsync("parent", "");
+        await ProtectedSessionStore.SetAsync("edit", false);
 
         await DownloadImage();
         Console.WriteLine("Finished downloading image");
 
-        if(parent.Equals("index")) {
+        if (parent.Equals("index"))
+        {
             await ProtectedSessionStore.DeleteAsync("parent");
             NavigationManager.NavigateTo("/solarScore");
-        } else {
+        }
+        else
+        {
             await ProtectedSessionStore.DeleteAsync("parent");
             StateHasChanged();
         }
