@@ -651,6 +651,10 @@ video {
   top: 100%;
 }
 
+.left-3 {
+  left: 0.75rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1207,6 +1211,11 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.translate-y-24 {
+  --tw-translate-y: 6rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
 .scale-105 {
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -1311,6 +1320,10 @@ video {
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.items-start {
+  align-items: flex-start;
 }
 
 .items-end {
@@ -2186,6 +2199,12 @@ video {
   transition-duration: 150ms;
 }
 
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .delay-100 {
   transition-delay: 100ms;
 }
@@ -2422,6 +2441,10 @@ body {
   width: 15rem;
 }
 
+.hover\:w-32:hover {
+  width: 8rem;
+}
+
 .hover\:-translate-y-1:hover {
   --tw-translate-y: -0.25rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -2551,6 +2574,14 @@ body {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.group:hover .group-hover\:fill-primary-500 {
+  fill: #3871c1;
+}
+
+.group:hover .group-hover\:fill-red-accent-500 {
+  fill: #f14624;
+}
+
 .group:hover .group-hover\:delay-200 {
   transition-delay: 200ms;
 }
@@ -2587,6 +2618,14 @@ body {
 @media (min-width: 640px) {
   .sm\:mt-0 {
     margin-top: 0px;
+  }
+
+  .sm\:h-24 {
+    height: 6rem;
+  }
+
+  .sm\:h-48 {
+    height: 12rem;
   }
 
   .sm\:max-w-sm {
@@ -2671,6 +2710,7 @@ body {
   .md\:h-20 {
     height: 5rem;
   }
+
   .md\:h-48 {
     height: 12rem;
   }
@@ -2883,6 +2923,10 @@ body {
 
   .xl\:h-36 {
     height: 9rem;
+  }
+
+  .xl\:h-52 {
+    height: 13rem;
   }
 
   .xl\:w-1\/3 {

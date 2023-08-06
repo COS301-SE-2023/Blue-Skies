@@ -125,8 +125,13 @@
         var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
 
         await getBasicCalculation(basicCalcId.Value);
-        dayLightHours = float.Parse(basicCalculation.daylightHours!);
-        mapImage = basicCalculation.image;
+        if(basicCalculation != null && basicCalculation.daylightHours != null){
+            dayLightHours = float.Parse(basicCalculation.daylightHours!);
+        }
+        else {
+            Console.WriteLine("basicCalculation is null");
+        }
+        mapImage = basicCalculation!.image;
 
         await GetSystems();
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
