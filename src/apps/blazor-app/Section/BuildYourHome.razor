@@ -56,14 +56,14 @@
             <h1 class="text-lg font-medium text-center text-primary-900">Select Appliances</h1>
             <div class="group">
                 <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                <div class="absolute hidden fade-in-active w-full -top-20 left-64  group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                <div class="absolute hidden fade-in-enter-active w-full -top-20 left-64  group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
                     <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
                 </div>
             </div>
         </div>
         @foreach (var appliance in appliances)
         {
-            <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+            <div class="fade-in-enter-active" @onclick="@(() => IncrementApplianceCount(appliance))">
                 <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
             </div>
         }
@@ -422,7 +422,6 @@
 
             Console.WriteLine("Report created successfully");
             int reportId = await GetCreatedReportId();
-            await ProtectedSessionStore.SetAsync("createdReport", reportId);
             foreach (var appliance in appliances)
             {
                 var request1 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
@@ -443,9 +442,11 @@
         else
         {
             Console.WriteLine("Failed to create report");
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         NavigationManager.NavigateTo("/dashboard");
     }
+
     private async Task updateBasicCalculation(){
         var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/BasicCalculation/update");
@@ -459,6 +460,8 @@
                     + basicCalc.location
                     + "\",\r\n        \"batteryLife\": "
                     + basicCalc.batteryLife
+                    + ",\r\n        \"image\": \""
+                    + basicCalc.image
                     + "\r\n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
