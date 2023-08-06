@@ -238,7 +238,7 @@
 
         string img = Convert.ToBase64String(imageBytes);
         await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
-        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId);
+        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
         return;
     }
 
