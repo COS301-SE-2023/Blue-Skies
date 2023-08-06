@@ -67,7 +67,9 @@
         </a>
       </div>
       @if(currentPage == "dashboard"){
+        
         <div class="fixed toast-slide-in top-5 left-3 flex flex-col-reverse justify-start items-start gap-4 z-30 transition-all duration-300 delay-300 @(isScrollingDown? "translate-y-0" : "translate-y-24")">
+          <a onclick="@(() => Delete())" href="/">
             <div class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
               <div class="scale-75">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -79,7 +81,9 @@
               </div>
               <p class="">Delete</p>
             </div>
+          </a>
 
+          <a onclick="@(() => Edit())" href="/">
             <div class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
                 <div class="scale-75">
                   <svg  width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -89,7 +93,9 @@
                 </div>
               <p class="">Edit</p>
             </div>
+          </a>
         </div>
+
       }
     </div>
   </nav>
@@ -226,6 +232,14 @@
       loggedIn = false;
       userEmail = "";
       StateHasChanged();
+    }
+
+    private void Edit(){
+        navigationManager.NavigateTo("/advanced");
+    }
+
+    private void Delete(){
+     
     }
 
 } 
