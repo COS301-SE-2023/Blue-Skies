@@ -234,7 +234,8 @@
       StateHasChanged();
     }
 
-    private void Edit(){
+    private async void Edit(){
+        await ProtectedSessionStore.SetAsync("edit", true);
         navigationManager.NavigateTo("/advanced");
     }
 
