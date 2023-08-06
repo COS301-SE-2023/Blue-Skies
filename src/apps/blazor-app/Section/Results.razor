@@ -16,7 +16,7 @@
 </div>
 <div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     <div class="sm:flex-shrink-0  flex justify-center ">
-        <Map css="scale-90"/>
+        <Map css="scale-90" ImageName="mapImage" />
     </div>
     <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-80 h-80">
@@ -111,6 +111,7 @@
     public string solarScoreId = "";
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
+    public string? mapImage = "";
     protected override async Task OnInitializedAsync()
     {
 
@@ -125,9 +126,9 @@
 
         await getBasicCalculation(basicCalcId.Value);
         dayLightHours = float.Parse(basicCalculation.daylightHours!);
+        mapImage = basicCalculation.image;
 
         await GetSystems();
-        Console.WriteLine("Systems: " + systems!.Count);
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
             double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
