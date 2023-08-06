@@ -20,6 +20,9 @@ body {
     animation: slideIn .6s;
     animation-delay: 50ms;
 }
+.slide-in-active {
+    animation: slideIn .3s;
+}
 
 .fade-active {
     animation: fade .6s;
