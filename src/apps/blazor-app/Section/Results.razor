@@ -113,26 +113,20 @@
     public bool isLoaded = false;
     protected override async Task OnInitializedAsync()
     {
-        //get solarScoreId
-        
-        await GetSystems();
-        
+
+
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
 
-        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        if (dlh.Success && dlh.Value != null)
-        {
-            basicCalculation = dlh.Value;
-            dayLightHours = float.Parse(basicCalculation.daylightHours!);
-        }
-        else
-        {
-            Console.WriteLine("Unsuccess");
-        }
+        var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
+
+        await getBasicCalculation(basicCalcId.Value);
+        dayLightHours = float.Parse(basicCalculation.daylightHours!);
+
+        await GetSystems();
         Console.WriteLine("Systems: " + systems!.Count);
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
@@ -260,6 +254,27 @@
         }
     }
 
+ private async Task getBasicCalculation(int id)
+    {
+        Console.WriteLine("Getting created basic calculation id");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/get/" + id);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            basicCalculation = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            Console.WriteLine("Got basic calculation");
+        }
+        else
+        {
+            Console.WriteLine("Failed to get basic calculation");
+        }
+        return;
+    }
 }
 
 

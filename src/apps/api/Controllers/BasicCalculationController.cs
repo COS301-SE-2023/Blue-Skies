@@ -30,6 +30,26 @@ public class BasicCalculationController : ControllerBase
         }
     }
 
+    //get a system by id
+    [HttpGet]
+    [Route("get/{id}")]
+    public async Task<IActionResult> GetBasicCalculation([FromRoute] int id)
+    {
+        try
+        {
+            var basicCalculation = await _basicCalculationsRepository.GetBasicCalculation(id);
+            if (basicCalculation == null)
+            {
+                return StatusCode(404, "System with id: " + id + " not found");
+            }
+            return Ok(basicCalculation);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
     //Create a basic calculation
     [HttpPost("create")]
     public async Task<IActionResult> CreateBasicCalculation(

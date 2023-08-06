@@ -14,7 +14,6 @@
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
-<div class="fade-in-enter-active">
     @if (!isLoaded) {}
     else if (!logIn)
     {
@@ -25,10 +24,8 @@
     {
         NavigationManager.NavigateTo("/admin/keys");
     }
-    else
-    {
-<div class="fade-in-active px-1 md:px-5">
-
+    else{
+    <div class="fade-in-active px-1 md:px-5">
         @if (reports.Count > 0)
         {
             <div class="flex flex-col justify-center items-center px-10">
@@ -38,7 +35,7 @@
                     selectedDate = reports[selectedReport].dateCreated;
                     }
                 }
-                <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
+                <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports"
                     dateCreated="selectedDate" />
                 <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" />
                 <div class="mt-10 w-full">
@@ -142,13 +139,12 @@
                 </div>
             </div>
         }
-    }
-</div>
+    </div>
+}
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
-    private List<string> userReportNames = new List<string>();
     private List<ReportAllModel> reportAll = new List<ReportAllModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
@@ -239,10 +235,6 @@
             if (reportAll.Count > 0)
             {
                 await ProtectedLocalStore.SetAsync("reportAll", reportAll);
-            }
-            foreach (var report in reportAll)
-            {
-                userReportNames.Add(report.reportName!);
             }
         isLoaded = true;
 

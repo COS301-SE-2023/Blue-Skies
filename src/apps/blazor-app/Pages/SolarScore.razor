@@ -32,15 +32,13 @@ else {
 
 @code {
     private bool isAd = false;
-    private bool loading = true;
     private int solarScore = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
     protected override async Task OnInitializedAsync()
     {
-        var selected = await ProtectedLocalStore.GetAsync<bool>("SelectedAddress");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var score = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        var load = await ProtectedSessionStore.GetAsync<bool>("loading");
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
         solarScore = score.Value;
         isAd = isAdmin.Value;
