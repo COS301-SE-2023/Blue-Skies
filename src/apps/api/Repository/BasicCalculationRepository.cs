@@ -61,7 +61,8 @@ public class BasicCalculationRepository
         int systemId,
         string daylightHours,
         string location,
-        int batteryLife
+        int batteryLife,
+        string image
     )
     {
         try
@@ -80,7 +81,9 @@ public class BasicCalculationRepository
                     + location
                     + "\",\r\n        \"batteryLife\": "
                     + batteryLife
-                    + "\r\n}",
+                    + ",\r\n        \"image\": \""
+                    + image
+                    + "\"\r\n}",
                 null,
                 "application/json"
             );
@@ -97,6 +100,7 @@ public class BasicCalculationRepository
                 basicCalculation.location = location;
                 basicCalculation.batteryLife = batteryLife;
                 basicCalculation.dateCreated = DateTime.Now;
+                basicCalculation.image = image;
                 Console.WriteLine(".NET: Created basic calculation");
                 return basicCalculation;
             }
@@ -117,7 +121,8 @@ public class BasicCalculationRepository
         int systemId,
         string daylightHours,
         string location,
-        int batteryLife
+        int batteryLife,
+        string image
     )
     {
         try
@@ -136,7 +141,9 @@ public class BasicCalculationRepository
                     + location
                     + "\",\r\n        \"batteryLife\": "
                     + batteryLife
-                    + "\r\n}",
+                    + ",\r\n        \"image\": \""
+                    + image
+                    + "\"\r\n}",
                 null,
                 "application/json"
             );
@@ -151,6 +158,7 @@ public class BasicCalculationRepository
                 basicCalculation.location = location;
                 basicCalculation.batteryLife = batteryLife;
                 basicCalculation.dateCreated = DateTime.Now;
+                basicCalculation.image = image;
                 Console.WriteLine(".NET: Updated basic calculation");
                 return basicCalculation;
             }

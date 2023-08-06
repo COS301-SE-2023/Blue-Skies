@@ -12,7 +12,7 @@ basicCalculationRouter.get('/', (req, res) => {
 const basicCalculationController = new BasicCalculationController();
 basicCalculationRouter.post(
   '/create',
-  bodyParser.json(),
+  bodyParser.json({ limit: '10mb' }),
   basicCalculationController.createBasicCalculation
 );
 basicCalculationRouter.get(
@@ -30,7 +30,7 @@ basicCalculationRouter.get(
 );
 basicCalculationRouter.patch(
   '/update/:basicCalculationId',
-  bodyParser.json(),
+  bodyParser.json({ limit: '10mb' }),
   basicCalculationController.updateBasicCalculation
 );
 basicCalculationRouter.delete(
