@@ -1,84 +1,52 @@
-@* Accordion *@
+@using BlazorApp.Models
+@using BlazorApp.Components.Base
+
 @{
-  if (show == "opacity-0 -translate-y-10") {
-  height = "h-28 sm:h-24";
-  }
-  else {
-  height = "h-80 sm:h-48 md:h-48 lg:h-60 xl:h-52";
-  }
+    switch(style)
+    {
+      case "outline":
+        <div class="grid grid-cols-1 gap-4">
+            @foreach (AccordionItemModel item in items)
+            {
+                <AccordionItem item="item" @OnClick="SetActive(item)" />
+            }
+        </div>
+        break;
+      default:
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl p-5 mx-auto">
+            @foreach (AccordionItemModel item in items)
+            {
+                <AccordionItem item="@item" />
+            }
+        </div>
+        break;
+    }
 }
-<div
-  class="@css w-full shadow-md transition-all duration-500 px-12 py-7 @height border-primary-500 border-[1px] space-y-4"
-  @onclick="ShowAnswer">
-  <div class="justify-between items-center flex cursor-pointer">
-    <h1 class="text-primary-500 font-bold text-base">@Question</h1>
-    @* If statement *@
-    @if (show == "opacity-0 -translate-y-10")
-    {
-      @if (scoreInfo == true)
-      {
-        <Image ImageName="Closed-Question.svg" css="" />
-      } else{
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
-          <path d="M11.25 30.625L24.75 17.5L11.25 4.375" stroke="#3871C1" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      }
-    }
-    else
-    {
-      @if(scoreInfo == true)
-      {
-        <Image ImageName="Open-Question.svg" css="" />
-      } else {
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="35" viewBox="0 0 36 35" fill="none">
-          <path d="M7.5 12.3958L18 22.6042L28.5 12.3958" stroke="#3871C1" stroke-width="2.4" stroke-linecap="round"
-            stroke-linejoin="round" />
-        </svg>
-      }
-    }
 
-  </div>
-
-  <div class="@show transition-all duration-200 delay-200">
-    @if (show == "opacity-0 -translate-y-10")
-    {
-      <p class="transition-all duration-200 delay-200">@temp</p>
-    }
-    else {
-      <p class="transition-all duration-200 delay-200">@Answer</p>
-    }
-  </div>
-</div>
-
-@* Accordion *@
 
 @code {
-  private string show = "opacity-0 -translate-y-10";
-  private string temp = "";
-  private string height = "h-20";
+    [Parameter]
+    public int columns { get; set; } = 2;
+    [Parameter]
+    public string style { get; set; } = "";
+    [Parameter]
+    public List<AccordionItemModel> items { get; set; } = new List<AccordionItemModel>();
+    
+    private AccordionItemModel? selectedItem { get; set; }
 
-  private void ShowAnswer() {
-    if (show == "opacity-0 -translate-y-10") {
-      show = "opacity-100";
-      if(scoreInfo == true){
-        css = "rounded-[30px] bg-blue-50";
-      }
+    private void SetActive(AccordionItemModel item)
+    {
+        Console.WriteLine("Accordion item Clicked:" + item.id + " - Accordion.razor, line 39");
+        foreach (AccordionItemModel i in items)
+        {
+            if (i.id == item.id)
+            {
+                i.active = true;
+            }
+            else
+            {
+                i.active = false;
+            }
+        }
     }
-    else {
-      show = "opacity-0 -translate-y-10";
-      if(scoreInfo == true){
-        css = "rounded-[100px]";
-      }
-    }
-  }
-
-  [Parameter]
-  public string? Question { get; set; }
-  [Parameter]
-  public string? Answer { get; set; }
-  [Parameter]
-  public string? css { get; set; }
-  [Parameter]
-  public bool? scoreInfo { get; set; } = false; 
 }
