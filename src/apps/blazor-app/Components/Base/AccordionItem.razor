@@ -1,0 +1,32 @@
+@using BlazorApp.Models
+@using BlazorApp.Components.Base
+@using System;
+@using System.Diagnostics;
+
+<div @onclick="OnClickHandler" class="p-4 w-full transition-all duration-300 @style rounded-xl border-1 border-primary-500 flex flex-col gap-4">
+    <div class="flex justify-between">
+        <p class="font-bold text-base tracking-wide text-primary-500">@item.title</p>
+
+        <svg width="@(item.active ? "30" : "16")" height="@(item.active ? "17" : "30")" viewBox="0 0 @(item.active ? "30 17" : "16 30")" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path class="transition-all duration-100" d="@(item.active ? "M1.88733 1.94385L15 15.4438L28.1127 1.94385" : "M1.25 28.125L14.75 15L1.25 1.875")" stroke="#3871C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+    <p class="@(item.active ? "opacity-100" : "opacity-0")">@item.content</p>
+</div>
+
+@code {
+    private string style => item.active ? "h-fit bg-primary-500 text-white" : "h-20 bg-white text-primary-500";
+    [Parameter] 
+    public AccordionItemModel item { get; set; } = new AccordionItemModel("","",false)!;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task OnClickHandler()
+    {
+        var stackTrace = new StackTrace();
+        var method = stackTrace.GetFrame(2)!.GetMethod();
+        Console.WriteLine("Clicked Accordion Item: " + item.title + " " + method!.Name + " - " + method.DeclaringType?.Name );
+        await OnClick.InvokeAsync();
+    }
+}
