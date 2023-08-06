@@ -16,7 +16,7 @@
 </div>
 <div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     <div class="sm:flex-shrink-0  flex justify-center ">
-        <Map css="scale-90"/>
+        <Map css="scale-90" ImageName="mapImage" />
     </div>
     <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-80 h-80">
@@ -111,29 +111,24 @@
     public string solarScoreId = "";
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
+    public string? mapImage = "";
     protected override async Task OnInitializedAsync()
     {
-        //get solarScoreId
-        
-        await GetSystems();
-        
+
+
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
 
-        var dlh = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        if (dlh.Success && dlh.Value != null)
-        {
-            basicCalculation = dlh.Value;
-            dayLightHours = float.Parse(basicCalculation.daylightHours!);
-        }
-        else
-        {
-            Console.WriteLine("Unsuccess");
-        }
-        Console.WriteLine("Systems: " + systems!.Count);
+        var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
+
+        await getBasicCalculation(basicCalcId.Value);
+        dayLightHours = float.Parse(basicCalculation.daylightHours!);
+        mapImage = basicCalculation.image;
+
+        await GetSystems();
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
             double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
@@ -260,6 +255,27 @@
         }
     }
 
+ private async Task getBasicCalculation(int id)
+    {
+        Console.WriteLine("Getting created basic calculation id");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/get/" + id);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            basicCalculation = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            Console.WriteLine("Got basic calculation");
+        }
+        else
+        {
+            Console.WriteLine("Failed to get basic calculation");
+        }
+        return;
+    }
 }
 
 
