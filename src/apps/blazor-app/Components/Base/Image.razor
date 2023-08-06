@@ -33,8 +33,9 @@ else
     private bool hasPath { get; set; }
     private string? ImageData { get; set; }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
+        base.OnParametersSet();
         try
         {
             if (ImageName != null)
@@ -71,5 +72,9 @@ else
         {
             Console.WriteLine("Image.razor: "+ex.Message);
         }
+    }
+    protected override void OnInitialized()
+    {
+        
     }
 }

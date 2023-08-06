@@ -16,7 +16,7 @@
 </div>
 <div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     <div class="sm:flex-shrink-0  flex justify-center ">
-        <Map css="scale-90" ImageName="mapImage" />
+        <Map css="scale-90" ImageName="@mapImage" />
     </div>
     <div class="grid sm:flex-shrink-0  grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-80 h-80">
@@ -114,8 +114,6 @@
     public string? mapImage = "";
     protected override async Task OnInitializedAsync()
     {
-
-
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
         solarScore = ss.Value;
 
@@ -127,11 +125,11 @@
         await getBasicCalculation(basicCalcId.Value);
         if(basicCalculation != null && basicCalculation.daylightHours != null){
             dayLightHours = float.Parse(basicCalculation.daylightHours!);
+            mapImage = basicCalculation.image;
         }
         else {
             Console.WriteLine("basicCalculation is null");
         }
-        mapImage = basicCalculation!.image;
 
         await GetSystems();
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
@@ -170,7 +168,6 @@
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }
-
     private async Task GetSystems()
     {
         var client = new HttpClient();
@@ -190,8 +187,6 @@
         }
         return;
     }
-
-    //get solar Score 
     private async Task GetSolarScores(string solarScoreId)
     {
         int count = 0;
@@ -234,7 +229,6 @@
         Console.WriteLine("Done");
         
     }
-
     public void CalculateSolarScore(){
         if(solarScores.Count > 0){
             int score = 0;
@@ -259,7 +253,6 @@
             
         }
     }
-
  private async Task getBasicCalculation(int id)
     {
         Console.WriteLine("Getting created basic calculation id");
