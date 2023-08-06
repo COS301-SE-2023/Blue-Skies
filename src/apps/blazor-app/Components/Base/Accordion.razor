@@ -2,33 +2,37 @@
 @using BlazorApp.Components.Base
 
 @{
-    switch(style)
-    {
-      case "outline":
-        <div class="grid grid-cols-1 gap-4">
-            @foreach (AccordionItemModel item in items)
-            {
-                <div onclick="@(() => SetActive(item))" class="">
-                    <AccordionItem item="@item" />
-                </div>
-            }
-        </div>
-        break;
-      default:
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-7xl p-5 mx-auto">
-            @foreach (AccordionItemModel item in items)
-            {
-                <div onclick="@(() => SetActive(item))" class="">
-                    <AccordionItem item="@item"  />
-                </div>
-            }
-        </div>
-        break;
+    switch(columns) {
+        case 1:
+            cols = "grid-cols-1";
+            break;
+        case 2:
+            cols = "grid-cols-1 lg:grid-cols-2";
+            break;
+        case 3:
+            cols = "grid-cols-1 lg:grid-cols-3";
+            break;
+        case 4:
+            cols = "grid-cols-1 lg:grid-cols-4";
+            break;
+        default:
+            cols = "grid-cols-1 lg:grid-cols-2";
+            break;
     }
+
+    <div class="@cols grid gap-4 max-w-7xl p-5 mx-auto">
+        @foreach (AccordionItemModel item in items)
+        {
+            <div onclick="@(() => SetActive(item))" class="">
+                <AccordionItem item="@item" style="@style" />
+            </div>
+        }
+    </div>
 }
 
 
 @code {
+    private string cols = "grid-cols-1 lg:grid-cols-2";
     [Parameter]
     public int columns { get; set; } = 2;
     [Parameter]

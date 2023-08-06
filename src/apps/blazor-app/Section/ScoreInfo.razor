@@ -1,6 +1,7 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Models
 
-@* <div class="px-2">
+<div class="px-2">
     <div class="mt-20 text-center">
         <Heading>
             <Header>
@@ -12,7 +13,8 @@
             </Subscript>
         </Heading>
     </div>
-    <div class="flex md:w-[80%] max-w-7xl mx-auto p-6 mt-5">
+    <Accordion items="@accordionItems" columns="1" style="rounded" />
+    @* <div class="flex md:w-[80%] max-w-7xl mx-auto p-6 mt-5">
         <div class="w-full lg:w-8/12 space-y-4">
             <div @onclick="args => ToggleGraphic(0)">
                 <Accordion css="rounded-[100px]" scoreInfo="true" Question="Excellent"
@@ -37,11 +39,38 @@
         <div class="lg:w-4/12 justify-center hidden lg:block">
             <Image ImageName="@graphicName" css="scale-150 translate-x-36 translate-y-32" />
         </div>
-    </div>
-</div> *@
+    </div> *@
+</div>
 
-@* @code{
+@code{
     public string graphicName = "Graphic.svg";
+    public List<AccordionItemModel> accordionItems { get; set; } = new List<AccordionItemModel>{
+        new AccordionItemModel(
+            "Excellent",
+            "80 - 100% Your area is excellent for solar installation. Solar installation is highly recommended based on the amount of sun in your area.",
+            false
+        ),
+        new AccordionItemModel(
+            "Good",
+            "60 - 79% Your area is good for solar installation. Solar installation would work well for your area.",
+            false
+        ),
+        new AccordionItemModel(
+            "Average",
+            "40 - 59% Your are  has the capacity to accommodate solar energy, though it may not be good. While solar could definitely be considered, other options would possibly work better, such as batteries charging with Eskom power.",
+            false
+        ),
+        new AccordionItemModel(
+            "Low",
+            "20 - 39% Your area is bad for solar. It is worthwhile to explore alternative solutions, instead of relying solely on solar. Batteries that charge on Eskom power will prove to be a highly effective solution.",
+            false
+        ),
+        new AccordionItemModel(
+            "Unfeasible",
+            "0 - 19% Solar for your are would be unfeasible. It is worthwhile to explore alternative solutions, such as batteries that charge on Eskom power.",
+            false
+        )
+    };
 
     public void ToggleGraphic(int type)
     {
@@ -59,4 +88,5 @@
                 break;
         }
     }
-} *@
+
+}
