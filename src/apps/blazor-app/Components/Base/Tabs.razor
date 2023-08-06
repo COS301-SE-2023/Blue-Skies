@@ -1,0 +1,39 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Models
+@* tabs *@
+<div class="flex bg-primary-100 gap-4 max-w-lg  p-1 w-full rounded-xl">
+    @foreach (var item in Items)
+    {
+        <div @onclick="@(() => toggleActive(item.title))" class="w-full">
+            <TabItem Title="@item.title" Active="@item.active" />
+        </div>
+    }
+</div>
+
+@code {
+    private bool active = false;
+    [Parameter] 
+    public RenderFragment ChildContent { get; set; } = null!;
+    [Parameter]
+    public List<TabItemModel> Items { get; set; } = null!;
+    [Parameter]
+    public EventCallback<List<TabItemModel>> ItemsChanged { get; set; }
+
+    
+
+    public void toggleActive(string title)
+    {
+        foreach (var item in Items)
+        {
+            if (item.title == title)
+            {
+                item.active = true;
+            }
+            else
+            {
+                item.active = false;
+            }
+        }
+        ItemsChanged.InvokeAsync(Items);
+    }
+}
