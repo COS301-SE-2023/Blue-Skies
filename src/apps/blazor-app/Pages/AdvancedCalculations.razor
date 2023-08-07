@@ -9,27 +9,39 @@
 @inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-    <div class="fade-in-enter-active">
-        @if(!isLoaded){}
-        else if (!logIn) {
-            ProtectedLocalStore.SetAsync("redirect", "advanced");
-            NavigationManager.NavigateTo("/login");
-        } else  if (isAd) {
-            NavigationManager.NavigateTo("/admin/keys");  
-        } else if (solarScore == 0) {
-            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
-            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+<div class="fade-in-enter-active">
+    @if (!isLoaded) { }
+    else if (!logIn)
+    {
+        ProtectedLocalStore.SetAsync("redirect", "advanced");
+        NavigationManager.NavigateTo("/login");
+    }
+    else if (isAd)
+    {
+        NavigationManager.NavigateTo("/admin/keys");
+    }
+    else if (solarScore == 0)
+    {
+        @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
+        toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
 
-            NavigationManager.NavigateTo("/solarScore");
-        } else {
+        NavigationManager.NavigateTo("/solarScore");
+    }
+    else
+    {
         <div class="w-full">
-            <div class="mb-20"><BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation" systems="systems"/></div>
+            <div class="mb-20">
+                <BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation"
+                    systems="systems" />
+            </div>
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculation" solarScore="solarScore"/>    
+                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
+                    systems="systems" basicCalc="basicCalculation" solarScore="solarScore"
+                    reportAllAppliance="reportAllAppliance" />
             </div>
         </div>
-        }
-    </div>
+    }
+</div>
 
 @code {
     private bool logIn = false;
@@ -41,6 +53,7 @@
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     private int selectedSystem = 0;
     private int solarScore = 0;
 
@@ -58,6 +71,8 @@
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
+            reportAllAppliance = reportAllAppl.Value!;
             ReportModel report = rep.Value!;
             var bCalcId = report.basicCalculationId;
             var sScore = report.solarScore;
@@ -66,7 +81,9 @@
             Console.WriteLine("ReportId: " + report.reportId + " SolarScore: " + sScore + " BasicCalcId: " + bCalcId);
             await getBasicCalculation(bCalcId);
             selectedSystem = basicCalculation.systemId - 2;
-        } else {
+        }
+        else
+        {
             var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
             var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
             var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
@@ -80,7 +97,8 @@
         await GetSystemsAsync();
     }
 
-    private async Task GetSystemsAsync(){
+    private async Task GetSystemsAsync()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
         var response = await client.SendAsync(request);
