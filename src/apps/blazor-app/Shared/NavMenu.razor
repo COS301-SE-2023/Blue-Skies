@@ -5,6 +5,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
+@inject BlazorApp.Data.ReportManager reportManager
 
 @{
   Uri uri = new Uri(navigationManager.Uri);
@@ -240,9 +241,13 @@
       StateHasChanged();
     }
 
-    private async Task Edit(){}
+    private void Edit(){
+      reportManager.EditReport();
+    }
 
-    private async Task Delete(){}
+    private async Task Delete(){
+      await reportManager.DeleteReport();
+    }
    
    private void ShowModal(){}
 

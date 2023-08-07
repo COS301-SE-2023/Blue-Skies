@@ -4,16 +4,19 @@ namespace BlazorApp.Data {
     {
         public event Action? EditReportRequested;
 
-        public event Action? DeleteReportRequested;
+        public event Func<Task>? DeleteReportRequested;
 
         public void EditReport()
         {
             EditReportRequested?.Invoke();
         }
 
-        public void DeleteReport()
+        public async Task DeleteReport()
         {
-            DeleteReportRequested?.Invoke();
+            if (DeleteReportRequested is not null)
+            {
+                await DeleteReportRequested.Invoke();
+            }
         }
     }
 
