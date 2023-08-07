@@ -188,7 +188,7 @@ else
         loadingService.HideLoadingScreen();
     }
 
-    private void updateAppliances()
+    private async void updateAppliances()
     {
         reportAllAppliance.Clear();
         if (reportAll.Count > 0)
@@ -203,6 +203,7 @@ else
             }
             updateCharts();
         }
+        await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
     }
 
     private async Task GetUserReports()
