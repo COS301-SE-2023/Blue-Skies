@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
+@using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json
 @using ChartJs.Blazor.PieChart
@@ -147,6 +148,25 @@ else
             </div>
         }
     </div>
+    <ModalPopup @ref="ModalPopup" Title="Delete Record?">
+          <ChildContent>
+            <p>Are you sure that you want to delete this record?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="Delete">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+      </ModalPopup>
 }
 
 
@@ -166,6 +186,8 @@ else
     private DateTime selectedDate;
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+    private ReportModel report = new ReportModel();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
     protected override async Task OnInitializedAsync()
     {
@@ -554,6 +576,49 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
         if (polarAreaConfig != null)
         {
             polarAreaConfig.Data.Datasets.Add(polarDataset);
+        }
+    }
+
+        private void ShowModal()
+    {
+        ModalPopup.Show();
+    }
+
+    private async void Edit(){
+        await ProtectedSessionStore.SetAsync("edit", true);
+        NavigationManager.NavigateTo("/advanced");
+    }
+
+
+     private async Task Delete(){
+        ModalPopup.Dismiss();
+
+        await DeleteFromDatabase();
+
+        StateHasChanged();
+    }
+
+    private async Task DeleteFromDatabase(){
+        
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
+
+        var repId = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+        report = repId.Value!;
+        Console.WriteLine(report!.reportId);
+
+        var content = new StringContent("{\r\n  \"reportId\": " + report.reportId +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            @* await GetReports(report.userId); *@
+            
+            Console.WriteLine("Report succesfully deleted");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete report"); 
         }
     }
 }
