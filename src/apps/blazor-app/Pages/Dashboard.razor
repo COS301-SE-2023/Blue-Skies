@@ -13,17 +13,18 @@
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
-    @if (!isLoaded) {}
-    else if (!logIn)
-    {
-        ProtectedLocalStore.SetAsync("redirect", "dashboard");
-        NavigationManager.NavigateTo("/login");
-    }
-    else if (isAd)
-    {
-        NavigationManager.NavigateTo("/admin/keys");
-    }
-    else{
+@if (!isLoaded) { }
+else if (!logIn)
+{
+    ProtectedLocalStore.SetAsync("redirect", "dashboard");
+    NavigationManager.NavigateTo("/login");
+}
+else if (isAd)
+{
+    NavigationManager.NavigateTo("/admin/keys");
+}
+else
+{
     <div class="fade-in-active px-1 md:px-5">
         @if (reports.Count > 0)
         {
@@ -31,19 +32,18 @@
                 @{
                     if (reports.Count > selectedReport)
                     {
-                    selectedDate = reports[selectedReport].dateCreated;
+                        selectedDate = reports[selectedReport].dateCreated;
                     }
                 }
-                <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports"
-                    dateCreated="selectedDate" />
-                    @{
-                        var image = "";
-                        if (reportAll.Count > selectedReport)
-                        {
-                            image = reportAll[selectedReport].image;
-                        }
+                <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" />
+                @{
+                    var image = "";
+                    if (reportAll.Count > selectedReport)
+                    {
+                        image = reportAll[selectedReport].image;
                     }
-                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" basicCalculationImage="@image"/>
+                }
+                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" basicCalculationImage="@image" />
                 <div class="mt-10 w-full">
                     <Card>
                         <Heading>
@@ -107,7 +107,7 @@
                                             {
                                                 imageName = "House 1.svg";
                                             }
-                                        }   
+                                        }
                                     }
                                 }
                                 <Image ImageName=@imageName alt="House" css="scale-90" />
@@ -115,9 +115,9 @@
                             <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
                                 <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
                                 @* <div class="flex items-center text-left gap-2">
-                                    <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
-                                    <p class="">High Energy Consumption</p>
-                                    </div> *@
+                        <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
+                        <p class="">High Energy Consumption</p>
+                        </div> *@
                                 <div class="flex relative flex-col justify-center w-full">
                                     <Chart Config="polarAreaConfig"></Chart>
                                 </div>
@@ -145,9 +145,9 @@
                 </div>
             </div>
         }
-</div>
-    }
- 
+    </div>
+}
+
 
 
 @code {
@@ -183,8 +183,9 @@
         {
             updateAppliances();
             renderCharts();
+            await ProtectedSessionStore.SetAsync("currentReport", reports[0]);
         }
-        loadingService.HideLoadingScreen(); 
+        loadingService.HideLoadingScreen();
     }
 
     private void updateAppliances()
@@ -245,7 +246,7 @@
             {
                 await ProtectedLocalStore.SetAsync("reportAll", reportAll);
             }
-        isLoaded = true;
+            isLoaded = true;
 
         }
         else
@@ -393,16 +394,16 @@
             pieConfig.Data.Labels.Add(color);
         }
         if (reportAll.Count > 0)
-        { 
+        {
             float hours = reportAll[selectedReport].daylightHours;
             float remaining = (float)Math.Round(13 - hours, 2);
             PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-            {
-                BackgroundColor = new[] {
-                    ColorUtil.ColorHexString(56,113,193),
-                    ColorUtil.ColorHexString(156,163,175),
-                },
-            };
+                {
+                    BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
+                };
             if (pieConfig != null)
             {
                 pieConfig.Data.Datasets.Add(pieDataset);
@@ -410,7 +411,8 @@
         }
 
 
-        @* **************************************** Polar Area Chart Update Data ************************************************ *@
+        @* **************************************** Polar Area Chart Update Data
+************************************************ *@
         polarAreaConfig.Data.Datasets.Clear();
         polarAreaConfig.Data.Labels.Clear();
         int countData = 0;
@@ -421,7 +423,7 @@
                 countData++;
             }
         }
-        
+
         int[] powerUsageData = new int[countData];
         int counter = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)
@@ -438,112 +440,112 @@
         {
             case 0:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 1:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 2:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 3:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 4:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 Console.WriteLine("4");
                 break;
             case 5:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 6:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 7:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
                 break;
             case 8:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18), // orange
-                        ColorUtil.ColorHexString(255,193,8), // yellow
-                        ColorUtil.ColorHexString(56,113,193),// l blue
-                        ColorUtil.ColorHexString(0,15,82), // blue
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18), // orange
+ColorUtil.ColorHexString(255,193,8), // yellow
+ColorUtil.ColorHexString(56,113,193),// l blue
+ColorUtil.ColorHexString(0,15,82), // blue
+}
+                    };
                 break;
             default:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+}
+                    };
                 break;
         }
         if (polarAreaConfig != null)
