@@ -20,7 +20,7 @@
             <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
             <select @onchange="ApplyTemplate" id="selectHome"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                <option disabled selected value="1">Select a home size</option>
+                <option disabled selected value="1">Select a template</option>
                 <option value="2">2 Bedroom House</option>
                 <option value="3">3 Bedroom House</option>
                 <option value="4">4+ Bedroom House</option>
@@ -283,7 +283,6 @@
     public int selectedSystem { get; set; }
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
-    public bool loading = false;
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
@@ -301,7 +300,8 @@
     {
         Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
-        userId = Convert.ToInt32(usId.Value);
+        userId = usId.Value;
+
         @* renderCharts(); *@
         CalculateRunningHours();
     }
@@ -459,7 +459,7 @@
                     + basicCalc.batteryLife
                     + ",\r\n        \"image\": \""
                     + basicCalc.image
-                    + "\r\n}", null, "application/json");
+                    + "\"\r\n}", null, "application/json");
                 request.Content = content;
                 var response = await client.SendAsync(request);
                 if(response.StatusCode == System.Net.HttpStatusCode.OK)

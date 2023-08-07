@@ -35,7 +35,7 @@
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
-    private bool loading = false;
+    private bool edit = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
@@ -48,19 +48,34 @@
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
-        logIn = loggedIn.Value;
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
+        edit = editing.Value;
+        Console.WriteLine("Edit: " + edit);
+        logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
-        var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
-        var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = sSystem.Value;
-        solarScore = sScore.Value;
-        await getBasicCalculation(bCalcId.Value);
+        if (edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            ReportModel report = rep.Value!;
+            var bCalcId = report.basicCalculationId;
+            var sScore = report.solarScore;
 
-        var load = await ProtectedSessionStore.GetAsync<bool>("load");
-        loading = load.Value;
+            solarScore = sScore;
+            Console.WriteLine("ReportId: " + report.reportId + " SolarScore: " + sScore + " BasicCalcId: " + bCalcId);
+            await getBasicCalculation(bCalcId);
+            selectedSystem = basicCalculation.systemId - 2;
+        } else {
+            var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
+            var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
+            var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+
+            selectedSystem = sSystem.Value;
+            solarScore = sScore.Value;
+            await getBasicCalculation(bCalcId.Value);
+        }
+
         await GetAppliancesAsync();
         await GetSystemsAsync();
     }

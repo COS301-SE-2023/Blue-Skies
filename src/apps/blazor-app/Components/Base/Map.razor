@@ -13,7 +13,6 @@
     <Image ImageName="@s" alt="Map" css="w-full h-full object-cover brightness-75 contrast-125 saturate-[.1] rounded-2xl" />
     <div class="w-[40%] h-[40%] rounded-3xl border-[6px] border-yellow-accent-500 z-10  absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-clip">
         <Image ImageName="@imageName" alt="Map" css="@secondImageCss" />
-        <p class="absolute top-20 left-20 z-40">@imageName</p>
     </div>
 </div>
 
@@ -27,10 +26,6 @@
     public string? imageName { get; set; }
 
     private string getImageName(){
-        @* while (imageName == null)
-        {
-            
-        } *@
         return imageName!;
     }
 }
