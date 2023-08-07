@@ -208,8 +208,16 @@ else
             renderCharts();
             await ProtectedSessionStore.SetAsync("currentReport", reports[0]);
         }
+        reportManager.EditReportRequested += Edit;
+        reportManager.DeleteReportRequested += Delete;
         loadingService.HideLoadingScreen();
     }
+
+    private void Dispose() {
+        reportManager.EditReportRequested -= Edit;
+        reportManager.DeleteReportRequested -= Delete;
+    }
+
 
     private async void updateAppliances()
     {
