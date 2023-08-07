@@ -31,13 +31,20 @@
     {
         <div class="w-full">
             <div class="mb-20">
+                @if (edit)
+                {
+                    var reportName = currentReport.reportName;
+                <BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation"
+                    systems="systems" reportName="@reportName"/>    
+                } else {
                 <BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation"
                     systems="systems" />
+                }
             </div>
             <div class="w-full">
                 <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
                     systems="systems" basicCalc="basicCalculation" solarScore="solarScore"
-                    reportAllAppliance="reportAllAppliance" />
+                    reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
             </div>
         </div>
     }
@@ -54,6 +61,7 @@
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private ReportModel currentReport = new ReportModel(); 
     private int selectedSystem = 0;
     private int solarScore = 0;
 
@@ -73,12 +81,11 @@
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
-            ReportModel report = rep.Value!;
-            var bCalcId = report.basicCalculationId;
-            var sScore = report.solarScore;
+            currentReport = rep.Value!;
+            var bCalcId = currentReport.basicCalculationId;
+            var sScore = currentReport.solarScore;
 
             solarScore = sScore;
-            Console.WriteLine("ReportId: " + report.reportId + " SolarScore: " + sScore + " BasicCalcId: " + bCalcId);
             await getBasicCalculation(bCalcId);
             selectedSystem = basicCalculation.systemId - 2;
         }

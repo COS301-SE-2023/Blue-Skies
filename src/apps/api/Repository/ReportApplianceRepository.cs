@@ -41,6 +41,15 @@ public class ReportAppliancesRepository
                 null,
                 "application/json"
             );
+            Console.WriteLine(
+                "{\r\n    \"reportId\" : "
+                    + reportId
+                    + ",\r\n    \"applianceId\" : "
+                    + applianceId
+                    + ",\r\n    \"numberOfAppliances\" : "
+                    + numberOfAppliances
+                    + "\r\n}"
+            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -93,7 +102,9 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error in function GetAllReportAppliances");
+                Console.WriteLine(
+                    ".NET: Database Connection Error in function GetAllReportAppliances"
+                );
                 return new List<ReportAppliances>();
             }
         }
@@ -131,7 +142,9 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error in function GetAppliancesInReport");
+                Console.WriteLine(
+                    ".NET: Database Connection Error in function GetAppliancesInReport"
+                );
                 return new List<ReportAppliances>();
             }
         }
@@ -169,7 +182,9 @@ public class ReportAppliancesRepository
             else
             {
                 //return empty list
-                Console.WriteLine(".NET: Database Connection Error in function GetReportsWithAppliance");
+                Console.WriteLine(
+                    ".NET: Database Connection Error in function GetReportsWithAppliance"
+                );
                 return new List<ReportAppliances>();
             }
         }
@@ -262,7 +277,7 @@ public class ReportAppliancesRepository
         }
         catch (Exception e)
         {
-            Console.WriteLine(".NET: Database Error: " + e.Message);
+            Console.WriteLine(".NET: Database Error when updating number of reports: " + e.Message);
             throw new Exception("Database Error: " + e.Message);
         }
     }
@@ -426,18 +441,18 @@ public class ReportAppliancesRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine(".NET: Report deleted");
+                Console.WriteLine(".NET: Report appliance deleted");
                 return true;
             }
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine(".NET: Report not found");
+                Console.WriteLine(".NET: Report appliance not found");
                 return false;
             }
             else
             {
-                Console.WriteLine(".NET: Error deleting report");
-                throw new Exception("Error deleting report");
+                Console.WriteLine(".NET: Error deleting report appliance");
+                throw new Exception("Error deleting report appliance");
             }
         }
         catch (Exception e)
