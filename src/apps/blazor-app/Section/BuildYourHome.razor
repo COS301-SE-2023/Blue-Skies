@@ -147,7 +147,12 @@
             </Button>
             <Button  css="h-16 w-60" style="pill">
                 <content>
-                    <p @onclick="ModalPopup.Show">Save this calculation</p>
+                    @if (edit)
+                    {
+                        <p @onclick="ModalPopup.Show">Update calculation</p> 
+                    } else {
+                        <p @onclick="ModalPopup.Show">Save this calculation</p>
+                    }
                 </content>
             </Button>
         </div>
@@ -155,9 +160,25 @@
 </div>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
         <ChildContent>
+            @if (edit)
+            {
+            <p>Rename this calculation?</p>
+            } else
+            {
             <p>Add a nickname for this calculation:</p>
+            }
             <Input @bind-InputValue="calculationName" placeholder="Nickname" />
             <div class="flex flex-row gap-4 justify-center">
+                @if (edit)
+                {
+                    <div @onclick="UpdateCalculation">
+                    <Button >
+                        <content>
+                            Update
+                        </content>
+                    </Button>
+                </div>
+                } else {
                 <div @onclick="SaveCalculation">
                     <Button >
                         <content>
@@ -165,6 +186,7 @@
                         </content>
                     </Button>
                 </div>
+                }
                 <div @onclick="ModalPopup.Dismiss">
                     <Button style="outline">
                         <content>Cancel</content>
@@ -285,12 +307,16 @@
     public EventCallback<int> selectedSystemChanged { get; set; }
     [Parameter]
     public List<ReportAllApplianceModel>? reportAllAppliance  { get; set; } 
-
+    [Parameter]
+    public ReportModel? currentReport  { get; set; }
+    [Parameter]
+    public bool edit { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
+    private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Add", true),
@@ -341,6 +367,18 @@
             appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
         }
         
+        }
+        calculationName = currentReport!.reportName;
+        Console.WriteLine("Edit: " + edit);
+
+        for (int i = 0; i < appliances.Count; i++)
+        {
+            ApplianceModel appliance = new ApplianceModel();
+            appliance.applianceId = appliances[i].applianceId;
+            appliance.type = appliances[i].type;
+            appliance.powerUsage = appliances[i].powerUsage;
+            appliance.quantity = appliances[i].quantity;
+            applianceQuantities.Add(appliance);
         }
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
@@ -484,6 +522,82 @@
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         NavigationManager.NavigateTo("/dashboard");
+    }
+    private async Task UpdateCalculation(){
+        ShowLoadingScreen();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
+        var content = new StringContent("{\r\n  \"reportId\": \"" + currentReport!.reportId + "\",\r\n  \"reportName\": \"" + calculationName + "\",\r\n  \"userId\": " + userId + ",\r\n  \"basicCalculationId\": " + currentReport.basicCalculationId + ",\r\n  \"solarScore\": " + solarScore + ",\r\n  \"runningTime\": " + 9 + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
+
+            Console.WriteLine("Report created successfully");
+            int reportId = await GetCreatedReportId();
+
+            for (int i = 0; i < 8; i++)
+            {
+                Console.WriteLine(i);
+                if (appliances[i].quantity != applianceQuantities[i].quantity)
+                {
+                    await updateReportAppliance(reportId, appliances[i]);
+                }
+            }
+            await updateBasicCalculation();
+        }
+        else
+        {
+            Console.WriteLine("Failed to create report");
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+        NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private async Task updateReportAppliance(int reportId, ApplianceModel appliance){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
+        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("ReportAppliance Updated successfully");
+        }
+        else
+        {
+            Console.WriteLine("Failed to update ReportAppliance - " + response.StatusCode);
+        }
+    }
+    private async Task createReportAppliance(int reportId, ApplianceModel appliance){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
+        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("ReportAppliance created successfully");
+        }
+        else
+        {
+            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
+        }
+    }
+    private async Task deleteReportAppliance(int reportId, ApplianceModel appliance){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/ReportAppliance/deleteReportAppliance/" + reportId + "/" + appliance.applianceId);
+        Console.WriteLine("ReportId: " + reportId + " ApplianceId: " + appliance.applianceId);
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("ReportAppliance deleted successfully");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete ReportAppliance - " + response.StatusCode);
+        }
     }
     private async Task updateBasicCalculation(){
         var client = new HttpClient();
