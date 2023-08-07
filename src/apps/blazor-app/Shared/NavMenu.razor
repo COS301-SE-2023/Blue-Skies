@@ -271,6 +271,12 @@
     private async Task Delete(){
         ModalPopup.Dismiss();
 
+        await DeleteFromDatabase();
+
+        StateHasChanged();
+    }
+
+    private async Task DeleteFromDatabase(){
         
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
@@ -284,13 +290,29 @@
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            StateHasChanged();
+            @* await GetReports(report.userId); *@
+            
             Console.WriteLine("Report succesfully deleted");
         }
         else
         {
-            Console.WriteLine("Failed to delete"); 
+            Console.WriteLine("Failed to delete report"); 
         }
     }
+
+    @* private async Task GetReports(int userId){
+      var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get reports");
+        }
+    } *@
 
 } 
