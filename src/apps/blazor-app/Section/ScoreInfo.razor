@@ -1,7 +1,7 @@
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 
-<div class="px-5">
+<div class="px-2 sm:px-5">
     <div class="mt-20 text-center">
         <Heading>
             <Header>
@@ -13,11 +13,11 @@
             </Subscript>
         </Heading>
     </div>
-    <div class="flex w-full">
+    <div class="flex flex-col justify-center items-center lg:flex-row w-full">
         <div @onclick="setImage" class="w-full">
             <Accordion items="@accordionItems" columns="1" style="rounded" />
         </div>
-        <Image ImageName="@graphicName" />
+        <Image ImageName="@graphicName" css="mt-5 w-2/3 lg:w-1/2"/>
     </div>
 </div>
 
