@@ -283,6 +283,9 @@
     public int selectedSystem { get; set; }
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
+    [Parameter]
+    public List<ReportAllApplianceModel>? reportAllAppliance  { get; set; } 
+
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
@@ -307,6 +310,39 @@
 
         CalculateRunningHours();
     }
+
+    protected override void OnParametersSet(){
+        for (int i = 0; i < reportAllAppliance!.Count; i++)
+        {
+            
+        if (reportAllAppliance[i].type!.Equals("Kettle"))
+        {
+            appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("Fridge"))
+        {
+            appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+        {
+            appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("TV"))
+        {
+            appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("Computer"))
+        {
+            appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("Microwave"))
+        {
+            appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("CCTV"))
+        {
+            appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
+        } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+        {
+            appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
+        }
+        
+        }
+    }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
         selectedSystem = Convert.ToInt32(e.Value);
@@ -326,6 +362,9 @@
             await Task.Delay(300);
         }
         appliance.quantity--;
+        if(appliance.quantity < 0) {
+            appliance.quantity = 0;
+        }
         appliance.fade = "fade-in-active";
         StateHasChanged();
         updateApplianceStorage();
@@ -509,7 +548,9 @@
 
         foreach (var appliance in appliances)
         {
-            sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+            if(appliance.quantity > 0) {
+                sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+            }
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;

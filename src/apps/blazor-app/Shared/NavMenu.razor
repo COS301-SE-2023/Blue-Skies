@@ -204,8 +204,7 @@
     protected override async Task OnInitializedAsync()
     {
       var result = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
-      var repId = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-      report = repId!.Value;
+     
 
       if (result.Success)
       {
@@ -271,15 +270,22 @@
 
     private async Task Delete(){
         ModalPopup.Dismiss();
+
+        
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
+
+        var repId = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+        report = repId.Value!;
+        Console.WriteLine(report!.reportId);
+
         var content = new StringContent("{\r\n  \"reportId\": " + report.reportId +"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            
-            Console.WriteLine("Delete");
+            StateHasChanged();
+            Console.WriteLine("Report succesfully deleted");
         }
         else
         {
