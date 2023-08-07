@@ -360,6 +360,9 @@
             await Task.Delay(300);
         }
         appliance.quantity--;
+        if(appliance.quantity < 0) {
+            appliance.quantity = 0;
+        }
         appliance.fade = "fade-in-active";
         StateHasChanged();
         updateApplianceStorage();
@@ -543,7 +546,9 @@
 
         foreach (var appliance in appliances)
         {
-            sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+            if(appliance.quantity > 0) {
+                sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+            }
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
