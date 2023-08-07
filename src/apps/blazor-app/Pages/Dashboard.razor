@@ -18,7 +18,7 @@
 @if (!isLoaded) { }
 else if (!logIn)
 {
-    ProtectedLocalStore.SetAsync("redirect", "dashboard");
+    ProtectedSessionStore.SetAsync("redirect", "dashboard");
     NavigationManager.NavigateTo("/login");
 }
 else if (isAd)
@@ -251,7 +251,7 @@ else
                 })!;
             if (reports.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReports", reports);
+                await ProtectedSessionStore.SetAsync("userReports", reports);
             }
         Console.WriteLine("Successfully retrieved user reports");
         }
@@ -277,7 +277,7 @@ else
                 })!;
             if (reportAll.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("reportAll", reportAll);
+                await ProtectedSessionStore.SetAsync("reportAll", reportAll);
             }
             isLoaded = true;
 
@@ -302,7 +302,7 @@ else
                 })!;
             if (allReportAllAppliance.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
+                await ProtectedSessionStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
             }
         }
         else

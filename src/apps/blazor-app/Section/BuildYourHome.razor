@@ -410,7 +410,7 @@
     }
     private async void updateApplianceStorage()
     {
-        await ProtectedLocalStore.SetAsync("advancedCalculationAppliances", appliances);
+        await ProtectedSessionStore.SetAsync("advancedCalculationAppliances", appliances);
     }
     private void SetSystemSize(int selection)
     {
@@ -640,7 +640,7 @@
                 })!;
             if (reports.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReports", reports);
+                await ProtectedSessionStore.SetAsync("userReports", reports);
             }
             return reports[reports.Count - 1].reportId;
         }

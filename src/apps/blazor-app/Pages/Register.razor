@@ -3,6 +3,7 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 
 <PageTitle>Register</PageTitle>
@@ -112,7 +113,7 @@ else if (logIn)
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
         redirect = re.Value;
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
@@ -144,7 +145,7 @@ private async Task HandleValidSubmit()
             await ProtectedLocalStore.SetAsync("userEmail", "");
         }
         await ProtectedLocalStore.SetAsync("isAdmin", false);
-        await ProtectedLocalStore.DeleteAsync("redirect");
+        await ProtectedSessionStore.DeleteAsync("redirect");
         NavigationManager.NavigateTo("/" + redirect);
     }
     else
