@@ -94,20 +94,20 @@
             <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@systems[selectedSystem].numberOfPanels />
             <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@systems[selectedSystem].numberOfBatteries />
         </div>
-        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
-        <div class="flex items-center text-left gap-2">
-            <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
-        </div>
+        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>   
         <div class="flex relative flex-col justify-center w-full">
-            @* <Chart Config="pieConfig" /> *@
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
             @{
-                var dlh = 0.00;
+                dlh = 0;
                 if (basicCalc != null)
                 {
-                    dlh = Math.Round(float.Parse(basicCalc.daylightHours!), 2);
+                    daylight = (float)Math.Round(float.Parse(basicCalc.daylightHours!), 2);
+                    dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
+                    daylightChart.SetDaylightHours(daylight);
+                    daylightChart.SetHours(dlh);
                 }
             }
+            <DaylightChart @ref="daylightChart"/>
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                 <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
@@ -294,6 +294,9 @@
         new TabItemModel("Remove", false)
     };
     float runningHoursPercentage = 0f;
+    float dlh = 0f;
+    float daylight = 0f;
+    DaylightChart daylightChart = new DaylightChart();
     
 
     protected override async Task OnInitializedAsync()
@@ -302,7 +305,6 @@
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
         userId = usId.Value;
 
-        @* renderCharts(); *@
         CalculateRunningHours();
     }
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
@@ -511,39 +513,14 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nondaylightHours = 24 - float.Parse(basicCalc.daylightHours!);
-        runningHoursPercentage = (runningHours / nondaylightHours) * 100;
+        float nonDaylightHours = 24 - float.Parse(basicCalc.daylightHours!);
+        runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);
+        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);        
     }
-
-       @* private void renderCharts() {
-         pieConfig = new PieConfig(true)
-            {
-                Options = new PieOptions
-                {
-                    Responsive = true,
-                    Title = new OptionsTitle
-                    {
-                        Display = true,
-                        Text = "Active Users",
-                        FontSize = 20,
-                    },
-                    Legend = new Legend
-                    {
-                        Position = Position.Right
-                    },
-                }
-            };
-
-        foreach (string color in new[] { "Remaining", "Past 3 months", "Past month", "Past week" })
-        {
-            pieConfig.Data.Labels.Add(color);
-        }
-    } *@
 
 
 }
