@@ -84,13 +84,13 @@
                     </div>
                 </div>
                 <div class="flex gap-2 mt-3">
-                @{
-                    var selectedPanels = 0;
-                    if (systems.Count > 0)
-                    {
-                        selectedPanels = systems[selectedSystem].numberOfPanels;
+                    @{
+                        var selectedPanels = 0;
+                        if (systems.Count > 0)
+                        {
+                            selectedPanels = systems[selectedSystem].numberOfPanels;
+                        }
                     }
-                }
                     <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
@@ -123,11 +123,13 @@
         var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
 
         await getBasicCalculation(basicCalcId.Value);
-        if(basicCalculation != null && basicCalculation.daylightHours != null){
+        if (basicCalculation != null && basicCalculation.daylightHours != null)
+        {
             dayLightHours = float.Parse(basicCalculation.daylightHours!);
             mapImage = basicCalculation.image;
         }
-        else {
+        else
+        {
             Console.WriteLine("basicCalculation is null");
         }
 
@@ -142,20 +144,9 @@
             Console.WriteLine("Error basicCalculation is null or no systems found in results");
         }
         isLoaded = true;
-        @* var solarScoreIdTemp = await ProtectedSessionStore.GetAsync<string>("solarScoreId");
-        if (solarScoreIdTemp.Success && solarScoreIdTemp.Value != null)
 
-        {
-            solarScoreId = solarScoreIdTemp.Value!;
-            await GetSolarScores(solarScoreId);
-        }
-        else
-        {
-            Console.WriteLine("Failed to get solarScoreId");
-        } *@
-        //solarScore generate a random number between 0 and 100
         solarScore = new Random().Next(0, 100);
-        await ProtectedSessionStore.SetAsync("solarScore",solarScore); 
+        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
     }
     private void SetSystemSize(int selection)
     {
@@ -187,73 +178,7 @@
         }
         return;
     }
-    private async Task GetSolarScores(string solarScoreId)
-    {
-        int count = 0;
-        int max = 20;
-        int prev = solarScores.Count;
-        while(solarScores.Count < 12){
-            Console.WriteLine("Waiting");
-            //Sleep 2 seconds
-            await Task.Delay(2000);
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/solarscore/get");
-            var content = new StringContent("{\r\n    \"solarScoreId\": \"" + solarScoreId + "\"\r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if(response.IsSuccessStatusCode){
-                Console.WriteLine("Success");
-                var data = await response.Content.ReadAsStringAsync();
-                solarScores = JsonSerializer.Deserialize<List<SolarScoreModel>>(data)!;
-                    if(prev == solarScores.Count){
-                        count++;
-                    }else{
-                        prev = solarScores.Count;
-                        count = 0;
-                        CalculateSolarScore();
-                        await ProtectedSessionStore.SetAsync("solarScore",solarScore);
-                        StateHasChanged();
-                    }                   
-            }else{
-                Console.WriteLine("Failed");
-                solarScores = new List<SolarScoreModel>();
-            }
-            Console.WriteLine(solarScores.Count);
-
-            if(count >= max){
-                break;
-            }
-
-        }
-
-        Console.WriteLine("Done");
-        
-    }
-    public void CalculateSolarScore(){
-        if(solarScores.Count > 0){
-            int score = 0;
-            
-            foreach(var solarScore in solarScores){
-                int add = 1;
-                if(solarScore.score!.Equals("Good")){
-                    add = 3;
-                }else if(solarScore.score.Equals("Average")){
-                   add = 2;
-                }
-                score += add;
-
-            }
-            Console.WriteLine("score: " +score);
-            int total = solarScores.Count * 3;
-            Console.WriteLine("solarScores.Count: " +total);
-
-            float ans = (score / (float)total) * 100;
-            Console.WriteLine("ans: " +ans);
-            solarScore = (int)ans;
-            
-        }
-    }
- private async Task getBasicCalculation(int id)
+    private async Task getBasicCalculation(int id)
     {
         Console.WriteLine("Getting created basic calculation id");
         var client = new HttpClient();
