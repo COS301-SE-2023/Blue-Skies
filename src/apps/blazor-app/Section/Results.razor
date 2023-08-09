@@ -127,7 +127,7 @@
         await getBasicCalculation(basicCalcId.Value);
         if (basicCalculation != null && basicCalculation.daylightHours != null)
         {
-            dayLightHours = float.Parse(basicCalculation.daylightHours!);
+            dayLightHours = float.Parse(basicCalculation.daylightHours.Replace(".", ","));
             mapImage = basicCalculation.image;
         }
         else
@@ -138,7 +138,7 @@
         await GetSystems();
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!.Replace(".", ",")) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
