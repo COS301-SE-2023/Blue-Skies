@@ -122,13 +122,13 @@
           </button>
         </div>
         <div class="flex flex-col w-full mt-5">
-          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/">Home</a>
-          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore">Solar Score</a>
-          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced">Advanced</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/">Home</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore">Solar Score</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced">Advanced</a>
           @if(loggedIn == true){
-            <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
+            <p @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
             }else{
-                <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
+                <p @onclick="ToggleNavMenu" class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
           }
           <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" onclick="@(() => logout())" >Logout</p>
         </div>
@@ -138,8 +138,6 @@
   </div>
   }
 </header>
-
-
 
 @code {
     [Parameter]
@@ -205,6 +203,7 @@
 
     public async void logout()
     {
+      ToggleNavMenu();
       await ProtectedSessionStore.DeleteAsync("reportAppliances");
       await ProtectedSessionStore.DeleteAsync("selectedReport");
       await ProtectedSessionStore.DeleteAsync("redirect");
