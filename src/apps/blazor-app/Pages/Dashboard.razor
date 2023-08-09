@@ -201,12 +201,12 @@ else
         userId = usId.Value;
 
         await GetUserReports();
+        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await GetReportAll();
         await GetReportAllAppliance();
-        if (reports.Count > selectedReport)
+        await getBasicCalculation(reports[selectedReport].basicCalculationId);
+        if (reportAll.Count > 0)
         {
-            await getBasicCalculation(reports[selectedReport].basicCalculationId);
-            await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
             renderCharts();
         }

@@ -77,6 +77,7 @@
             if (userReports[i].reportId == reportId)
             {
                 selectedReport = i;
+                await ProtectedSessionStore.SetAsync("currentReport", userReports![selectedReport]);
                 await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectReport').value = " + selectedReport + ";");
                 await selectedReportChanged.InvokeAsync(selectedReport);
             }
