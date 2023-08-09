@@ -75,4 +75,20 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    //update solar score
+    [HttpPatch]
+    [Route("update")]
+    public async Task<IActionResult> Update([FromBody] SolarScore ss)
+    {
+        try
+        {
+            var result = await _solarScoreRepository.UpdateSolarScore(ss);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }

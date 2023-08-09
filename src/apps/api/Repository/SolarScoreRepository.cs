@@ -122,6 +122,37 @@ public class SolarScoreRepository
             throw new Exception("Error creating solar score");
         }
     }
+
+    //UpdateSolarScore solar score
+    public async Task<string> UpdateSolarScore(SolarScore ss)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Patch,
+            express + "/api/solarscore/update/" + ss.solarScoreId
+        );
+        var content = new StringContent(
+            "{\r\n  \"data\": \""
+                + ss.data
+                + "\",\r\n    \"remainingCalls\": "
+                + ss.remainingCalls
+                + "\r\n}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            return data;
+
+        }
+        else
+        {
+            throw new Exception("Error updating solar score");
+        }
+    }
 }
 
 
