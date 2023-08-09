@@ -501,18 +501,7 @@
             int reportId = await GetCreatedReportId();
             foreach (var appliance in appliances)
             {
-                var request1 = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
-                var content1 = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
-                request1.Content = content1;
-                var response1 = await client.SendAsync(request1);
-                if(response1.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    Console.WriteLine("ReportAppliance created successfully");
-                }
-                else
-                {
-                    Console.WriteLine("Failed to create ReportAppliance");
-                }
+                await createReportAppliance(reportId, appliance);
             }
             await updateBasicCalculation();
         }
@@ -554,7 +543,6 @@
         }
         NavigationManager.NavigateTo("/dashboard");
     }
-
     private async Task updateReportAppliance(int reportId, ApplianceModel appliance){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
@@ -583,20 +571,6 @@
         else
         {
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
-        }
-    }
-    private async Task deleteReportAppliance(int reportId, ApplianceModel appliance){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/ReportAppliance/deleteReportAppliance/" + reportId + "/" + appliance.applianceId);
-        Console.WriteLine("ReportId: " + reportId + " ApplianceId: " + appliance.applianceId);
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("ReportAppliance deleted successfully");
-        }
-        else
-        {
-            Console.WriteLine("Failed to delete ReportAppliance - " + response.StatusCode);
         }
     }
     private async Task updateBasicCalculation(){
@@ -642,6 +616,8 @@
             {
                 await ProtectedSessionStore.SetAsync("userReports", reports);
             }
+            await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
+            Console.WriteLine("ReportId: " + reports[reports.Count - 1].reportId);
             return reports[reports.Count - 1].reportId;
         }
         else
@@ -676,6 +652,5 @@
         }
         Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);        
     }
-
 
 }

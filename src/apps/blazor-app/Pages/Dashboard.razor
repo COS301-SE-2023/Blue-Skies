@@ -199,6 +199,7 @@ else
         userId = usId.Value;
 
         await GetUserReports();
+        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await GetReportAll();
         await GetReportAllAppliance();
         await getBasicCalculation(reports[selectedReport].basicCalculationId);
@@ -206,7 +207,6 @@ else
         {
             updateAppliances();
             renderCharts();
-            await ProtectedSessionStore.SetAsync("currentReport", reports[0]);
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += Delete;
@@ -620,8 +620,6 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            @* await GetReports(report.userId); *@
-            
             Console.WriteLine("Report succesfully deleted");
         }
         else
