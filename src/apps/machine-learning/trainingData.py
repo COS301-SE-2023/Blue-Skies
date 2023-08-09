@@ -23,6 +23,7 @@ end_year = int(sys.argv[1])
 num_years = int(sys.argv[2])
 num_points = int(sys.argv[3])
 
+
 scale = 10
 
 # very_bad_solar_radiation = 120
@@ -74,7 +75,6 @@ class imageRequest :
 
         # Get the image from the collection
         image = ee.Image(collection)
-
 
         # Get the solar radiation for the specific image
         self.solar_radiation = get_solar_radiation(image, self.roi)
