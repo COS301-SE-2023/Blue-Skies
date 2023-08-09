@@ -45,12 +45,12 @@ export default class SolarScoreController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(400).json({
+            res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
+            res.status(200).json({
               message: 'Solar Score created successfully.',
             });
           }
@@ -75,12 +75,12 @@ export default class SolarScoreController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(400).json({
+            res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
+            res.status(200).json({
               message: 'Solar Score updated successfully.',
             });
           }
@@ -104,12 +104,12 @@ export default class SolarScoreController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(400).json({
+            res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
+            res.status(200).json({
               message: 'Solar Score deleted successfully.',
             });
           }
