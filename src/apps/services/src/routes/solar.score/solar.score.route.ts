@@ -33,3 +33,8 @@ solarScoreRouter.patch(
   bodyParser.json(),
   solarScoreController.updateSolarScore
 );
+
+solarScoreRouter.delete(
+  '/delete/:solarScoreId',
+  solarScoreController.deleteSolarScore
+);

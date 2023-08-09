@@ -153,6 +153,27 @@ public class SolarScoreRepository
             throw new Exception("Error updating solar score");
         }
     }
+
+    //Delete solar score
+    public async Task<string> DeleteSolarScore(string solarScoreId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Delete,
+            express + "/api/solarscore/delete/" + solarScoreId
+        );
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            return data;
+
+        }
+        else
+        {
+            throw new Exception("Error deleting solar score");
+        }
+    }
 }
 
 
