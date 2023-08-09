@@ -1,12 +1,15 @@
-# python3 solarRadiation.py -25.771 28.357 2022 3 48 12432123
+# python3 solarRadiation.py -25.771 28.357 2022 3 48 abcdefg
 import datetime
 import os
 import sys
 import concurrent.futures
 import threading
+import json
+import requests
 from dotenv import load_dotenv
 from google.oauth2 import service_account
 import ee
+
 
 LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
@@ -59,7 +62,7 @@ solar_radiations = [[] for i in range(12)]
 amount_of_calls_left = AMOUNT_OF_YEARS * AMOUNT_OF_TIMES_PER_YEAR
 data = ""
 
-def getDate(day):
+def get_date(day):
     month = 1
     if day > 31:
         day -= 31
@@ -100,7 +103,7 @@ for i in range(YEAR - AMOUNT_OF_YEARS + 1, YEAR + 1):
     for frac in range(1, AMOUNT_OF_TIMES_PER_YEAR + 1):
         if(frac < 365):
             day = int((365/AMOUNT_OF_TIMES_PER_YEAR * frac) - (365/AMOUNT_OF_TIMES_PER_YEAR/2))
-            date = getDate(day)
+            date = get_date(day)
             date = datetime.date(i, date[0], date[1])
             dates.append(date)
 
@@ -129,9 +132,21 @@ def get_solar_radiation(date):
             amount_of_calls_left -= 1
             solar_radiations[date.month - 1].append([date, solar_radiation])
             data += str(date) + ";" + str(solar_radiation) + ","
-            print(data)
-            print(amount_of_calls_left)
-            print(SOLAR_SCORE_ID)
+            # print(data)
+            # print(amount_of_calls_left)
+            # print(SOLAR_SCORE_ID)
+
+            url = API_PORT + "/SolarScore/update"
+
+            payload = json.dumps({
+                "solarScoreId": SOLAR_SCORE_ID,
+                "data": data,
+                "remainingCalls": amount_of_calls_left
+            })
+            headers = {
+                'Content-Type': 'application/json'
+            }
+            requests.request("PATCH", url, headers=headers, data=payload)
         finally:
             file_lock.release()
 
