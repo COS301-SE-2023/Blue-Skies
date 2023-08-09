@@ -27,3 +27,9 @@ solarScoreRouter.post(
   bodyParser.json(),
   solarScoreController.createSolarScore
 );
+
+solarScoreRouter.patch(
+  '/update/:solarScoreId',
+  bodyParser.json(),
+  solarScoreController.updateSolarScore
+);
