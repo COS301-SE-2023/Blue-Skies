@@ -1,4 +1,4 @@
-# python3 solarRadiation.py -25.771 28.357 2022 3 48 abcdefg
+# python3 solarRadiation.py -25.7652655 28.2784689 2022 3 48 534f7115
 import datetime
 import os
 import sys
@@ -107,6 +107,15 @@ for i in range(YEAR - AMOUNT_OF_YEARS + 1, YEAR + 1):
             date = datetime.date(i, date[0], date[1])
             dates.append(date)
 
+def reduce_amount_of_calls_left():
+    global amount_of_calls_left
+    file_lock.acquire()
+    try:
+        amount_of_calls_left -= 1
+    finally:
+        file_lock.release()
+
+
 def get_solar_radiation(date):
     global amount_of_calls_left
     global data
@@ -114,17 +123,40 @@ def get_solar_radiation(date):
     next_day = date + datetime.timedelta(days=1)  # Calculate the next day using timedelta
     solar_dataset = ee.ImageCollection('ECMWF/ERA5_LAND/DAILY_AGGR') \
         .filterDate(date.strftime("%Y-%m-%d"), next_day.strftime("%Y-%m-%d"))
+    if solar_dataset is None and solar_dataset.size().getInfo() == 0:
+        print("Error: solar dataset is empty")
+        reduce_amount_of_calls_left()
+        return
     solar_image = solar_dataset.first()
+    if solar_image is None:
+        print("Error: solar image is empty")
+        reduce_amount_of_calls_left()
+        return
     solar_image_roi = solar_image.clip(roi)
+    if solar_image_roi is None:
+        print("Error: solar image roi is empty")
+        reduce_amount_of_calls_left()
+        return
     solar_radiation_band = solar_image_roi.select('surface_net_solar_radiation_sum')
-    solar_radiation_value = solar_radiation_band.reduceRegion(
+    if solar_radiation_band.getInfo() is None:
+        print("Error: solar radiation band is empty")
+        reduce_amount_of_calls_left()
+        return
+    
+    solar_radiation_value_before = solar_radiation_band.reduceRegion(
         reducer = ee.Reducer.mean(),
         geometry = roi,
         scale = scale
-    ).get('surface_net_solar_radiation_sum')
-    if solar_radiation_value is not None:
+    ).getInfo()
+    
+    solar_radiation_value = solar_radiation_value_before.get('surface_net_solar_radiation_sum')
+    if solar_radiation_value is not None and solar_radiation_value is not None:
         # solar radiation is in J/m^2/day so  / (24 * 60 * 60) to get W/m^2
         solar_radiation = ee.Number(solar_radiation_value).divide(24 * 60 * 60).getInfo()
+    else:
+        print("Error: solar radiation value is empty")
+        reduce_amount_of_calls_left()
+        return
 
     if(solar_radiation != -1):
         file_lock.acquire()
@@ -149,12 +181,12 @@ def get_solar_radiation(date):
             requests.request("PATCH", url, headers=headers, data=payload)
         finally:
             file_lock.release()
+    else:
+        print("Error: solar radiation is -1")
+        reduce_amount_of_calls_left()
 
-with concurrent.futures.ThreadPoolExecutor() as executor:
+with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
     for date in dates:
         executor.submit(get_solar_radiation, date)
 
-# i = 0
-# for month in solar_radiations:
-#     for data in month:
-#         print("date: " + str(data[0]) + " solar radiation: " + str(data[1]))
+print("File is done")

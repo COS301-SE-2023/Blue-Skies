@@ -44,15 +44,15 @@ export default class SolarScoreController {
     const { latitude, longitude, numYears, numDaysPerYear, uniqueID } = req.body;
     const previousYear = new Date().getFullYear() - 1;
     try {
-      await this.executePython('scripts/solarRadiation.py', [
-        latitude,
+      this.executePython('scripts/solarRadiation.py', [
         longitude,
+        latitude,
         previousYear,
         numYears,
         numDaysPerYear,
         uniqueID,
       ]);
-
+      
       res.status(200).json({
         message: 'Solar Data retrieved successfully.',
       });
