@@ -38,6 +38,6 @@ basicCalculationRouter.delete(
   basicCalculationController.deleteBasicCalculation
 );
 basicCalculationRouter.get(
-  '/withoutImage',
+  '/withoutImage/:test',
   basicCalculationController.getAllBasicCalculationsWithoutImage
 );
