@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { connection as conn } from '../../main';
+import * as tedious from 'tedious';
 import { spawn } from 'child_process';
 export default class SolarScoreController {
   public getMapBoxApiKey = async (req: Request, res: Response) => {
@@ -34,6 +36,35 @@ export default class SolarScoreController {
       res.status(500).json({ error: error });
     }
   };
+
+  public createSolarScore = async (req: Request, res: Response) => {
+    const { solarScoreId, data, remainingCalls } = req.body;
+    const query = `INSERT INTO [dbo].[solarScore] (solarScoreId, data, remainingCalls) VALUES ('${solarScoreId}', '${data}', ${remainingCalls})`;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json({
+              message: 'Solar Score created successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  };
+  //create a function to execute python script
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
     const py = spawn('python3', [script, ...parameters]);

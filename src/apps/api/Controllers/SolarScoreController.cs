@@ -61,4 +61,18 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+    [HttpPost]
+    [Route("create")]
+    public async Task<IActionResult> Create([FromBody] SolarScore ss)
+    {
+        try
+        {
+            var result = await _solarScoreRepository.Create(ss);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }

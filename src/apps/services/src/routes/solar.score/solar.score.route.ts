@@ -21,3 +21,9 @@ solarScoreRouter.get(
   bodyParser.json(),
   solarScoreController.getSunTimes
 );
+
+solarScoreRouter.post(
+  '/create',
+  bodyParser.json(),
+  solarScoreController.createSolarScore
+);
