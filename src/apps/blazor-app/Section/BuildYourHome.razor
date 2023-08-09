@@ -100,7 +100,7 @@
                 dlh = 0;
                 if (basicCalc != null)
                 {
-                    daylight = (float)Math.Round(float.Parse(basicCalc.daylightHours!), 2);
+                    daylight = (float)Math.Round(float.Parse(basicCalc.daylightHours!.Replace(".", ",")), 2);
                     dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
                     daylightChart.SetDaylightHours(daylight);
                     daylightChart.SetHours(dlh);
@@ -599,6 +599,7 @@
                 {
                     Console.WriteLine("Failed to update Basic Calculation");
                 }
+                await ProtectedSessionStore.DeleteAsync("edit");
     }
     private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
@@ -644,7 +645,7 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - float.Parse(basicCalc.daylightHours!);
+        float nonDaylightHours = 24 - float.Parse(basicCalc.daylightHours!.Replace(".", ","));
         runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {

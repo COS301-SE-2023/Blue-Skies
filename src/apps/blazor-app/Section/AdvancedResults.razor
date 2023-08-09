@@ -46,7 +46,7 @@
                     var usableHours = 0.0F;
                     if (basicCalculation != null)
                     {
-                        usableHours = float.Parse(basicCalculation.daylightHours!);
+                        usableHours = float.Parse(basicCalculation.daylightHours!.Replace(".", ","));
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
@@ -64,7 +64,7 @@
                     if (basicCalculation != null && systems != null)
                     {
                         double calc = systems[selectedSystem].numberOfPanels * float.Parse(
-                        basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
+                        basicCalculation.daylightHours!.Replace(".", ",")) * systems[selectedSystem].solarInput / 1000;
                         avgEnergyProduction = Math.Round(calc, 2);
                     }
                 }
