@@ -89,6 +89,33 @@ public class SolarScoreRepository
         }
     }
 
+    //Get solar data
+    public async Task GetSolarData(SolarData data)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            express + "/api/solarscore/getsolardata/"
+        );
+        var content = new StringContent(
+            "{\r\n" +
+            "    \"latitude\": " + data.latitude + ",\r\n" +
+            "    \"longitude\": " + data.longitude + ",\r\n" +
+            "    \"numYears\": \"" + data.numYears + "\",\r\n" +
+            "    \"numDaysPerYear\": \"" + data.numDaysPerYear + "\",\r\n" +
+            "    \"uniqueID\": \"" + data.uniqueID + "\"\r\n" +
+            "}",
+            null,
+            "application/json"
+        );
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Error getting solar data");
+        }
+    }
+
 
     //create solar score
     public async Task<string> Create(SolarScore ss)

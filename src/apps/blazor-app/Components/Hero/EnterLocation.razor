@@ -77,6 +77,7 @@
 
 
         dayLightHours = await getDayLightHours(latitude, longitude);
+        await GetSolarData(latitude, longitude);
 
         if (locationSuggestion != null)
         {
@@ -129,8 +130,55 @@
         }
     }
 
-    public async Task CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife,
-    string image)
+    public async Task<int> GetSolarData(double latitude, double longitude) 
+    {
+        var numYears = 3;
+        var numDaysPerYear = 48;
+
+
+        @* Create the new table in database *@
+        Console.WriteLine("Creating new table in database");
+        var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+        Console.WriteLine(uniqueId);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/create");
+        var content = new StringContent("{\r\n    \"solarScoreId\" : \"" + uniqueId + "\",\r\n    \"data\" : \"\",\r\n    \"remainingCalls\": 48\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Created new table in database");
+
+            @* Call the python script *@
+            var newClient = new HttpClient();
+            var newRequest = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsolardata");
+            var newContent = new StringContent("{\r\n" + " \"latitude\": " + latitude + ",\r\n" + " \"longitude\": " + longitude + ",\r\n" + " \"numYears\": " + numYears + ",\r\n" + " \"numDaysPerYear\": " + numDaysPerYear + ",\r\n" + " \"uniqueID\": \"" + uniqueId + "\"\r\n" + "}", null, "application/json");
+            newRequest.Content = newContent;
+            var newResponse = await newClient.SendAsync(newRequest);
+            if (newResponse.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Got solar data");
+                return 1;
+            }
+            else
+            {
+                Console.WriteLine("Failed to get solar data");
+                return 0;
+            }
+
+            @* Wait for results to come in TODO*@
+            }
+        else
+        {
+            Console.WriteLine("Failed to create new table in database");
+            return 0;
+        }
+        return 0;
+    } 
+
+    public async Task CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife, string image)
     {
         Console.WriteLine("Creating Basic Calculation");
         var client = new HttpClient();
