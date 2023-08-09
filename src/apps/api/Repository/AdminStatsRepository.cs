@@ -36,7 +36,7 @@ public class AdminStatsRepository
             //Get basic calculations
             var request2 = new HttpRequestMessage(
                 HttpMethod.Get,
-                express + "/api/basicCalculation/all"
+                express + "/api/basicCalculation/withoutImage/test"
             );
             var response2 = await client.SendAsync(request2);
             List<BasicCalculation> basicCalculations = new List<BasicCalculation>();
