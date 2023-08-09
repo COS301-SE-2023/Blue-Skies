@@ -91,4 +91,21 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    //Delete solar score
+    [HttpDelete]
+    [Route("delete/{solarScoreId}")]
+    public async Task<IActionResult> Delete([FromRoute] string solarScoreId)
+    {
+        try
+        {
+            var result = await _solarScoreRepository.DeleteSolarScore(solarScoreId);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }

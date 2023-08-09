@@ -94,6 +94,36 @@ export default class SolarScoreController {
       });
     }
   };
+
+  //delete solarScore
+  public deleteSolarScore = async (req: Request, res: Response) => {
+    const { solarScoreId } = req.params;
+    const query = `DELETE FROM [dbo].[solarScore] WHERE solarScoreId = '${solarScoreId}'`;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            console.log(rowCount);
+            return res.status(200).json({
+              message: 'Solar Score deleted successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  };
+
   //create a function to execute python script
   private executePython = async (script, args) => {
     const parameters = args.map((arg) => arg.toString());
