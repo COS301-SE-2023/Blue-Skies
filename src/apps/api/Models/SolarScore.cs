@@ -1,8 +1,6 @@
 public class SolarScore
 {
-    public string? imgName { get; set; }
     public string solarScoreId { get; set; }
-    public string? base64Image { get; set; }
-
-    public string? score { get; set; }
+    public string? data { get; set; }
+    public int remainingCalls { get; set; }
 }
