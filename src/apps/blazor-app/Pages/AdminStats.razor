@@ -131,13 +131,26 @@
                     {
                         Enabled = false
                     },
+                    Scales = new BarScales
+                    {
+                        YAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    }
 
                 }
             };
 
 
 
-        IDataset<int> dataset2 = new BarDataset<int>(new[] { 6, 5, 3, 10 })
+        IDataset<int> dataset2 = new BarDataset<int>(new[] { 30 })
             {
                 Label = "Total reports generated",
                 BackgroundColor = "rgba(54, 162, 235, 0.2)",
