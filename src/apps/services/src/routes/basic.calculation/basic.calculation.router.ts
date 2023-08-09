@@ -24,6 +24,9 @@ basicCalculationRouter.get(
   bodyParser.json(),
   basicCalculationController.getCreatedBasicCalculation
 );
+basicCalculationRouter.get('/count',
+  basicCalculationController.getSystemCount
+);
 basicCalculationRouter.get(
   '/:basicCalculationId',
   basicCalculationController.getBasicCalculation
