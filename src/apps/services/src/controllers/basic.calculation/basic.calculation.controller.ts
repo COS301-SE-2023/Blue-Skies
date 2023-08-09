@@ -2,6 +2,7 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import IBasicCalculation from '../../models/basic.calculation.interface';
 import { connection as conn } from '../../main';
+import ISystemUses from '../../models/systems.uses.interface';
 export default class BasicCalculationController {
   public createBasicCalculation = (req: Request, res: Response) => {
     const { systemId, dayLightHours, location, batteryLife, image } = req.body;
@@ -223,6 +224,48 @@ export default class BasicCalculationController {
     } catch (error) {
       res.status(500).json({
         error: error.message,
+      });
+    }
+  };
+
+  public getSystemCount = (req: Request, res: Response) => {
+    const query = 'SELECT s.systemSize, COUNT(*) FROM [dbo].[systems] AS s INNER JOIN [dbo].[basicCalculations] AS b ON s.systemId = b.systemId GROUP BY s.systemSize';
+    const systemUses: ISystemUses[] = [];
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No basic calculations exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json(systemUses);
+          }
+        }
+      );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        const systemUse: ISystemUses = {
+          systemSize: columns[0].value,
+          count: columns[1].value,
+          
+        };
+        systemUses.push(systemUse);
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to retrieve basic calculations.',
+        details: 'Database connection error.',
       });
     }
   };
