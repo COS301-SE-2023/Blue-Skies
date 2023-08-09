@@ -5,5 +5,5 @@ export default interface IBasicCalculation {
   location: string;
   batteryLife: number;
   dateCreated: Date;
-  image: string;
+  image?: string;
 }

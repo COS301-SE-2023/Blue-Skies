@@ -81,6 +81,62 @@ export default class BasicCalculationController {
     }
   };
 
+  //Get all basic calculations without the image
+  public getAllBasicCalculationsWithoutImage = (
+    req: Request,
+    res: Response
+  ) => {
+    console.log('Getting all basic calculations without image');
+    const query = `SELECT
+    [basicCalculationId]
+    ,[systemId]
+    ,[daylightHours]
+    ,[location]
+    ,[batteryLife]
+    ,[dateCreated]
+    FROM [dbo].[basicCalculations]`;
+    const basicCalculations: IBasicCalculation[] = [];
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            return res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            return res.status(404).json({
+              error: 'Not Found',
+              details: 'No basic calculations exist.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json(basicCalculations);
+          }
+        }
+      );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        const basicCalculation: IBasicCalculation = {
+          basicCalculationId: columns[0].value,
+          systemId: columns[1].value,
+          daylightHours: columns[2].value + '',
+          location: columns[3].value,
+          batteryLife: columns[4].value,
+          dateCreated: columns[5].value,
+        };
+        basicCalculations.push(basicCalculation);
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({
+        error: 'Failed to retrieve basic calculations.',
+        details: 'Database connection error.',
+      });
+    }
+  };
+
   public getCreatedBasicCalculation = (req: Request, res: Response) => {
     const { systemId, dayLightHours, location } = req.body;
     let basicCalculation: IBasicCalculation;
