@@ -101,6 +101,7 @@ public class SolarScoreController : ControllerBase
             var result = await _solarScoreRepository.UpdateSolarScore(ss);
             return Ok(result);
         }
+
         catch (Exception e)
         {
             return StatusCode(500, e.Message);
@@ -122,5 +123,4 @@ public class SolarScoreController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-
 }

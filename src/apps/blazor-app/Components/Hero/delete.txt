@@ -1,7 +1,0 @@
-{
-  "latitude": 12,
-  "longitude": -12,
-  "numYears": 2,
-  "numDaysPerYear": 3,
-  "uniqueID": "f058bd02"
-}
