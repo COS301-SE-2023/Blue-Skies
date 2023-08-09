@@ -240,7 +240,77 @@ describe('Basic Calculation Controller', () => {
       });
     });
   });
+  // Get Basic Calculations Without Image
+  describe('getBasicCalculationsWithoutImage', () => {
+    it('should return all basic calculations', () => {
+      basicCalculationController.getAllBasicCalculationsWithoutImage(
+        mockRequest as Request,
+        mockResponse as Response
+      );
 
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([] as IBasicCalculation[]);
+    });
+    //should return 400 if error
+    it('should return 400 if error', () => {
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Query failed'));
+        }
+      );
+
+      basicCalculationController.getAllBasicCalculationsWithoutImage(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Query failed',
+      });
+    });
+    //should return 500 if error
+    it('should return 500 if error', () => {
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Error thrown');
+        }
+      );
+
+      basicCalculationController.getAllBasicCalculations(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to retrieve basic calculations.',
+        details: 'Database connection error.',
+      });
+    });
+    //should return 404 if error
+    it('should return 404 if no basic calculations found', () => {
+      // Simulate a failed query
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+
+      basicCalculationController.getAllBasicCalculations(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'No basic calculations exist.',
+      });
+    });
+  });
   // Get All Basic Calculations
 
   describe('getAllBasicCalculations', () => {
