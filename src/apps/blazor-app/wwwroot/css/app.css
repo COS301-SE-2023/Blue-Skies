@@ -845,10 +845,6 @@ video {
   margin-top: 8rem;
 }
 
-.mt-36 {
-  margin-top: 9rem;
-}
-
 .mt-4 {
   margin-top: 1rem;
 }
@@ -1125,6 +1121,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-96 {
+  width: 24rem;
 }
 
 .min-w-fit {
@@ -1857,6 +1857,10 @@ video {
 
 .pl-28 {
   padding-left: 7rem;
+}
+
+.pl-32 {
+  padding-left: 8rem;
 }
 
 .text-left {
