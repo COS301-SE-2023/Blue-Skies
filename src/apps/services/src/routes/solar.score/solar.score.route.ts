@@ -38,3 +38,8 @@ solarScoreRouter.get(
   '/:latitude/:longitude',
   solarScoreController.getSolarIrradiation
 );
+
+solarScoreRouter.delete(
+  '/delete/:latitude/:longitude',
+  solarScoreController.deleteSolarIrradiation
+);
