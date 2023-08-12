@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { connection as conn } from '../../main';
 import * as tedious from 'tedious';
 import { spawn } from 'child_process';
+import ISolarIrradiation from '../../models/solar.irradiation.interfact';
 export default class SolarScoreController {
   public getMapBoxApiKey = async (req: Request, res: Response) => {
     try {
@@ -39,29 +40,6 @@ export default class SolarScoreController {
     }
   };
 
-  public getSolarData = async (req: Request, res: Response) => {
-    console.log('Get Solar Data script started');
-    const { latitude, longitude, numYears, numDaysPerYear, uniqueID } =
-      req.body;
-    const previousYear = new Date().getFullYear() - 1;
-    try {
-      this.executePython('scripts/solarRadiation.py', [
-        longitude,
-        latitude,
-        previousYear,
-        numYears,
-        numDaysPerYear,
-        uniqueID,
-      ]);
-
-      res.status(200).json({
-        message: 'Solar Data retrieved successfully.',
-      });
-    } catch (error) {
-      res.status(500).json({ error: error });
-    }
-  };
-
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.body;
@@ -72,12 +50,12 @@ export default class SolarScoreController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(400).json({
+            res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
+            res.status(200).json({
               message: 'Solar Irradiation created successfully.',
             });
           }
@@ -101,17 +79,53 @@ export default class SolarScoreController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            return res.status(400).json({
+            res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            return res.status(200).json({
+            res.status(200).json({
               message: 'Solar Irradiation updated successfully.',
             });
           }
         }
       );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
+
+  //get solarIrradiation
+  public getSolarIrradiation = async (req: Request, res: Response) => {
+    const { solarIrradiationId } = req.params;
+    const query = `SELECT * FROM [dbo].[solarIrradiation] WHERE solarIrradiationId = ${solarIrradiationId}`;
+    let solarIrradiation: ISolarIrradiation;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          solarIrradiationId: columns[0].value,
+          data: columns[1].value,
+          remainingCalls: columns[2].value,
+          latitude: columns[3].value,
+          longitude: columns[4].value,
+          dateCreated: columns[5].value,
+        };
+      });
 
       conn.execSql(request);
     } catch (error) {

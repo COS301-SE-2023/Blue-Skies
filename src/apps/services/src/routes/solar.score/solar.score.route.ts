@@ -22,12 +22,6 @@ solarScoreRouter.get(
   solarScoreController.getSunTimes
 );
 
-solarScoreRouter.get(
-  '/getsolardata',
-  bodyParser.json(),
-  solarScoreController.getSolarData
-);
-
 solarScoreRouter.post(
   '/create',
   bodyParser.json(),
@@ -38,4 +32,9 @@ solarScoreRouter.patch(
   '/update/:solarIrradiationId',
   bodyParser.json(),
   solarScoreController.updateSolarIrradiation
+);
+
+solarScoreRouter.get(
+  '/:solarIrradiationId',
+  solarScoreController.getSolarIrradiation
 );
