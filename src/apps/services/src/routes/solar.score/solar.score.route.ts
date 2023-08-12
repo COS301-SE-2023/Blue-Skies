@@ -33,3 +33,9 @@ solarScoreRouter.post(
   bodyParser.json(),
   solarScoreController.createSolarIrradiation
 );
+
+solarScoreRouter.patch(
+  '/update/:solarIrradiationId',
+  bodyParser.json(),
+  solarScoreController.updateSolarIrradiation
+);
