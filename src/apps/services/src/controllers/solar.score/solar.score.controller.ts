@@ -41,7 +41,8 @@ export default class SolarScoreController {
 
   public getSolarData = async (req: Request, res: Response) => {
     console.log('Get Solar Data script started');
-    const { latitude, longitude, numYears, numDaysPerYear, uniqueID } = req.body;
+    const { latitude, longitude, numYears, numDaysPerYear, uniqueID } =
+      req.body;
     const previousYear = new Date().getFullYear() - 1;
     try {
       this.executePython('scripts/solarRadiation.py', [
@@ -52,60 +53,32 @@ export default class SolarScoreController {
         numDaysPerYear,
         uniqueID,
       ]);
-      
+
       res.status(200).json({
         message: 'Solar Data retrieved successfully.',
       });
     } catch (error) {
       res.status(500).json({ error: error });
     }
-  }
-
-  public createSolarScore = async (req: Request, res: Response) => {
-    const { solarScoreId, data, remainingCalls } = req.body;
-    const query = `INSERT INTO [dbo].[solarScore] (solarScoreId, data, remainingCalls) VALUES ('${solarScoreId}', '${data}', ${remainingCalls})`;
-    try {
-      const request = new tedious.Request(
-        query,
-        (err: tedious.RequestError, rowCount: number) => {
-          if (err) {
-            res.status(400).json({
-              error: err.message,
-            });
-          } else {
-            console.log(rowCount);
-            res.status(200).json({
-              message: 'Solar Score created successfully.',
-            });
-          }
-        }
-      );
-
-      conn.execSql(request);
-    } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
-    }
   };
 
-  public updateSolarScore = async (req: Request, res: Response) => {
-    const { data, remainingCalls } = req.body;
-    const { solarScoreId } = req.params;
-
-    const query = `UPDATE [dbo].[solarScore] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE solarScoreId = '${solarScoreId}'`;
+  //createSolarIrradiation
+  public createSolarIrradiation = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.body;
+    const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const query = `INSERT INTO [dbo].[solarIrradiation] (data, remainingCalls, latitude, longitude, dateCreated) VALUES ('', 0, ${latitude}, ${longitude}, '${dateCreated}')`;
     try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            res.status(400).json({
+            return res.status(400).json({
               error: err.message,
             });
           } else {
             console.log(rowCount);
-            res.status(200).json({
-              message: 'Solar Score updated successfully.',
+            return res.status(200).json({
+              message: 'Solar Irradiation created successfully.',
             });
           }
         }
@@ -113,38 +86,7 @@ export default class SolarScoreController {
 
       conn.execSql(request);
     } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
-    }
-  };
-
-  //delete solarScore
-  public deleteSolarScore = async (req: Request, res: Response) => {
-    const { solarScoreId } = req.params;
-    const query = `DELETE FROM [dbo].[solarScore] WHERE solarScoreId = '${solarScoreId}'`;
-    try {
-      const request = new tedious.Request(
-        query,
-        (err: tedious.RequestError, rowCount: number) => {
-          if (err) {
-            res.status(400).json({
-              error: err.message,
-            });
-          } else {
-            console.log(rowCount);
-            res.status(200).json({
-              message: 'Solar Score deleted successfully.',
-            });
-          }
-        }
-      );
-
-      conn.execSql(request);
-    } catch (error) {
-      res.status(500).json({
-        error: error.message,
-      });
+      res.status(500).json({ error: error });
     }
   };
 

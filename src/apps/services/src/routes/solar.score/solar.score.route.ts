@@ -31,16 +31,5 @@ solarScoreRouter.get(
 solarScoreRouter.post(
   '/create',
   bodyParser.json(),
-  solarScoreController.createSolarScore
-);
-
-solarScoreRouter.patch(
-  '/update/:solarScoreId',
-  bodyParser.json(),
-  solarScoreController.updateSolarScore
-);
-
-solarScoreRouter.delete(
-  '/delete/:solarScoreId',
-  solarScoreController.deleteSolarScore
+  solarScoreController.createSolarIrradiation
 );
