@@ -71,8 +71,8 @@ export default class SolarScoreController {
   //update solarIrradiation
   public updateSolarIrradiation = async (req: Request, res: Response) => {
     const { data, remainingCalls } = req.body;
-    const { solarIrradiationId } = req.params;
-    const query = `UPDATE [dbo].[solarIrradiation] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE solarIrradiationId = ${solarIrradiationId}`;
+    const { latitude, longitude } = req.params;
+    const query = `UPDATE [dbo].[solarIrradiation] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${latitude} AND longitude = ${longitude}`;
 
     try {
       const request = new tedious.Request(
@@ -99,8 +99,9 @@ export default class SolarScoreController {
 
   //get solarIrradiation
   public getSolarIrradiation = async (req: Request, res: Response) => {
-    const { solarIrradiationId } = req.params;
-    const query = `SELECT * FROM [dbo].[solarIrradiation] WHERE solarIrradiationId = ${solarIrradiationId}`;
+    const { latitude, longitude } = req.params;
+    console.log(latitude, longitude);
+    const query = `SELECT * FROM [dbo].[solarIrradiation] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
     let solarIrradiation: ISolarIrradiation;
     try {
       const request = new tedious.Request(
@@ -118,12 +119,11 @@ export default class SolarScoreController {
 
       request.on('row', (columns) => {
         solarIrradiation = {
-          solarIrradiationId: columns[0].value,
-          data: columns[1].value,
-          remainingCalls: columns[2].value,
-          latitude: columns[3].value,
-          longitude: columns[4].value,
-          dateCreated: columns[5].value,
+          data: columns[0].value,
+          remainingCalls: columns[1].value,
+          latitude: columns[2].value,
+          longitude: columns[3].value,
+          dateCreated: columns[4].value,
         };
       });
 

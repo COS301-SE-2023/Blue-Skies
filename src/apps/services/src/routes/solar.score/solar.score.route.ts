@@ -29,12 +29,12 @@ solarScoreRouter.post(
 );
 
 solarScoreRouter.patch(
-  '/update/:solarIrradiationId',
+  '/update/:latitude/:longitude',
   bodyParser.json(),
   solarScoreController.updateSolarIrradiation
 );
 
 solarScoreRouter.get(
-  '/:solarIrradiationId',
+  '/:latitude/:longitude',
   solarScoreController.getSolarIrradiation
 );
