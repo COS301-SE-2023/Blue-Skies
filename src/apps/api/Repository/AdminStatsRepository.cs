@@ -34,20 +34,21 @@ public class AdminStatsRepository
             }
 
             //Get basic calculations
+            // todo: implement withoutImage in report
             var request2 = new HttpRequestMessage(
                 HttpMethod.Get,
                 express + "/api/basicCalculation/withoutImage/test"
             );
             var response2 = await client.SendAsync(request2);
-            List<BasicCalculation> basicCalculations = new List<BasicCalculation>();
+            List<Reports> reports = new List<Reports>();
             if (response2.IsSuccessStatusCode)
             {
                 var data2 = await response2.Content.ReadAsStringAsync();
                 Console.WriteLine(".NET: Get All Basic Calculations");
-                basicCalculations = JsonSerializer.Deserialize<List<BasicCalculation>>(data2)!;
+                reports = JsonSerializer.Deserialize<List<Reports>>(data2)!;
             }
 
-            if (systems == null || basicCalculations == null)
+            if (systems == null || reports == null)
             {
                 Console.WriteLine(".NET: Database Connection Error in function GetAllSystemUsage");
                 throw new Exception("Database Connection Error");
@@ -70,7 +71,7 @@ public class AdminStatsRepository
                     );
                 }
             }
-            foreach (BasicCalculation item in basicCalculations)
+            foreach (Reports item in reports)
             {
                 int index = systemUsages.FindIndex(x => x.systemId == item.systemId);
                 if (index != -1)
