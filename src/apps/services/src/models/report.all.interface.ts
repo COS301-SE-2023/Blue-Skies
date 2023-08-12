@@ -7,13 +7,10 @@ export default interface IReportAll {
   lastLoggedIn: Date;
   reportId: number;
   reportName: string;
-  solarScore: number;
-  runningTime: number;
-  reportDateCreated: Date;
-  basicCalculationId: number;
+  solarIrradiationId: number;
   daylightHours: number;
   location: string;
-  basicCalculationDateCreated: Date;
+  reportDateCreated: Date;
   systemId: number;
   systemSize: number;
   inverterOutput: number;
@@ -22,5 +19,4 @@ export default interface IReportAll {
   numberOfBatteries: number;
   solarInput: number;
   image: string;
-  batteryLife: number;
 }
