@@ -111,6 +111,10 @@ export default class SolarScoreController {
             res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
           } else {
             res.status(200).json(solarIrradiation);
           }
