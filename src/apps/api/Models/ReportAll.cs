@@ -10,13 +10,10 @@ public class ReportAll
     public DateTime lastLoggedIn { get; set; }
     public int reportId { get; set; }
     public string? reportName { get; set; }
-    public int solarScore { get; set; }
-    public int runningTime { get; set; }
-    public DateTime reportDateCreated { get; set; }
-    public int basicCalculationId { get; set; }
+    public int solarIrradiationId { get; set; }
     public float daylightHours { get; set; }
     public string? location { get; set; }
-    public DateTime basicCalculationDateCreated { get; set; }
+    public DateTime reportDateCreated { get; set; }
     public int systemId { get; set; }
     public string? systemSize { get; set; }
     public int inverterOutput { get; set; }
@@ -25,5 +22,4 @@ public class ReportAll
     public int numberOfBatteries { get; set; }
     public int solarInput { get; set; }
     public string? image { get; set; }
-    public int batteryLife { get; set; }
 }

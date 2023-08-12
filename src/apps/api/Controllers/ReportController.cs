@@ -57,11 +57,13 @@ public class ReportController : ControllerBase
         try
         {
             var data = await _reportsRepository.CreateReports(
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.solarIrradiationId,
+                report.systemId,
+                report.daylightHours,
+                report.location!,
+                report.image!
             );
             return Ok(data);
         }
@@ -80,11 +82,13 @@ public class ReportController : ControllerBase
         {
             var data = await _reportsRepository.UpdateReports(
                 report.reportId,
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.solarIrradiationId,
+                report.systemId,
+                report.daylightHours,
+                report.location!,
+                report.image!
             );
             return Ok(data);
         }
