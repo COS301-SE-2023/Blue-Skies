@@ -11,6 +11,7 @@ import { trainingDataRouter } from './training.data/training.data.router';
 import { reportAllRouter } from './report.all/report.all.router';
 import { solarScoreRouter } from './solar.score/solar.score.route';
 import { reportAllApplianceRouter } from './report.all.appliances/report.all.appliances.router';
+import { locationRouter } from './location/location.router';
 const router = Router();
 
 router.get('/', testHelloWorld);
@@ -25,5 +26,6 @@ router.use('/trainingData', trainingDataRouter);
 router.use('/reportAll', reportAllRouter);
 router.use('/solarscore', solarScoreRouter);
 router.use('/reportAllAppliance', reportAllApplianceRouter);
+router.use('/location', locationRouter);
 
 export default router;
