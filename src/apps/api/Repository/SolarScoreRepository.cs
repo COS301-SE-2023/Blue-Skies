@@ -1,14 +1,6 @@
 using System.Net;
 using System.Text.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using Microsoft.ML;
-using static Microsoft.ML.DataOperationsCatalog;
-using Microsoft.ML.Vision;
-using Microsoft.ML.Data;
-using Microsoft.Extensions.ML;
 
 namespace Api.Repository;
 
@@ -188,7 +180,7 @@ public class SolarScoreRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/solarscore/solarIrradiationData");
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/solarIrradiationData");
             var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": " + numYears + ",\r\n    \"numDaysPerYear\": " + numDaysPerYear + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
