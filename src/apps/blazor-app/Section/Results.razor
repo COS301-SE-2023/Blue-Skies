@@ -114,6 +114,10 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
+    public bool  foundSolarIrradiation = false;
+    private double latitude = 0;
+    private double longitude = 0;
+    public SolarIrradiationModel solarIrradiation = null;
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -123,8 +127,8 @@
         selectedSystem = selectedSys.Value;
 
         var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
-
         await getBasicCalculation(basicCalcId.Value);
+
         if (basicCalculation != null && basicCalculation.daylightHours != null)
         {
             dayLightHours = float.Parse(basicCalculation.daylightHours.Replace(".", ","));
@@ -149,6 +153,31 @@
 
         solarScore = new Random().Next(0, 100);
         await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<bool>("foundSolarIrradiation");
+        foundSolarIrradiation = tempSolarIrradiation.Value;
+
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = tempLatitude.Value;
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = tempLongitude.Value;
+
+        if(foundSolarIrradiation == true)
+        {
+            //Get Solar Irradiation once
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                solarIrradiation = JsonSerializer.Deserialize<SolarIrradiationModel>(data);
+            }
+
+        }else{
+            //Get Solar Irradiation a bunch of times
+             GetSolarIrradiation();
+        }
     }
     private void SetSystemSize(int selection)
     {
@@ -201,6 +230,33 @@
         }
         return;
     }
+
+    private async Task GetSolarIrradiation()
+    {
+        int remainingCalls = 1;
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        while(remainingCalls > 0){
+            Console.WriteLine("Another one");
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                solarIrradiation = JsonSerializer.Deserialize<SolarIrradiationModel>(data);
+                remainingCalls = solarIrradiation.remainingCalls;
+                Console.WriteLine("Remaining calls: " + remainingCalls);
+            }else{
+                Console.WriteLine("Failed to get solar irradiation");
+            }
+
+            await Task.Delay(2000);
+            Console.WriteLine("Getting solar irradiation");
+            response = await client.SendAsync(request);
+        }
+
+    }
+
+
 }
 
 
