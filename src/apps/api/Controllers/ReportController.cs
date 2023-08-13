@@ -59,10 +59,9 @@ public class ReportController : ControllerBase
             var data = await _reportsRepository.CreateReports(
                 report.reportName!,
                 report.userId,
-                report.solarIrradiationId,
                 report.systemId,
+                report.locationId,
                 report.daylightHours,
-                report.location!,
                 report.image!
             );
             return Ok(data);
@@ -84,10 +83,9 @@ public class ReportController : ControllerBase
                 report.reportId,
                 report.reportName!,
                 report.userId,
-                report.solarIrradiationId,
                 report.systemId,
+                report.locationId,
                 report.daylightHours,
-                report.location!,
                 report.image!
             );
             return Ok(data);
