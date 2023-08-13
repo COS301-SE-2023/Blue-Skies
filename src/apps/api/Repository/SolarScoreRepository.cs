@@ -89,6 +89,68 @@ public class SolarScoreRepository
         }
     }
 
+
+    //Create Solar Irradiation
+    public async Task<string> CreateSolarIrradiation(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/solarscore/create");
+            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return "Solar Irradiation created successfully";
+            }
+            else if (response.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return "Solar Irradiation already exists";
+            }
+            else
+            {
+                throw new Exception("Error creating solar irradiation");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not create solar irradiation");
+        }
+    }
+
+    //Get solar irradiation
+    public async Task<SolarIrradiation> GetSolarIrradiation(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/" + latitude + "/" + longitude);
+            var response = await client.SendAsync(request);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                SolarIrradiation solarIrradiation = JsonSerializer.Deserialize<SolarIrradiation>(data);
+                return solarIrradiation;
+            }
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+            else
+            {
+                throw new Exception("Error getting solar irradiation");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
 }
 
 
