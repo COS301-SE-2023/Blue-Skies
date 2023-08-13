@@ -192,4 +192,25 @@ export default class SolarScoreController {
 
     return result;
   };
+
+  public getSolarIrradiationData = async (req: Request, res: Response) => {
+    console.log('Get Solar Data script started');
+    const { latitude, longitude, numYears, numDaysPerYear } = req.body;
+    const previousYear = new Date().getFullYear() - 1;
+    try {
+      this.executePython('scripts/solarRadiation.py', [
+        latitude,
+        longitude,
+        previousYear,
+        numYears,
+        numDaysPerYear,
+      ]);
+
+      res.status(200).json({
+        message: 'Solar Data retrieved successfully.',
+      });
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  };
 }

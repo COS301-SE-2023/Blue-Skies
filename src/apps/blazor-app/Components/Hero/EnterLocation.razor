@@ -79,7 +79,7 @@
 
 
         dayLightHours = await getDayLightHours(latitude, longitude);
-        await GetSolarData(latitude, longitude);
+        await CreateSolarIrradiation(latitude, longitude);
 
         if (locationSuggestion != null)
         {
@@ -131,7 +131,7 @@
         }
     }
 
-    public async Task<int> GetSolarData(double latitude, double longitude) 
+    public async Task<int> CreateSolarIrradiation(double latitude, double longitude) 
     {
         var numYears = 3;
         var numDaysPerYear = 48;
