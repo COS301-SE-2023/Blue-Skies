@@ -81,4 +81,24 @@ public class SolarScoreController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("getSolarIrradiation/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetSolarIrradiation(double latitude, double longitude)
+    {
+        try
+        {
+            SolarIrradiation data = await _solarScoreRepository.GetSolarIrradiation(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(404, "Solar Irradiation not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+
 }
