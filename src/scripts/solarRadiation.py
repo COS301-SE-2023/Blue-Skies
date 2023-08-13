@@ -1,4 +1,4 @@
-# python3 solarRadiation.py -25.7652655 28.2784689 2022 3 48 534f7115
+# python3 solarRadiation.py -25.7652655 28.2784689 2022 3 48
 import datetime
 import os
 import sys
@@ -16,7 +16,6 @@ LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
 AMOUNT_OF_YEARS = int(sys.argv[4])
 AMOUNT_OF_TIMES_PER_YEAR = int(sys.argv[5])
-SOLAR_SCORE_ID = sys.argv[6]
 
 # Load environment variables from .env file
 load_dotenv()
@@ -168,13 +167,15 @@ def get_solar_radiation(date):
             # print(amount_of_calls_left)
             # print(SOLAR_SCORE_ID)
 
-            url = API_PORT + "/SolarScore/update"
+            url = API_PORT + "/SolarScore/updateSolarIrradiation"
 
             payload = json.dumps({
-                "solarScoreId": SOLAR_SCORE_ID,
-                "data": data,
-                "remainingCalls": amount_of_calls_left
+            "data": data,
+            "remainingCalls": amount_of_calls_left,
+            "latitude": LATITUDE,
+            "longitude": LONGITUDE
             })
+            
             headers = {
                 'Content-Type': 'application/json'
             }
