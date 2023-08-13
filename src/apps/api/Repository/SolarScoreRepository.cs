@@ -119,6 +119,38 @@ public class SolarScoreRepository
             throw new Exception("Could not create solar irradiation");
         }
     }
+
+    //Get solar irradiation
+    public async Task<SolarIrradiation> GetSolarIrradiation(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/" + latitude + "/" + longitude);
+            var response = await client.SendAsync(request);
+
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                SolarIrradiation solarIrradiation = JsonSerializer.Deserialize<SolarIrradiation>(data);
+                return solarIrradiation;
+            }
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+            else
+            {
+                throw new Exception("Error getting solar irradiation");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
 }
 
 
