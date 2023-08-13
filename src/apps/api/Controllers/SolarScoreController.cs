@@ -120,5 +120,19 @@ public class SolarScoreController : ControllerBase
         }
     }
 
+    [HttpGet]
+    [Route("getSolarIrradiationData")]
+    public async Task<IActionResult> GetSolarIrradiationData([FromBody] SolarData sd)
+    {
+        try
+        {
+            string data = await _solarScoreRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 
 }

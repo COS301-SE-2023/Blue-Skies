@@ -158,7 +158,7 @@ public class SolarScoreRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:3333/api/solarscore/update/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/solarscore/update/" + latitude + "/" + longitude);
             var content = new StringContent("{\r\n    \"data\": \"" + data + "\",\r\n    \"remainingCalls\": " + remainingCalls + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -179,6 +179,33 @@ public class SolarScoreRepository
         {
 
             throw new Exception("Could not update solar irradiation");
+        }
+    }
+
+    //Get Solar Irradiation Data
+    public async Task<string> GetSolarIrradiationData(double latitude, double longitude, int numYears, int numDaysPerYear)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost:3333/api/solarscore/solarIrradiationData");
+            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": " + numYears + ",\r\n    \"numDaysPerYear\": " + numDaysPerYear + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                return data;
+            }
+            else
+            {
+                throw new Exception("Error getting solar irradiation data");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not get solar irradiation data");
         }
     }
 }
