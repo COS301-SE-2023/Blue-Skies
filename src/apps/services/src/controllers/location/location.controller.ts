@@ -5,9 +5,11 @@ import { connection as conn } from '../../main';
 export default class LocationController {
   public createLocation = (req: Request, res: Response) => {
     const { location, latitude, longitude } = req.body;
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let lon = parseFloat(longitude.replace(',', '.'));
     const query =
       `INSERT INTO [dbo].[locations] (location, latitude, longitude)` +
-      ` VALUES ('${location}', '${latitude}', ${longitude})`;
+      ` VALUES ('${location}', '${lat}', '${lon}')`;
     try {
       const request = new tedious.Request(
         query,
@@ -128,8 +130,10 @@ export default class LocationController {
   public updateLocation = (req: Request, res: Response) => {
     const { locationId } = req.params;
     const { location, latitude, longitude } = req.body;
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let lon = parseFloat(longitude.replace(',', '.'));
     const query =
-      `UPDATE [dbo].[locations] SET location = '${location}', latitude = '${latitude}', longitude = '${longitude}'` +
+      `UPDATE [dbo].[locations] SET location = '${location}', latitude = '${lat}', longitude = '${lon}'` +
       ` WHERE locationId = ${locationId}`;
     try {
       const request = new tedious.Request(
