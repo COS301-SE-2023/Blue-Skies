@@ -56,10 +56,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -82,10 +81,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -115,10 +113,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -417,10 +414,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -443,10 +439,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -479,10 +474,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 
@@ -517,10 +511,9 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        solarIrradiation: 1,
         systemId: 1,
-        dayLightHours: 1,
-        location: 'testLocation',
+        daylightHours: 1,
+        locationId: 1,
         image: 'testImage',
       };
 

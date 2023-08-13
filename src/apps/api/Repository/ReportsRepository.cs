@@ -93,10 +93,9 @@ public class ReportsRepository
     public async Task<Reports> CreateReports(
         string reportName,
         int userId,
-        int solarIrradiationId,
         int systemId,
+        int locationId,
         int daylightHours,
-        string location,
         string image
     )
     {
@@ -109,15 +108,13 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"solarIrradiationId\" : "
-                    + solarIrradiationId
                     + ",\r\n    \"systemId\" : "
                     + systemId
-                    + ",\r\n    \"daylightHours\" : "
+                    + ",\r\n    \"locationId\" : \""
+                    + locationId
+                    + "\",\r\n    \"daylightHours\" : "
                     + daylightHours
-                    + ",\r\n    \"location\" : \""
-                    + location
-                    + "\",\r\n    \"image\" : \""
+                    + ",\r\n    \"image\" : \""
                     + image
                     + "\"\r\n}",
                 null,
@@ -131,10 +128,9 @@ public class ReportsRepository
                 rep.reportId = -1;
                 rep.reportName = reportName;
                 rep.userId = userId;
-                rep.solarIrradiationId = solarIrradiationId;
                 rep.systemId = systemId;
+                rep.locationId = locationId;
                 rep.daylightHours = daylightHours;
-                rep.location = location;
                 rep.image = image;
 
                 Console.WriteLine(".NET: report created successfully");
@@ -157,10 +153,9 @@ public class ReportsRepository
         int reportId,
         string reportName,
         int userId,
-        int solarIrradiationId,
         int systemId,
+        int locationId,
         int daylightHours,
-        string location,
         string image
     )
     {
@@ -177,15 +172,13 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"solarIrradiationId\" : "
-                    + solarIrradiationId
                     + ",\r\n    \"systemId\" : "
                     + systemId
-                    + ",\r\n    \"daylightHours\" : "
+                    + ",\r\n    \"locationId\" : \""
+                    + locationId
+                    + "\",\r\n    \"daylightHours\" : "
                     + daylightHours
-                    + ",\r\n    \"location\" : \""
-                    + location
-                    + "\",\r\n    \"image\" : \""
+                    + ",\r\n    \"image\" : \""
                     + image
                     + "\"\r\n}",
                 null,
@@ -200,10 +193,9 @@ public class ReportsRepository
                 rep.reportId = reportId;
                 rep.reportName = reportName;
                 rep.userId = userId;
-                rep.solarIrradiationId = solarIrradiationId;
                 rep.systemId = systemId;
+                rep.locationId = locationId;
                 rep.daylightHours = daylightHours;
-                rep.location = location;
                 rep.image = image;
 
                 Console.WriteLine(".NET: report updated successfully");

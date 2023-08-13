@@ -4,14 +4,14 @@ import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const { reportName, userId, basicCalculationId, solarIrradiationId, systemId, dayLightHours, location, image } =
+    const { reportName, userId, basicCalculationId, solarIrradiationId, systemId, daylightHours, location, image } =
       req.body;
 
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
     const query =
-      `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarIrradiationId, systemId, dayLightHours, location, image, dateCreated)` +
-      ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarIrradiationId}, ${systemId}, ${dayLightHours}, '${location}', '${image}', '${dateCreated}')`;
+      `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarIrradiationId, systemId, daylightHours, location, image, dateCreated)` +
+      ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarIrradiationId}, ${systemId}, ${daylightHours}, '${location}', '${image}', '${dateCreated}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,12 +67,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          solarIrradiationId: columns[3].value,
-          systemId: columns[4].value,
-          dayLightHours: columns[5].value,
-          location: columns[6].value,
-          image: columns[7].value,
-          dateCreated: columns[8].value,
+          systemId: columns[3].value,
+          daylightHours: columns[4].value,
+          locationId: columns[5].value,
+          image: columns[6].value,
+          dateCreated: columns[7].value,
         };
 
         reports.push(report);
@@ -116,12 +115,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          solarIrradiationId: columns[3].value,
-          systemId: columns[4].value,
-          dayLightHours: columns[5].value,
-          location: columns[6].value,
-          image: columns[7].value,
-          dateCreated: columns[8].value,
+          systemId: columns[3].value,
+          daylightHours: columns[4].value,
+          locationId: columns[5].value,
+          image: columns[6].value,
+          dateCreated: columns[7].value,
         };
 
         reports.push(report);
@@ -165,12 +163,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          solarIrradiationId: columns[3].value,
-          systemId: columns[4].value,
-          dayLightHours: columns[5].value,
-          location: columns[6].value,
-          image: columns[7].value,
-          dateCreated: columns[8].value,
+          systemId: columns[3].value,
+          daylightHours: columns[4].value,
+          locationId: columns[5].value,
+          image: columns[6].value,
+          dateCreated: columns[7].value,
         };
       });
 
@@ -184,10 +181,10 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-    const { reportName, userId, solarIrradiationId, systemId, dayLightHours, location, image } =
+    const { reportName, userId, solarIrradiationId, systemId, daylightHours, location, image } =
       req.body;
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, solarIrradiationId = ${solarIrradiationId}, systemId = ${systemId}, dayLightHours = ${dayLightHours}, location = '${location}', image '${image}'` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, solarIrradiationId = ${solarIrradiationId}, systemId = ${systemId}, daylightHours = ${daylightHours}, location = '${location}', image '${image}'` +
       `WHERE reportId = ${reportId}`;
 
     try {
