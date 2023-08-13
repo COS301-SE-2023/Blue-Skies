@@ -5,5 +5,5 @@ public class SolarIrradiation
     public double latitude { get; set; }
     public double longitude { get; set; }
 
-    public DateTime dateCreated { get; set; }
+    public DateTime? dateCreated { get; set; }
 }
