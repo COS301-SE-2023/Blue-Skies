@@ -62,4 +62,23 @@ public class SolarScoreController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [Route("createSolarIrradiation")]
+    public async Task<IActionResult> CreateSolarIrradiation([FromBody] Coordinates cord)
+    {
+        try
+        {
+            string data = await _solarScoreRepository.CreateSolarIrradiation(cord.latitude, cord.longitude);
+            if (data.Equals("Solar Irradiation already exists"))
+            {
+                return StatusCode(400, "Solar Irradiation already exists for this location");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }
