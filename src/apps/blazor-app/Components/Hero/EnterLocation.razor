@@ -141,12 +141,12 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
+        bool foundSolarIrradiation = false;
         //if not found
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
 
             Console.WriteLine("Solar Irradiation Data not found");
-            Console.WriteLine("latitude: " + latitude + " longitude: " + longitude);
             client = new HttpClient();
             request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/createSolarIrradiation");
             var content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
@@ -154,17 +154,24 @@
             response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Created new row in database for solarIrradiation data");
+                client = new HttpClient();
+                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiationData");
+                content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
+                request.Content = content;
+                response = await client.SendAsync(request);
             } else {
                 Console.WriteLine("Failed to create row table in database for solarIrradiation data");
             }
         } else if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Solar Irradiation Data found");
+            foundSolarIrradiation = true;
         } else {
             Console.WriteLine("Failed to create new table in database for solarScore data");
 
         }
+
+        await ProtectedSessionStore.SetAsync("foundSolarIrradiation", foundSolarIrradiation);
     }
 
     private double calculateSolarScore(string data) {
