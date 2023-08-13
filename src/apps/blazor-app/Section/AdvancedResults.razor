@@ -21,7 +21,7 @@
 <div class="flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
     <div class="w-80 mx-auto">
         @{
-            var imageName = basicCalculation!.image;
+            var imageName = currentReport!.image;
         }
         <Map scale="scale-[2.6]" imageName="@imageName" />
     </div>
@@ -44,9 +44,9 @@
             <div class="flex gap-1 mt-3">
                 @{
                     var usableHours = 0.0F;
-                    if (basicCalculation != null)
+                    if (currentReport != null)
                     {
-                        usableHours = float.Parse(basicCalculation.daylightHours!.Replace(".", ","));
+                        usableHours = float.Parse(currentReport.daylightHours!.Replace(".", ","));
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
@@ -61,10 +61,10 @@
             <div class="flex gap-1 mt-3">
                 @{
                     var avgEnergyProduction = 0.0;
-                    if (basicCalculation != null && systems != null)
+                    if (currentReport != null && systems != null)
                     {
                         double calc = systems[selectedSystem].numberOfPanels * float.Parse(
-                        basicCalculation.daylightHours!.Replace(".", ",")) * systems[selectedSystem].solarInput / 1000;
+                        currentReport.daylightHours!.Replace(".", ",")) * systems[selectedSystem].solarInput / 1000;
                         avgEnergyProduction = Math.Round(calc, 2);
                     }
                 }
@@ -79,7 +79,7 @@
     [Parameter]
     public int solarScore { get; set; }
     [Parameter]
-    public BasicCalculationModel? basicCalculation { get; set; }
+    public ReportModel? currentReport { get; set; }
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
