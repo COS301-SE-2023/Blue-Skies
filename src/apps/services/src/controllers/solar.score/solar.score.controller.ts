@@ -72,6 +72,7 @@ export default class SolarScoreController {
   public updateSolarIrradiation = async (req: Request, res: Response) => {
     const { data, remainingCalls } = req.body;
     const { latitude, longitude } = req.params;
+
     const query = `UPDATE [dbo].[solarIrradiation] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${latitude} AND longitude = ${longitude}`;
 
     try {
@@ -123,10 +124,10 @@ export default class SolarScoreController {
 
       request.on('row', (columns) => {
         solarIrradiation = {
-          data: columns[0].value,
-          remainingCalls: columns[1].value,
-          latitude: columns[2].value,
-          longitude: columns[3].value,
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          data: columns[2].value,
+          remainingCalls: columns[3].value,
           dateCreated: columns[4].value,
         };
       });

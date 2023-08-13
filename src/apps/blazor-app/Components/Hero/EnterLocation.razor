@@ -2,6 +2,7 @@
 @using BlazorApp.Components.Hero
 @using BlazorApp.Models
 @using System.Text.Json;
+@using System.Net;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
@@ -74,8 +75,8 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;
         }
-        latitude = cord[0];
-        longitude = cord[1];
+        longitude = cord[0];
+        latitude = cord[1];
 
 
         dayLightHours = await getDayLightHours(latitude, longitude);
@@ -98,6 +99,7 @@
 
         if (parent.Equals("index"))
         {
+            Console.WriteLine("Parent is index");
             await ProtectedSessionStore.DeleteAsync("parent");
             NavigationManager.NavigateTo("/solarScore");
         }
@@ -131,46 +133,37 @@
         }
     }
 
-    public async Task<int> CreateSolarIrradiation(double latitude, double longitude) 
+    public async Task CreateSolarIrradiation(double latitude, double longitude) 
     {
         var numYears = 3;
         var numDaysPerYear = 48;
-
-        @* Create the new table in database *@
-        var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+        //Try to get the solar Radiation if it exsists
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/create");
-        var content = new StringContent("{\r\n    \"solarScoreId\" : \"" + uniqueId + "\",\r\n    \"data\" : \"\",\r\n    \"remainingCalls\": 48\r\n}", null, "application/json");
-        request.Content = content;
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        if (response.IsSuccessStatusCode)
+        //if not found
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            @* Call the python script *@
-            var newClient = new HttpClient();
-            var newRequest = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsolardata");
-            var newContent = new StringContent("{\r\n" + " \"latitude\": " + latitude + ",\r\n" + " \"longitude\": " + longitude + ",\r\n" + " \"numYears\": " + numYears + ",\r\n" + " \"numDaysPerYear\": " + numDaysPerYear + ",\r\n" + " \"uniqueID\": \"" + uniqueId + "\"\r\n" + "}", null, "application/json");
-            newRequest.Content = newContent;
-            var newResponse = await newClient.SendAsync(newRequest);
-            if (newResponse.IsSuccessStatusCode)
-            {
-                Console.WriteLine("The script for SolarScore Data was run successfully");
-                @* Wait for results to come in*@
-                @* var canExit = false;
-                while(canExit) 
-                {
 
-                    await Task.Delay(50);
-                } *@
-                return 1;
+            Console.WriteLine("Solar Irradiation Data not found");
+            Console.WriteLine("latitude: " + latitude + " longitude: " + longitude);
+            client = new HttpClient();
+            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/createSolarIrradiation");
+            var content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+            request.Content = content;
+            response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Created new row in database for solarIrradiation data");
             } else {
-                Console.WriteLine("Failed to get solar data");
-                return 0;
+                Console.WriteLine("Failed to create row table in database for solarIrradiation data");
             }
+        } else if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Solar Irradiation Data found");
         } else {
             Console.WriteLine("Failed to create new table in database for solarScore data");
-            return 0;
+
         }
     }
 
@@ -272,7 +265,7 @@
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
 
         string img = Convert.ToBase64String(imageBytes);
-        //await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
+        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
         await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
         return;
     }
