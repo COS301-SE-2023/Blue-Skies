@@ -151,6 +151,36 @@ public class SolarScoreRepository
             throw new Exception("Could not get solar irradiation");
         }
     }
+
+    //UpdateSolarIrradiation
+    public async Task<string> UpdateSolarIrradiation(double latitude, double longitude, string data, int remainingCalls)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, "http://localhost:3333/api/solarscore/update/" + latitude + "/" + longitude);
+            var content = new StringContent("{\r\n    \"data\": \"" + data + "\",\r\n    \"remainingCalls\": " + remainingCalls + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return "Solar Irradiation updated successfully";
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return "Solar Irradiation not found";
+            }
+            else
+            {
+                throw new Exception("Error updating solar irradiation");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not update solar irradiation");
+        }
+    }
 }
 
 

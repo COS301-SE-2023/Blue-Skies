@@ -101,4 +101,24 @@ public class SolarScoreController : ControllerBase
     }
 
 
+    [HttpPatch]
+    [Route("updateSolarIrradiation")]
+    public async Task<IActionResult> UpdateSolarIrradiation([FromBody] SolarIrradiation solarIrradiation)
+    {
+        try
+        {
+            string data = await _solarScoreRepository.UpdateSolarIrradiation(solarIrradiation.latitude, solarIrradiation.longitude, solarIrradiation.data, solarIrradiation.remainingCalls);
+            if (data.Equals("Solar Irradiation not found"))
+            {
+                return StatusCode(404, "Solar Irradiation not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+
 }
