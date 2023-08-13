@@ -32,7 +32,7 @@ public class ReportController : ControllerBase
 
     [HttpGet]
     [Route("getUserReports/{userId}")]
-    public async Task<IActionResult> GetAllReports([FromRoute] int userId)
+    public async Task<IActionResult> GetUserReports([FromRoute] int userId)
     {
         try
         {

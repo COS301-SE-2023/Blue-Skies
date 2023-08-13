@@ -3,8 +3,8 @@ export default interface IReport {
   reportName: string;
   userId: number;
   systemId: number;
-  daylightHours: number;
   locationId: number;
+  daylightHours: number;
   image: string;
   dateCreated: Date;
 }
