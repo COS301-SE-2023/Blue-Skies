@@ -95,7 +95,7 @@ public class ReportsRepository
         int userId,
         int systemId,
         int locationId,
-        int daylightHours,
+        float daylightHours,
         string image
     )
     {
@@ -110,11 +110,11 @@ public class ReportsRepository
                     + userId
                     + ",\r\n    \"systemId\" : "
                     + systemId
-                    + ",\r\n    \"locationId\" : \""
+                    + ",\r\n    \"locationId\" : "
                     + locationId
-                    + "\",\r\n    \"daylightHours\" : "
+                    + ",\r\n    \"daylightHours\" : \""
                     + daylightHours
-                    + ",\r\n    \"image\" : \""
+                    + "\",\r\n    \"image\" : \""
                     + image
                     + "\"\r\n}",
                 null,
@@ -138,7 +138,7 @@ public class ReportsRepository
             }
             else
             {
-                Console.WriteLine(".NET: Error creating report");
+                Console.WriteLine(".NET: Error creating report: " + await response.Content.ReadAsStringAsync());
                 throw new Exception("Error creating report");
             }
         }
@@ -155,7 +155,7 @@ public class ReportsRepository
         int userId,
         int systemId,
         int locationId,
-        int daylightHours,
+        float daylightHours,
         string image
     )
     {
@@ -176,9 +176,9 @@ public class ReportsRepository
                     + systemId
                     + ",\r\n    \"locationId\" : \""
                     + locationId
-                    + "\",\r\n    \"daylightHours\" : "
+                    + "\",\r\n    \"daylightHours\" : \""
                     + daylightHours
-                    + ",\r\n    \"image\" : \""
+                    + "\",\r\n    \"image\" : \""
                     + image
                     + "\"\r\n}",
                 null,
