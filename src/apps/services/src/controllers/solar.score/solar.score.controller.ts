@@ -44,7 +44,7 @@ export default class SolarScoreController {
   public createSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const query = `INSERT INTO [dbo].[solarIrradiation] (data, remainingCalls, latitude, longitude, dateCreated) VALUES ('', 0, ${latitude}, ${longitude}, '${dateCreated}')`;
+    const query = `INSERT INTO [dbo].[solarIrradiation] (data, remainingCalls, latitude, longitude, dateCreated) VALUES ('', 1, ${latitude}, ${longitude}, '${dateCreated}')`;
     try {
       const request = new tedious.Request(
         query,
