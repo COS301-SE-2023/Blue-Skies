@@ -76,7 +76,7 @@
 
         daylightHours = await getDayLightHours(latitude, longitude);
         await GetSolarData(latitude, longitude);
-        currentReport.daylightHours = daylightHours + "";
+        currentReport.daylightHours = daylightHours;
 
         if (locationSuggestion != null)
         {

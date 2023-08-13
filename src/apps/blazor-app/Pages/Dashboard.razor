@@ -40,12 +40,12 @@ else
                 <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" />
                 @{
                     var image = "";
-                    if (reportAll.Count > selectedReport)
+                    if (reports.Count > selectedReport)
                     {
-                        image = reportAll[selectedReport].image;
+                        image = reports[selectedReport].image;
                     }
                 }
-                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" basicCalculationImage="@image" />
+                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" basicCalculationImage="@image" systems="systems" />
                 <div class="mt-10 w-full">
                     <Card>
                         <Heading>
@@ -84,7 +84,7 @@ else
                                     <Chart Config="pieConfig"></Chart>
                                     <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                                         <p class="text-5xl text-primary-900 font-semibold">
-                                            @reportAll[selectedReport].daylightHours</p>
+                                            @reports[selectedReport].daylightHours</p>
                                         <p class="text-5xl text-gray-400 font-bold">h</p>
                                     </div>
                                 </div>
@@ -92,9 +92,17 @@ else
                             <div class="hidden md:block w-full">
                                 @{
                                     var imageName = "";
-                                    if (reportAll.Count > selectedReport)
+                                    if (reports.Count > selectedReport)
                                     {
-                                        var sysSize = reportAll[selectedReport].systemSize;
+                                        var sysId = reports[selectedReport].systemId;
+                                        var sysSize = "Small";
+                                        foreach (var sys in systems)
+                                        {
+                                            if (sys.systemId == sysId)
+                                            {
+                                                sysSize = sys.systemSize;
+                                            }
+                                        }
                                         if (sysSize != null)
                                         {
                                             if (sysSize.Equals("Small"))
@@ -176,9 +184,9 @@ else
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
-    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private List<SystemModel> systems = new List<SystemModel>();
     private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
@@ -199,11 +207,14 @@ else
         isAd = isAdmin.Value;
         userId = usId.Value;
 
+        await GetSystemsAsync();       
         await GetUserReports();
-        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
-        await GetReportAll();
+        if (reports.Count > 0)
+        {
+            await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
+        }
         await GetReportAllAppliance();
-        if (reportAll.Count > 0)
+        if (reports.Count > 0)
         {
             updateAppliances();
             renderCharts();
@@ -213,6 +224,29 @@ else
         loadingService.HideLoadingScreen();
     }
 
+    private async Task GetSystemsAsync()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (systems.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("systems", systems);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
     private void Dispose() {
         reportManager.EditReportRequested -= Edit;
         reportManager.DeleteReportRequested -= ShowModal;
@@ -220,9 +254,9 @@ else
     private async void updateAppliances()
     {
         reportAllAppliance.Clear();
-        if (reportAll.Count > 0)
+        if (reports.Count > 0)
         {
-            int reportId = reportAll[selectedReport].reportId;
+            int reportId = reports[selectedReport].reportId;
             foreach (var reportAllApp in allReportAllAppliance)
             {
                 if (reportAllApp.reportId == reportId)
@@ -255,32 +289,6 @@ else
         else
         {
             Console.WriteLine("Failed to get user reports");
-        }
-    }
-    private async Task GetReportAll()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/user/" + userId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Successfully got report all");
-            var data = await response.Content.ReadAsStringAsync();
-            reportAll = JsonSerializer.Deserialize<List<ReportAllModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-            if (reportAll.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("reportAll", reportAll);
-            }
-            isLoaded = true;
-
-        }
-        else
-        {
-            Console.WriteLine("Failed to get report all");
         }
     }
     private async Task GetReportAllAppliance()
@@ -398,9 +406,9 @@ else
         {
             pieConfig.Data.Labels.Add(color);
         }
-        if (reportAll.Count > 0)
+        if (reports.Count > 0)
         {
-            float hours = reportAll[selectedReport].daylightHours;
+            float hours = reports[selectedReport].daylightHours;
             float remaining = (float)Math.Round(13 - hours, 2);
             PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
                 {

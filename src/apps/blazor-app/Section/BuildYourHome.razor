@@ -104,7 +104,7 @@
                 dlh = 0;
                 if (currentReport != null)
                 {
-                    daylight = (float)Math.Round(float.Parse(currentReport.daylightHours!.Replace(".", ",")), 2);
+                    daylight = (float)Math.Round(currentReport!.daylightHours, 2);
                     dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
                     daylightChart.SetDaylightHours(daylight);
                     daylightChart.SetHours(dlh);
@@ -633,7 +633,7 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - float.Parse(currentReport!.daylightHours!.Replace(".", ","));
+        float nonDaylightHours = 24 - currentReport!.daylightHours;
         runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
