@@ -49,7 +49,7 @@
     int systemId = 2;
     int batteryLife = 10;
     string location = "";
-    float dayLightHours = 5f;
+    float daylightHours = 5f;
 
 
     protected override async Task OnInitializedAsync()
@@ -74,7 +74,7 @@
         longitude = cord[1];
 
 
-        dayLightHours = await getDayLightHours(latitude, longitude);
+        daylightHours = await getDayLightHours(latitude, longitude);
         await GetSolarData(latitude, longitude);
 
         if (locationSuggestion != null)
@@ -170,7 +170,7 @@
         }
         return 0;
     } 
-    public async Task CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife, string image)
+    public async Task CreateBasicCaculation(int systemId, float daylightHours, string location, int batteryLife, string image)
     {
         Console.WriteLine("Creating Basic Calculation");
         var client = new HttpClient();
@@ -179,7 +179,7 @@
         "{\r\n \"systemId\": "
         + systemId
         + ",\r\n \"daylightHours\": \""
-        + dayLightHours
+        + daylightHours
         + "\",\r\n \"location\": \""
         + location
         + "\",\r\n \"batteryLife\": "
@@ -195,7 +195,7 @@
         if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Created Basic Calculation");
-            await getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
+            await getCreatedBasicCalculationId(systemId, daylightHours + "", location);
         }
         else
         {
@@ -204,7 +204,7 @@
         return;
     }
 
-    private async Task getCreatedBasicCalculationId(int systemId, string dayLightHours, string location)
+    private async Task getCreatedBasicCalculationId(int systemId, string daylightHours, string location)
     {
         Console.WriteLine("Getting created basic calculation id");
         var client = new HttpClient();
@@ -213,7 +213,7 @@
         "{\r\n \"systemId\": "
         + systemId
         + ",\r\n \"daylightHours\": \""
-        + dayLightHours
+        + daylightHours
         + "\",\r\n \"location\": \""
         + location
         + "\"\r\n}",
@@ -244,7 +244,7 @@
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
 
         string img = Convert.ToBase64String(imageBytes);
-        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
+        await CreateBasicCaculation(systemId, daylightHours, location, batteryLife, img);
         await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
         return;
     }
