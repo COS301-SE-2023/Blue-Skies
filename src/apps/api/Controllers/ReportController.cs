@@ -99,7 +99,7 @@ public class ReportController : ControllerBase
     //delete a report
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> DeleteReport([FromBody] ReportAll report)
+    public async Task<IActionResult> DeleteReport([FromBody] Reports report)
     {
         try
         {
