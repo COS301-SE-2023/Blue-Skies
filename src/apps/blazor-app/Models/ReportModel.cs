@@ -5,7 +5,7 @@ public class ReportModel
     public int userId { get; set; }
     public int systemId { get; set; }
     public int locationId { get; set; }
-    public string? daylightHours { get; set; }
+    public float daylightHours { get; set; }
     public string? image { get; set; }
     public DateTime dateCreated { get; set; }
 }
