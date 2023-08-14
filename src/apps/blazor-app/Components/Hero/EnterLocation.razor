@@ -75,7 +75,7 @@
         @* store above in location table and set currentReport to locationId *@
 
         daylightHours = await getDayLightHours(latitude, longitude);
-        await GetSolarData(latitude, longitude);
+        @* await GetSolarData(latitude, longitude); *@
         currentReport.daylightHours = daylightHours;
 
         if (locationSuggestion != null)

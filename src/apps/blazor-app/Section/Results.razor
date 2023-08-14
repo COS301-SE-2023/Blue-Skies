@@ -122,8 +122,6 @@
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
 
-        var basicCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
-
         var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
         currentReport = rep.Value!;
         if (currentReport != null)

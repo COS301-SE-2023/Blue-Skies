@@ -45,7 +45,7 @@ else
                         image = reports[selectedReport].image;
                     }
                 }
-                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" basicCalculationImage="@image" systems="systems" />
+                <LocationInfo css="mt-8" selectedReport="selectedReport" basicCalculationImage="@image" systems="systems" />
                 <div class="mt-10 w-full">
                     <Card>
                         <Heading>
@@ -209,19 +209,18 @@ else
 
         await GetSystemsAsync();       
         await GetUserReports();
+        Console.WriteLine("Reports: " + reports.Count);
         if (reports.Count > 0)
         {
+            await GetReportAllAppliance();
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
-        }
-        await GetReportAllAppliance();
-        if (reports.Count > 0)
-        {
             updateAppliances();
             renderCharts();
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         loadingService.HideLoadingScreen();
+        isLoaded = true;
     }
 
     private async Task GetSystemsAsync()
