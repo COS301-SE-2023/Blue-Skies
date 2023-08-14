@@ -12,6 +12,8 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -19,10 +21,12 @@
 else if (!logIn)
 {
     ProtectedSessionStore.SetAsync("redirect", "dashboard");
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/login");
 }
 else if (isAd)
 {
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 }
 else
@@ -140,8 +144,8 @@ else
                 <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
                     <Button style="pill" css="h-14">
                         <content>
-                            <p @onclick='() => NavigationManager.NavigateTo("/advanced")'
-                                class="text-sm font-semibold hover:text-white">Create a Report</p>
+                            <p @onclick='() => CreateReport()' class="text-sm font-semibold hover:text-white">Create a Report
+                            </p>
                         </content>
                     </Button>
                 </div>
@@ -216,7 +220,15 @@ else
         loadingService.HideLoadingScreen();
     }
 
-    private void Dispose() {
+    private Task CreateReport()
+    {
+        loadingService.ShowLoadingScreen();
+        NavigationManager.NavigateTo("/advanced");
+        return Task.CompletedTask;
+    }
+
+    private void Dispose()
+    {
         reportManager.EditReportRequested -= Edit;
         reportManager.DeleteReportRequested -= ShowModal;
     }
@@ -256,7 +268,7 @@ else
             {
                 await ProtectedSessionStore.SetAsync("userReports", reports);
             }
-        Console.WriteLine("Successfully retrieved user reports");
+            Console.WriteLine("Successfully retrieved user reports");
         }
         else
         {
@@ -436,9 +448,9 @@ else
             PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
                 {
                     BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(156,163,175),
-                    },
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
                 };
             if (pieConfig != null)
             {
@@ -447,8 +459,9 @@ else
         }
 
 
-        @* **************************************** Polar Area Chart Update Data ************************************************ *@
-        
+        @* **************************************** Polar Area Chart Update Data
+************************************************ *@
+
         polarAreaConfig.Data.Datasets.Clear();
         polarAreaConfig.Data.Labels.Clear();
         int countData = 0;
@@ -597,9 +610,12 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
         Console.WriteLine("Modal shown");
     }
 
-    private async void Edit(){
+    private async void Edit()
+    {
+        loadingService.ShowLoadingScreen();
         await ProtectedSessionStore.SetAsync("edit", true);
         NavigationManager.NavigateTo("/advanced");
+        StateHasChanged();
     }
 
 
@@ -612,8 +628,9 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
 
     }
 
-    private async Task DeleteFromDatabase(){
-        
+    private async Task DeleteFromDatabase()
+    {
+
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
 
@@ -621,7 +638,7 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
         report = repId.Value!;
         Console.WriteLine(report!.reportId);
 
-        var content = new StringContent("{\r\n  \"reportId\": " + report.reportId +"\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n \"reportId\": " + report.reportId + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -630,7 +647,7 @@ ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
         }
         else
         {
-            Console.WriteLine("Failed to delete report"); 
+            Console.WriteLine("Failed to delete report");
         }
     }
 }
