@@ -101,7 +101,6 @@ export default class SolarScoreController {
   //get solarIrradiation
   public getSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
-    console.log(latitude, longitude);
     const query = `SELECT * FROM [dbo].[solarIrradiation] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
     let solarIrradiation: ISolarIrradiation;
     try {

@@ -4,6 +4,7 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 <div class="mt-24 text-center">
     <Heading>
@@ -103,7 +104,7 @@
 
 
 @code {
-    private int solarScore = -1;
+    private int solarScore = 100;
     private float dayLightHours = -1F;
     private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     public List<SystemModel> systems = new List<SystemModel>();
@@ -131,7 +132,7 @@
 
         if (basicCalculation != null && basicCalculation.daylightHours != null)
         {
-            dayLightHours = float.Parse(basicCalculation.daylightHours.Replace(".", ","));
+            dayLightHours = float.Parse(basicCalculation.daylightHours);
             mapImage = basicCalculation.image;
         }
         else
@@ -142,7 +143,7 @@
         await GetSystems();
         if (basicCalculation != null && basicCalculation.daylightHours != null && systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!.Replace(".", ",")) * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * float.Parse(basicCalculation.daylightHours!) * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
@@ -151,9 +152,6 @@
         }
         isLoaded = true;
 
-        solarScore = new Random().Next(0, 100);
-        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<bool>("foundSolarIrradiation");
         foundSolarIrradiation = tempSolarIrradiation.Value;
 
@@ -161,24 +159,10 @@
         latitude = tempLatitude.Value;
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = tempLongitude.Value;
-
-        if(foundSolarIrradiation == true)
-        {
-            //Get Solar Irradiation once
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
-            var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                solarIrradiation = JsonSerializer.Deserialize<SolarIrradiationModel>(data);
-            }
-
-        }else{
-            //Get Solar Irradiation a bunch of times
-             GetSolarIrradiation();
-        }
+        
+        GetSolarScore();
     }
+
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -231,32 +215,25 @@
         return;
     }
 
-    private async Task GetSolarIrradiation()
+    private async Task GetSolarScore() 
     {
         int remainingCalls = 1;
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
-        var response = await client.SendAsync(request);
-        while(remainingCalls > 0){
-            Console.WriteLine("Another one");
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                solarIrradiation = JsonSerializer.Deserialize<SolarIrradiationModel>(data);
-                remainingCalls = solarIrradiation.remainingCalls;
-                Console.WriteLine("Remaining calls: " + remainingCalls);
-            }else{
-                Console.WriteLine("Failed to get solar irradiation");
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        Console.WriteLine("In GetSolarScore function");
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
+            int[] result = await solarCalculator.GetSolarIrradiation(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            solarScore = result[0];
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
             }
-
-            await Task.Delay(2000);
-            Console.WriteLine("Getting solar irradiation");
-            response = await client.SendAsync(request);
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
         }
-
     }
-
-
 }
-
-
