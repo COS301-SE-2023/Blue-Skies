@@ -504,6 +504,7 @@
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
     private async Task UpdateCalculation(){
@@ -535,6 +536,7 @@
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
     private async Task updateReportAppliance(int reportId, ApplianceModel appliance){
