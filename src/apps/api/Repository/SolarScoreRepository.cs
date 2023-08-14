@@ -73,7 +73,6 @@ public class SolarScoreRepository
         {
             string data = response.Content.ReadAsStringAsync().Result;
             return data;
-
         }
         else
         {

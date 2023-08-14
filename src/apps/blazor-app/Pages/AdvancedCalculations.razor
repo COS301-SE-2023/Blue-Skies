@@ -20,7 +20,7 @@
     {
         NavigationManager.NavigateTo("/admin/keys");
     }
-    else if (solarScore == 0)
+    else if (solarScore == 0 && longitude == 0 && latitude == 0)
     {
         @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
         toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
@@ -64,6 +64,8 @@
     private ReportModel currentReport = new ReportModel(); 
     private int selectedSystem = 0;
     private int solarScore = 0;
+    private double longitude = 0;
+    private double latitude = 0;
 
 
     protected override async Task OnInitializedAsync()
@@ -94,7 +96,10 @@
             var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
             var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
             var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-
+            var longi = await ProtectedSessionStore.GetAsync<double>("longitude");
+            var lati = await ProtectedSessionStore.GetAsync<double>("latitude");
+            longitude = longi.Value;
+            latitude = lati.Value;
             selectedSystem = sSystem.Value;
             solarScore = sScore.Value;
             await getBasicCalculation(bCalcId.Value);
