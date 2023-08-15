@@ -56,7 +56,7 @@ public class LocationDataRepository
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            express + "/api/solarscore/getsuntimes/"
+            express + "/api/locationData/getsuntimes/"
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": "

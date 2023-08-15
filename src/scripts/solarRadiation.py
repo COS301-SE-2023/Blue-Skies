@@ -43,6 +43,24 @@ ee.Initialize(credentials=scoped_credentials)
 
 print('Authenticated successfully.')
 
+def callDatabase(data, amount_of_calls_left):
+    print("Hello")
+    url = API_PORT + f"/locationData/update/data/{LATITUDE}/{LONGITUDE}"
+
+    payload = json.dumps({
+    "data": data,
+    "remainingCalls": amount_of_calls_left
+    })
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+
+    print(response.text)
+
+    
+
 # Create a rectangle representing the region of interest
 scale = 10
 width = 0.01
@@ -114,19 +132,7 @@ def reduce_amount_of_calls_left():
         amount_of_calls_left -= 1
         data_to_be_called_to_database += 1
         if(data_to_be_called_to_database >= 10) or (amount_of_calls_left <= 5):
-            url = API_PORT + "/SolarScore/updateSolarIrradiation"
-
-            payload = json.dumps({
-                "data": data,
-                "remainingCalls": amount_of_calls_left,
-                "latitude": LATITUDE,
-                "longitude": LONGITUDE
-            })
-            
-            headers = {
-                'Content-Type': 'application/json'
-            }
-            requests.request("PATCH", url, headers=headers, data=payload)
+            callDatabase(data, amount_of_calls_left)
             data_to_be_called_to_database = 0
     finally:
         file_lock.release()
@@ -184,19 +190,7 @@ def get_solar_radiation(date):
             data += str(date) + ";" + str(solar_radiation) + ","
 
             if(data_to_be_called_to_database >= 10) or (amount_of_calls_left <= 5):
-                url = API_PORT + "/SolarScore/updateSolarIrradiation"
-
-                payload = json.dumps({
-                "data": data,
-                "remainingCalls": amount_of_calls_left,
-                "latitude": LATITUDE,
-                "longitude": LONGITUDE
-                })
-                
-                headers = {
-                    'Content-Type': 'application/json'
-                }
-                requests.request("PATCH", url, headers=headers, data=payload)
+                callDatabase(data, amount_of_calls_left)
                 data_to_be_called_to_database = 0
         finally:
             file_lock.release()

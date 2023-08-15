@@ -74,16 +74,16 @@
         longitude = cord[0];
         latitude = cord[1];
 
-        Console.WriteLine("Heeeeeeeeeeeeeere:" + latitude);
-        Console.WriteLine("Heeeeeeeeeeeeeere:" + longitude);
         dayLightHours = await getDayLightHours(latitude, longitude);
-        await CreateSolarIrradiation(latitude, longitude);
+        
 
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
         //Convert float to int
+        await CreateSolarIrradiation(latitude, longitude);
+
         int solarScore = 50;
         await ProtectedSessionStore.SetAsync("solarScore", solarScore);
         await ProtectedSessionStore.SetAsync("latitude", latitude);
@@ -111,7 +111,7 @@
     public async Task<float> getDayLightHours(double latitude, double longitude)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsuntimes");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getsuntimes");
         var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null,
         "application/json");
         request.Content = content;
@@ -136,7 +136,7 @@
         var numDaysPerYear = 48;
         //Try to get the solar Radiation if it exsists
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
         bool foundSolarIrradiation = false;
         //if not found
@@ -145,14 +145,15 @@
 
             Console.WriteLine("Solar Irradiation Data not found");
             client = new HttpClient();
-            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/createSolarIrradiation");
-            var content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
+            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
+            var content = new StringContent("{\r\n    \"coordinates\": {\r\n        \"latitude\": " + latitude + ",\r\n        \"longitude\": " + longitude + "\r\n    },\r\n    \"location\": \"" + location + "\"\r\n\r\n}", null, "application/json");
             request.Content = content;
             response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine("Making the call to python");
                 client = new HttpClient();
-                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiationData");
+                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
                 content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
                 request.Content = content;
                 response = await client.SendAsync(request);
@@ -242,10 +243,10 @@
     private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-
-        string img = Convert.ToBase64String(imageBytes);
-        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
+        //imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        Console.WriteLine("Downloaded image Hello");
+        //string img = Convert.ToBase64String(imageBytes);
+        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, "img");
         await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
         return;
     }
