@@ -2,8 +2,7 @@ export default interface IReport {
   reportId: number;
   reportName: string;
   userId: number;
-  basicCalculationId: number;
-  solarScore: number;
-  runningTime: number;
+  systemId: number;
+  locationId: number;
   dateCreated: Date;
 }

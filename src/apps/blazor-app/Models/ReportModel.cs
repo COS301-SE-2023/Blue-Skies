@@ -1,18 +1,11 @@
 public class ReportModel
 {
-
-  public int reportId { get; set; }
-  //reportName
-  public string? reportName { get; set; }
-  //userId
-  public int userId { get; set; }
-  //basicCalculationId
-  public int basicCalculationId { get; set; }
-  //solarScore
-  public int solarScore { get; set; }
-  //runningTime
-  public int runningTime { get; set; }
-  //dateCreated
-  public DateTime dateCreated { get; set; }
-  public string? image { get; set; }
+    public int reportId { get; set; }
+    public string? reportName { get; set; }
+    public int userId { get; set; }
+    public int systemId { get; set; }
+    public int locationId { get; set; }
+    public float daylightHours { get; set; }
+    public string? image { get; set; }
+    public DateTime dateCreated { get; set; }
 }
