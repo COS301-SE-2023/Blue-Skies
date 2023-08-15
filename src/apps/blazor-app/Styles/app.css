@@ -40,7 +40,27 @@ body {
     animation: toastSlideOut .3s;
 }
 
+.panel-trees-slide-in {
+    animation: panelSlideLeft .5s;
+    animation-delay: .5s;
+    animation-fill-mode: forwards;
+}
+
+.robert-slide-in-right {
+    animation: robertSlideRight .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
 /* Fade-Out Transition */
+@keyframes robertSlideRight {
+    from { transform: translateX(100%); }
+    to { opacity: 1; transform: rotate(-45deg); }
+}
+@keyframes panelSlideLeft {
+    from { opacity: 0; transform: translateX(-150%); }
+    to { opacity: 1;  transform: translateX(0);}
+}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(1%); }
     to { opacity: 1;}
