@@ -29,7 +29,7 @@
                     </content>
                 </Button>
             </div>
-            <a href="/dashboard" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
+            <a href="/dashboard" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
                     aria-hidden="true"></span></a>
         </div>
     </div>
@@ -96,6 +96,7 @@
         if (parent.Equals("index"))
         {
             await ProtectedSessionStore.DeleteAsync("parent");
+            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/solarScore");
         }
         else
@@ -184,7 +185,6 @@
 
     private void ShowLoadingScreen()
     {
-        Console.WriteLine("Showing loading screen - EnterLocation.razor");
         loadingService.ShowLoadingScreen();
     }
 
