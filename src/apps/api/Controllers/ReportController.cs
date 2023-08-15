@@ -32,7 +32,7 @@ public class ReportController : ControllerBase
 
     [HttpGet]
     [Route("getUserReports/{userId}")]
-    public async Task<IActionResult> GetAllReports([FromRoute] int userId)
+    public async Task<IActionResult> GetUserReports([FromRoute] int userId)
     {
         try
         {
@@ -57,11 +57,10 @@ public class ReportController : ControllerBase
         try
         {
             var data = await _reportsRepository.CreateReports(
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.systemId,
+                report.locationId
             );
             return Ok(data);
         }
@@ -80,11 +79,10 @@ public class ReportController : ControllerBase
         {
             var data = await _reportsRepository.UpdateReports(
                 report.reportId,
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.systemId,
+                report.locationId
             );
             return Ok(data);
         }
@@ -97,7 +95,7 @@ public class ReportController : ControllerBase
     //delete a report
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> DeleteReport([FromBody] ReportAll report)
+    public async Task<IActionResult> DeleteReport([FromBody] Reports report)
     {
         try
         {

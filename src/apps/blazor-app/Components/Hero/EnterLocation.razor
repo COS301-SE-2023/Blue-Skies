@@ -22,7 +22,7 @@
             <AutoComplete />
         </div>
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div @onclick="saveBasicCalculation">
+            <div @onclick="saveCurrentReport">
                 <Button style="pill" css="h-14">
                     <content>
                         <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
@@ -37,6 +37,7 @@
 
 
 @code {
+    private ReportModel currentReport = new ReportModel();
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0;
@@ -45,11 +46,10 @@
     private readonly int width = 600;
     private readonly int height = 500;
     private byte[] imageBytes = new byte[0];
-    private BasicCalculationModel basicCalc = new BasicCalculationModel();
     int systemId = 2;
     int batteryLife = 10;
     string location = "";
-    float dayLightHours = 5f;
+    float daylightHours = 5f;
 
 
     protected override async Task OnInitializedAsync()
@@ -58,9 +58,8 @@
         parent = par.Value!;
     }
 
-    public async void saveBasicCalculation()
+    public async void saveCurrentReport()
     {
-
         ShowLoadingScreen();
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
@@ -73,9 +72,11 @@
         latitude = cord[0];
         longitude = cord[1];
 
+        @* store above in location table and set currentReport to locationId *@
 
-        dayLightHours = await getDayLightHours(latitude, longitude);
-        await GetSolarData(latitude, longitude);
+        daylightHours = await getDayLightHours(latitude, longitude);
+        @* await GetSolarData(latitude, longitude); *@
+        currentReport.daylightHours = daylightHours;
 
         if (locationSuggestion != null)
         {
@@ -169,84 +170,16 @@
             Console.WriteLine("Failed to create new table in database for solarScore data");
             return 0;
         }
-        return 0;
     } 
-    public async Task CreateBasicCaculation(int systemId, float dayLightHours, string location, int batteryLife, string image)
-    {
-        Console.WriteLine("Creating Basic Calculation");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/BasicCalculation/create");
-        var content = new StringContent(
-        "{\r\n \"systemId\": "
-        + systemId
-        + ",\r\n \"daylightHours\": \""
-        + dayLightHours
-        + "\",\r\n \"location\": \""
-        + location
-        + "\",\r\n \"batteryLife\": "
-        + batteryLife
-        + ",\r\n \"image\": \""
-        + image
-        + "\"\r\n}",
-        null,
-        "application/json"
-        );
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Created Basic Calculation");
-            await getCreatedBasicCalculationId(systemId, dayLightHours + "", location);
-        }
-        else
-        {
-            Console.WriteLine("Failed to create basic calculation");
-        }
-        return;
-    }
-
-    private async Task getCreatedBasicCalculationId(int systemId, string dayLightHours, string location)
-    {
-        Console.WriteLine("Getting created basic calculation id");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/getCreated");
-        var content = new StringContent(
-        "{\r\n \"systemId\": "
-        + systemId
-        + ",\r\n \"daylightHours\": \""
-        + dayLightHours
-        + "\",\r\n \"location\": \""
-        + location
-        + "\"\r\n}",
-        null,
-        "application/json"
-        );
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            basicCalc = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-            Console.WriteLine("Got basic calculation");
-        }
-        else
-        {
-            Console.WriteLine("Failed to get basic calculation");
-        }
-        return;
-    }
-
-    private async Task DownloadImage()
+        private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
 
         string img = Convert.ToBase64String(imageBytes);
-        await CreateBasicCaculation(systemId, dayLightHours, location, batteryLife, img);
-        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!);
+        @* await CreateBasicCaculation(systemId, daylightHours, location, batteryLife, img);
+        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!); *@
+        @* store image locally after saving currentReport to session storage *@
         return;
     }
 

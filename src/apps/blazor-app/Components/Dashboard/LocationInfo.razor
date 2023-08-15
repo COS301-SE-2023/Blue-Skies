@@ -17,12 +17,13 @@
                         var location = "";
                         var solarScore = "";
                         var avgEnergyProduction = "";
-                        if (reportAll != null)
+                        @* TODO: get locationId *@
+                        if (reports != null)
                         {
-                            location = reportAll[selectedReport].location;
-                            solarScore = reportAll[selectedReport].solarScore + "%";
-                            avgEnergyProduction = Math.Round(reportAll[selectedReport].numberOfPanels *
-                            reportAll[selectedReport].daylightHours * reportAll[selectedReport].solarInput /1000, 2) + " kw/h";
+                            @* location = reports[selectedReport].location;
+                            solarScore = reports[selectedReport].solarScore + "%";
+                            avgEnergyProduction = Math.Round(reports[selectedReport].numberOfPanels *
+                            reports[selectedReport].daylightHours * reports[selectedReport].solarInput /1000, 2) + " kw/h"; *@
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
@@ -48,11 +49,12 @@
                         var numPanels = 0;
                         var numBatteries = 0;
                         var systemSize = 0;
-                        if (reportAll != null)
+                        var system = systems?.Find(x => x.systemId == reports?[selectedReport].systemId);
+                        if (reports != null)
                         {
-                            systemSize = reportAll[selectedReport].inverterOutput;
-                            numPanels = reportAll[selectedReport].numberOfPanels;
-                            numBatteries = reportAll[selectedReport].numberOfBatteries;
+                            systemSize = system!.inverterOutput;
+                            numPanels = system.numberOfPanels;
+                            numBatteries = system.numberOfBatteries;
                         }
                     }
                     <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
@@ -71,10 +73,11 @@
     [Parameter]
     public string? css { get; set; }
     [Parameter]
-    public List<ReportAllModel>? reportAll { get; set; }
+    public List<ReportModel>? reports { get; set; }
     [Parameter]
     public int selectedReport { get; set; }
     [Parameter]
     public string? basicCalculationImage { get; set; }
-
+    [Parameter]
+    public List<SystemModel>? systems { get; set; } 
 }
