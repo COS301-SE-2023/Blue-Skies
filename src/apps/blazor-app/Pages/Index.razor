@@ -4,6 +4,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @layout MainLayout
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Home</PageTitle>
 
@@ -11,6 +12,7 @@
       <div class="fade-in-enter-active">
         @if (!isLoaded){}
         else if (isAd){
+            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/admin/keys");
         } else {
         <div class="w-full">
@@ -38,11 +40,13 @@
     await ProtectedSessionStorage.SetAsync("parent", "index");
     isAd = isAdmin.Value;
     isLoaded = true;
+    loadingService.HideLoadingScreen();
   }
 
   //Go to Sign Up Page
   void Register()
   {
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/register");
   }
 }

@@ -87,7 +87,6 @@
             }
             @{
                 HomeImage = HomeSize + HomeType;
-                Console.WriteLine("HomeImage: " + HomeImage);
             }
             <Image ImageName="@HomeImage" alt="Home" css="w-full h-full scale-90" />
         </div>
@@ -515,6 +514,7 @@
             Console.WriteLine("Failed to create report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
     private async Task UpdateCalculation(){
@@ -557,6 +557,7 @@
             Console.WriteLine("Failed to update report");
             Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
     private async Task updateReportAppliance(int reportId, ApplianceModel appliance){

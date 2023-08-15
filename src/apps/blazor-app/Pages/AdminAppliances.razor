@@ -8,6 +8,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 @inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -157,6 +158,7 @@
     protected override async Task OnInitializedAsync()
     {
         await GetAppliances();
+        loadingService.HideLoadingScreen();
     }
 
     private async Task GetAppliances()
@@ -192,7 +194,8 @@
             Console.WriteLine("Add Appliance");
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
-            var content = new StringContent("{\r\n \"type\": \"" + appliance.type + "\",\r\n \"powerUsage\": " + appliance.powerUsage
+            var content = new StringContent("{\r\n \"type\": \"" + appliance.type + "\",\r\n \"powerUsage\": " +
+            appliance.powerUsage
             + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
