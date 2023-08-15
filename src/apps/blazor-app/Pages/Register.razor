@@ -4,16 +4,18 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
-
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Register</PageTitle>
 
 @if (!isLoaded) {}
 else if (logIn)
 {
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/");
 }  else  if (isAd)
 {
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 } else {
 <div class="w-full h-full ">
@@ -21,7 +23,7 @@ else if (logIn)
     <div class="flex fade-in-enter-active p-4 gap-10 md:gap-20 flex-col w-full justify-center z-10 mt-10  items-center">
         <div class="justify-center flex w-full">
             <div class="w-full hidden xl:block "></div>
-            <a href="/" class="relative -mt-10 md:mt-0">
+            <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative -mt-10 md:mt-0">
                 <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-36" alt="Logo" />
                 <div class="absolute top-0 left-0 w-full h-full bg-black -z-10 blur-3xl opacity-20"></div>
             </a>
@@ -146,6 +148,7 @@ private async Task HandleValidSubmit()
         }
         await ProtectedLocalStore.SetAsync("isAdmin", false);
         await ProtectedSessionStore.DeleteAsync("redirect");
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/" + redirect);
     }
     else

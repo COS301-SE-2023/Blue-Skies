@@ -4,6 +4,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
 @using BlazorApp.Components.Hero;
 @using BlazorApp.Section;
@@ -11,24 +12,35 @@
 <PageTitle>Solar Score</PageTitle>
 
 
-@if (isAd) {
+@if (isAd)
+{
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
-} 
-else {      
-<div class="fade-in-enter-active">
-    <div class="w-full">
-        @if (solarScore != 0)
-        {
-        <div class="mb-20"><BlazorApp.Section.Results/></div>
-        <a href="/advanced" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculation<span
-                    aria-hidden="true"></span></a>
-        } else {
-            <EnterLocation/>
-        }
-        <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
-        <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
+}
+else
+{
+    <div class="fade-in-enter-active">
+        <div class="w-full">
+            @if (solarScore != 0)
+            {
+                <div class="mb-20">
+                    <BlazorApp.Section.Results />
+                </div>
+                <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculation<span
+                        aria-hidden="true"></span></a>
+            }
+            else
+            {
+                <EnterLocation />
+            }
+            <div class="mt-40 mb-20">
+                <BlazorApp.Section.ScoreInfo />
+            </div>
+            <div class="mt-32 mb-10">
+                <BlazorApp.Section.NextSteps />
+            </div>
+        </div>
     </div>
-</div>
 }
 
 
@@ -44,5 +56,5 @@ else {
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
         solarScore = score.Value;
         isAd = isAdmin.Value;
-    }  
+    }
 }
