@@ -37,17 +37,16 @@
                 @if (edit)
                 {
                     var reportName = currentReport.reportName;
-                <BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation"
+                <BlazorApp.Section.AdvancedResults solarScore="solarScore" currentReport="currentReport"
                     systems="systems" reportName="@reportName"/>    
                 } else {
-                <BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation"
+                <BlazorApp.Section.AdvancedResults solarScore="solarScore" currentReport="currentReport"
                     systems="systems" />
                 }
             </div>
             <div class="w-full">
                 <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
-                    systems="systems" basicCalc="basicCalculation" solarScore="solarScore"
-                    reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
+                    systems="systems" solarScore="solarScore" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
             </div>
         </div>
     }
@@ -61,7 +60,6 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-    private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     private ReportModel currentReport = new ReportModel(); 
@@ -73,39 +71,35 @@
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
-        edit = editing.Value;
-        Console.WriteLine("Edit: " + edit);
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
+
+        @* Get the current report either half populated from the solarScore page or a fully populated if editing an existing report *@
+        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
+        edit = editing.Value;
+
+        var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+        currentReport = rep.Value!;
+        
         if (edit)
         {
-            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
-            currentReport = rep.Value!;
-            var bCalcId = currentReport.basicCalculationId;
-            var sScore = currentReport.solarScore;
-
-            solarScore = sScore;
-            await getBasicCalculation(bCalcId);
-            selectedSystem = basicCalculation.systemId - 2;
         }
-        else
-        {
-            var bCalcId = await ProtectedSessionStore.GetAsync<int>("basicCalculationId");
-            var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
-            var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-
-            selectedSystem = sSystem.Value;
-            solarScore = sScore.Value;
-            await getBasicCalculation(bCalcId.Value);
-        }
+        @* TODO: Do calculations to set solar score from solar Irradtiation *@
 
         await GetAppliancesAsync();
         await GetSystemsAsync();
+        for (int i = 0; i < systems.Count; i++)
+        {
+            if (currentReport.systemId == systems[i].systemId)
+            {
+                selectedSystem = i;
+            }  
+        }
         loadingService.HideLoadingScreen();
+
     }
 
     private async Task GetSystemsAsync()
@@ -154,27 +148,5 @@
         {
             Console.WriteLine("Failed");
         }
-    }
-
-    private async Task getBasicCalculation(int id)
-    {
-        Console.WriteLine("Getting created basic calculation id");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/BasicCalculation/get/" + id);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            basicCalculation = JsonSerializer.Deserialize<BasicCalculationModel>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-            Console.WriteLine("Got basic calculation");
-        }
-        else
-        {
-            Console.WriteLine("Failed to get basic calculation");
-        }
-        return;
     }
 }

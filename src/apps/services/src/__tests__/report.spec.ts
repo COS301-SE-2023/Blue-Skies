@@ -56,9 +56,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest = {
@@ -80,9 +79,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest = {
@@ -111,9 +109,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest = {
@@ -411,9 +408,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest.body = mockReport;
@@ -435,9 +431,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest.body = mockReport;
@@ -469,9 +464,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest.body = mockReport;
@@ -505,9 +499,8 @@ describe('Report Controller', () => {
       const mockReport = {
         reportName: 'testReport',
         userId: 1,
-        basicCalculationId: 1,
-        solarScore: 1,
-        runningTime: 1,
+        systemId: 1,
+        locationId: 1,
       };
 
       mockRequest.body = mockReport;
