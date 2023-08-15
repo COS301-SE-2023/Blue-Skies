@@ -80,7 +80,7 @@
         httpClient = new HttpClient();
 
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/mapboxkey");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/mapboxkey");
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK){
             mapboxAccessToken = await response.Content.ReadAsStringAsync();

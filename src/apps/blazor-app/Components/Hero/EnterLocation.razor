@@ -2,6 +2,7 @@
 @using BlazorApp.Components.Hero
 @using BlazorApp.Models
 @using System.Text.Json;
+@using System.Net;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
@@ -69,20 +70,20 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;
         }
-        latitude = cord[0];
-        longitude = cord[1];
 
-        @* store above in location table and set currentReport to locationId *@
+        longitude = cord[0];
+        latitude = cord[1];
 
-        daylightHours = await getDayLightHours(latitude, longitude);
-        @* await GetSolarData(latitude, longitude); *@
-        currentReport.daylightHours = daylightHours;
+        dayLightHours = await getDayLightHours(latitude, longitude);
+        
 
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
         //Convert float to int
+        await CreateSolarIrradiation(latitude, longitude);
+
         int solarScore = 50;
         await ProtectedSessionStore.SetAsync("solarScore", solarScore);
         await ProtectedSessionStore.SetAsync("latitude", latitude);
@@ -95,6 +96,7 @@
 
         if (parent.Equals("index"))
         {
+            Console.WriteLine("Parent is index");
             await ProtectedSessionStore.DeleteAsync("parent");
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/solarScore");
@@ -110,7 +112,7 @@
     public async Task<float> getDayLightHours(double latitude, double longitude)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsuntimes");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getsuntimes");
         var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null,
         "application/json");
         request.Content = content;
@@ -129,46 +131,43 @@
         }
     }
 
-    public async Task<int> GetSolarData(double latitude, double longitude) 
+    public async Task CreateSolarIrradiation(double latitude, double longitude) 
     {
         var numYears = 3;
         var numDaysPerYear = 48;
-
-        @* Create the new table in database *@
-        var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
+        //Try to get the solar Radiation if it exsists
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/SolarScore/create");
-        var content = new StringContent("{\r\n    \"solarScoreId\" : \"" + uniqueId + "\",\r\n    \"data\" : \"\",\r\n    \"remainingCalls\": 48\r\n}", null, "application/json");
-        request.Content = content;
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
-        if (response.IsSuccessStatusCode)
+        bool foundSolarIrradiation = false;
+        //if not found
+        if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            @* Call the python script *@
-            var newClient = new HttpClient();
-            var newRequest = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getsolardata");
-            var newContent = new StringContent("{\r\n" + " \"latitude\": " + latitude + ",\r\n" + " \"longitude\": " + longitude + ",\r\n" + " \"numYears\": " + numYears + ",\r\n" + " \"numDaysPerYear\": " + numDaysPerYear + ",\r\n" + " \"uniqueID\": \"" + uniqueId + "\"\r\n" + "}", null, "application/json");
-            newRequest.Content = newContent;
-            var newResponse = await newClient.SendAsync(newRequest);
-            if (newResponse.IsSuccessStatusCode)
-            {
-                Console.WriteLine("The script for SolarScore Data was run successfully");
-                @* Wait for results to come in*@
-                @* var canExit = false;
-                while(canExit) 
-                {
 
-                    await Task.Delay(50);
-                } *@
-                return 1;
+            Console.WriteLine("Solar Irradiation Data not found");
+            client = new HttpClient();
+            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
+            var content = new StringContent("{\r\n    \"coordinates\": {\r\n        \"latitude\": " + latitude + ",\r\n        \"longitude\": " + longitude + "\r\n    },\r\n    \"location\": \"" + location + "\"\r\n\r\n}", null, "application/json");
+            request.Content = content;
+            response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Making the call to python");
+                client = new HttpClient();
+                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
+                content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
+                request.Content = content;
+                response = await client.SendAsync(request);
             } else {
-                Console.WriteLine("Failed to get solar data");
-                return 0;
+                Console.WriteLine("Failed to create row table in database for solarIrradiation data");
             }
+        } else if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Solar Irradiation Data found");
+            foundSolarIrradiation = true;
         } else {
             Console.WriteLine("Failed to create new table in database for solarScore data");
-            return 0;
+
         }
     } 
         private async Task DownloadImage()

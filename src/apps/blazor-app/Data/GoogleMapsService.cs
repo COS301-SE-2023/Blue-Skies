@@ -14,8 +14,8 @@ public class GoogleMapsService
     }
 
     public async Task<byte[]> DownloadStaticMapImageAsync(
-        double longitude,
         double latitude,
+        double longitude,
         int zoom,
         int width,
         int height

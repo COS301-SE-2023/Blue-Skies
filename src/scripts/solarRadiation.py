@@ -1,4 +1,4 @@
-# python3 solarRadiation.py -25.7652655 28.2784689 2022 3 48 534f7115
+# python3 solarRadiation.py -25.7652655 28.2784689 2022 3 48
 import datetime
 import os
 import sys
@@ -10,13 +10,11 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 import ee
 
-
 LATITUDE = float(sys.argv[1])
 LONGITUDE = float(sys.argv[2])
 YEAR = int(sys.argv[3])
 AMOUNT_OF_YEARS = int(sys.argv[4])
 AMOUNT_OF_TIMES_PER_YEAR = int(sys.argv[5])
-SOLAR_SCORE_ID = sys.argv[6]
 
 # Load environment variables from .env file
 load_dotenv()
@@ -45,6 +43,24 @@ ee.Initialize(credentials=scoped_credentials)
 
 print('Authenticated successfully.')
 
+def callDatabase(data, amount_of_calls_left):
+    print("Hello")
+    url = API_PORT + f"/locationData/update/data/{LATITUDE}/{LONGITUDE}"
+
+    payload = json.dumps({
+    "data": data,
+    "remainingCalls": amount_of_calls_left
+    })
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request("PATCH", url, headers=headers, data=payload)
+
+    print(response.text)
+
+    
+
 # Create a rectangle representing the region of interest
 scale = 10
 width = 0.01
@@ -60,6 +76,7 @@ roi = ee.Geometry.Polygon([lowerLeft, lowerRight, upperRight, upperLeft])
 dates = []
 solar_radiations = [[] for i in range(12)]
 amount_of_calls_left = AMOUNT_OF_YEARS * AMOUNT_OF_TIMES_PER_YEAR
+data_to_be_called_to_database = 0
 data = ""
 
 def get_date(day):
@@ -109,15 +126,21 @@ for i in range(YEAR - AMOUNT_OF_YEARS + 1, YEAR + 1):
 
 def reduce_amount_of_calls_left():
     global amount_of_calls_left
+    global data_to_be_called_to_database
     file_lock.acquire()
     try:
         amount_of_calls_left -= 1
+        data_to_be_called_to_database += 1
+        if(data_to_be_called_to_database >= 10) or (amount_of_calls_left <= 5):
+            callDatabase(data, amount_of_calls_left)
+            data_to_be_called_to_database = 0
     finally:
         file_lock.release()
 
 
 def get_solar_radiation(date):
     global amount_of_calls_left
+    global data_to_be_called_to_database
     global data
     solar_radiation = -1
     next_day = date + datetime.timedelta(days=1)  # Calculate the next day using timedelta
@@ -162,23 +185,13 @@ def get_solar_radiation(date):
         file_lock.acquire()
         try:
             amount_of_calls_left -= 1
+            data_to_be_called_to_database += 1
             solar_radiations[date.month - 1].append([date, solar_radiation])
             data += str(date) + ";" + str(solar_radiation) + ","
-            # print(data)
-            # print(amount_of_calls_left)
-            # print(SOLAR_SCORE_ID)
 
-            url = API_PORT + "/SolarScore/update"
-
-            payload = json.dumps({
-                "solarScoreId": SOLAR_SCORE_ID,
-                "data": data,
-                "remainingCalls": amount_of_calls_left
-            })
-            headers = {
-                'Content-Type': 'application/json'
-            }
-            requests.request("PATCH", url, headers=headers, data=payload)
+            if(data_to_be_called_to_database >= 10) or (amount_of_calls_left <= 5):
+                callDatabase(data, amount_of_calls_left)
+                data_to_be_called_to_database = 0
         finally:
             file_lock.release()
     else:
