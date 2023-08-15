@@ -23,7 +23,7 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     }
-    else if (solarScore == 0)
+    else if (solarScore == 0 && longitude == 0 && latitude == 0)
     {
         @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
         toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
@@ -65,6 +65,8 @@
     private ReportModel currentReport = new ReportModel(); 
     private int selectedSystem = 0;
     private int solarScore = 0;
+    private double longitude = 0;
+    private double latitude = 0;
 
 
     protected override async Task OnInitializedAsync()

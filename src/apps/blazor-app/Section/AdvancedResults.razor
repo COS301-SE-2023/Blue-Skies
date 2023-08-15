@@ -1,4 +1,7 @@
 @using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+@inject BlazorApp.Data.SolarCalculator solarCalculator
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
     <Heading>
@@ -85,4 +88,38 @@
     public int selectedSystem { get; set; }
     [Parameter]
     public string? reportName { get; set; }
+    private double latitude = 0;
+    private double longitude = 0;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = tempLatitude.Value;
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = tempLongitude.Value; 
+        GetSolarScore();   
+    }
+
+    private async Task GetSolarScore() 
+    {
+        int remainingCalls = 1;
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        Console.WriteLine("In GetSolarScore function");
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            solarScore = result[0];
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
+            }
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+        }
+    }
 }

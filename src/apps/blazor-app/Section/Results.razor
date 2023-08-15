@@ -4,6 +4,7 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject BlazorApp.Data.LoadingService loadingService
 
 
@@ -105,8 +106,8 @@
 
 
 @code {
-    private int solarScore = -1;
-    private float daylightHours = -1F;
+    private int solarScore = 100;
+    private float dayLightHours = -1F;
     private ReportModel currentReport = new ReportModel();
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
@@ -116,6 +117,10 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
+    public bool  foundSolarIrradiation = false;
+    private double latitude = 0;
+    private double longitude = 0;
+    public LocationDataModel locationData = null;
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -140,6 +145,7 @@
         await GetSystems();
         if (currentReport != null && systems!.Count > 0)
         {
+
             double calc = systems[selectedSystem].numberOfPanels * currentReport!.daylightHours * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
@@ -149,10 +155,19 @@
         }
         isLoaded = true;
 
-        solarScore = new Random().Next(0, 100);
-        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<bool>("foundSolarIrradiation");
+        foundSolarIrradiation = tempSolarIrradiation.Value;
+
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = tempLatitude.Value;
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = tempLongitude.Value;
+        
+        GetSolarScore();
+
         loadingService.HideLoadingScreen();
     }
+
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -182,6 +197,27 @@
         }
         return;
     }
+
+
+    private async Task GetSolarScore() 
+    {
+        int remainingCalls = 1;
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        Console.WriteLine("In GetSolarScore function");
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            solarScore = result[0];
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
+            }
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+        }
+    }
 }
-
-

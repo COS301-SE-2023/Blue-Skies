@@ -11,6 +11,7 @@ builder.Services.AddSingleton<BlobStorageService>();
 builder.Services.AddScoped<LoadingService>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<ReportManager>();
+builder.Services.AddScoped<SolarCalculator>();
 
 var app = builder.Build();
 
