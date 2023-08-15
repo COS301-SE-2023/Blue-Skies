@@ -109,7 +109,7 @@
         int previousRemainingCalls = remainingCalls;
         Console.WriteLine("In GetSolarScore function");
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetSolarIrradiation(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
             solarScore = result[0];
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];

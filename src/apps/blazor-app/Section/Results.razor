@@ -118,7 +118,7 @@
     public bool  foundSolarIrradiation = false;
     private double latitude = 0;
     private double longitude = 0;
-    public SolarIrradiationModel solarIrradiation = null;
+    public LocationDataModel locationData = null;
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -222,7 +222,7 @@
         int previousRemainingCalls = remainingCalls;
         Console.WriteLine("In GetSolarScore function");
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
-            int[] result = await solarCalculator.GetSolarIrradiation(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
             solarScore = result[0];
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];

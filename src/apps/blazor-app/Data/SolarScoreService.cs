@@ -4,12 +4,12 @@ using System.Text.Json;
 namespace BlazorApp.Data {
     public class SolarCalculator {
         private double perfectSolarIrradiation = 220;
-        public async Task<int[]> GetSolarIrradiation(double latitude, double longitude, string API_PORT, int solarScore, int remainingCalls)
+        public async Task<int[]> GetDataLocationData(double latitude, double longitude, string API_PORT, int solarScore, int remainingCalls)
         {
-            Console.WriteLine("I am calling GetSolarIrradiation");
+            Console.WriteLine("I am calling GetDataLocationData");
             int[] result = {solarScore, remainingCalls};
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/SolarScore/getSolarIrradiation/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
             var response = await client.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
@@ -17,17 +17,17 @@ namespace BlazorApp.Data {
                 if(data.Equals("Solar Irradiation not found")) {
                     return result;
                 }
-                var solarIrradiation = JsonSerializer.Deserialize<SolarIrradiationModel>(data);
-                if(solarIrradiation == null || solarIrradiation.data == null) {
+                var locationData = JsonSerializer.Deserialize<LocationDataModel>(data);
+                if(locationData == null || locationData.data == null) {
                     return result;
                 }
-                result[0] = calculateSolarScore(solarIrradiation.data);
-                result[1] = solarIrradiation.remainingCalls;
+                result[0] = calculateSolarScore(locationData.data);
+                result[1] = locationData.remainingCalls;
                 Console.WriteLine("Remaining calls: " + remainingCalls + " for call with latitude: " + latitude + " and longitude: " + longitude);
             }else{
-                Console.WriteLine("Failed to get solar irradiation");
+                Console.WriteLine("Failed to get data from LocationData");
             }
-            Console.WriteLine("I am returning from GetSolarIrradiation");
+            Console.WriteLine("I am returning from GetSGetDataLocationDataolarIrradiation");
             return result;
         }
 
