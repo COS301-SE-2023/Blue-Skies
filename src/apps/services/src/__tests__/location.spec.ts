@@ -108,7 +108,6 @@ describe('Test the Location Controller', () => {
     it('should create a new location', () => {
       mockRequest = {
         body: {
-          location: 'Test Location',
           latitude: 1.0,
           longitude: 1.0,
         },
@@ -129,7 +128,6 @@ describe('Test the Location Controller', () => {
     it('should handle error when creating a location', () => {
       mockRequest = {
         body: {
-          location: 'Test Location',
           latitude: 1.0,
           longitude: 1.0,
         },
@@ -156,7 +154,6 @@ describe('Test the Location Controller', () => {
     it('should return 400 when creating a location', () => {
       mockRequest = {
         body: {
-          location: 'Test Location',
           latitude: 1.0,
           longitude: 1.0,
         },
@@ -312,7 +309,6 @@ describe('Test the Location Controller', () => {
           locationId: '1',
         },
         body: {
-          location: 'Test Location',
           latitude: 1.0,
           longitude: 1.0,
         },
@@ -342,7 +338,6 @@ describe('Test the Location Controller', () => {
           locationId: '1',
         },
         body: {
-          location: 'Test Location',
           latitude: 1.0,
           longitude: 1.0,
         },

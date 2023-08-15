@@ -91,16 +91,14 @@ public class LocationsRepository
     }
 
     //Create location
-    public async Task<Locations> CreateLocation(string location, float latitude, float longitude)
+    public async Task<Locations> CreateLocation(float latitude, float longitude)
     {
         try
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/location/create");
             var content = new StringContent(
-                "{\r\n    \"location\": \""
-                    + location
-                    + "\",\r\n    \"latitude\" : \""
+                "{\r\n    \"latitude\": \""
                     + latitude
                     + "\",\r\n    \"longitude\" : \""
                     + longitude
@@ -114,7 +112,6 @@ public class LocationsRepository
             if (response.IsSuccessStatusCode)
             {
                 Locations ans = new Locations();
-                ans.location = location;
                 ans.latitude = latitude;
                 ans.longitude = longitude;
 
@@ -171,12 +168,7 @@ public class LocationsRepository
         }
     }
 
-    public async Task<Locations> UpdateLocations(
-        int locationId,
-        string location,
-        float latitude,
-        float longitude
-    )
+    public async Task<Locations> UpdateLocations(int locationId, float latitude, float longitude)
     {
         try
         {
@@ -186,9 +178,7 @@ public class LocationsRepository
                 express + "/api/location/update/" + locationId
             );
             var content = new StringContent(
-                "{\r\n    \"location\": \""
-                    + location
-                    + "\",\r\n    \"latitude\" : \""
+                "{\r\n    \"latitude\": \""
                     + latitude
                     + "\",\r\n    \"longitude\" : \""
                     + longitude
@@ -202,7 +192,6 @@ public class LocationsRepository
             {
                 Locations loc = new Locations();
                 loc.locationId = locationId;
-                loc.location = location;
                 loc.latitude = latitude;
                 loc.longitude = longitude;
 

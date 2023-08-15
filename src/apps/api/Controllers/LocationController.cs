@@ -51,7 +51,6 @@ public class LocationController : ControllerBase
         {
             Console.WriteLine("Location: " + locations.latitude);
             var location = await _locationsRepository.CreateLocation(
-                locations.location!,
                 locations.latitude,
                 locations.longitude
             );
@@ -92,9 +91,8 @@ public class LocationController : ControllerBase
         {
             var data = await _locationsRepository.UpdateLocations(
                 location.locationId,
-                location.location!,
-                location.latitude!,
-                location.longitude!
+                location.latitude,
+                location.longitude
             );
             return Ok(data);
         }

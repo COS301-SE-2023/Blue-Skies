@@ -4,12 +4,12 @@ import ILocation from '../../models/location.interface';
 import { connection as conn } from '../../main';
 export default class LocationController {
   public createLocation = (req: Request, res: Response) => {
-    const { location, latitude, longitude } = req.body;
+    const { latitude, longitude } = req.body;
     let lat = parseFloat(latitude.replace(',', '.'));
     let lon = parseFloat(longitude.replace(',', '.'));
     const query =
-      `INSERT INTO [dbo].[locations] (location, latitude, longitude)` +
-      ` VALUES ('${location}', '${lat}', '${lon}')`;
+      `INSERT INTO [dbo].[locations] (latitude, longitude)` +
+      ` VALUES ('${lat}', '${lon}')`;
     try {
       const request = new tedious.Request(
         query,
@@ -66,9 +66,8 @@ export default class LocationController {
       request.on('row', (columns: tedious.ColumnValue[]) => {
         const location: ILocation = {
           locationId: columns[0].value,
-          location: columns[1].value,
-          latitude: columns[2].value,
-          longitude: columns[3].value,
+          latitude: columns[1].value,
+          longitude: columns[2].value,
         };
         locations.push(location);
       });
@@ -112,9 +111,8 @@ export default class LocationController {
       request.on('row', (columns: tedious.ColumnValue[]) => {
         location = {
           locationId: columns[0].value,
-          location: columns[1].value,
-          latitude: columns[2].value,
-          longitude: columns[3].value,
+          latitude: columns[1].value,
+          longitude: columns[2].value,
         };
       });
 
@@ -129,11 +127,11 @@ export default class LocationController {
 
   public updateLocation = (req: Request, res: Response) => {
     const { locationId } = req.params;
-    const { location, latitude, longitude } = req.body;
+    const { latitude, longitude } = req.body;
     let lat = parseFloat(latitude.replace(',', '.'));
     let lon = parseFloat(longitude.replace(',', '.'));
     const query =
-      `UPDATE [dbo].[locations] SET location = '${location}', latitude = '${lat}', longitude = '${lon}'` +
+      `UPDATE [dbo].[locations] SET latitude = '${lat}', longitude = '${lon}'` +
       ` WHERE locationId = ${locationId}`;
     try {
       const request = new tedious.Request(
