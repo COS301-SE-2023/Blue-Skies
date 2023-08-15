@@ -4,11 +4,11 @@ using System;
 
 namespace Api.Repository;
 
-public class SolarScoreRepository
+public class LocationDataRepository
 {
     private readonly string express = "http://localhost:3333";
 
-    public SolarScoreRepository()
+    public LocationDataRepository()
     {
         var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
         if (backendexpress != null)
@@ -20,7 +20,7 @@ public class SolarScoreRepository
     public async Task<string> GetMapBoxApiKey()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/mapboxkey");
+        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/mapboxkey");
         var response = await client.SendAsync(request);
         // response.EnsureSuccessStatusCode();
         // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -36,7 +36,7 @@ public class SolarScoreRepository
     public async Task<string> GetGoogleMapsKey()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/googlemapskey");
+        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/googlemapskey");
         var response = await client.SendAsync(request);
         // response.EnsureSuccessStatusCode();
         // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -82,14 +82,13 @@ public class SolarScoreRepository
 
 
     //Create Solar Irradiation
-    public async Task<string> CreateSolarIrradiation(double latitude, double longitude)
+    public async Task<string> CreateLocationData(double latitude, double longitude, string location)
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/solarscore/create");
-            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + "\r\n}", null, "application/json");
-            request.Content = content;
+            var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/locationData/create");
+            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"location\": \"" + location + "\"\r\n}", null, "application/json"); request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -117,7 +116,7 @@ public class SolarScoreRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/" + latitude + "/" + longitude);
             var response = await client.SendAsync(request);
 
 
@@ -149,7 +148,7 @@ public class SolarScoreRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/solarscore/update/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/" + latitude + "/" + longitude);
             var content = new StringContent("{\r\n    \"data\": \"" + data + "\",\r\n    \"remainingCalls\": " + remainingCalls + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
@@ -179,7 +178,7 @@ public class SolarScoreRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/solarscore/solarIrradiationData");
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/solarIrradiationData");
             var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": " + numYears + ",\r\n    \"numDaysPerYear\": " + numDaysPerYear + "\r\n}", null, "application/json");
             request.Content = content;
             var response = await client.SendAsync(request);
