@@ -655,6 +655,30 @@ video {
   top: 100%;
 }
 
+.-top-1\/2 {
+  top: -50%;
+}
+
+.-right-0 {
+  right: -0px;
+}
+
+.-right-1\/2 {
+  right: -50%;
+}
+
+.bottom-1\/2 {
+  bottom: 50%;
+}
+
+.-left-1\/2 {
+  left: -50%;
+}
+
+.-bottom-1\/2 {
+  bottom: -50%;
+}
+
 .isolate {
   isolation: isolate;
 }
