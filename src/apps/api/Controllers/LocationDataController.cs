@@ -8,13 +8,13 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class SolarScoreController : ControllerBase
+public class LocationDataController : ControllerBase
 {
-    private readonly SolarScoreRepository _solarScoreRepository;
+    private readonly LocationDataRepository _locationDataRepository;
 
-    public SolarScoreController()
+    public LocationDataController()
     {
-        _solarScoreRepository = new SolarScoreRepository();
+        _locationDataRepository = new LocationDataRepository();
     }
 
     [HttpGet]
@@ -23,7 +23,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            var key = await _solarScoreRepository.GetMapBoxApiKey();
+            var key = await _locationDataRepository.GetMapBoxApiKey();
             return Ok(key);
         }
         catch (Exception e)
@@ -37,7 +37,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            var key = await _solarScoreRepository.GetGoogleMapsKey();
+            var key = await _locationDataRepository.GetGoogleMapsKey();
             return Ok(key);
         }
         catch (Exception e)
@@ -49,11 +49,11 @@ public class SolarScoreController : ControllerBase
 
     [HttpGet]
     [Route("getsuntimes")]
-    public async Task<IActionResult> GetSumTimes([FromBody] Coordinates cord)
+    public async Task<IActionResult> GetSunTimes([FromBody] Coordinates cord)
     {
         try
         {
-            string sumTimes = await _solarScoreRepository.GetSunTimes(cord);
+            string sumTimes = await _locationDataRepository.GetSunTimes(cord);
             return Ok(sumTimes);
         }
         catch (Exception e)
@@ -63,12 +63,12 @@ public class SolarScoreController : ControllerBase
     }
 
     [HttpPost]
-    [Route("createSolarIrradiation")]
-    public async Task<IActionResult> CreateSolarIrradiation([FromBody] Coordinates cord)
+    [Route("createLocationData")]
+    public async Task<IActionResult> CreateLocationData([FromBody] LocationDataCreate locationData)
     {
         try
         {
-            string data = await _solarScoreRepository.CreateSolarIrradiation(cord.latitude, cord.longitude);
+            string data = await _locationDataRepository.CreateLocationData(locationData.coordinates.latitude, locationData.coordinates.longitude, locationData.location);
             if (data.Equals("Solar Irradiation already exists"))
             {
                 return StatusCode(400, "Solar Irradiation already exists for this location");
@@ -82,12 +82,12 @@ public class SolarScoreController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getSolarIrradiation/{latitude}/{longitude}")]
-    public async Task<IActionResult> GetSolarIrradiation(double latitude, double longitude)
+    [Route("getDataLocationData/{latitude}/{longitude}")]
+    public async Task<IActionResult> getDataLocationData(double latitude, double longitude)
     {
         try
         {
-            SolarIrradiation data = await _solarScoreRepository.GetSolarIrradiation(latitude, longitude);
+            SolarIrradiation data = await _locationDataRepository.GetSolarIrradiation(latitude, longitude);
             if (data == null)
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -107,7 +107,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            string data = await _solarScoreRepository.UpdateSolarIrradiation(solarIrradiation.latitude, solarIrradiation.longitude, solarIrradiation.data, solarIrradiation.remainingCalls);
+            string data = await _locationDataRepository.UpdateSolarIrradiation(solarIrradiation.latitude, solarIrradiation.longitude, solarIrradiation.data, solarIrradiation.remainingCalls);
             if (data.Equals("Solar Irradiation not found"))
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -126,7 +126,7 @@ public class SolarScoreController : ControllerBase
     {
         try
         {
-            string data = await _solarScoreRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
+            string data = await _locationDataRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
             return Ok(data);
         }
         catch (Exception e)
