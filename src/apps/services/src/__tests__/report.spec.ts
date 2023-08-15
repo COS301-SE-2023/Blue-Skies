@@ -57,9 +57,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest = {
@@ -82,9 +80,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest = {
@@ -114,9 +110,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest = {
@@ -415,9 +409,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest.body = mockReport;
@@ -440,9 +432,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest.body = mockReport;
@@ -475,9 +465,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest.body = mockReport;
@@ -512,9 +500,7 @@ describe('Report Controller', () => {
         reportName: 'testReport',
         userId: 1,
         systemId: 1,
-        daylightHours: 1,
         locationId: 1,
-        image: 'testImage',
       };
 
       mockRequest.body = mockReport;
