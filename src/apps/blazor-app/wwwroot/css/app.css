@@ -679,6 +679,10 @@ video {
   top: 100%;
 }
 
+.-left-\[200px\] {
+  left: -200px;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1020,6 +1024,10 @@ video {
 
 .h-screen {
   height: 100vh;
+}
+
+.h-\[600px\] {
+  height: 600px;
 }
 
 .w-1\/2 {
