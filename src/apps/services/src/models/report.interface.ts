@@ -4,7 +4,5 @@ export default interface IReport {
   userId: number;
   systemId: number;
   locationId: number;
-  daylightHours: number;
-  image: string;
   dateCreated: Date;
 }

@@ -94,9 +94,7 @@ public class ReportsRepository
         string reportName,
         int userId,
         int systemId,
-        int locationId,
-        float daylightHours,
-        string image
+        int locationId
     )
     {
         try
@@ -112,11 +110,7 @@ public class ReportsRepository
                     + systemId
                     + ",\r\n    \"locationId\" : "
                     + locationId
-                    + ",\r\n    \"daylightHours\" : \""
-                    + daylightHours
-                    + "\",\r\n    \"image\" : \""
-                    + image
-                    + "\"\r\n}",
+                    + "\r\n}",
                 null,
                 "application/json"
             );
@@ -130,15 +124,15 @@ public class ReportsRepository
                 rep.userId = userId;
                 rep.systemId = systemId;
                 rep.locationId = locationId;
-                rep.daylightHours = daylightHours;
-                rep.image = image;
 
                 Console.WriteLine(".NET: report created successfully");
                 return rep;
             }
             else
             {
-                Console.WriteLine(".NET: Error creating report: " + await response.Content.ReadAsStringAsync());
+                Console.WriteLine(
+                    ".NET: Error creating report: " + await response.Content.ReadAsStringAsync()
+                );
                 throw new Exception("Error creating report");
             }
         }
@@ -154,9 +148,7 @@ public class ReportsRepository
         string reportName,
         int userId,
         int systemId,
-        int locationId,
-        float daylightHours,
-        string image
+        int locationId
     )
     {
         try
@@ -176,11 +168,7 @@ public class ReportsRepository
                     + systemId
                     + ",\r\n    \"locationId\" : \""
                     + locationId
-                    + "\",\r\n    \"daylightHours\" : \""
-                    + daylightHours
-                    + "\",\r\n    \"image\" : \""
-                    + image
-                    + "\"\r\n}",
+                    + "\r\n}",
                 null,
                 "application/json"
             );
@@ -195,9 +183,6 @@ public class ReportsRepository
                 rep.userId = userId;
                 rep.systemId = systemId;
                 rep.locationId = locationId;
-                rep.daylightHours = daylightHours;
-                rep.image = image;
-
                 Console.WriteLine(".NET: report updated successfully");
                 return rep;
             }

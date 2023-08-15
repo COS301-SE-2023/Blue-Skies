@@ -4,14 +4,13 @@ import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const { reportName, userId, locationId, systemId, daylightHours, image } =
+    const { reportName, userId, locationId, systemId } =
       req.body;
 
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    let dlh = parseFloat(daylightHours.replace(',', '.'));
     const query =
-      `INSERT INTO [dbo].[reports] (reportName, userId, locationId, systemId, daylightHours, image, dateCreated)` +
-      ` VALUES ('${reportName}', ${userId}, ${locationId}, ${systemId}, ${dlh}, '${image}', '${dateCreated}')`;
+      `INSERT INTO [dbo].[reports] (reportName, userId, locationId, systemId, dateCreated)` +
+      ` VALUES ('${reportName}', ${userId}, ${locationId}, ${systemId}, '${dateCreated}')`;
 
     try {
       const request = new tedious.Request(
@@ -69,9 +68,7 @@ export default class ReportController {
           userId: columns[2].value,
           systemId: columns[3].value,
           locationId: columns[4].value,
-          daylightHours: columns[5].value,
-          image: columns[6].value,
-          dateCreated: columns[7].value,
+          dateCreated: columns[5].value,
         };
 
         reports.push(report);
@@ -117,9 +114,7 @@ export default class ReportController {
           userId: columns[2].value,
           systemId: columns[3].value,
           locationId: columns[4].value,
-          daylightHours: columns[5].value,
-          image: columns[6].value,
-          dateCreated: columns[7].value,
+          dateCreated: columns[5].value,
         };
 
         reports.push(report);
@@ -165,9 +160,7 @@ export default class ReportController {
           userId: columns[2].value,
           systemId: columns[3].value,
           locationId: columns[4].value,
-          daylightHours: columns[5].value,
-          image: columns[6].value,
-          dateCreated: columns[7].value,
+          dateCreated: columns[5].value,
         };
       });
 
@@ -181,13 +174,11 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-    const { reportName, userId, locationId, systemId, daylightHours, image } =
+    const { reportName, userId, locationId, systemId } =
       req.body;
-    console.log(daylightHours);
-    let dlh = parseFloat(daylightHours);
-    console.log(dlh);
+
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, locationId = ${locationId}, systemId = ${systemId}, daylightHours = '${dlh}', image = '${image}'` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, locationId = ${locationId}, systemId = ${systemId}` +
       `WHERE reportId = ${reportId}`;
 
     try {

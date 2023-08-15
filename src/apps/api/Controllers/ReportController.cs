@@ -60,9 +60,7 @@ public class ReportController : ControllerBase
                 report.reportName!,
                 report.userId,
                 report.systemId,
-                report.locationId,
-                report.daylightHours,
-                report.image!
+                report.locationId
             );
             return Ok(data);
         }
@@ -84,9 +82,7 @@ public class ReportController : ControllerBase
                 report.reportName!,
                 report.userId,
                 report.systemId,
-                report.locationId,
-                report.daylightHours,
-                report.image!
+                report.locationId
             );
             return Ok(data);
         }
