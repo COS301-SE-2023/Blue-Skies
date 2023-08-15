@@ -70,43 +70,4 @@ body {
     from { opacity: 1; }
     to { opacity: 0; }
 }  
-
-/* Chart Container */
-.chart-container {
-    width: 200px;
-    height: 200px;
-  }
-  
-  /* Chart Half Doughnut */
-  .chart-half-doughnut {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Progress */
-  .chart-progress {
-    width: 100%;
-    height: 100%;
-    background-color: #3b82f6;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Remaining */
-  .chart-remaining {
-    width: 100%;
-    height: 100%;
-    background-color: #f3f4f6;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Label */
-  .chart-label {
-    width: 100%;
-    height: 100%;
-    line-height: 200px; /* Should match the height of .chart-container */
-  }
   
