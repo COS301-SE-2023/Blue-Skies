@@ -52,12 +52,15 @@ public class ReportsRepository
         }
     }
 
-public async Task<List<Reports>> GetUserReports(int userId)
+    public async Task<List<Reports>> GetUserReports(int userId)
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/getUserReports/" + userId);
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/report/getUserReports/" + userId
+            );
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -90,9 +93,8 @@ public async Task<List<Reports>> GetUserReports(int userId)
     public async Task<Reports> CreateReports(
         string reportName,
         int userId,
-        int basicCalculationId,
-        int solarScore,
-        int runningTime
+        int systemId,
+        int locationId
     )
     {
         try
@@ -104,12 +106,10 @@ public async Task<List<Reports>> GetUserReports(int userId)
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"basicCalculationId\" : "
-                    + basicCalculationId
-                    + ",\r\n    \"solarScore\" : "
-                    + solarScore
-                    + ",\r\n    \"runningTime\" : "
-                    + runningTime
+                    + ",\r\n    \"systemId\" : "
+                    + systemId
+                    + ",\r\n    \"locationId\" : "
+                    + locationId
                     + "\r\n}",
                 null,
                 "application/json"
@@ -122,16 +122,17 @@ public async Task<List<Reports>> GetUserReports(int userId)
                 rep.reportId = -1;
                 rep.reportName = reportName;
                 rep.userId = userId;
-                rep.basicCalculationId = basicCalculationId;
-                rep.solarScore = solarScore;
-                rep.runningTime = runningTime;
+                rep.systemId = systemId;
+                rep.locationId = locationId;
 
                 Console.WriteLine(".NET: report created successfully");
                 return rep;
             }
             else
             {
-                Console.WriteLine(".NET: Error creating report");
+                Console.WriteLine(
+                    ".NET: Error creating report: " + await response.Content.ReadAsStringAsync()
+                );
                 throw new Exception("Error creating report");
             }
         }
@@ -146,9 +147,8 @@ public async Task<List<Reports>> GetUserReports(int userId)
         int reportId,
         string reportName,
         int userId,
-        int basicCalculationId,
-        int solarScore,
-        int runningTime
+        int systemId,
+        int locationId
     )
     {
         try
@@ -164,29 +164,25 @@ public async Task<List<Reports>> GetUserReports(int userId)
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"basicCalculationId\" : "
-                    + basicCalculationId
-                    + ",\r\n    \"solarScore\" : "
-                    + solarScore
-                    + ",\r\n    \"runningTime\" : "
-                    + runningTime
+                    + ",\r\n    \"systemId\" : "
+                    + systemId
+                    + ",\r\n    \"locationId\" : \""
+                    + locationId
                     + "\r\n}",
                 null,
                 "application/json"
             );
             request.Content = content;
             var response = await client.SendAsync(request);
-            
+
             if (response.IsSuccessStatusCode)
             {
                 Reports rep = new Reports();
-                rep.reportId = -1;
+                rep.reportId = reportId;
                 rep.reportName = reportName;
                 rep.userId = userId;
-                rep.basicCalculationId = basicCalculationId;
-                rep.solarScore = solarScore;
-                rep.runningTime = runningTime;
-
+                rep.systemId = systemId;
+                rep.locationId = locationId;
                 Console.WriteLine(".NET: report updated successfully");
                 return rep;
             }

@@ -6,6 +6,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject BlazorApp.Data.ReportManager reportManager
+@inject BlazorApp.Data.LoadingService loadingService
 
 @{
   Uri uri = new Uri(navigationManager.Uri);
@@ -23,7 +24,7 @@
 <header class="fixed h-20 left-0 bg-transparent w-full z-20 transition-all duration-300 delay-[250ms] @(isScrollingDown ? "-top-20" : "top-0")">
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
-      <a href="/" class="-m-1.5 p-1.5">
+      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()"  class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
         <BlazorApp.Components.Base.Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
       </a>
@@ -37,9 +38,9 @@
       </button>
     </div>
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/" class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="/solarscore" class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="/advanced" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Home</a>
+      <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
+      <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
     </div>
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
@@ -50,7 +51,7 @@
             <p>Out</p>
           </div>
         </a>
-        <a href="@(loggedIn ? "/dashboard" : "/login")">
+        <a href="@(loggedIn ? "/dashboard" : "/login")" @onclick="() => loadingService.ShowLoadingScreen()">
           <div class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
             
@@ -61,7 +62,7 @@
             }
           </div>
         </a>
-        <a href="/">
+        <a href="/" @onclick="() => loadingService.ShowLoadingScreen()">
           <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
             <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
@@ -86,7 +87,10 @@
             </div>
           
 
-          <a onclick="@(() => Edit())" href="/">
+          <a onclick="@(() => {
+             Edit();
+             loadingService.ShowLoadingScreen();
+             })" href="/">
             <div class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
                 <div class="scale-75">
                   <svg  width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -110,7 +114,7 @@
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
       <div class="flex px-2 flex-col items-center justify-between w-full ">
         <div class="flex justify-between w-full ">
-          <a href="/" class="-m-1.5 p-1.5">
+          <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="-m-1.5 p-1.5">
             <span class="sr-only">BlueSkies</span>
             <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
           </a>
@@ -122,9 +126,9 @@
           </button>
         </div>
         <div class="flex flex-col w-full mt-5">
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/">Home</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore">Solar Score</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced">Advanced</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/" @onclick="() => loadingService.ShowLoadingScreen()">Home</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()">Solar Score</a>
+          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()">Advanced</a>
           @if(loggedIn == true){
             <p @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
             }else{
@@ -204,6 +208,7 @@
     public async void logout()
     {
       ToggleNavMenu();
+      loadingService.ShowLoadingScreen();
       await ProtectedSessionStore.DeleteAsync("reportAppliances");
       await ProtectedSessionStore.DeleteAsync("selectedReport");
       await ProtectedSessionStore.DeleteAsync("redirect");
@@ -241,13 +246,13 @@
     }
 
     private void Edit(){
+      loadingService.ShowLoadingScreen();
       reportManager.EditReport();
     }
 
     private void Delete(){
       reportManager.DeleteReport();
-      StateHasChanged();
-      
+      StateHasChanged(); 
     }
    
    private void ShowModal(){}

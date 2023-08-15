@@ -4,14 +4,13 @@ import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const { reportName, userId, basicCalculationId, solarScore, runningTime } =
+    const { reportName, userId, locationId, systemId } =
       req.body;
 
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
     const query =
-      `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarScore, runningTime, dateCreated)` +
-      ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarScore}, ${runningTime}, '${dateCreated}')`;
+      `INSERT INTO [dbo].[reports] (reportName, userId, locationId, systemId, dateCreated)` +
+      ` VALUES ('${reportName}', ${userId}, ${locationId}, ${systemId}, '${dateCreated}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,10 +66,9 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          systemId: columns[3].value,
+          locationId: columns[4].value,
+          dateCreated: columns[5].value,
         };
 
         reports.push(report);
@@ -114,10 +112,9 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          systemId: columns[3].value,
+          locationId: columns[4].value,
+          dateCreated: columns[5].value,
         };
 
         reports.push(report);
@@ -161,10 +158,9 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          systemId: columns[3].value,
+          locationId: columns[4].value,
+          dateCreated: columns[5].value,
         };
       });
 
@@ -178,10 +174,11 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-    const { reportName, userId, basicCalculationId, solarScore, runningTime } =
+    const { reportName, userId, locationId, systemId } =
       req.body;
+
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, basicCalculationId = ${basicCalculationId}, solarScore = ${solarScore}, runningTime = ${runningTime}` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, locationId = ${locationId}, systemId = ${systemId}` +
       `WHERE reportId = ${reportId}`;
 
     try {

@@ -1,5 +1,7 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+
 
 <div class="mt-28">
     <div class="relative ">
@@ -31,7 +33,7 @@
         </Heading>
 
         <div class="flex space-x-3 mt-5">
-          <a href="/solarscore">
+          <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()">
             <Button css="h-14" style="pill">
               <content>
                 <p>Get Started</p>
@@ -53,6 +55,7 @@
   //Go to Sign Up Page
   void Register()
   {
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/register");
   }
 }
