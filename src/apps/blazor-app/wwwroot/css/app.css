@@ -1018,6 +1018,10 @@ video {
   height: 100vh;
 }
 
+.h-1\/2 {
+  height: 50%;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1880,6 +1884,10 @@ video {
 
 .pt-14 {
   padding-top: 3.5rem;
+}
+
+.pl-10 {
+  padding-left: 2.5rem;
 }
 
 .text-left {
@@ -3021,6 +3029,18 @@ body {
 
   .xl\:h-52 {
     height: 13rem;
+  }
+
+  .xl\:h-32 {
+    height: 8rem;
+  }
+
+  .xl\:h-28 {
+    height: 7rem;
+  }
+
+  .xl\:h-24 {
+    height: 6rem;
   }
 
   .xl\:w-1\/3 {
