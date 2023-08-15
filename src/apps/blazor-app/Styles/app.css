@@ -41,13 +41,13 @@ body {
 }
 
 .panel-trees-slide-in {
-    animation: panelSlideLeft .5s;
+    animation: panelSlideLeft .3s;
     animation-delay: .5s;
     animation-fill-mode: forwards;
 }
 
 .robert-slide-in-right {
-    animation: robertSlideRight .5s;
+    animation: robertSlideRight .3s;
     animation-delay: 1s;
     animation-fill-mode: forwards;
 }

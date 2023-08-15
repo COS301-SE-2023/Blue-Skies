@@ -1707,6 +1707,16 @@ video {
   background-color: rgb(255 251 197 / var(--tw-bg-opacity));
 }
 
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
+.bg-blue-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(191 219 254 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -2308,13 +2318,13 @@ body {
 }
 
 .panel-trees-slide-in {
-  animation: panelSlideLeft .5s;
+  animation: panelSlideLeft .3s;
   animation-delay: .5s;
   animation-fill-mode: forwards;
 }
 
 .robert-slide-in-right {
-  animation: robertSlideRight .5s;
+  animation: robertSlideRight .3s;
   animation-delay: 1s;
   animation-fill-mode: forwards;
 }
