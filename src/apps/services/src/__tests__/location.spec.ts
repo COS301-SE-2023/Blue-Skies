@@ -108,8 +108,8 @@ describe('Test the Location Controller', () => {
     it('should create a new location', () => {
       mockRequest = {
         body: {
-          latitude: 1.0,
-          longitude: 1.0,
+          latitude: 1.1,
+          longitude: 1.1,
         },
       };
       // Call the createLocation method with the mock request and response
