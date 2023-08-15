@@ -68,7 +68,7 @@ public class LocationDataController : ControllerBase
     {
         try
         {
-            if(locationData.coordinates == null )
+            if (locationData.coordinates == null)
             {
                 return StatusCode(400, "Missing data");
             }
@@ -86,12 +86,12 @@ public class LocationDataController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getDataLocationData/{latitude}/{longitude}")]
-    public async Task<IActionResult> getDataLocationData([FromRoute] double latitude, [FromRoute] double longitude)
+    [Route("getLocationData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetLocationData([FromRoute] double latitude, [FromRoute] double longitude)
     {
         try
         {
-            LocationData data = await _locationDataRepository.GetSolarIrradiation(latitude, longitude);
+            LocationData data = await _locationDataRepository.GetLocationData(latitude, longitude);
             if (data == null)
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -104,7 +104,24 @@ public class LocationDataController : ControllerBase
         }
     }
 
-
+    [HttpGet]
+    [Route("getLocationDataWithoutImage/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetLocationDataWithoutImage([FromRoute] double latitude, [FromRoute] double longitude)
+    {
+        try
+        {
+            LocationData data = await _locationDataRepository.GetSolarIrradiationWithoutImage(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(404, "Solar Irradiation not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
     [HttpPatch]
     [Route("update/data/{latitude}/{longitude}")]
     public async Task<IActionResult> UpdateSolarIrradiation([FromRoute] double latitude, [FromRoute] double longitude, [FromBody] LocationData locationData)
@@ -126,7 +143,7 @@ public class LocationDataController : ControllerBase
 
     [HttpPatch]
     [Route("update/image/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateImage([FromRoute]double latitude, [FromRoute]double longitude, [FromBody] LocationData locationData)
+    public async Task<IActionResult> UpdateImage([FromRoute] double latitude, [FromRoute] double longitude, [FromBody] LocationData locationData)
     {
         try
         {
@@ -145,7 +162,7 @@ public class LocationDataController : ControllerBase
 
     [HttpPatch]
     [Route("update/daylightHours/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateDaylightHours([FromRoute]double latitude, double longitude, [FromBody] LocationData locationData)
+    public async Task<IActionResult> UpdateDaylightHours([FromRoute] double latitude, double longitude, [FromBody] LocationData locationData)
     {
         try
         {

@@ -111,7 +111,7 @@ public class LocationDataRepository
     }
 
     //Get solar irradiation
-    public async Task<LocationData> GetSolarIrradiation(double latitude, double longitude)
+    public async Task<LocationData> GetLocationData(double latitude, double longitude)
     {
         try
         {
@@ -122,6 +122,7 @@ public class LocationDataRepository
 
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
                 LocationData locationData = JsonSerializer.Deserialize<LocationData>(data)!;
                 return locationData!;
@@ -140,6 +141,29 @@ public class LocationDataRepository
 
             throw new Exception("Could not get solar irradiation");
         }
+    }
+
+    //GetSolarIrradiationWithoutImage
+    public async Task<LocationData> GetSolarIrradiationWithoutImage(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/withoutImage/" + latitude + "/" + longitude);
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationData locationData = JsonSerializer.Deserialize<LocationData>(data)!;
+                return locationData!;
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not get solar irradiation without image");
+        }
+        return null!;
     }
 
     //Update the data in LocationData

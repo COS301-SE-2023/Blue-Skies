@@ -54,6 +54,11 @@ locationDataRouter.get(
   locationDataController.getSolarIrradiation
 );
 
+locationDataRouter.get(
+  '/withoutImage/:latitude/:longitude/',
+  locationDataController.getSolarIrradiationWithoutImage
+);
+
 locationDataRouter.delete(
   '/delete/:latitude/:longitude',
   locationDataController.deleteSolarIrradiation

@@ -199,6 +199,50 @@ export default class LocationDataController {
     }
   };
 
+  public getSolarIrradiationWithoutImage = async (
+    req: Request,
+    res: Response
+  ) => {
+    const { latitude, longitude } = req.params;
+    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    let solarIrradiation: ILocationData;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          location: columns[2].value,
+          image: '',
+          data: columns[3].value,
+          dateCreated: columns[4].value,
+          daylightHours: columns[5].value,
+          remainingCalls: columns[6].value,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
   //delete solarIrradiation
   public deleteSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
