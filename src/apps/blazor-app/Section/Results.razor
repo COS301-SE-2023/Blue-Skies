@@ -4,6 +4,8 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+
 
 <div class="mt-24 text-center">
     <Heading>
@@ -149,6 +151,7 @@
 
         solarScore = new Random().Next(0, 100);
         await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+        loadingService.HideLoadingScreen();
     }
     private void SetSystemSize(int selection)
     {

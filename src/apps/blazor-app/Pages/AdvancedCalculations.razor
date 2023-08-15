@@ -7,6 +7,7 @@
 @using System.Text.Json
 @using BlazorApp.Components
 @inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.LoadingService loadingService;
 
 <PageTitle>Advanced Calculations</PageTitle>
 <div class="fade-in-enter-active">
@@ -14,17 +15,19 @@
     else if (!logIn)
     {
         ProtectedSessionStore.SetAsync("redirect", "advanced");
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/login");
     }
     else if (isAd)
     {
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     }
     else if (solarScore == 0)
     {
         @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
         toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/solarScore");
     }
     else
@@ -95,6 +98,8 @@
                 selectedSystem = i;
             }  
         }
+        loadingService.HideLoadingScreen();
+
     }
 
     private async Task GetSystemsAsync()

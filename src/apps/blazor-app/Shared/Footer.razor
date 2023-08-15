@@ -1,3 +1,5 @@
+@inject BlazorApp.Data.LoadingService loadingService
+
 <footer class="bg-white border-t-2 m-4">
   <div
     class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between"
@@ -11,13 +13,13 @@
       class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 sm:mt-0"
     >
       <li>
-        <a href="/" class="mr-4 md:mr-6">Home</a>
+        <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="mr-4 md:mr-6">Home</a>
       </li>
       <li>
-        <a href="/solarscore" class="mr-4 md:mr-6">Solar Score</a>
+        <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()" class="mr-4 md:mr-6">Solar Score</a>
       </li>
       <li>
-        <a href="/advanced" class="mr-4 md:mr-6">Advanced</a>
+        <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="mr-4 md:mr-6">Advanced</a>
       </li>
     </ul>
   </div>
