@@ -283,6 +283,34 @@ public class LocationDataRepository
             throw new Exception("Could not get solar irradiation data");
         }
     }
+
+    //DeleteLocationData
+    public async Task<string> DeleteLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Delete, express + "/api/locationData/delete/" + latitude + "/" + longitude);
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return "LocationData deleted successfully";
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return "LocationData not found";
+            }
+            else
+            {
+                throw new Exception("Error deleting LocationData");
+            }
+        }
+        catch (System.Exception)
+        {
+
+            throw new Exception("Could not delete LocationData");
+        }
+    }
 }
 
 

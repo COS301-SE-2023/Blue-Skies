@@ -256,6 +256,10 @@ export default class LocationDataController {
             res.status(400).json({
               error: err.message,
             });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
           } else {
             console.log(rowCount);
             res.status(200).json({

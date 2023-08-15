@@ -62,21 +62,13 @@ public class LocationDataController : ControllerBase
         }
     }
 
-    [HttpPost]
-    [Route("create")]
-    public async Task<IActionResult> CreateLocationData([FromBody] LocationDataCreate locationData)
+    [HttpGet]
+    [Route("getSolarIrradiationData")]
+    public async Task<IActionResult> GetSolarIrradiationData([FromBody] SolarData sd)
     {
         try
         {
-            if (locationData.coordinates == null)
-            {
-                return StatusCode(400, "Missing data");
-            }
-            string data = await _locationDataRepository.CreateLocationData(locationData.coordinates.latitude, locationData.coordinates.longitude, locationData.location!);
-            if (data.Equals("Solar Irradiation already exists"))
-            {
-                return StatusCode(400, "Solar Irradiation already exists for this location");
-            }
+            string data = await _locationDataRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
             return Ok(data);
         }
         catch (Exception e)
@@ -84,6 +76,8 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+
 
     [HttpGet]
     [Route("getLocationData/{latitude}/{longitude}")]
@@ -114,6 +108,28 @@ public class LocationDataController : ControllerBase
             if (data == null)
             {
                 return StatusCode(404, "Solar Irradiation not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+    [HttpPost]
+    [Route("create")]
+    public async Task<IActionResult> CreateLocationData([FromBody] LocationDataCreate locationData)
+    {
+        try
+        {
+            if (locationData.coordinates == null)
+            {
+                return StatusCode(400, "Missing data");
+            }
+            string data = await _locationDataRepository.CreateLocationData(locationData.coordinates.latitude, locationData.coordinates.longitude, locationData.location!);
+            if (data.Equals("Solar Irradiation already exists"))
+            {
+                return StatusCode(400, "Solar Irradiation already exists for this location");
             }
             return Ok(data);
         }
@@ -179,13 +195,18 @@ public class LocationDataController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("getSolarIrradiationData")]
-    public async Task<IActionResult> GetSolarIrradiationData([FromBody] SolarData sd)
+
+    [HttpDelete]
+    [Route("delete/{latitude}/{longitude}")]
+    public async Task<IActionResult> DeleteLocationData([FromRoute] double latitude, [FromRoute] double longitude)
     {
         try
         {
-            string data = await _locationDataRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
+            string data = await _locationDataRepository.DeleteLocationData(latitude, longitude);
+            if (data.Equals("LocationData not found"))
+            {
+                return StatusCode(404, "Solar Irradiation not found");
+            }
             return Ok(data);
         }
         catch (Exception e)
@@ -193,5 +214,4 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-
 }
