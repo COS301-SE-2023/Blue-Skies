@@ -141,6 +141,7 @@ public class LocationDataRepository
     //Get solar irradiation
     public async Task<LocationData> GetLocationData(double latitude, double longitude)
     {
+        Console.WriteLine(express + "/api/locationData/" + latitude + "/" + longitude);
         try
         {
             var client = new HttpClient();
