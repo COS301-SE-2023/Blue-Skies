@@ -46,7 +46,6 @@
     private readonly int zoom = 19;
     private readonly int width = 600;
     private readonly int height = 500;
-    private byte[] imageBytes = new byte[0];
     int systemId = 2;
     int batteryLife = 10;
     string location = "";
@@ -84,14 +83,8 @@
         await ProtectedSessionStore.SetAsync("parent", "");
         await ProtectedSessionStore.SetAsync("edit", false);
 
-        @* string? image  = await DownloadImage();
-        if (image != null)
-        {
         daylightHours = await getDayLightHours(latitude, longitude);
-            await CreateLocationData(latitude, longitude, image, daylightHours);
-        } else {
-            Console.WriteLine("Image returned null, could not create location data");
-        } *@
+        await CreateLocationData(latitude, longitude, daylightHours);
 
         if (parent.Equals("index"))
         {
@@ -130,18 +123,20 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        @* if (response.IsSuccessStatusCodeotFound)
+        if (response.IsSuccessStatusCodeotFound)
         {
             Console.Write("Locationddation Data found");
         } else {
             Console.Write("Location data not foundre data");
-        } *@
+        }
 
         return false;
     }
     
-    public async Task CreateLocationData(double latitude, double longitude, string image, float daylightHours) 
+    public async Task CreateLocationData(double latitude, double longitude, float daylightHours) 
     {
+        await SaveImageToLocalStorage(await DownloadImageFromGoogleMapsService());
+
         var numYears = 3;
         var numDaysPerYear = 48;
 
@@ -149,8 +144,6 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        
-        bool foundSolarIrradiation = false;
         //if not found
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
@@ -181,18 +174,34 @@
         }
     } 
     
-    private async Task DownloadImage()
+    /// <summary>
+    /// Downloads the image from the Google Maps Static API returns it as a byte array.
+    /// </summary>
+    private async Task<byte[]> DownloadImageFromGoogleMapsService()
     {
+        byte[] imageBytes = new byte[0];
         var googleMapsService = new GoogleMapsService(new HttpClient());
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        return imageBytes;
+    }
+
+    /// <summary>
+    /// Saves the image as a bytes array to the local storage.
+    /// </summary>
+    private async Task SaveImageToLocalStorage(byte[] imageBytes)
+    {
+        if(imageBytes.Length == 0) {
+            Console.WriteLine("Image bytes is empty");
+            return;
+        }
         var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
         if (File.Exists(imagePath))
         {
             File.Delete(imagePath);
         }
         await File.WriteAllBytesAsync(imagePath, imageBytes);
-        await ProtectedSessionStore.SetAsync("loading", false);
     }
+    
 
     private void ShowLoadingScreen()
     {
