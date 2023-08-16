@@ -23,7 +23,7 @@ public class GoogleMapsService
     {
         var request = new HttpRequestMessage(
             HttpMethod.Get,
-            API_PORT + "/SolarScore/googlemapskey"
+            API_PORT + "/locationData/googlemapskey"
         );
         var response = await _httpClient.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -31,13 +31,14 @@ public class GoogleMapsService
             apiKey = await response.Content.ReadAsStringAsync();
         }
         apiKey = apiKey.Trim('"');
-
-        Console.WriteLine($"Getting map image for {latitude}, {longitude}");
-        var url =
-            $"https://maps.googleapis.com/maps/api/staticmap?center={latitude},{longitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
-
-        var result = await _httpClient.GetByteArrayAsync(url);
-        Console.WriteLine($"Got map image for {latitude}, {longitude}: " + result.Length + " bytes: " + result);
-        return result;
+        if(apiKey != "") {
+            Console.WriteLine($"Getting map image for {latitude}, {longitude}");
+            var url =
+                $"https://maps.googleapis.com/maps/api/staticmap?center={latitude},{longitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
+            return await _httpClient.GetByteArrayAsync(url);
+        } else {
+            Console.WriteLine("No Google Maps API key found");
+            return new byte[0];
+        }
     }
 }
