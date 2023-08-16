@@ -98,11 +98,18 @@
         latitude = tempLatitude.Value;
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = tempLongitude.Value; 
-        GetSolarScore();   
+
+
+        // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
+        _ = GetSolarScore();
     }
 
     private async Task GetSolarScore() 
     {
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
         int remainingCalls = 1;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
