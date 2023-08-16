@@ -1,6 +1,5 @@
 @page "/solarscore"
 @layout MainLayout
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
@@ -21,10 +20,10 @@ else
 {
     <div class="fade-in-enter-active">
         <div class="w-full">
-            @if (lat != null && lng != null)
+            @if (lat != 0 && lng != 0)
             {
                 <div class="mb-20">
-                    <BlazorApp.Section.Results />
+                    <BlazorApp.Section.Results latitude="lat" longitude="lng"/>
                 </div>
                 <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculation<span
                         aria-hidden="true"></span></a>
@@ -46,20 +45,19 @@ else
 
 @code {
     private bool isAd = false;
-    private double? lat;
-    private double? lng;
+    private double lat = 0;
+    private double lng = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     protected override async Task OnInitializedAsync()
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var locationData = await ProtectedSessionStore.GetAsync<LocationDataModel>("currentLocationData");
+        @* var locationData = await ProtectedSessionStore.GetAsync<LocationDataModel>("currentLocationData"); *@
+        var latitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        lat = latitude.Value;
+        var longitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        lng = longitude.Value;
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
-        Console.WriteLine(locationData.Value);
-        if(locationData.Value != null) {
-            lat = locationData.Value.latitude;
-            lng = locationData.Value.longitude;
-        }
         isAd = isAdmin.Value;
     }
 }
