@@ -12,7 +12,6 @@ reportRouter.get('/', (req, res) => {
 const reportController = new ReportController();
 reportRouter.post(
   '/create',
-  bodyParser.json({ limit: '10mb' }),
   reportController.createReport
 );
 reportRouter.get('/all', reportController.getAllReports);
@@ -20,7 +19,6 @@ reportRouter.get('/getUserReports/:userId', reportController.getUserReports);
 reportRouter.get('/:reportId', reportController.getReport);
 reportRouter.patch(
   '/update/:reportId',
-  bodyParser.json({ limit: '10mb' }),
   reportController.updateReport
 );
 reportRouter.delete('/delete/:reportId', reportController.deleteReport);
