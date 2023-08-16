@@ -42,9 +42,12 @@ export default class LocationDataController {
 
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
-    const { latitude, longitude, location } = req.body;
+    const { latitude, longitude, location, daylightHours, image } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls) VALUES (${latitude}, ${longitude}, '${location}', '', '${dateCreated}', -1, 1)`;
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let long = parseFloat(longitude.replace(',', '.'));
+    let dlh = parseFloat(daylightHours.replace(',', '.'));
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 1)`;
     try {
       const request = new tedious.Request(
         query,
@@ -72,7 +75,9 @@ export default class LocationDataController {
   public updateDataLocationData = async (req: Request, res: Response) => {
     const { data, remainingCalls } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -104,7 +109,10 @@ export default class LocationDataController {
   ) => {
     const { daylightHours } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET daylightHours = '${daylightHours}' WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    let dlh = parseFloat(daylightHours.replace(',', '.'));
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET daylightHours = '${dlh}' WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -133,7 +141,9 @@ export default class LocationDataController {
   public updateImgLocationData = async (req: Request, res: Response) => {
     const { image } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET image = '${image}' WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    let lat = parseFloat(latitude.replace(',', '.'));
+    let long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET image = '${image}' WHERE latitude = ${lat} AND longitude = ${long}`;
     try {
       const request = new tedious.Request(
         query,
