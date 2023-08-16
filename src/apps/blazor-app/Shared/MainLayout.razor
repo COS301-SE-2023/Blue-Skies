@@ -53,6 +53,7 @@
         toastService.HideToastRequested += HideToast;
     }
 
+@* Loading Service functions *@
     public void ShowLoadingScreen()
     {
 
@@ -66,6 +67,7 @@
         StateHasChanged();
     }
 
+@* Toast Service functions *@
     public void ShowToast(string title, string message, string type) {
         this.title = title;
         this.message = message;
@@ -84,6 +86,9 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Dispose of the services functions in MainLayout.razor
+    /// </summary>
     public void Dispose()
     {
         loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;
