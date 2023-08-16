@@ -117,6 +117,7 @@ public class LocationDataRepository
                 null,
                 "application/json"
             );
+            Console.WriteLine("Here goes nothing");
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)

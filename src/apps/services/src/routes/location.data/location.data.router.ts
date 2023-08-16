@@ -27,7 +27,6 @@ locationDataRouter.get(
 
 locationDataRouter.post(
   '/create',
-  bodyParser.json(),
   bodyParser.json({ limit: '10mb' }),
   locationDataController.createSolarIrradiation
 );
@@ -40,7 +39,6 @@ locationDataRouter.patch(
 
 locationDataRouter.patch(
   '/update/image/:latitude/:longitude',
-  bodyParser.json(),
   bodyParser.json({ limit: '10mb' }),
   locationDataController.updateImgLocationData
 );

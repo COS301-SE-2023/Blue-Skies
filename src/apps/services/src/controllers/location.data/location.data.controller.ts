@@ -34,7 +34,7 @@ export default class LocationDataController {
       ]);
 
       const ans: number = parseFloat(result[0]);
-      res.json(ans);
+      res.json(ans); 
     } catch (error) {
       res.status(500).json({ error: error });
     }
@@ -43,10 +43,11 @@ export default class LocationDataController {
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude, location, daylightHours, image } = req.body;
+    console.log("Well hello there");
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    let lat = parseFloat(latitude.replace(',', '.'));
-    let long = parseFloat(longitude.replace(',', '.'));
-    let dlh = parseFloat(daylightHours.replace(',', '.'));
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const dlh = parseFloat(daylightHours.replace(',', '.'));
     const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 1)`;
     try {
       const request = new tedious.Request(
