@@ -21,7 +21,7 @@
 <div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     <div class="sm:flex-shrink-0  flex flex-col justify-center ">
         <Map css="scale-90" ImageName="@mapImage" />
-        <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@currentReport.reportName" />
+        <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@currentLocationData.location" />
     </div>
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
@@ -43,7 +43,7 @@
                 </div>
                 <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
                 <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@daylightHours</p>
+                    <p class="text-5xl text-primary-900 font-semibold">@currentLocationData.daylightHours</p>
                     <p class="text-5xl text-gray-400 font-bold">h</p>
                 </div>
             </div>
@@ -106,9 +106,13 @@
 
 
 @code {
+    [Parameter]
+    public double latitude  { get; set; }
+    [Parameter]
+    public double longitude  { get; set; }
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int solarScore = 100;
     private float daylightHours = -1F;
-    private ReportModel currentReport = new ReportModel();
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
@@ -118,38 +122,24 @@
     public bool isLoaded = false;
     public string? mapImage = "";
     public bool  foundSolarIrradiation = false;
-    private double latitude = 0;
-    private double longitude = 0;
-    
+
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        solarScore = ss.Value;
-
+        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
+        System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        customCulture.NumberFormat.NumberDecimalSeparator = ".";
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
-
-        var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-        currentReport = rep.Value!;
-        if (currentReport != null)
-        {
-            daylightHours = currentReport!.daylightHours;
-            @* get image locally if session storage does not work *@
-            mapImage = currentReport.image;
-        }
-        else
-        {
-            Console.WriteLine("currentReport is null");
-        }
-
+        
+        await getLocationData(latitude, longitude);
+        mapImage = currentLocationData.image;
         await GetSystems();
-        if (currentReport != null && systems!.Count > 0)
+        if (systems!.Count > 0)
         {
-
-            double calc = systems[selectedSystem].numberOfPanels * currentReport!.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
@@ -165,11 +155,33 @@
         latitude = tempLatitude.Value;
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = tempLongitude.Value;
-        
+
         // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
         _ = GetSolarScore();
 
         loadingService.HideLoadingScreen();
+    }
+
+    /// <summary>
+    /// 1. Tries to get the location data from the database.
+    /// If the data exists: save it's data to the currentLocationData variable
+    /// If the data does not exist print error.
+    /// </summary>
+    public async Task getLocationData(double latitude, double longitude){
+        string lat = latitude.ToString().Replace(",", ".");
+        string lon = longitude.ToString().Replace(",", ".");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + lat + "/" + lon);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+        return;
     }
 
     /// <summary>
@@ -181,7 +193,7 @@
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * currentReport!.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }
@@ -220,7 +232,6 @@
         int remainingCalls = 1;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
-        Console.WriteLine("In GetSolarScore function");
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
             int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
             solarScore = result[0];

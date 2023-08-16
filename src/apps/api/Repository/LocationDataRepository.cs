@@ -66,9 +66,9 @@ public class LocationDataRepository
         );
         var content = new StringContent(
             "{\r\n    \"latitude\": "
-                + coordinates.latitude
+                + coordinates.latitude.ToString().Replace(",", ".")
                 + ",\r\n    \"longitude\": "
-                + coordinates.longitude
+                + coordinates.longitude.ToString().Replace(",", ".")
                 + "\r\n}",
             null,
             "application/json"
@@ -141,7 +141,6 @@ public class LocationDataRepository
     //Get solar irradiation
     public async Task<LocationData> GetLocationData(double latitude, double longitude)
     {
-        Console.WriteLine(express + "/api/locationData/" + latitude + "/" + longitude);
         try
         {
             var client = new HttpClient();
@@ -153,7 +152,7 @@ public class LocationDataRepository
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Success");
+                // Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
                 LocationData locationData = JsonSerializer.Deserialize<LocationData>(data)!;
                 return locationData!;
