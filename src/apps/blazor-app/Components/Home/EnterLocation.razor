@@ -120,6 +120,7 @@
         {
             await ProtectedSessionStore.DeleteAsync("parent");
             StateHasChanged();
+            HideLoadingScreen();
         }
 
         @* if (exists)
@@ -128,7 +129,6 @@
         } else {
             await SaveImageToLocalStorage(imageBytes);
         } *@
-        HideLoadingScreen();
     }
 
     /// <summary>

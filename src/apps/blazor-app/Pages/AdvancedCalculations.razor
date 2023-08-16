@@ -37,16 +37,16 @@
                 @if (edit)
                 {
                     var reportName = currentReport.reportName;
-                <BlazorApp.Section.AdvancedResults solarScore="solarScore" currentReport="currentReport"
+                <BlazorApp.Section.AdvancedResults currentLocationData="currentLocationData"
                     systems="systems" reportName="@reportName"/>    
                 } else {
-                <BlazorApp.Section.AdvancedResults solarScore="solarScore" currentReport="currentReport"
+                <BlazorApp.Section.AdvancedResults currentLocationData="currentLocationData"
                     systems="systems" />
                 }
             </div>
             <div class="w-full">
                 <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
-                    systems="systems" solarScore="solarScore" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
+                    systems="systems" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
             </div>
         </div>
     }
@@ -63,6 +63,7 @@
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     private ReportModel currentReport = new ReportModel(); 
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int selectedSystem = 0;
     private int solarScore = 0;
     private double longitude = 0;
@@ -81,15 +82,18 @@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
         edit = editing.Value;
 
-        var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-        currentReport = rep.Value!;
-        
+        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = lat.Value;
+        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = lng.Value;
+        await getLocationData(latitude, longitude);
         if (edit)
         {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            currentReport = rep.Value!;
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
         }
-        @* TODO: Do calculations to set solar score from solar Irradtiation *@
 
         await GetAppliancesAsync();
         await GetSystemsAsync();
@@ -104,6 +108,27 @@
 
     }
 
+    /// <summary>
+    /// 1. Tries to get the location data from the database.
+    /// If the data exists: save it's data to the currentLocationData variable
+    /// If the data does not exist print error.
+    /// </summary>
+    public async Task getLocationData(double latitude, double longitude){
+        string lat = latitude.ToString().Replace(",", ".");
+        string lon = longitude.ToString().Replace(",", ".");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + lat + "/" + lon);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+        return;
+    }
     private async Task GetSystemsAsync()
     {
         var client = new HttpClient();
