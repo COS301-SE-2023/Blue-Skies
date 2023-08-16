@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-
 namespace BlazorApp.Data {
     public class SolarCalculator {
         private double perfectSolarIrradiation = 220;
