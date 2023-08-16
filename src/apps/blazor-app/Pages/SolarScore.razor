@@ -6,11 +6,11 @@
 @inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
-@using BlazorApp.Section;
+@using BlazorApp.Components.SolarScore;
 
 <PageTitle>Solar Score</PageTitle>
 
-
+@* Check for admin *@
 @if (isAd)
 {
     loadingService.ShowLoadingScreen();
@@ -23,7 +23,7 @@ else
             @if (latitude != 0 && longitude != 0)
             {
                 <div class="mb-20">
-                    <BlazorApp.Section.Results latitude="latitude" longitude="longitude"/>
+                    <Results latitude="latitude" longitude="longitude"/>
                 </div>
                 <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculation<span
                         aria-hidden="true"></span></a>
@@ -33,10 +33,10 @@ else
                 <EnterLocation />
             }
             <div class="mt-40 mb-20">
-                <BlazorApp.Section.ScoreInfo />
+                <ScoreInfo />
             </div>
             <div class="mt-32 mb-10">
-                <BlazorApp.Section.NextSteps />
+                <NextSteps />
             </div>
         </div>
     </div>
@@ -49,6 +49,10 @@ else
     private double longitude = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    /// <summary>
+    /// On page load, check if user is admin.
+    /// Get current location data from session storage.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
