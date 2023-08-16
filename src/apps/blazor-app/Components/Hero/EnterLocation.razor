@@ -38,7 +38,7 @@
 
 
 @code {
-    private ReportModel currentReport = new ReportModel();
+    private LocationDataModel currentLocationData = new LocationDataModel();
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0;
@@ -51,7 +51,6 @@
     int batteryLife = 10;
     string location = "";
     float daylightHours = 5f;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -70,29 +69,29 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;
         }
-
         longitude = cord[0];
         latitude = cord[1];
-
-        daylightHours = await getDayLightHours(latitude, longitude);
         
-
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
-        //Convert float to int
-        await CreateSolarIrradiation(latitude, longitude);
 
-        int solarScore = 50;
-        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-        await ProtectedSessionStore.SetAsync("latitude", latitude);
-        await ProtectedSessionStore.SetAsync("longitude", longitude);
+        currentLocationData.location = location;
+        currentLocationData.latitude = latitude;
+        currentLocationData.longitude = longitude;
+        currentLocationData.daylightHours = daylightHours;
         await ProtectedSessionStore.SetAsync("parent", "");
         await ProtectedSessionStore.SetAsync("edit", false);
 
-        await DownloadImage();
-        Console.WriteLine("Finished downloading image");
+        @* string? image  = await DownloadImage();
+        if (image != null)
+        {
+        daylightHours = await getDayLightHours(latitude, longitude);
+            await CreateLocationData(latitude, longitude, image, daylightHours);
+        } else {
+            Console.WriteLine("Image returned null, could not create location data");
+        } *@
 
         if (parent.Equals("index"))
         {
@@ -113,37 +112,48 @@
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getsuntimes");
-        var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null,
-        "application/json");
+        var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
 
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
-            //convert data to double
             float ans = float.Parse(data);
             return ans;
-        }
-        else
-        {
+        } else {
             return 0f;
         }
     }
 
-    public async Task CreateSolarIrradiation(double latitude, double longitude) 
+    public async Task<bool> getLocationData(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        @* if (response.IsSuccessStatusCodeotFound)
+        {
+            Console.Write("Locationddation Data found");
+        } else {
+            Console.Write("Location data not foundre data");
+        } *@
+
+        return false;
+    }
+    
+    public async Task CreateLocationData(double latitude, double longitude, string image, float daylightHours) 
     {
         var numYears = 3;
         var numDaysPerYear = 48;
-        //Try to get the solar Radiation if it exsists
+
+        //First we see if the data does not already exist
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
+        
         bool foundSolarIrradiation = false;
         //if not found
         if (response.StatusCode == HttpStatusCode.NotFound)
         {
-
             Console.WriteLine("Solar Irradiation Data not found");
             client = new HttpClient();
             request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
@@ -170,15 +180,18 @@
 
         }
     } 
+    
     private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-        string img = Convert.ToBase64String(imageBytes);
-        @* await CreateBasicCaculation(systemId, daylightHours, location, batteryLife, img);
-        await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!); *@
-        @* store image locally after saving currentReport to session storage *@
-        return;
+        var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
+        if (File.Exists(imagePath))
+        {
+            File.Delete(imagePath);
+        }
+        await File.WriteAllBytesAsync(imagePath, imageBytes);
+        await ProtectedSessionStore.SetAsync("loading", false);
     }
 
     private void ShowLoadingScreen()
