@@ -121,6 +121,9 @@
     private double latitude = 0;
     private double longitude = 0;
     
+    /// <summary>
+    /// This function is called when the page is loaded and it gets the data from the session storage and the API
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -169,6 +172,9 @@
         loadingService.HideLoadingScreen();
     }
 
+    /// <summary>
+    /// This function is called when the user selects a system size and it updates the selected system and the average energy production
+    /// </summary>
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -179,6 +185,10 @@
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }
+
+    /// <summary>
+    /// This function is called to get the systems from the API and store them in the systems list
+    /// </summary>
     private async Task GetSystems()
     {
         var client = new HttpClient();
@@ -187,10 +197,9 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions {
+                PropertyNameCaseInsensitive = true
+            })!;
         }
         else
         {
@@ -199,7 +208,9 @@
         return;
     }
 
-
+    /// <summary>
+    /// This function is called in the background to update the solar score
+    /// </summary>
     private async Task GetSolarScore() 
     {
         if(API_PORT == null) {
