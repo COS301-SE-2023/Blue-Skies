@@ -169,21 +169,24 @@
     {
         var numYears = 3;
         var numDaysPerYear = 48;
+
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-        var content = new StringContent("{\r\n    \"latitude\": "
-                    + latitude
-                    + ",\r\n    \"longitude\": "
-                    + longitude
-                    + ",\r\n    \"location\": \""
-                    + location
-                    + "\",\r\n    \"daylightHours\": "
-                    + daylightHours
-                    + ",\r\n    \"image\": \""
-                    + image
-                    + "\"\r\n}", null, "application/json");
+        var content = new StringContent("{\r\n    \"latitude\": \"" 
+                                    + latitude 
+                                    + "\",\r\n    \"longitude\": \"" 
+                                    + longitude 
+                                    + "\",\r\n    \"location\": \"" 
+                                    + location 
+                                    + "\",\r\n    \"daylightHours\" : \"" 
+                                    + daylightHours 
+                                    + "\",\r\n    \"image\": \"" 
+                                    + image 
+                                    + "\"\r\n}", null, "application/json");
+
         request.Content = content;
         var response = await client.SendAsync(request);
+        Console.WriteLine(response.StatusCode);
         if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Making the call to python");
