@@ -6,5 +6,7 @@ public class LocationDataModel
     public string? data { get; set; }
     public DateTime? dateCreated { get; set; }
     public double daylightHours { get; set; }
+    public string? image { get; set; }
     public int remainingCalls { get; set; }
+
 }

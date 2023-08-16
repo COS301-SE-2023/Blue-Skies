@@ -70,6 +70,9 @@
     public async void generateLocationData()
     {
         ShowLoadingScreen();
+        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        customCulture.NumberFormat.NumberDecimalSeparator = ".";
+        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
 
@@ -90,13 +93,13 @@
         currentLocationData.latitude = latitude;
         currentLocationData.longitude = longitude;
 
+        byte[] imageBytes = new byte[0];
         bool exists = await getLocationData(latitude, longitude);
         if (!exists)
         {
             daylightHours = await getDayLightHours(latitude, longitude);
             currentLocationData.daylightHours = daylightHours;
-            byte[] imageBytes = await DownloadImageFromGoogleMapsService();
-            await SaveImageToLocalStorage(imageBytes);
+            imageBytes = await DownloadImageFromGoogleMapsService();
             await CreateLocationData(latitude, longitude, daylightHours, Convert.ToBase64String(imageBytes), location);
         }
 
@@ -115,6 +118,14 @@
         {
             await ProtectedSessionStore.DeleteAsync("parent");
             StateHasChanged();
+        }
+
+        if (exists)
+        {
+            await SaveImageToLocalStorage(Convert.FromBase64String(currentLocationData.image!));
+        } else {
+            await SaveImageToLocalStorage(imageBytes);
+
         }
         HideLoadingScreen();
     }
@@ -146,6 +157,7 @@
     /// If the data does not exist: return false.
     /// </summary>
     public async Task<bool> getLocationData(double latitude, double longitude){
+        Console.WriteLine("/locationData/getLocationData/" + latitude + "/" + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
@@ -156,7 +168,7 @@
             currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data);
             return true;
         } else {
-            Console.WriteLine("Location data not found");
+            Console.WriteLine("Location data not found - fetching data instead");
             return false;
         }
     }
@@ -169,7 +181,6 @@
     {
         var numYears = 3;
         var numDaysPerYear = 48;
-
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
         var content = new StringContent("{\r\n    \"latitude\": \"" 
@@ -186,7 +197,6 @@
 
         request.Content = content;
         var response = await client.SendAsync(request);
-        Console.WriteLine(response.StatusCode);
         if (response.IsSuccessStatusCode)
         {
             client = new HttpClient();
