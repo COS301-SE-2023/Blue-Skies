@@ -34,7 +34,7 @@ export default class LocationDataController {
       ]);
 
       const ans: number = parseFloat(result[0]);
-      res.json(ans); 
+      res.json(ans);
     } catch (error) {
       res.status(500).json({ error: error });
     }
@@ -170,7 +170,9 @@ export default class LocationDataController {
   //get solarIrradiation
   public getSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
-    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
     try {
       const request = new tedious.Request(
@@ -214,7 +216,9 @@ export default class LocationDataController {
     res: Response
   ) => {
     const { latitude, longitude } = req.params;
-    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
     try {
       const request = new tedious.Request(
@@ -256,7 +260,9 @@ export default class LocationDataController {
   //delete solarIrradiation
   public deleteSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
-    const query = `DELETE FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `DELETE FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -316,11 +322,13 @@ export default class LocationDataController {
   public getSolarIrradiationData = async (req: Request, res: Response) => {
     console.log('Get Solar Data script started');
     const { latitude, longitude, numYears, numDaysPerYear } = req.body;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
     const previousYear = new Date().getFullYear() - 1;
     try {
       this.executePython('scripts/solarRadiation.py', [
-        latitude,
-        longitude,
+        lat,
+        long,
         previousYear,
         numYears,
         numDaysPerYear,
