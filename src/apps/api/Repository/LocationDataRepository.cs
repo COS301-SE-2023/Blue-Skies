@@ -20,7 +20,10 @@ public class LocationDataRepository
     public async Task<string> GetMapBoxApiKey()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/mapboxkey");
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            express + "/api/locationData/mapboxkey"
+        );
         var response = await client.SendAsync(request);
         // response.EnsureSuccessStatusCode();
         // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -33,10 +36,14 @@ public class LocationDataRepository
             throw new Exception("Error getting mapbox key");
         }
     }
+
     public async Task<string> GetGoogleMapsKey()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/googlemapskey");
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            express + "/api/locationData/googlemapskey"
+        );
         var response = await client.SendAsync(request);
         // response.EnsureSuccessStatusCode();
         // Console.WriteLine(await response.Content.ReadAsStringAsync());
@@ -50,7 +57,6 @@ public class LocationDataRepository
         }
     }
 
-    //Get sun times
     public async Task<string> GetSunTimes(Coordinates coordinates)
     {
         var client = new HttpClient();
@@ -80,15 +86,38 @@ public class LocationDataRepository
         }
     }
 
-
     //Create Solar Irradiation
-    public async Task<string> CreateLocationData(double latitude, double longitude, string location)
+    public async Task<string> CreateLocationData(
+        double latitude,
+        double longitude,
+        string location,
+        double daylightHours,
+        string image
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, express + "/api/locationData/create");
-            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"location\": \"" + location + "\"\r\n}", null, "application/json"); request.Content = content;
+            var request = new HttpRequestMessage(
+                HttpMethod.Post,
+                express + "/api/locationData/create"
+            );
+            var content = new StringContent(
+                "{\r\n    \"latitude\": \""
+                    + latitude
+                    + "\",\r\n    \"longitude\": \""
+                    + longitude
+                    + "\",\r\n    \"location\": \""
+                    + location
+                    + "\",\r\n    \"daylightHours\": \""
+                    + daylightHours
+                    + "\",\r\n    \"image\": \""
+                    + image
+                    + "\"\r\n}",
+                null,
+                "application/json"
+            );
+            request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -105,7 +134,6 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not create solar irradiation");
         }
     }
@@ -116,9 +144,11 @@ public class LocationDataRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/" + latitude + "/" + longitude
+            );
             var response = await client.SendAsync(request);
-
 
             if (response.IsSuccessStatusCode)
             {
@@ -138,18 +168,23 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not get solar irradiation");
         }
     }
 
     //GetSolarIrradiationWithoutImage
-    public async Task<LocationData> GetSolarIrradiationWithoutImage(double latitude, double longitude)
+    public async Task<LocationData> GetSolarIrradiationWithoutImage(
+        double latitude,
+        double longitude
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/withoutImage/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/withoutImage/" + latitude + "/" + longitude
+            );
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -160,20 +195,35 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not get solar irradiation without image");
         }
         return null!;
     }
 
     //Update the data in LocationData
-    public async Task<string> UpdateDataLocationData(double latitude, double longitude, string data, int remainingCalls)
+    public async Task<string> UpdateDataLocationData(
+        double latitude,
+        double longitude,
+        string data,
+        int? remainingCalls
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/data/" + latitude + "/" + longitude);
-            var content = new StringContent("{\r\n    \"data\": \"" + data + "\",\r\n    \"remainingCalls\": " + remainingCalls + "\r\n}", null, "application/json");
+            var request = new HttpRequestMessage(
+                HttpMethod.Patch,
+                express + "/api/locationData/update/data/" + latitude + "/" + longitude
+            );
+            var content = new StringContent(
+                "{\r\n    \"data\": \""
+                    + data
+                    + "\",\r\n    \"remainingCalls\": "
+                    + remainingCalls
+                    + "\r\n}",
+                null,
+                "application/json"
+            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -191,19 +241,29 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not update data in LocationData");
         }
     }
 
     //Update the image in LocationData
-    public async Task<string> UpdateImageLocationData(double latitude, double longitude, string image)
+    public async Task<string> UpdateImageLocationData(
+        double latitude,
+        double longitude,
+        string image
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/image/" + latitude + "/" + longitude);
-            var content = new StringContent("{\r\n    \"image\": \"" + image + "\"\r\n}", null, "application/json");
+            var request = new HttpRequestMessage(
+                HttpMethod.Patch,
+                express + "/api/locationData/update/image/" + latitude + "/" + longitude
+            );
+            var content = new StringContent(
+                "{\r\n    \"image\": \"" + image + "\"\r\n}",
+                null,
+                "application/json"
+            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -221,19 +281,29 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not update image in LocationData");
         }
     }
 
     //Update the daylightHours in LocationData
-    public async Task<string> UpdateDaylightHoursLocationData(double latitude, double longitude, double daylightHours)
+    public async Task<string> UpdateDaylightHoursLocationData(
+        double latitude,
+        double longitude,
+        double daylightHours
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/daylightHours/" + latitude + "/" + longitude);
-            var content = new StringContent("{\r\n    \"daylightHours\": " + daylightHours + "\r\n}", null, "application/json");
+            var request = new HttpRequestMessage(
+                HttpMethod.Patch,
+                express + "/api/locationData/update/daylightHours/" + latitude + "/" + longitude
+            );
+            var content = new StringContent(
+                "{\r\n    \"daylightHours\": \"" + daylightHours + "\"\r\n}",
+                null,
+                "application/json"
+            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -251,20 +321,38 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not update DaylightHours in LocationData");
         }
     }
 
-
     //Get Solar Irradiation Data
-    public async Task<string> GetSolarIrradiationData(double latitude, double longitude, int numYears, int numDaysPerYear)
+    public async Task<string> GetSolarIrradiationData(
+        double latitude,
+        double longitude,
+        int numYears,
+        int numDaysPerYear
+    )
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/solarIrradiationData");
-            var content = new StringContent("{\r\n    \"latitude\": " + latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": " + numYears + ",\r\n    \"numDaysPerYear\": " + numDaysPerYear + "\r\n}", null, "application/json");
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/solarIrradiationData"
+            );
+            var content = new StringContent(
+                "{\r\n    \"latitude\": "
+                    + latitude
+                    + ",\r\n    \"longitude\": "
+                    + longitude
+                    + ",\r\n    \"numYears\": "
+                    + numYears
+                    + ",\r\n    \"numDaysPerYear\": "
+                    + numDaysPerYear
+                    + "\r\n}",
+                null,
+                "application/json"
+            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -279,7 +367,6 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not get solar irradiation data");
         }
     }
@@ -290,7 +377,10 @@ public class LocationDataRepository
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Delete, express + "/api/locationData/delete/" + latitude + "/" + longitude);
+            var request = new HttpRequestMessage(
+                HttpMethod.Delete,
+                express + "/api/locationData/delete/" + latitude + "/" + longitude
+            );
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -307,10 +397,7 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-
             throw new Exception("Could not delete LocationData");
         }
     }
 }
-
-
