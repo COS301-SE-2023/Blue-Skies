@@ -1,5 +1,5 @@
 @using BlazorApp.Components.Base
-@using BlazorApp.Components.Home
+@using BlazorApp.Components.Hero
 @using BlazorApp.Models
 @using System.Text.Json;
 @using System.Net;
@@ -38,7 +38,7 @@
 
 
 @code {
-    private LocationDataModel currentLocationData = new LocationDataModel();
+    private LocationDataModel? currentLocationData = new LocationDataModel();
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0;
@@ -46,9 +46,6 @@
     private readonly int zoom = 19;
     private readonly int width = 600;
     private readonly int height = 500;
-    int systemId = 2;
-    int batteryLife = 10;
-    string location = "";
     float daylightHours = 5f;
 
     protected override async Task OnInitializedAsync()
@@ -70,21 +67,29 @@
         }
         longitude = cord[0];
         latitude = cord[1];
-        
+        var location = "";
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
 
-        currentLocationData.location = location;
+        currentLocationData!.location = location;
         currentLocationData.latitude = latitude;
         currentLocationData.longitude = longitude;
-        currentLocationData.daylightHours = daylightHours;
+
+        bool exists = await getLocationData(latitude, longitude);
+        if (!exists)
+        {
+            daylightHours = await getDayLightHours(latitude, longitude);
+            currentLocationData.daylightHours = daylightHours;
+            byte[] imageBytes = await DownloadImageFromGoogleMapsService();
+            await SaveImageToLocalStorage(imageBytes);
+            await CreateLocationData(latitude, longitude, daylightHours, Convert.ToBase64String(imageBytes));
+        }
+        await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData);
         await ProtectedSessionStore.SetAsync("parent", "");
         await ProtectedSessionStore.SetAsync("edit", false);
 
-        daylightHours = await getDayLightHours(latitude, longitude);
-        await CreateLocationData(latitude, longitude, daylightHours);
 
         if (parent.Equals("index"))
         {
@@ -119,38 +124,47 @@
         }
     }
 
-    public async Task<bool> getLocationData(){
+    public async Task<bool> getLocationData(double latitude, double longitude){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            Console.Write("Locationddation Data found");
+            Console.Write("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data);
+            return true;
         } else {
-            Console.Write("Location data not foundre data");
+            Console.Write("Location data not found");
+            return false;
         }
-
-        return false;
     }
     
-    public async Task CreateLocationData(double latitude, double longitude, float daylightHours) 
+    public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
-        await SaveImageToLocalStorage(await DownloadImageFromGoogleMapsService());
-
         var numYears = 3;
         var numDaysPerYear = 48;
-
-        //First we see if the data does not already exist
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
+        var content = new StringContent("{\r\n    \"latitude\": "
+                    + latitude
+                    + ",\r\n    \"longitude\": "
+                    + longitude
+                    + ",\r\n    \"location\": \""
+                    + location
+                    + "\",\r\n    \"daylightHours\": "
+                    + daylightHours
+                    + ",\r\n    \"image\": \""
+                    + image
+                    + "\"\r\n}", null, "application/json");
+        request.Content = content;
         var response = await client.SendAsync(request);
-        //if not found
-        if (response.StatusCode == HttpStatusCode.NotFound)
+        if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Solar Irradiation Data not found");
+            Console.WriteLine("Making the call to python");
             client = new HttpClient();
-            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-            var content = new StringContent("{\r\n    \"coordinates\": {\r\n        \"latitude\": " + latitude + ",\r\n        \"longitude\": " + longitude + "\r\n    },\r\n    \"location\": \"" + location + "\"\r\n\r\n}", null, "application/json");
+            request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
+            content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
             request.Content = content;
             response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -168,11 +182,11 @@
         {
             Console.WriteLine("Solar Irradiation Data found");
         } else {
-            Console.WriteLine("Failed to create new table in database for solarScore data");
-
+            Console.WriteLine("Failed to create row table in database for solarIrradiation data");
         }
     } 
     
+
     /// <summary>
     /// Downloads the image from the Google Maps Static API returns it as a byte array.
     /// </summary>
