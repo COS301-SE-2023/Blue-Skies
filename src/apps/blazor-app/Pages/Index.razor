@@ -8,32 +8,40 @@
 
 <PageTitle>Blue Skies - Home</PageTitle>
 
-
-      <div class="fade-in-enter-active">
-        @if (!isLoaded){}
-        else if (isAd){
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/admin/keys");
-        } else {
+<div class="fade-in-enter-active">
+  @if (isLoaded){
+    @if(isAd){
+        loadingService.ShowLoadingScreen();
+        NavigationManager.NavigateTo("/admin/keys");
+    } else {
         <div class="w-full">
-            <div class=""><BlazorApp.Section.Hero /></div>
+            <BlazorApp.Section.Hero />
+
             @* How it works *@
-            <div class="mt-20"><BlazorApp.Section.HowItWorks /></div>
+            <div class="mt-20">
+            <BlazorApp.Section.HowItWorks />
+            </div>
+            
             @* Unlock your full potential *@
             <BlazorApp.Section.CTA />
-            @* Frequently Asked Questions *@
-            <div class="mt-72 lg:mt-44 mb-40"><BlazorApp.Section.FAQ /></div>
-        </div>
-        }
-      </div>
 
+            @* Frequently Asked Questions *@
+            <div class="mt-72 lg:mt-44 mb-40">
+            <BlazorApp.Section.FAQ />
+            </div>
+        </div>
+    }
+  }
+</div>
 
 
 @code {
   private bool isAd = false;
   private bool isLoaded = false;
 
-
+/// <summary>
+/// On page load, check if user is admin
+/// </summary>
   protected override async Task OnInitializedAsync()
   {
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -43,7 +51,9 @@
     loadingService.HideLoadingScreen();
   }
 
-  //Go to Sign Up Page
+/// <summary>
+/// Navigate to register page
+/// </summary>
   void Register()
   {
     loadingService.ShowLoadingScreen();
