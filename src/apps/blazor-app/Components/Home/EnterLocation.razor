@@ -99,10 +99,10 @@
             await SaveImageToLocalStorage(imageBytes);
             await CreateLocationData(latitude, longitude, daylightHours, Convert.ToBase64String(imageBytes), location);
         }
+
         await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData);
         await ProtectedSessionStore.SetAsync("parent", "");
         await ProtectedSessionStore.SetAsync("edit", false);
-
 
         if (parent.Equals("index"))
         {
@@ -189,7 +189,6 @@
         Console.WriteLine(response.StatusCode);
         if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Making the call to python");
             client = new HttpClient();
             request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
             content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
