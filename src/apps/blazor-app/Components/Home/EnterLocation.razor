@@ -151,12 +151,12 @@
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            Console.Write("Location data found");
+            Console.WriteLine("Location data found");
             string data = response.Content.ReadAsStringAsync().Result;
             currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data);
             return true;
         } else {
-            Console.Write("Location data not found");
+            Console.WriteLine("Location data not found");
             return false;
         }
     }
@@ -194,14 +194,9 @@
             response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("Making the call to python");
-                client = new HttpClient();
-                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
-                content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
-                request.Content = content;
-                response = await client.SendAsync(request);
+                Console.WriteLine("Successfully called python file");
             } else {
-                Console.WriteLine("Failed to create row table in database for solarIrradiation data");
+                Console.WriteLine("Failed to call python file");
             }
         } else {
             Console.WriteLine("Failed to create row table in database for solarIrradiation data");
