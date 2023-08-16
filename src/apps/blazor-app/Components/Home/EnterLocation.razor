@@ -1,5 +1,5 @@
 @using BlazorApp.Components.Base
-@using BlazorApp.Components.Hero
+@using BlazorApp.Components.Home
 @using BlazorApp.Models
 @using System.Text.Json;
 @using System.Net;
@@ -23,7 +23,7 @@
             <AutoComplete />
         </div>
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-            <div @onclick="saveCurrentReport">
+            <div @onclick="generateLocationData">
                 <Button style="pill" css="h-14">
                     <content>
                         <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
@@ -54,7 +54,20 @@
         parent = par.Value!;
     }
 
-    public async void saveCurrentReport()
+    /// <summary>
+    /// 1. Gets the longitude and latitude from the location suggestion.
+    /// 2. Gets the location name from the location suggestion.
+    /// 3. Checks if the location data exists in the database.
+    /// 4. If the location data does not exist:
+    ///     4.1. Gets the daylight hours for the location.
+    ///     4.2. Downloads the image from the Google Maps Static API.
+    ///     4.3. Saves the image to the local storage.
+    ///     4.4. Creates a new row in the database for the location data.
+    /// 5. Saves the location data to the currentLocationData variable.
+    /// 6. Saves the currentLocationData variable to the session storage.
+    /// 7. Navigates to the solarScore page.
+    /// </summary>
+    public async void generateLocationData()
     {
         ShowLoadingScreen();
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
@@ -84,7 +97,7 @@
             currentLocationData.daylightHours = daylightHours;
             byte[] imageBytes = await DownloadImageFromGoogleMapsService();
             await SaveImageToLocalStorage(imageBytes);
-            await CreateLocationData(latitude, longitude, daylightHours, Convert.ToBase64String(imageBytes));
+            await CreateLocationData(latitude, longitude, daylightHours, Convert.ToBase64String(imageBytes), location);
         }
         await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData);
         await ProtectedSessionStore.SetAsync("parent", "");
@@ -106,6 +119,9 @@
         HideLoadingScreen();
     }
 
+    /// <summary>
+    /// Calls the python API to get the daylight hours for the current location.
+    /// </summary>
     public async Task<float> getDayLightHours(double latitude, double longitude)
     {
         var client = new HttpClient();
@@ -124,6 +140,11 @@
         }
     }
 
+    /// <summary>
+    /// 1. Tries to get the location data from the database.
+    /// If the data exists: save it's data to the currentLocationData variable and return true.
+    /// If the data does not exist: return false.
+    /// </summary>
     public async Task<bool> getLocationData(double latitude, double longitude){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
@@ -140,6 +161,10 @@
         }
     }
     
+    /// <summary>
+    /// 1. Creates a new row in the database for the location data. 
+    /// 2. Calls the python API to get the solar irradiation data for that location.
+    /// </summary>
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
         var numYears = 3;
@@ -178,9 +203,6 @@
             } else {
                 Console.WriteLine("Failed to create row table in database for solarIrradiation data");
             }
-        } else if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Solar Irradiation Data found");
         } else {
             Console.WriteLine("Failed to create row table in database for solarIrradiation data");
         }
@@ -215,7 +237,6 @@
         await File.WriteAllBytesAsync(imagePath, imageBytes);
     }
     
-
     private void ShowLoadingScreen()
     {
         loadingService.ShowLoadingScreen();
