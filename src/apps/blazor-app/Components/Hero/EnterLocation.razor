@@ -74,7 +74,7 @@
         longitude = cord[0];
         latitude = cord[1];
 
-        dayLightHours = await getDayLightHours(latitude, longitude);
+        daylightHours = await getDayLightHours(latitude, longitude);
         
 
         if (locationSuggestion != null)
@@ -170,11 +170,11 @@
 
         }
     } 
-        private async Task DownloadImage()
+    private async Task DownloadImage()
     {
         var googleMapsService = new GoogleMapsService(new HttpClient());
         imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-
+        Console.WriteLine("Image downloaded: " + imageBytes.Length + " bytes");
         string img = Convert.ToBase64String(imageBytes);
         @* await CreateBasicCaculation(systemId, daylightHours, location, batteryLife, img);
         await ProtectedSessionStore.SetAsync("basicCalculationId", basicCalc.basicCalculationId!); *@

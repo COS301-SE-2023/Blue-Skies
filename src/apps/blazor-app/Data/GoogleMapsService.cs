@@ -35,6 +35,9 @@ public class GoogleMapsService
         Console.WriteLine($"Getting map image for {latitude}, {longitude}");
         var url =
             $"https://maps.googleapis.com/maps/api/staticmap?center={latitude},{longitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
-        return await _httpClient.GetByteArrayAsync(url);
+
+        var result = await _httpClient.GetByteArrayAsync(url);
+        Console.WriteLine($"Got map image for {latitude}, {longitude}: " + result.Length + " bytes: " + result);
+        return result;
     }
 }
