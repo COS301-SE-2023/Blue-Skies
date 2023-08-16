@@ -10,9 +10,18 @@ body {
 .fade-in-enter-active {
     animation: fadeIn .6s;
 }
-/* Fade-In Transition */
+
+/* Fade Transition */
 .fade-in-active {
     animation: fadeIn .3s;
+}
+
+.fade-active {
+    animation: fade .6s;
+}
+
+.fade-out-active {
+    animation: fade-out .3s;
 }
 
 /* Slide-In Transition */
@@ -24,14 +33,7 @@ body {
     animation: slideIn .3s;
 }
 
-.fade-active {
-    animation: fade .6s;
-}
-
-.fade-out-active {
-    animation: fade-out .3s;
-}
-
+/* Toast Classes */
 .toast-slide-in {
     animation: toastSlideIn .3s;
 }
@@ -40,11 +42,51 @@ body {
     animation: toastSlideOut .3s;
 }
 
-/* Fade-Out Transition */
+/* Panel and Trees Classes */
+.panel-trees-slide-in-left {
+    animation: panelSlideLeft .5s;
+    animation-delay: .5s;
+    animation-fill-mode: forwards;
+}
+
+/* Robert Classes */
+.robert-slide-in-right {
+    animation: robertSlideRight .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+.robert-slide-in-left {
+    animation: robertSlideLeft .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+/* Robert Transitions */
+
+@keyframes robertSlideRight {
+    from { transform: translateX(100%); }
+    to { opacity: 1; transform: rotate(-45deg); }
+}
+
+@keyframes robertSlideLeft {
+    from { transform: translateX(-100%) rotate(90deg); }
+    to { opacity: 1; transform: rotate(60deg) translateX(14px);}
+}
+
+/* Panels and Trees UI Transitions */
+
+@keyframes panelSlideLeft {
+    from { opacity: 0; transform: translateX(-150%); }
+    to { opacity: 1;  transform: translateX(0);}
+}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(1%); }
     to { opacity: 1;}
 }
+
+
+/* Toast Transitions */
 
 @keyframes toastSlideIn {
     from { opacity: 0; transform: translateX(-100%); }
@@ -55,6 +97,9 @@ body {
     from { opacity: 1; }
     to { opacity: 0; transform: translateX(-100%); }
 }
+
+
+/* Page Transitionsj */
 
 @keyframes slideIn {
     from { opacity: 0; transform: translateY(-10%); }
@@ -70,43 +115,4 @@ body {
     from { opacity: 1; }
     to { opacity: 0; }
 }  
-
-/* Chart Container */
-.chart-container {
-    width: 200px;
-    height: 200px;
-  }
-  
-  /* Chart Half Doughnut */
-  .chart-half-doughnut {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Progress */
-  .chart-progress {
-    width: 100%;
-    height: 100%;
-    background-color: #3b82f6;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Remaining */
-  .chart-remaining {
-    width: 100%;
-    height: 100%;
-    background-color: #f3f4f6;
-    border-radius: 50%;
-    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
-  }
-  
-  /* Chart Label */
-  .chart-label {
-    width: 100%;
-    height: 100%;
-    line-height: 200px; /* Should match the height of .chart-container */
-  }
   
