@@ -43,7 +43,6 @@ export default class LocationDataController {
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude, location, daylightHours, image } = req.body;
-    console.log("Well hello there");
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
