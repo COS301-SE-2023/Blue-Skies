@@ -341,11 +341,11 @@ public class LocationDataRepository
                 express + "/api/locationData/solarIrradiationData"
             );
             var content = new StringContent(
-                "{\r\n    \"latitude\": "
+                "{\r\n    \"latitude\": \""
                     + latitude
-                    + ",\r\n    \"longitude\": "
+                    + "\",\r\n    \"longitude\": \""
                     + longitude
-                    + ",\r\n    \"numYears\": "
+                    + "\",\r\n    \"numYears\": "
                     + numYears
                     + ",\r\n    \"numDaysPerYear\": "
                     + numDaysPerYear

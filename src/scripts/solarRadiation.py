@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 from google.oauth2 import service_account
 import ee
 
-LATITUDE = float(sys.argv[1])
-LONGITUDE = float(sys.argv[2])
+LATITUDE = float(sys.argv[1].replace(",", "."))
+LONGITUDE = float(sys.argv[2].replace(",", "."))
 YEAR = int(sys.argv[3])
 AMOUNT_OF_YEARS = int(sys.argv[4])
 AMOUNT_OF_TIMES_PER_YEAR = int(sys.argv[5])
