@@ -1,0 +1,214 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Home
+@using BlazorApp.Models
+@using System.Text.Json;
+@using System.Net;
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+
+<div class="mx-auto max-w-2xl px-10 py-32 sm:py-20 lg:py-28">
+    <div class="text-center">
+        <Heading>
+            <Header>
+                <h1 class="text-4xl font-bold tracking-tight text-primary-950 sm:text-6xl">Discover Your Solar Score
+                </h1>
+            </Header>
+            <Subscript>
+                <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">Uncover Your Solar Potential. Calculate Your Solar
+                    Score Today.</p>
+            </Subscript>
+        </Heading>
+        <div>
+            <AutoComplete />
+        </div>
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+            <div @onclick="saveCurrentReport">
+                <Button style="pill" css="h-14">
+                    <content>
+                        <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
+                    </content>
+                </Button>
+            </div>
+            <a href="/dashboard" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
+                    aria-hidden="true"></span></a>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    private LocationDataModel currentLocationData = new LocationDataModel();
+    public string parent = "index";
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private double latitude = 0;
+    private double longitude = 0;
+    private readonly int zoom = 19;
+    private readonly int width = 600;
+    private readonly int height = 500;
+    int systemId = 2;
+    int batteryLife = 10;
+    string location = "";
+    float daylightHours = 5f;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var par = await ProtectedSessionStore.GetAsync<string>("parent");
+        parent = par.Value!;
+    }
+
+    public async void saveCurrentReport()
+    {
+        ShowLoadingScreen();
+        var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
+        LocationSuggestion locationSuggestion = locationTemp.Value!;
+
+        List<double> cord = new List<double>();
+        if (locationSuggestion.Geometry != null)
+        {
+            cord = locationSuggestion.Geometry.Coordinates!;
+        }
+        longitude = cord[0];
+        latitude = cord[1];
+        
+        if (locationSuggestion != null)
+        {
+            location = locationSuggestion.Place_Name;
+        }
+
+        currentLocationData.location = location;
+        currentLocationData.latitude = latitude;
+        currentLocationData.longitude = longitude;
+        currentLocationData.daylightHours = daylightHours;
+        await ProtectedSessionStore.SetAsync("parent", "");
+        await ProtectedSessionStore.SetAsync("edit", false);
+
+        daylightHours = await getDayLightHours(latitude, longitude);
+        await CreateLocationData(latitude, longitude, daylightHours);
+
+        if (parent.Equals("index"))
+        {
+            Console.WriteLine("Parent is index");
+            await ProtectedSessionStore.DeleteAsync("parent");
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/solarScore");
+        }
+        else
+        {
+            await ProtectedSessionStore.DeleteAsync("parent");
+            StateHasChanged();
+        }
+        HideLoadingScreen();
+    }
+
+    public async Task<float> getDayLightHours(double latitude, double longitude)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getsuntimes");
+        var content = new StringContent("{\r\n \"latitude\": " + latitude + ",\r\n \"longitude\": " + longitude + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            float ans = float.Parse(data);
+            return ans;
+        } else {
+            return 0f;
+        }
+    }
+
+    public async Task<bool> getLocationData(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.Write("Locationddation Data found");
+        } else {
+            Console.Write("Location data not foundre data");
+        }
+
+        return false;
+    }
+    
+    public async Task CreateLocationData(double latitude, double longitude, float daylightHours) 
+    {
+        await SaveImageToLocalStorage(await DownloadImageFromGoogleMapsService());
+
+        var numYears = 3;
+        var numDaysPerYear = 48;
+
+        //First we see if the data does not already exist
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        //if not found
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            Console.WriteLine("Solar Irradiation Data not found");
+            client = new HttpClient();
+            request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
+            var content = new StringContent("{\r\n    \"coordinates\": {\r\n        \"latitude\": " + latitude + ",\r\n        \"longitude\": " + longitude + "\r\n    },\r\n    \"location\": \"" + location + "\"\r\n\r\n}", null, "application/json");
+            request.Content = content;
+            response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Making the call to python");
+                client = new HttpClient();
+                request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
+                content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
+                request.Content = content;
+                response = await client.SendAsync(request);
+            } else {
+                Console.WriteLine("Failed to create row table in database for solarIrradiation data");
+            }
+        } else if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Solar Irradiation Data found");
+        } else {
+            Console.WriteLine("Failed to create new table in database for solarScore data");
+
+        }
+    } 
+    
+    /// <summary>
+    /// Downloads the image from the Google Maps Static API returns it as a byte array.
+    /// </summary>
+    private async Task<byte[]> DownloadImageFromGoogleMapsService()
+    {
+        byte[] imageBytes = new byte[0];
+        var googleMapsService = new GoogleMapsService(new HttpClient());
+        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        return imageBytes;
+    }
+
+    /// <summary>
+    /// Saves the image as a bytes array to the local storage.
+    /// </summary>
+    private async Task SaveImageToLocalStorage(byte[] imageBytes)
+    {
+        if(imageBytes.Length == 0) {
+            Console.WriteLine("Image bytes is empty");
+            return;
+        }
+        var imagePath = Path.Combine("wwwroot", "assets", "map_image.png");
+        if (File.Exists(imagePath))
+        {
+            File.Delete(imagePath);
+        }
+        await File.WriteAllBytesAsync(imagePath, imageBytes);
+    }
+    
+
+    private void ShowLoadingScreen()
+    {
+        loadingService.ShowLoadingScreen();
+    }
+
+    private void HideLoadingScreen()
+    {
+        loadingService.HideLoadingScreen();
+    }
+}
