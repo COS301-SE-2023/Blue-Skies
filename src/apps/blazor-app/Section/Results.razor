@@ -120,7 +120,7 @@
     public bool  foundSolarIrradiation = false;
     private double latitude = 0;
     private double longitude = 0;
-    public LocationDataModel locationData = null;
+    
     protected override async Task OnInitializedAsync()
     {
         var ss = await ProtectedSessionStore.GetAsync<int>("solarScore");
@@ -163,7 +163,8 @@
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = tempLongitude.Value;
         
-        GetSolarScore();
+        // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
+        _ = GetSolarScore();
 
         loadingService.HideLoadingScreen();
     }
@@ -201,6 +202,10 @@
 
     private async Task GetSolarScore() 
     {
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
         int remainingCalls = 1;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;

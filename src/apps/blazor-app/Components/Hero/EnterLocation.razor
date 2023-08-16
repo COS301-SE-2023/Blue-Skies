@@ -46,8 +46,6 @@
     private readonly int zoom = 19;
     private readonly int width = 600;
     private readonly int height = 500;
-    int systemId = 2;
-    int batteryLife = 10;
     string location = "";
     float daylightHours = 5f;
 
@@ -123,7 +121,7 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCodeotFound)
+        if (response.IsSuccessStatusCode)
         {
             Console.Write("Locationddation Data found");
         } else {
@@ -167,7 +165,6 @@
         } else if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Solar Irradiation Data found");
-            foundSolarIrradiation = true;
         } else {
             Console.WriteLine("Failed to create new table in database for solarScore data");
 
