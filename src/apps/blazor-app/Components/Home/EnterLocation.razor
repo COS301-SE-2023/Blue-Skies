@@ -48,6 +48,9 @@
     private readonly int height = 500;
     float daylightHours = 5f;
 
+    /// <summary>
+    /// Gets the parent page from the session storage.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var par = await ProtectedSessionStore.GetAsync<string>("parent");
@@ -55,17 +58,21 @@
     }
 
     /// <summary>
-    /// 1. Gets the longitude and latitude from the location suggestion.
-    /// 2. Gets the location name from the location suggestion.
-    /// 3. Checks if the location data exists in the database.
-    /// 4. If the location data does not exist:
-    ///     4.1. Gets the daylight hours for the location.
-    ///     4.2. Downloads the image from the Google Maps Static API.
-    ///     4.3. Saves the image to the local storage.
-    ///     4.4. Creates a new row in the database for the location data.
-    /// 5. Saves the location data to the currentLocationData variable.
-    /// 6. Saves the currentLocationData variable to the session storage.
-    /// 7. Navigates to the solarScore page.
+    /// <list type="number">
+    ///     <item>Gets the longitude and latitude from the location suggestion.</item>
+    ///     <item>Gets the location name from the location suggestion.</item>
+    ///     <item>Checks if the location data exists in the database.</item>
+    ///     <item>If the location data does not exist:</item>
+    ///     <list type="bullet">
+    ///         <item>Gets the daylight hours for the location.</item>
+    ///         <item>Downloads the image from the Google Maps Static API.</item>
+    ///         <item>Saves the image to the local storage.</item>
+    ///         <item>Creates a new row in the database for the location data.</item>
+    ///     </list>
+    ///     <item>Saves the location data to the currentLocationData variable.</item>
+    ///     <item>Saves the currentLocationData variable to the session storage.</item>
+    ///     <item>Navigates to the solarScore page.</item>
+    /// </list>
     /// </summary>
     public async void generateLocationData()
     {
@@ -153,9 +160,11 @@
     }
 
     /// <summary>
-    /// 1. Tries to get the location data from the database.
-    /// If the data exists: save it's data to the currentLocationData variable and return true.
-    /// If the data does not exist: return false.
+    /// <list type="bulltet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable and return true.</item>
+    ///     <item>If the data does not exist: return false.</item>
+    /// </list>
     /// </summary>
     public async Task<bool> getLocationData(double latitude, double longitude){
         var client = new HttpClient();
@@ -174,8 +183,10 @@
     }
     
     /// <summary>
-    /// 1. Creates a new row in the database for the location data. 
-    /// 2. Calls the python API to get the solar irradiation data for that location.
+    /// <list type="number">
+    ///     <item>Creates a new row in the database for the location data. </item>
+    ///     <item>Calls the python API to get the solar irradiation data for that location.</item>
+    /// </list>
     /// </summary>
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
