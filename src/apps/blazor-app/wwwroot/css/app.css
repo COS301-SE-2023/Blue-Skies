@@ -575,6 +575,10 @@ video {
   left: -50%;
 }
 
+.-left-64 {
+  left: -16rem;
+}
+
 .-right-1\/2 {
   right: -50%;
 }
@@ -763,10 +767,6 @@ video {
 .my-auto {
   margin-top: auto;
   margin-bottom: auto;
-}
-
-.-mt-10 {
-  margin-top: -2.5rem;
 }
 
 .-mt-4 {
@@ -1268,56 +1268,6 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.-translate-x-\[45\] {
-  --tw-translate-x: -45;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-x-\[45\%\] {
-  --tw-translate-x: -45%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-x-\[46\%\] {
-  --tw-translate-x: -46%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-x-\[46\.5\%\] {
-  --tw-translate-x: -46.5%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.-translate-x-\[47\%\] {
-  --tw-translate-x: -47%;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-45 {
-  --tw-rotate: 45deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-\[\] {
-  --tw-rotate: ;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-\[50\] {
-  --tw-rotate: 50;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-\[50deg\] {
-  --tw-rotate: 50deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.rotate-\[60deg\] {
-  --tw-rotate: 60deg;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .scale-105 {
   --tw-scale-x: 1.05;
   --tw-scale-y: 1.05;
@@ -1679,11 +1629,6 @@ video {
 .border-yellow-accent-500 {
   --tw-border-opacity: 1;
   border-color: rgb(255 193 8 / var(--tw-border-opacity));
-}
-
-.bg-black {
-  --tw-bg-opacity: 1;
-  background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
 .bg-blue-600 {
@@ -2186,10 +2131,6 @@ video {
   opacity: 1;
 }
 
-.opacity-20 {
-  opacity: 0.2;
-}
-
 .opacity-50 {
   opacity: 0.5;
 }
@@ -2246,11 +2187,6 @@ video {
 .ring-red-300 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(252 165 165 / var(--tw-ring-opacity));
-}
-
-.blur-3xl {
-  --tw-blur: blur(64px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
 .blur-lg {
@@ -2337,10 +2273,18 @@ body {
   animation: fadeIn .6s;
 }
 
-/* Fade-In Transition */
+/* Fade Transition */
 
 .fade-in-active {
   animation: fadeIn .3s;
+}
+
+.fade-active {
+  animation: fade .6s;
+}
+
+.fade-out-active {
+  animation: fade-out .3s;
 }
 
 /* Slide-In Transition */
@@ -2354,13 +2298,7 @@ body {
   animation: slideIn .3s;
 }
 
-.fade-active {
-  animation: fade .6s;
-}
-
-.fade-out-active {
-  animation: fade-out .3s;
-}
+/* Toast Classes */
 
 .toast-slide-in {
   animation: toastSlideIn .3s;
@@ -2370,19 +2308,29 @@ body {
   animation: toastSlideOut .3s;
 }
 
-.panel-trees-slide-in {
-  animation: panelSlideLeft .3s;
+/* Panel and Trees Classes */
+
+.panel-trees-slide-in-left {
+  animation: panelSlideLeft .5s;
   animation-delay: .5s;
   animation-fill-mode: forwards;
 }
 
+/* Robert Classes */
+
 .robert-slide-in-right {
-  animation: robertSlideRight .3s;
+  animation: robertSlideRight .5s;
   animation-delay: 1s;
   animation-fill-mode: forwards;
 }
 
-/* Fade-Out Transition */
+.robert-slide-in-left {
+  animation: robertSlideLeft .5s;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
+}
+
+/* Robert Transitions */
 
 @keyframes robertSlideRight {
   from {
@@ -2397,14 +2345,16 @@ body {
 
 @keyframes robertSlideLeft {
   from {
-    transform: translateX(-100%);
+    transform: translateX(-100%) rotate(90deg);
   }
 
   to {
     opacity: 1;
-    transform: rotate(45deg);
+    transform: rotate(60deg) translateX(14px);
   }
 }
+
+/* Panels and Trees UI Transitions */
 
 @keyframes panelSlideLeft {
   from {
@@ -2429,6 +2379,8 @@ body {
   }
 }
 
+/* Toast Transitions */
+
 @keyframes toastSlideIn {
   from {
     opacity: 0;
@@ -2450,6 +2402,8 @@ body {
     transform: translateX(-100%);
   }
 }
+
+/* Page Transitionsj */
 
 @keyframes slideIn {
   from {
@@ -3051,16 +3005,8 @@ body {
     height: 6rem;
   }
 
-  .xl\:h-36 {
-    height: 9rem;
-  }
-
   .xl\:h-52 {
     height: 13rem;
-  }
-
-  .xl\:w-1\/3 {
-    width: 33.333333%;
   }
 
   .xl\:scale-100 {
