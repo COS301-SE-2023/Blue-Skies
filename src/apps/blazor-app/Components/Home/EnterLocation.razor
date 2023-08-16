@@ -1,5 +1,5 @@
 @using BlazorApp.Components.Base
-@using BlazorApp.Components.Hero
+@using BlazorApp.Components.Home
 @using BlazorApp.Models
 @using System.Text.Json;
 @using System.Net;
@@ -123,7 +123,7 @@
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCodeotFound)
+        if (response.IsSuccessStatusCode)
         {
             Console.Write("Locationddation Data found");
         } else {
@@ -167,7 +167,7 @@
         } else if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Solar Irradiation Data found");
-            foundSolarIrradiation = true;
+            @* foundSolarIrradiation = true; *@
         } else {
             Console.WriteLine("Failed to create new table in database for solarScore data");
 
