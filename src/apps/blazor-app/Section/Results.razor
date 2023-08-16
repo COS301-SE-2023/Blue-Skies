@@ -147,6 +147,7 @@
             Console.WriteLine("Error currentReport is null or no systems found in results");
         }
         isLoaded = true;
+        loadingService.HideLoadingScreen();
 
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<bool>("foundSolarIrradiation");
         foundSolarIrradiation = tempSolarIrradiation.Value;
@@ -158,8 +159,6 @@
 
         // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
         _ = GetSolarScore();
-
-        loadingService.HideLoadingScreen();
     }
 
     /// <summary>

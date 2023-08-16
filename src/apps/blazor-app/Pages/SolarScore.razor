@@ -1,5 +1,5 @@
 @page "/solarscore"
-@layout MainLayout
+@* @layout MainLayout *@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
@@ -20,10 +20,10 @@ else
 {
     <div class="fade-in-enter-active">
         <div class="w-full">
-            @if (lat != 0 && lng != 0)
+            @if (latitude != 0 && longitude != 0)
             {
                 <div class="mb-20">
-                    <BlazorApp.Section.Results latitude="lat" longitude="lng"/>
+                    <BlazorApp.Section.Results latitude="latitude" longitude="longitude"/>
                 </div>
                 <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Advanced Calculation<span
                         aria-hidden="true"></span></a>
@@ -45,18 +45,18 @@ else
 
 @code {
     private bool isAd = false;
-    private double lat = 0;
-    private double lng = 0;
+    private double latitude = 0;
+    private double longitude = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     protected override async Task OnInitializedAsync()
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         @* var locationData = await ProtectedSessionStore.GetAsync<LocationDataModel>("currentLocationData"); *@
-        var latitude = await ProtectedSessionStore.GetAsync<double>("latitude");
-        lat = latitude.Value;
-        var longitude = await ProtectedSessionStore.GetAsync<double>("longitude");
-        lng = longitude.Value;
+        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = lat.Value;
+        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = lng.Value;
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
         isAd = isAdmin.Value;
     }
