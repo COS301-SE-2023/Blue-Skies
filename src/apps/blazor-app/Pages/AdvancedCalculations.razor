@@ -36,6 +36,7 @@
         {
             <div class="w-full">
                 <div class="mb-20">
+                    @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
                         var reportName = currentReport.reportName;
@@ -73,6 +74,17 @@
     private double latitude = 0;
 
 
+    /// <summary>
+///     <list type="bullet">
+///         <item>Check if user is logged in</item>
+///         <item>Check if logged in user is admin</item>
+///         <item>Check if the user has created a solar score</item>
+///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
+///         <item>Get the location data from the database</item>
+///         <item>Get all the appliances and systems from the database</item>
+///         <item>Set the selected system to the current report system</item>
+///     </list>
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
@@ -112,9 +124,11 @@
     }
 
     /// <summary>
-    /// 1. Tries to get the location data from the database.
-    /// If the data exists: save it's data to the currentLocationData variable
-    /// If the data does not exist print error.
+    /// <list type="bullet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
+    ///     <item>If the data does not exist print error.</item>
+    /// </list>
     /// </summary>
     public async Task getLocationData(double latitude, double longitude){
         string lat = latitude.ToString().Replace(",", ".");
@@ -132,6 +146,13 @@
         }
         return;
     }
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the systems from the database</item>
+    ///     <item>Save the systems to the systems variable</item>
+    ///     <item>Save the systems to the session storage</item>
+    /// </list>
+    /// </summary>
     private async Task GetSystemsAsync()
     {
         var client = new HttpClient();
@@ -156,6 +177,13 @@
         }
     }
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the appliances from the database</item>
+    ///     <item>Save the appliances to the appliances variable</item>
+    ///     <item>Save the appliances to the session storage</item>
+    /// </list>
+    /// </summary>
     private async Task GetAppliancesAsync()
     {
         var client = new HttpClient();
