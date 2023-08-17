@@ -1082,16 +1082,16 @@ video {
   width: 10rem;
 }
 
+.w-44 {
+  width: 11rem;
+}
+
 .w-48 {
   width: 12rem;
 }
 
 .w-5 {
   width: 1.25rem;
-}
-
-.w-5\/12 {
-  width: 41.666667%;
 }
 
 .w-6 {
@@ -1145,14 +1145,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-52 {
-  width: 13rem;
-}
-
-.w-44 {
-  width: 11rem;
 }
 
 .min-w-fit {
@@ -2749,10 +2741,6 @@ body {
 
   .sm\:flex-row {
     flex-direction: row;
-  }
-
-  .sm\:gap-4 {
-    gap: 1rem;
   }
 
   .sm\:px-5 {
