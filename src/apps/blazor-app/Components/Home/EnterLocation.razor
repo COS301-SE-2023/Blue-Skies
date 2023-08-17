@@ -139,7 +139,9 @@
     }
 
     /// <summary>
-    /// Calls the python API to get the daylight hours for the current location.
+    /// <para>Calls the python API to get the daylight hours for the current location.</para>
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
     public async Task<float> getDayLightHours(double latitude, double longitude)
     {
@@ -165,6 +167,8 @@
     ///     <item>If the data exists: save it's data to the currentLocationData variable and return true.</item>
     ///     <item>If the data does not exist: return false.</item>
     /// </list>
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
     public async Task<bool> getLocationData(double latitude, double longitude){
         var client = new HttpClient();
@@ -187,6 +191,11 @@
     ///     <item>Creates a new row in the database for the location data. </item>
     ///     <item>Calls the python API to get the solar irradiation data for that location.</item>
     /// </list>
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
+    /// <paramref name="daylightHours"/> The daylight hours for the current location.
+    /// <paramref name="image"/> The image of the current location.
+    /// <paramref name="location"/> The name of the current location.
     /// </summary>
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
@@ -240,6 +249,7 @@
 
     /// <summary>
     /// Saves the image as a bytes array to the local storage.
+    /// <paramref name="imageBytes"/> The image as a byte array.
     /// </summary>
     private async Task SaveImageToLocalStorage(byte[] imageBytes)
     {

@@ -19,11 +19,13 @@
     </Heading>
 </div>
 <div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
+    @* Map Container *@
     <div class="sm:flex-shrink-0  flex flex-col justify-center ">
         <Map css="scale-90" ImageName="@mapImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@currentLocationData.location" />
     </div>
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+        @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
             <div class="my-auto w-full">
                 <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
@@ -36,6 +38,7 @@
                 </div>
             </div>
         </Card>
+        @* Daylight Hours Card *@
         <Card css="border-2 flex scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72 flex  my-auto flex-col">
             <div class="my-auto w-full ">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
@@ -48,6 +51,7 @@
                 </div>
             </div>
         </Card>
+        @* Average Energy Production Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 p-4 w-72 h-72  my-auto">
             <div class="my-auto w-full">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
@@ -60,6 +64,7 @@
                 </div>
             </div>
         </Card>
+        @* System used Card *@
         <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-72 h-72">
             <div class="my-auto flex flex-col gap-4 w-full ">
                 <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
@@ -162,9 +167,13 @@
     }
 
     /// <summary>
-    /// 1. Tries to get the location data from the database.
-    /// If the data exists: save it's data to the currentLocationData variable
-    /// If the data does not exist print error.
+    /// <list type="bullet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
+    ///     <item>If the data does not exist print error.</item>
+    /// </list>
+    /// <paramref name="latitude"/> The latitude of the location.
+    /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
     public async Task getLocationData(double latitude, double longitude){
         string lat = latitude.ToString().Replace(",", ".");
@@ -184,7 +193,8 @@
     }
 
     /// <summary>
-    /// This function is called when the user selects a system size and it updates the selected system and the average energy production
+    /// <para>This function is called when the user selects a system size and it updates the selected system and the average energy production</para>
+    /// <paramref name="selection"/> The index of the selected system.
     /// </summary>
     private void SetSystemSize(int selection)
     {
