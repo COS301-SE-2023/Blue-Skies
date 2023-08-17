@@ -90,6 +90,13 @@
     private double longitude = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the latitude and longitude from the session storage </item>
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetSolarScore function </item>
+    /// </list>
+    /// </summary>    
     protected override async Task OnInitializedAsync()
     {
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
@@ -102,6 +109,17 @@
         _ = GetSolarScore();
     }
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetDataLocationData function from the solarCalculator </item>
+    ///     <item> Set the solar score to the result from the GetDataLocationData function </item>
+    ///     <item> Set the solar score in the session storage </item>
+    ///     <item> Set the remaining calls to the result from the GetDataLocationData function </item>
+    ///     <item> If the remaining calls is not updated 10 times in a row, stop the function </item>
+    ///     <item> Wait 3 seconds before calling the function again </item>
+    /// </list>
+    /// </summary>
     private async Task GetSolarScore() 
     {
         if(API_PORT == null) {
