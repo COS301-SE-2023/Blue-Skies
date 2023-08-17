@@ -5,51 +5,54 @@
 @inject NavigationManager NavigationManager;
 @using BlazorApp.Models;
 @using System.Text.Json
-@using BlazorApp.Components
+@using BlazorApp.Components.Advanced
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
 <PageTitle>Advanced Calculations</PageTitle>
 <div class="fade-in-enter-active">
-    @if (!isLoaded) { }
-    else if (!logIn)
-    {
-        ProtectedSessionStore.SetAsync("redirect", "advanced");
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/login");
-    }
-    else if (isAd)
-    {
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/admin/keys");
-    }
-    else if (longitude == 0 && latitude == 0)
-    {
-        @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
-        toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/solarScore");
-    }
-    else
-    {
-        <div class="w-full">
-            <div class="mb-20">
-                @if (edit)
-                {
-                    var reportName = currentReport.reportName;
-                <BlazorApp.Section.AdvancedResults currentLocationData="currentLocationData"
-                    systems="systems" reportName="@reportName"/>    
-                } else {
-                <BlazorApp.Section.AdvancedResults currentLocationData="currentLocationData"
-                    systems="systems" />
-                }
-            </div>
+    @if (isLoaded) {
+        @* Check if user is logged in *@
+        if (!logIn)
+        {
+            ProtectedSessionStore.SetAsync("redirect", "advanced");
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/login");
+        }
+        @* Check if logged in user is admin *@
+        else if (isAd)
+        {
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+        else if (longitude == 0 && latitude == 0)
+        {
+            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/solarScore");
+        }
+        else
+        {
             <div class="w-full">
-                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
-                    systems="systems" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
+                <div class="mb-20">
+                    @if (edit)
+                    {
+                        var reportName = currentReport.reportName;
+                    <Results currentLocationData="currentLocationData"
+                        systems="systems" reportName="@reportName"/>    
+                    } else {
+                    <Results currentLocationData="currentLocationData"
+                        systems="systems" />
+                    }
+                </div>
+                <div class="w-full">
+                    <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances"
+                        systems="systems" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
+                </div>
             </div>
-        </div>
-    }
+        }
+     }
 </div>
 
 @code {
