@@ -23,7 +23,7 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     }
-    else if (solarScore == 0 && longitude == 0 && latitude == 0)
+    else if (longitude == 0 && latitude == 0)
     {
         @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
         toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
