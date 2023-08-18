@@ -4,13 +4,12 @@ import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const { reportName, userId, locationId, systemId } =
-      req.body;
-
+    const { reportName, userId, latitude, longitude, systemId } = req.body;
+    console.log(reportName);
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const query =
-      `INSERT INTO [dbo].[reports] (reportName, userId, locationId, systemId, dateCreated)` +
-      ` VALUES ('${reportName}', ${userId}, ${locationId}, ${systemId}, '${dateCreated}')`;
+      `INSERT INTO [dbo].[reports] (reportName, userId, latitude, longitude, systemId, dateCreated)` +
+      ` VALUES ('${reportName}', ${userId}, ${latitude}, ${longitude}, ${systemId}, '${dateCreated}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,8 +66,9 @@ export default class ReportController {
           reportName: columns[1].value,
           userId: columns[2].value,
           systemId: columns[3].value,
-          locationId: columns[4].value,
-          dateCreated: columns[5].value,
+          latitude: columns[4].value,
+          longitude: columns[5].value,
+          dateCreated: columns[6].value,
         };
 
         reports.push(report);
@@ -113,8 +113,9 @@ export default class ReportController {
           reportName: columns[1].value,
           userId: columns[2].value,
           systemId: columns[3].value,
-          locationId: columns[4].value,
-          dateCreated: columns[5].value,
+          latitude: columns[4].value,
+          longitude: columns[5].value,
+          dateCreated: columns[6].value,
         };
 
         reports.push(report);
@@ -159,8 +160,9 @@ export default class ReportController {
           reportName: columns[1].value,
           userId: columns[2].value,
           systemId: columns[3].value,
-          locationId: columns[4].value,
-          dateCreated: columns[5].value,
+          latitude: columns[4].value,
+          longitude: columns[5].value,
+          dateCreated: columns[6].value,
         };
       });
 
@@ -174,11 +176,10 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-    const { reportName, userId, locationId, systemId } =
-      req.body;
+    const { reportName, userId, latitude, longitude, systemId } = req.body;
 
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, locationId = ${locationId}, systemId = ${systemId}` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, latitude = ${latitude}, longitude = ${longitude}, systemId = ${systemId}` +
       `WHERE reportId = ${reportId}`;
 
     try {

@@ -60,7 +60,8 @@ public class ReportController : ControllerBase
                 report.reportName!,
                 report.userId,
                 report.systemId,
-                report.locationId
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }
@@ -82,7 +83,8 @@ public class ReportController : ControllerBase
                 report.reportName!,
                 report.userId,
                 report.systemId,
-                report.locationId
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }

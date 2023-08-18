@@ -3,6 +3,7 @@ export default interface IReport {
   reportName: string;
   userId: number;
   systemId: number;
-  locationId: number;
+  latitude: number;
+  longitude: number;
   dateCreated: Date;
 }
