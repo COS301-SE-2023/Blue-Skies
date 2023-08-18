@@ -64,6 +64,7 @@
                         </div>
                 </div>
             </div>
+            @* Tabs to add or remove *@
             <div class="flex justify-center items-center w-full  my-7">
                 <Tabs @bind-Items="tabs"></Tabs>
             </div>
@@ -86,6 +87,7 @@
         </div>
     </div>
     <div class="w-full pl-32 flex flex-col justify-center items-center">
+        @* Home images *@
         <div class="flex pjustify-center items-center h-full">
             @switch (selectedSystem)
             {
@@ -105,9 +107,10 @@
             @{
                 HomeImage = HomeSize + HomeType;
             }
-            <Image ImageName="@HomeImage" alt="Home" css="w-full h-full scale-90" />
+            <Image ImageName="@HomeImage" alt="Home" css="w-full h-full scale-75" />
         </div>
     </div>
+    @* System details *@
     <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
@@ -135,6 +138,7 @@
     </div>
 </div>
 
+@* Appliance Summary *@
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <div class="flex gap-4 justify-start mb-10 relative">
@@ -333,6 +337,9 @@
     private string HomeImage = "";
     
 
+    /// <summary>
+    /// On initialisation, get the user id from local storage
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("Solar Score: " + solarScore);
@@ -342,6 +349,9 @@
         CalculateRunningHours();
     }
 
+    /// <summary>
+    /// On parameters set, set the appliance quantities to the values from the report
+    /// </summary>
     protected override void OnParametersSet(){
         for (int i = 0; i < reportAllAppliance!.Count; i++)
         {
@@ -386,18 +396,27 @@
             applianceQuantities.Add(appliance);
         }
     }
+
+    /// <summary>
+    /// On selected system changed, update the selected system and calculate the running hours
+    /// </summary>
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
         selectedSystem = Convert.ToInt32(e.Value);
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
+
     private void IncrementApplianceCount(ApplianceModel appliance) {
         appliance.fade = "fade-in-active";
         StateHasChanged();
         appliance.quantity++;
-        updateApplianceStorage();
+        UpdateApplianceStorage();
         CalculateRunningHours();
     }
+
+    /// <summary>
+    /// On appliance count changed, update the appliance count and calculate the running hours
+    /// </summary>
     private async void DecrementApplianceCount(ApplianceModel appliance) {
         if (appliance.quantity == 1) {
             appliance.fade = "fade-out-active";
@@ -410,13 +429,18 @@
         }
         appliance.fade = "fade-in-active";
         StateHasChanged();
-        updateApplianceStorage();
+        UpdateApplianceStorage();
          CalculateRunningHours();
     }
-    private async void updateApplianceStorage()
+
+    private async void UpdateApplianceStorage()
     {
         await ProtectedSessionStore.SetAsync("advancedCalculationAppliances", appliances);
     }
+
+    /// <summary>
+    /// On system size changed, update the selected system and calculate the running hours
+    /// </summary>
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -424,6 +448,10 @@
         selectedSystemChanged.InvokeAsync(selectedSystem);
         CalculateRunningHours();
     }
+
+    /// <summary>
+    /// On template changed, update the selected system and appliance quantities
+    /// </summary>
     private void ApplyTemplate(ChangeEventArgs e) {
         switch (e.Value)
         {
@@ -493,6 +521,7 @@
         await selectedSystemChanged.InvokeAsync(selectedSystem);
         CalculateRunningHours();
     }
+
     private async void SaveCalculation(){
         ModalPopup.Dismiss();
         ShowLoadingScreen();
@@ -523,7 +552,7 @@
             int reportId = await GetCreatedReportId();
             foreach (var appliance in appliances)
             {
-                await createReportAppliance(reportId, appliance);
+                await CreateReportAppliance(reportId, appliance);
             }
         }
         else
@@ -534,6 +563,7 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
+
     private async Task UpdateCalculation(){
         ShowLoadingScreen();
         var client = new HttpClient();
@@ -565,7 +595,7 @@
                 Console.WriteLine(i);
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
-                    await updateReportAppliance(reportId, appliances[i]);
+                    await UpdateReportAppliance(reportId, appliances[i]);
                 }
             }
         }
@@ -577,7 +607,8 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
-    private async Task updateReportAppliance(int reportId, ApplianceModel appliance){
+
+    private async Task UpdateReportAppliance(int reportId, ApplianceModel appliance){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
@@ -592,7 +623,8 @@
             Console.WriteLine("Failed to update ReportAppliance - " + response.StatusCode);
         }
     }
-    private async Task createReportAppliance(int reportId, ApplianceModel appliance){
+
+    private async Task CreateReportAppliance(int reportId, ApplianceModel appliance){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
@@ -633,9 +665,12 @@
             return -1;
         }
     }
+    
     private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
+
+
     private void CalculateRunningHours() {
         //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
         // % = (running hours / non-daylight hours) * 100
