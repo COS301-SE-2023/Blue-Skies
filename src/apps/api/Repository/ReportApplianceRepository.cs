@@ -41,15 +41,6 @@ public class ReportAppliancesRepository
                 null,
                 "application/json"
             );
-            Console.WriteLine(
-                "{\r\n    \"reportId\" : "
-                    + reportId
-                    + ",\r\n    \"applianceId\" : "
-                    + applianceId
-                    + ",\r\n    \"numberOfAppliances\" : "
-                    + numberOfAppliances
-                    + "\r\n}"
-            );
             request.Content = content;
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)

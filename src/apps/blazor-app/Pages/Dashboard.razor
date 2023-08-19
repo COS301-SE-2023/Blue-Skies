@@ -64,7 +64,6 @@ else if (!logIn)
                             <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
                                 <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
                                     @{
-                                        updateAppliances();
                                         for (int i = 0; i < reportAllAppliance.Count; i++)
                                         {
                                             if (reportAllAppliance[i].numberOfAppliances != 0)
@@ -214,8 +213,22 @@ else if (!logIn)
 
         await GetSystemsAsync();       
         await GetUserReports();
+        var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
+        int createdReport = cReport.Value;
+
         if (reports.Count > 0)
         {
+            if (createdReport != 0)
+            {   
+                for (int i = 0; i < reports.Count; i++)
+                {
+                    if (reports[i].reportId == createdReport)
+                    {
+                     selectedReport = i;
+                    }
+                }
+            }
+            await ProtectedSessionStore.DeleteAsync("createdReport");
             await GetLocationData();
             await GetSolarScore();
             await GetReportAllAppliance();
@@ -232,6 +245,7 @@ else if (!logIn)
     public async Task updateLocationData()
     {
         Console.WriteLine("Update Location Data");
+        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await GetLocationData();
         await GetSolarScore();
         updateAppliances();
@@ -309,7 +323,6 @@ else if (!logIn)
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            Console.WriteLine("Location data found");
             string data = response.Content.ReadAsStringAsync().Result;
             currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
             await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
@@ -336,7 +349,6 @@ else if (!logIn)
             {
                 await ProtectedSessionStore.SetAsync("userReports", reports);
             }
-            Console.WriteLine("Successfully retrieved user reports");
         }
         else
         {
@@ -667,6 +679,9 @@ else if (!logIn)
             toastService.ShowToast("Deleted Calculation", "Report successfuly deleted.", "success");
             Console.WriteLine("Report succesfully deleted");
             reports.RemoveAt(selectedReport);
+            selectedReport = 0;
+            await updateLocationData();
+            StateHasChanged();
         }
         else
         {
