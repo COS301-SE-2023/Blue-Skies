@@ -13,7 +13,8 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
-
+@inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -41,7 +42,7 @@ else if (!logIn)
                             selectedDate = reports[selectedReport].dateCreated;
                         }
                     }
-                    <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" />
+                    <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" updateLocation="updateLocationData"/>
                     @{
                         var image = "";
                         if (reports.Count > selectedReport)
@@ -49,7 +50,7 @@ else if (!logIn)
                             image = currentLocationData.image;
                         }
                     }
-                    <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" />
+                    <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" solarScore="solarScore" />
                     <div class="mt-10 w-full">
                         <Card>
                             <Heading>
@@ -189,19 +190,21 @@ else if (!logIn)
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
-    private int selectedReport = 0;
+    [Parameter]
+    public int selectedReport { get; set;}
     private DateTime selectedDate;
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
-    private ReportModel report = new ReportModel();
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
     public LocationDataModel currentLocationData  = new LocationDataModel();
+    public int solarScore = 0;
 
     /// <summary>
     /// Load the user's reports and all appliances
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        selectedReport = 0;
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
@@ -213,7 +216,8 @@ else if (!logIn)
         await GetUserReports();
         if (reports.Count > 0)
         {
-            await getLocationData();
+            await GetLocationData();
+            await GetSolarScore();
             await GetReportAllAppliance();
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
@@ -225,6 +229,26 @@ else if (!logIn)
         isLoaded = true;
     }
 
+    public async Task updateLocationData()
+    {
+        Console.WriteLine("Update Location Data");
+        await GetLocationData();
+        await GetSolarScore();
+        updateAppliances();
+    }
+    private async Task GetSolarScore() 
+    {
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
+        int remainingCalls = 1;
+        int[] result = await solarCalculator.GetDataLocationData(currentLocationData!.latitude, currentLocationData.longitude, API_PORT, solarScore, remainingCalls);
+        solarScore = result[0];
+        Console.WriteLine("Solar Score: " + solarScore);
+        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+        StateHasChanged();
+    }
     private async Task GetSystemsAsync()
     {
         var client = new HttpClient();
@@ -278,9 +302,9 @@ else if (!logIn)
     ///     <item>If the data does not exist print error.</item>
     /// </list>
     /// </summary>
-    public async Task getLocationData(){
+    public async Task GetLocationData(){
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/"
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/"
         + reports[selectedReport].latitude.ToString().Replace(",", ".") + "/" + reports[selectedReport].longitude.ToString().Replace(",", "."));
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
@@ -526,7 +550,6 @@ else if (!logIn)
                             ColorUtil.ColorHexString(0,15,82),
                         }
                     };
-                Console.WriteLine("4");
                 break;
             case 5:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
@@ -624,11 +647,8 @@ else if (!logIn)
     /// Delete the current report
     /// </summary>
      private async Task Delete(){
-
         modalPopup.Dismiss();
         await DeleteFromDatabase();
-
-        NavigationManager.NavigateTo("/dashboard", true);
     }
 
     /// <summary>
@@ -638,17 +658,15 @@ else if (!logIn)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
-
-        var repId = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-        report = repId.Value!;
-        Console.WriteLine(report!.reportId);
-
-        var content = new StringContent("{\r\n \"reportId\": " + report.reportId + "\r\n}", null, "application/json");
+        
+        var content = new StringContent("{\r\n \"reportId\": " + reports[selectedReport].reportId + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            toastService.ShowToast("Deleted Calculation", "Report successfuly deleted.", "success");
             Console.WriteLine("Report succesfully deleted");
+            reports.RemoveAt(selectedReport);
         }
         else
         {

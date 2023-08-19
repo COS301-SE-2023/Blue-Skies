@@ -105,7 +105,7 @@
 
 
         byte[] imageBytes = new byte[0];
-        bool exists = await getLocationData(latitude, longitude);
+        bool exists = await GetLocationData(latitude, longitude);
         if (!exists)
         {
             daylightHours = await getDayLightHours(latitude, longitude);
@@ -170,9 +170,9 @@
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<bool> getLocationData(double latitude, double longitude){
+    public async Task<bool> GetLocationData(double latitude, double longitude){
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {

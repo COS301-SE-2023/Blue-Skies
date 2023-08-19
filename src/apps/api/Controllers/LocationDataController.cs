@@ -81,7 +81,7 @@ public class LocationDataController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getLocationData/{latitude}/{longitude}")]
+    [Route("GetLocationData/{latitude}/{longitude}")]
     public async Task<IActionResult> GetLocationData(
         [FromRoute] double latitude,
         [FromRoute] double longitude
@@ -103,7 +103,7 @@ public class LocationDataController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getLocationDataWithoutImage/{latitude}/{longitude}")]
+    [Route("GetLocationDataWithoutImage/{latitude}/{longitude}")]
     public async Task<IActionResult> GetLocationDataWithoutImage(
         [FromRoute] double latitude,
         [FromRoute] double longitude

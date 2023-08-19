@@ -85,7 +85,6 @@
             pieConfig.Data.Labels.Add(color);
         }
         float remaining = (24-daylightHours) - hours;
-        Console.WriteLine(hours + " hours");
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {
                 BackgroundColor = new[] {
