@@ -77,6 +77,7 @@
 </div>
 
 @code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
@@ -88,7 +89,6 @@
     public int solarScore { get; set; }
     private double latitude = 0;
     private double longitude = 0;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
     /// <list type="bullet">

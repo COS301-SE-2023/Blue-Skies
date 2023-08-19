@@ -341,7 +341,7 @@
     private string HomeSize = "Small";
     private string HomeType = "";
     private string HomeImage = "";
-    
+
 
     /// <summary>
     /// On initialisation, get the user id from local storage
@@ -360,36 +360,35 @@
     protected override void OnParametersSet(){
         for (int i = 0; i < reportAllAppliance!.Count; i++)
         {
-            
-        if (reportAllAppliance[i].type!.Equals("Kettle"))
-        {
-            appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Fridge"))
-        {
-            appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
-        {
-            appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("TV"))
-        {
-            appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Computer"))
-        {
-            appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Microwave"))
-        {
-            appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("CCTV"))
-        {
-            appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
-        {
-            appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
-        }
-        
+
+            if (reportAllAppliance[i].type!.Equals("Kettle"))
+            {
+                appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Fridge"))
+            {
+                appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+            {
+                appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("TV"))
+            {
+                appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Computer"))
+            {
+                appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Microwave"))
+            {
+                appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("CCTV"))
+            {
+                appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+            {
+                appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
+            }
+
         }
         calculationName = currentReport!.reportName;
-        Console.WriteLine("Edit: " + edit);
 
         for (int i = 0; i < appliances.Count; i++)
         {
@@ -435,7 +434,7 @@
         appliance.fade = "fade-in-active";
         StateHasChanged();
         UpdateApplianceStorage();
-         CalculateRunningHours();
+        CalculateRunningHours();
     }
 
     private async void UpdateApplianceStorage()
@@ -511,7 +510,7 @@
                 break;
         }
     }
-   
+
     private async void ResetHome(){
         Console.WriteLine("Resetting"); 
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
@@ -538,16 +537,17 @@
                     + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
-                    + selectedSystem
                     + ",\r\n    \"latitude\" : \""
-                    + currentReport!.latitude
-                    + "\",\r\n    \"longitude\" : "
-                    + currentReport.longitude
-                    + "\"\r\n}",
+                    + currentReport!.latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + currentReport.longitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"systemId\" : "
+                    + systems[selectedSystem].systemId
+                    + "\r\n}",
         null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
+        Console.WriteLine(response.StatusCode);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
@@ -562,7 +562,6 @@
         else
         {
             Console.WriteLine("Failed to create report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
@@ -572,19 +571,19 @@
         ShowLoadingScreen();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n    \"reportId\" : \""
+        var content = new StringContent("{\r\n    \"reportId\" : "
                     + currentReport!.reportId
-                    + "\r\n    \"reportName\" : \""
-                    + calculationName
+                    + ",\r\n    \"reportName\" : \""
+                   + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
-                    + selectedSystem
                     + ",\r\n    \"latitude\" : \""
-                    + currentReport!.latitude
-                    + "\",\r\n    \"longitude\" : "
-                    + currentReport.longitude
-                    + "\"\r\n}", null, "application/json");
+                    + currentReport!.latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + currentReport.longitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"systemId\" : "
+                    + systems[selectedSystem].systemId
+                    + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -595,17 +594,17 @@
 
             for (int i = 0; i < 8; i++)
             {
-                Console.WriteLine(i);
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
                     await UpdateReportAppliance(currentReport.reportId, appliances[i]);
                 }
             }
+            await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
+
         }
         else
         {
             Console.WriteLine("Failed to update report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
@@ -620,6 +619,7 @@
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("ReportAppliance Updated successfully");
+
         }
         else
         {
@@ -694,6 +694,5 @@
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);        
     }
 }

@@ -23,7 +23,7 @@ namespace BlazorApp.Data
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude + "/" + longitude
+                API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude + "/" + longitude
             );
             var response = await client.SendAsync(request);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)

@@ -101,7 +101,7 @@
         var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = lng.Value;
 
-        await getLocationData(latitude, longitude);
+        await GetLocationData(latitude, longitude);
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
@@ -133,11 +133,11 @@
     ///     <item>If the data does not exist print error.</item>
     /// </list>
     /// </summary>
-    public async Task getLocationData(double latitude, double longitude){
+    public async Task GetLocationData(double latitude, double longitude){
         string lat = latitude.ToString().Replace(",", ".");
         string lon = longitude.ToString().Replace(",", ".");
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + lat + "/" + lon);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + lat + "/" + lon);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
