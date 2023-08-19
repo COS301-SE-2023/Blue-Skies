@@ -55,7 +55,6 @@
     public async Task OnSelectedReportChanged(ChangeEventArgs e)
     {
         selectedReport = Convert.ToInt32(e.Value);
-        await ProtectedSessionStore.SetAsync("currentReport", userReports![selectedReport]);
         await selectedReportChanged.InvokeAsync(selectedReport);
         await updateLocation.InvokeAsync();
         return;

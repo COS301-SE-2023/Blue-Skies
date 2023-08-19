@@ -547,13 +547,12 @@
         null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
-        Console.WriteLine(response.StatusCode);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
-            Console.WriteLine("Report created successfully");
             int reportId = await GetCreatedReportId();
+            await ProtectedSessionStore.SetAsync("createdReport", reportId);
             foreach (var appliance in appliances)
             {
                 await CreateReportAppliance(reportId, appliance);
@@ -590,8 +589,6 @@
         {
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
-            Console.WriteLine("Report updated successfully");
-
             for (int i = 0; i < 8; i++)
             {
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
@@ -616,14 +613,9 @@
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("ReportAppliance Updated successfully");
-
-        }
-        else
-        {
-            Console.WriteLine("Failed to update ReportAppliance - " + response.StatusCode);
+            Console.WriteLine("Failed to update ReportAppliance");
         }
     }
 
@@ -633,11 +625,7 @@
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("ReportAppliance created successfully");
-        }
-        else
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
