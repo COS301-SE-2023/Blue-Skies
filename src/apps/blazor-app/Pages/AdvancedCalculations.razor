@@ -48,7 +48,8 @@
                     }
                 </div>
                 <div class="w-full">
-                    <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
+                    <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData"
+                     reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
                 </div>
             </div>
         }
@@ -68,7 +69,6 @@
     private ReportModel currentReport = new ReportModel(); 
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int selectedSystem = 0;
-    private int solarScore = 0;
     private double longitude = 0;
     private double latitude = 0;
 
@@ -100,6 +100,7 @@
         latitude = lat.Value;
         var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = lng.Value;
+
         await getLocationData(latitude, longitude);
         if (edit)
         {
@@ -107,6 +108,9 @@
             currentReport = rep.Value!;
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
+        } else {
+            currentReport.latitude = latitude;
+            currentReport.longitude = longitude;
         }
 
         await GetAppliancesAsync();
@@ -145,6 +149,7 @@
         }
         return;
     }
+
     /// <summary>
     /// <list type="bullet">
     ///     <item>Get all the systems from the database</item>

@@ -123,7 +123,7 @@
                 dlh = 0;
                 if (currentReport != null)
                 {
-                    daylight = (float)Math.Round(currentReport!.daylightHours, 2);
+                    daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
                     dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
                     daylightChart.SetDaylightHours(daylight);
                     daylightChart.SetHours(dlh);
@@ -317,6 +317,12 @@
     public ReportModel? currentReport  { get; set; }
     [Parameter]
     public bool edit { get; set; }
+    [Parameter]
+    public double latitude { get; set; }
+    [Parameter]
+    public double longitude { get; set; }
+    [Parameter]
+    public LocationDataModel? currentLocationData { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
@@ -342,7 +348,6 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
         userId = usId.Value;
 
@@ -506,6 +511,7 @@
                 break;
         }
     }
+   
     private async void ResetHome(){
         Console.WriteLine("Resetting"); 
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
@@ -533,13 +539,11 @@
                     + "\",\r\n    \"userId\" : "
                     + userId
                     + ",\r\n    \"systemId\" : "
-                    + currentReport!.systemId
-                    + ",\r\n    \"locationId\" : \""
-                    + currentReport.locationId
-                    + "\",\r\n    \"daylightHours\" : "
-                    + currentReport.daylightHours
-                    + ",\r\n    \"image\" : \""
-                    + currentReport.image
+                    + selectedSystem
+                    + ",\r\n    \"latitude\" : \""
+                    + currentReport!.latitude
+                    + "\",\r\n    \"longitude\" : "
+                    + currentReport.longitude
                     + "\"\r\n}",
         null, "application/json");
         request.Content = content;
@@ -568,18 +572,18 @@
         ShowLoadingScreen();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n    \"reportName\" : \""
+        var content = new StringContent("{\r\n    \"reportId\" : \""
+                    + currentReport!.reportId
+                    + "\r\n    \"reportName\" : \""
                     + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
                     + ",\r\n    \"systemId\" : "
-                    + currentReport!.systemId
-                    + ",\r\n    \"locationId\" : \""
-                    + currentReport.locationId
-                    + "\",\r\n    \"daylightHours\" : "
-                    + currentReport.daylightHours
-                    + ",\r\n    \"image\" : \""
-                    + currentReport.image
+                    + selectedSystem
+                    + ",\r\n    \"latitude\" : \""
+                    + currentReport!.latitude
+                    + "\",\r\n    \"longitude\" : "
+                    + currentReport.longitude
                     + "\"\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -588,14 +592,13 @@
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
             Console.WriteLine("Report updated successfully");
-            int reportId = await GetCreatedReportId();
 
             for (int i = 0; i < 8; i++)
             {
                 Console.WriteLine(i);
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
-                    await UpdateReportAppliance(reportId, appliances[i]);
+                    await UpdateReportAppliance(currentReport.reportId, appliances[i]);
                 }
             }
         }
@@ -639,6 +642,7 @@
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
     }
+    
     private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
@@ -656,7 +660,8 @@
                 await ProtectedSessionStore.SetAsync("userReports", reports);
             }
             await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-            Console.WriteLine("ReportId: " + reports[reports.Count - 1].reportId);
+            await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
+
             return reports[reports.Count - 1].reportId;
         }
         else
@@ -670,10 +675,7 @@
         loadingService.ShowLoadingScreen();
     }
 
-
     private void CalculateRunningHours() {
-        //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
-        // % = (running hours / non-daylight hours) * 100
         int numBatteries = systems[selectedSystem].numberOfBatteries; 
         int batteryStorage = systems[selectedSystem].batterySize *1000; // kwh
         float sumOfAppliances = 0f;
@@ -686,7 +688,7 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - currentReport!.daylightHours;
+        float nonDaylightHours = 24 - (float) (currentLocationData!.daylightHours);
         runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
@@ -694,5 +696,4 @@
         }
         Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);        
     }
-
 }

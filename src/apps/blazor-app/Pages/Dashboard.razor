@@ -17,8 +17,8 @@
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
-@if (!isLoaded) { 
-    if (!logIn)
+@if (!isLoaded) {}
+else if (!logIn)
     {
         ProtectedSessionStore.SetAsync("redirect", "dashboard");
         loadingService.ShowLoadingScreen();
@@ -46,10 +46,10 @@
                         var image = "";
                         if (reports.Count > selectedReport)
                         {
-                            image = reports[selectedReport].image;
+                            image = currentLocationData.image;
                         }
                     }
-                    <LocationInfo css="mt-8" selectedReport="selectedReport" basicCalculationImage="@image" systems="systems" />
+                    <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" />
                     <div class="mt-10 w-full">
                         <Card>
                             <Heading>
@@ -88,7 +88,7 @@
                                         <Chart Config="pieConfig"></Chart>
                                         <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                                             <p class="text-5xl text-primary-900 font-semibold">
-                                                @reports[selectedReport].daylightHours</p>
+                                                @currentLocationData.daylightHours</p>
                                             <p class="text-5xl text-gray-400 font-bold">h</p>
                                         </div>
                                     </div>
@@ -177,8 +177,6 @@
         </ModalPopup>
     
     }
-}
-
 
 
 @code {
@@ -197,6 +195,7 @@
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private ReportModel report = new ReportModel();
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
+    public LocationDataModel currentLocationData  = new LocationDataModel();
 
     /// <summary>
     /// Load the user's reports and all appliances
@@ -212,17 +211,17 @@
 
         await GetSystemsAsync();       
         await GetUserReports();
-        Console.WriteLine("Reports: " + reports.Count);
         if (reports.Count > 0)
         {
+            await getLocationData();
             await GetReportAllAppliance();
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
             renderCharts();
         }
+        loadingService.HideLoadingScreen();
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
-        loadingService.HideLoadingScreen();
         isLoaded = true;
     }
 
@@ -246,9 +245,10 @@
         }
         else
         {
-            Console.WriteLine("Failed");
+            Console.WriteLine("Failed to get systems");
         }
     }
+
     private void Dispose() {
         reportManager.EditReportRequested -= Edit;
         reportManager.DeleteReportRequested -= ShowModal;
@@ -270,6 +270,32 @@
         }
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
     }
+    
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
+    ///     <item>If the data does not exist print error.</item>
+    /// </list>
+    /// </summary>
+    public async Task getLocationData(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/"
+        + reports[selectedReport].latitude.ToString().Replace(",", ".") + "/" + reports[selectedReport].longitude.ToString().Replace(",", "."));
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+        return;
+    }
+
     private async Task GetUserReports()
     {
         var client = new HttpClient();
@@ -412,7 +438,7 @@
         }
         if (reports.Count > 0)
         {
-            float hours = reports[selectedReport].daylightHours;
+            float hours = (float) currentLocationData!.daylightHours;
             float remaining = (float)Math.Round(13 - hours, 2);
             PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
                 {
