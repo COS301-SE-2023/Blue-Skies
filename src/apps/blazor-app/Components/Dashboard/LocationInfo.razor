@@ -10,20 +10,19 @@
             </Heading>
             <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
                 <div class="w-80">
-                    <Map scale="scale-[2.6]" imageName="@basicCalculationImage"/>
+                    <Map scale="scale-[2.6]" imageName="@currentLocationData!.image"/>
                 </div>
                 <div class="flex flex-col justify-start gap-10">
                     @{
                         var location = "";
                         var solarScore = "";
                         var avgEnergyProduction = "";
-                        @* TODO: get locationId *@
                         if (reports != null)
                         {
-                            @* location = reports[selectedReport].location;
-                            solarScore = reports[selectedReport].solarScore + "%";
-                            avgEnergyProduction = Math.Round(reports[selectedReport].numberOfPanels *
-                            reports[selectedReport].daylightHours * reports[selectedReport].solarInput /1000, 2) + " kw/h"; *@
+                            location = currentLocationData.location;
+                            @* solarScore = currentLocationData.solarScore + "%"; *@
+                            avgEnergyProduction = Math.Round(systems![selectedSystem].numberOfPanels *
+                            currentLocationData.daylightHours * systems[selectedSystem].solarInput /1000, 2) + " kw/h";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
@@ -77,7 +76,18 @@
     [Parameter]
     public int selectedReport { get; set; }
     [Parameter]
-    public string? basicCalculationImage { get; set; }
+    public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
-    public List<SystemModel>? systems { get; set; } 
+    public List<SystemModel>? systems { get; set; }
+    public int selectedSystem { get; set; }
+
+    protected override void OnInitialized(){
+        for (int i = 0; i < systems!.Count; i++)
+        {
+            if (reports![selectedReport].systemId == systems[i].systemId)
+            {
+                selectedSystem = i;    
+            }
+        }
+    }
 }

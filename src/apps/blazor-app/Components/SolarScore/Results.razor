@@ -117,7 +117,6 @@
     public double longitude  { get; set; }
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int solarScore = 100;
-    private float daylightHours = -1F;
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
