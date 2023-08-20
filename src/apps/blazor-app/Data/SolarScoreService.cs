@@ -7,6 +7,7 @@ namespace BlazorApp.Data
     {
         private double perfectSolarIrradiation = 205;
         private double worstSolarIrradiation = 120;
+        private int previousScore = -1;
 
         public async Task<int[]> GetDataLocationData(
             double latitude,
@@ -52,6 +53,10 @@ namespace BlazorApp.Data
             }
             else
             {
+                if(previousScore != -1)
+                {
+                    result[0] = previousScore;
+                }
                 Console.WriteLine("Failed to get data from LocationData");
             }
             return result;
@@ -100,6 +105,7 @@ namespace BlazorApp.Data
             {
                 percentage = 100;
             }
+            previousScore = (int)percentage;
             return (int)percentage;
         }
     }
