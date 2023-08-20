@@ -115,27 +115,19 @@
         }
         @* await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData); *@
         await ProtectedSessionStore.SetAsync("parent", "");
+        parent = "";
         await ProtectedSessionStore.SetAsync("edit", false);
 
         if (parent.Equals("index"))
         {
-            await ProtectedSessionStore.DeleteAsync("parent");
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/solarScore");
         }
         else
         {
-            await ProtectedSessionStore.DeleteAsync("parent");
-            StateHasChanged();
-            HideLoadingScreen();
+            NavigationManager.NavigateTo("/solarScore", true);
+            ShowLoadingScreen();
         }
-
-        @* if (exists)
-        {
-            await SaveImageToLocalStorage(Convert.FromBase64String(currentLocationData.image!));
-        } else {
-            await SaveImageToLocalStorage(imageBytes);
-        } *@
     }
 
     /// <summary>

@@ -28,7 +28,7 @@
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       @* BlueSkies Logo *@
-      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()"  class="-m-1.5 p-1.5">
+      <a @onclick='() => forceNavigate("/")'  class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
         <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
       </a>
@@ -44,15 +44,15 @@
     </div>
     @* Desktop Menu Links *@
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+      <a href="" @onclick='() => forceNavigate("/")' class="text-sm font-semibold leading-6 text-gray-900">Home</a>
+      <a href="" @onclick='() => forceNavigate("/solarScore")' class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
+      <a href="" @onclick='() => forceNavigate("/advanced")' class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
     </div>
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
         @* Log Out Button *@
-        <a onclick="@(() => Logout())" href="/">
+        <a href="" @onclick='(() => {Logout(); forceNavigate("/");})'>
           <div class="@(loggedIn ? "flex" : "hidden") shadow group w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "-translate-y-40") @(currentPage == "dashboard" && !isScrollingDown ? "opacity-100 w-40" : "opacity-0" ) ">
             <Image ImageName="Logout.svg" alt="User Circle" css="w-10 h-10 scale-75" />
             <p class="">Log</p>
@@ -60,7 +60,7 @@
           </div>
         </a>
         @* Log In and Dashboard Button *@
-        <a href="@(loggedIn ? "/dashboard" : "/login")" @onclick="() => loadingService.ShowLoadingScreen()">
+        <a href="" @onclick='() => forceNavigate(loggedIn)'>
           <div class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
             
@@ -72,7 +72,7 @@
           </div>
         </a>
         @* BlueSkies Floating Logo *@
-        <a href="/" @onclick="() => loadingService.ShowLoadingScreen()">
+        <a href="" @onclick='() => forceNavigate("/")'>
           <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
             <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
@@ -84,6 +84,7 @@
       @if(currentPage == "dashboard"){
         <div class="fixed toast-slide-in top-5 left-3 flex flex-col-reverse justify-start items-start gap-4 z-30 transition-all duration-300 delay-300 @(isScrollingDown? "translate-y-0" : "translate-y-24")">
             @* Delete Button *@
+            <a href="">
             <div @onclick="Delete" class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
               <div class="scale-75">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,12 +96,12 @@
               </div>
               <p class="">Delete</p>
             </div>
-          
+          </a>
           @* Edit Button *@
           <a onclick="@(() => {
              Edit();
              loadingService.ShowLoadingScreen();
-             })" href="/">
+             })" href="">
             <div class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
                 <div class="scale-75">
                   <svg  width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -124,7 +125,7 @@
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
       <div class="flex px-2 flex-col items-center justify-between w-full ">
         <div class="flex justify-between w-full ">
-          <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="-m-1.5 p-1.5">
+          <a href="" @onclick='() => forceNavigate("/")' class="-m-1.5 p-1.5">
             <span class="sr-only">BlueSkies</span>
             <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
           </a>
@@ -138,15 +139,15 @@
         </div>
         @* Mobile Menu Links *@
         <div class="flex flex-col w-full mt-5">
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/" @onclick="() => loadingService.ShowLoadingScreen()">Home</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()">Solar Score</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()">Advanced</a>
+          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/")'>Home</a>
+          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/solarScore")'>Solar Score</a>
+          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/advanced")'>Advanced</a>
           @if(loggedIn == true){
             <p @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
             }else{
                 <p @onclick="ToggleNavMenu" class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
           }
-          <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" onclick="@(() => Logout())" >Logout</p>
+          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="" onclick="@(() => Logout())" >Logout</a>
         </div>
         
       </div>
@@ -156,26 +157,43 @@
 </header>
 
 @code {
-    [Parameter]
-    public bool isDashboard { get; set; } = false;
-    [Parameter]
-    public EventCallback<bool> isScrollingDownChanged { get; set; }
-    [Parameter]
-    public bool isScrollingDown { get; set; } = false;
-    private string width = "";
-    private bool loggedIn = false;
-    private string userEmail = "";
-    private bool collapseNavMenu = false;
-    private string currentPage = "";
-    private ReportModel report = new ReportModel();
-    private string? navMenuCssClass => collapseNavMenu ? "collapse" : null;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private int currentScrollPosition;
+  [Parameter]
+  public bool isDashboard { get; set; } = false;
+  [Parameter]
+  public EventCallback<bool> isScrollingDownChanged { get; set; }
+  [Parameter]
+  public bool isScrollingDown { get; set; } = false;
+  private string width = "";
+  private bool loggedIn = false;
+  private string userEmail = "";
+  private bool collapseNavMenu = false;
+  private string currentPage = "";
+  private ReportModel report = new ReportModel();
+  private string? navMenuCssClass => collapseNavMenu ? "collapse" : null;
+  private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+  private int currentScrollPosition;
 
 
-    private void ToggleNavMenu()
+  private void ToggleNavMenu()
+  {
+    collapseNavMenu = !collapseNavMenu;
+  }
+
+  private void forceNavigate(string url)
+  {
+    loadingService.ShowLoadingScreen();
+    navigationManager.NavigateTo(url,true);
+  }
+
+  private void forceNavigate(bool loggedIn)
+  {
+    loadingService.ShowLoadingScreen();
+    if (loggedIn)
     {
-        collapseNavMenu = !collapseNavMenu;
+      navigationManager.NavigateTo("/dashboard",true);
+    } else {
+      navigationManager.NavigateTo("/login",true);
+    }
     }
 
     /// <summary>
@@ -235,27 +253,14 @@
       await ProtectedLocalStore.DeleteAsync("userId");
       await ProtectedLocalStore.DeleteAsync("loggedIn");
       await ProtectedSessionStore.DeleteAsync("userReports");
-      await ProtectedSessionStore.DeleteAsync("reportAll");
       await ProtectedSessionStore.DeleteAsync("userReportAllAppliance");
       
       //systems
       await ProtectedSessionStore.DeleteAsync("systems");
-      //advancedCalculationAppliances
-      await ProtectedSessionStore.DeleteAsync("advancedCalculationAppliances");
-      //selectedSystem
-      await ProtectedSessionStore.DeleteAsync("selectedSystem");
-      //location
-      await ProtectedSessionStore.DeleteAsync("location");
-      //SelectedAddress
-      await ProtectedSessionStore.DeleteAsync("selectedAddress");
       await ProtectedSessionStore.DeleteAsync("latitude");
       await ProtectedSessionStore.DeleteAsync("longitude");
       //solarScore
       await ProtectedSessionStore.DeleteAsync("solarScore");
-      //basicCalculation
-      await ProtectedSessionStore.DeleteAsync("basicCalculation");
-      //selectedSystem
-      await ProtectedSessionStore.DeleteAsync("selectedSystem");
       await ProtectedSessionStore.DeleteAsync("parent");
 
       loggedIn = false;
