@@ -93,6 +93,7 @@ public class ReportsRepository
     public async Task<Reports> CreateReports(
         string reportName,
         int userId,
+        string homeSize,
         int systemId,
         double latitude,
         double longitude
@@ -107,7 +108,9 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"systemId\" : "
                     + systemId
                     + ",\r\n    \"latitude\" : \""
                     + latitude.ToString().Replace(",", ".")
@@ -150,6 +153,7 @@ public class ReportsRepository
         int reportId,
         string reportName,
         int userId,
+        string homeSize,
         int systemId,
         double latitude,
         double longitude
@@ -168,7 +172,9 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"systemId\" : "
                     + systemId
                     + ",\r\n    \"latitude\" : \""
                     + latitude.ToString().Replace(",", ".")
