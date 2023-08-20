@@ -75,8 +75,8 @@ export default class LocationDataController {
   public updateDataLocationData = async (req: Request, res: Response) => {
     const { data, remainingCalls } = req.body;
     const { latitude, longitude } = req.params;
-    let lat = parseFloat(latitude.replace(',', '.'));
-    let long = parseFloat(longitude.replace(',', '.'));
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
     const query = `UPDATE [dbo].[locationData] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
@@ -109,9 +109,9 @@ export default class LocationDataController {
   ) => {
     const { daylightHours } = req.body;
     const { latitude, longitude } = req.params;
-    let dlh = parseFloat(daylightHours.replace(',', '.'));
-    let lat = parseFloat(latitude.replace(',', '.'));
-    let long = parseFloat(longitude.replace(',', '.'));
+    const dlh = parseFloat(daylightHours.replace(',', '.'));
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
     const query = `UPDATE [dbo].[locationData] SET daylightHours = '${dlh}' WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
@@ -141,8 +141,8 @@ export default class LocationDataController {
   public updateImgLocationData = async (req: Request, res: Response) => {
     const { image } = req.body;
     const { latitude, longitude } = req.params;
-    let lat = parseFloat(latitude.replace(',', '.'));
-    let long = parseFloat(longitude.replace(',', '.'));
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
     const query = `UPDATE [dbo].[locationData] SET image = '${image}' WHERE latitude = ${lat} AND longitude = ${long}`;
     try {
       const request = new tedious.Request(
