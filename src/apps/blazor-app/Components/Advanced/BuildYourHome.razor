@@ -92,22 +92,22 @@
             @switch (selectedSystem)
             {
                 case 0:
-                    HomeType = "-Home1.svg";
+                    homeType = "-Home1.svg";
                     break;
                 case 1:
-                    HomeType = "-Home2.svg";
+                    homeType = "-Home2.svg";
                     break;
                 case 2:
-                    HomeType = "-Home3.svg";
+                    homeType = "-Home3.svg";
                     break;
                 default:    
-                    HomeType = "-Home1.svg";    
+                    homeType = "-Home1.svg";    
                     break;
             }
             @{
-                HomeImage = HomeSize + HomeType;
+                homeImage = homeSize + homeType;
             }
-            <Image ImageName="@HomeImage" alt="Home" css="w-full h-full scale-75" />
+            <Image ImageName="@homeImage" alt="Home" css="w-full h-full scale-75" />
         </div>
     </div>
     @* System details *@
@@ -338,9 +338,9 @@
     float dlh = 0f;
     float daylight = 0f;
     DaylightChart daylightChart = new DaylightChart();
-    private string HomeSize = "Small";
-    private string HomeType = "";
-    private string HomeImage = "";
+    private string homeSize = "Small";
+    private string homeType = "";
+    private string homeImage = "";
 
 
     /// <summary>
@@ -350,6 +350,9 @@
     {
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
         userId = usId.Value;
+        if (currentReport!.homeSize != null) {
+            homeSize = currentReport.homeSize;
+        }
 
         CalculateRunningHours();
     }
@@ -460,7 +463,7 @@
         switch (e.Value)
         {
             case "2":
-                HomeSize = "Small";
+                homeSize = "Small";
                 selectedSystem = 0;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -473,7 +476,7 @@
 
                 break;
             case "3":
-                HomeSize = "Medium";
+                homeSize = "Medium";
                 selectedSystem = 1;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -485,7 +488,7 @@
                 appliances[7].quantity = 0;
                 break;
             case "4":
-                HomeSize = "Large";
+                homeSize = "Large";
                 selectedSystem = 2;
                 appliances[0].quantity = 2;
                 appliances[1].quantity = 1;
@@ -497,7 +500,7 @@
                 appliances[7].quantity = 1;
                 break;
             default:
-                HomeSize = "Small";
+                homeSize = "Small";
                 selectedSystem = 0;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -537,7 +540,9 @@
                     + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"latitude\" : \""
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
                     + currentReport!.latitude.ToString().Replace(",", ".")
                     + "\",\r\n    \"longitude\" : \""
                     + currentReport.longitude.ToString().Replace(",", ".")
@@ -573,10 +578,12 @@
         var content = new StringContent("{\r\n    \"reportId\" : "
                     + currentReport!.reportId
                     + ",\r\n    \"reportName\" : \""
-                   + calculationName
+                    + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"latitude\" : \""
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
                     + currentReport!.latitude.ToString().Replace(",", ".")
                     + "\",\r\n    \"longitude\" : \""
                     + currentReport.longitude.ToString().Replace(",", ".")

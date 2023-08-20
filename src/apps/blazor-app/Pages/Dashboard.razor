@@ -43,13 +43,6 @@ else if (!logIn)
                         }
                     }
                     <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" updateLocation="updateLocationData"/>
-                    @{
-                        var image = "";
-                        if (reports.Count > selectedReport)
-                        {
-                            image = currentLocationData.image;
-                        }
-                    }
                     <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" solarScore="solarScore" />
                     <div class="mt-10 w-full">
                         <Card>
@@ -111,15 +104,15 @@ else if (!logIn)
                                             {
                                                 if (sysSize.Equals("Small"))
                                                 {
-                                                    imageName = "Small-Home1.svg";
+                                                    imageName = reports[selectedReport].homeSize + "-Home1.svg";
                                                 }
                                                 else if (sysSize.Equals("Medium"))
                                                 {
-                                                    imageName = "Small-Home2.svg";
+                                                    imageName = reports[selectedReport].homeSize + "-Home2.svg";
                                                 }
                                                 else
                                                 {
-                                                    imageName = "Small-Home3.svg";
+                                                    imageName = reports[selectedReport].homeSize + "-Home3.svg";
                                                 }
                                             }
                                         }
