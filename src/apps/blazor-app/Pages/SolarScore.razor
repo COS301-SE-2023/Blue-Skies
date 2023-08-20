@@ -31,7 +31,6 @@ else
             else
             {
                 <EnterLocation />
-                loadingService.HideLoadingScreen(); 
             }
             <div class="mt-40 mb-20">
                 <ScoreInfo />
@@ -66,5 +65,8 @@ else
         Console.WriteLine("Longitude: " + longitude);
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
         isAd = isAdmin.Value;
+        if (latitude == 0 && longitude == 0){
+            loadingService.HideLoadingScreen();
+        }
     }
 }

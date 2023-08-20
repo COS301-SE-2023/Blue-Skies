@@ -12,7 +12,7 @@
   @* Get URI of current page *@
   Uri uri = new Uri(navigationManager.Uri);
   string[] segments = uri.Segments;
-  currentPage = segments[segments.Length - 1];
+  currentPage = segments[segments.Length - 1]; 
 
   @* Change navbar styling based on scroll position *@
   if (isScrollingDown) 
@@ -28,7 +28,7 @@
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       @* BlueSkies Logo *@
-      <a @onclick='() => forceNavigate("/")'  class="-m-1.5 p-1.5">
+      <a @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'  class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
         <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
       </a>
@@ -44,15 +44,15 @@
     </div>
     @* Desktop Menu Links *@
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="" @onclick='() => forceNavigate("/")' class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="" @onclick='() => forceNavigate("/solarScore")' class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="" @onclick='() => forceNavigate("/advanced")' class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="text-sm font-semibold leading-6 text-gray-900">Home</a>
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");})' class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
+      <a href=""@onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");})' class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
     </div>
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
         @* Log Out Button *@
-        <a href="" @onclick='(() => {Logout(); forceNavigate("/");})'>
+        <a href="" @onclick='(() => {Logout();forceNavigate("/");})'>
           <div class="@(loggedIn ? "flex" : "hidden") shadow group w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "-translate-y-40") @(currentPage == "dashboard" && !isScrollingDown ? "opacity-100 w-40" : "opacity-0" ) ">
             <Image ImageName="Logout.svg" alt="User Circle" css="w-10 h-10 scale-75" />
             <p class="">Log</p>
@@ -60,7 +60,7 @@
           </div>
         </a>
         @* Log In and Dashboard Button *@
-        <a href="" @onclick='() => forceNavigate(loggedIn)'>
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate(loggedIn);})'>
           <div class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
             
@@ -72,7 +72,7 @@
           </div>
         </a>
         @* BlueSkies Floating Logo *@
-        <a href="" @onclick='() => forceNavigate("/")'>
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'>
           <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
             <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
@@ -125,7 +125,7 @@
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
       <div class="flex px-2 flex-col items-center justify-between w-full ">
         <div class="flex justify-between w-full ">
-          <a href="" @onclick='() => forceNavigate("/")' class="-m-1.5 p-1.5">
+          <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
             <span class="sr-only">BlueSkies</span>
             <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
           </a>
@@ -139,9 +139,9 @@
         </div>
         @* Mobile Menu Links *@
         <div class="flex flex-col w-full mt-5">
-          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/")'>Home</a>
-          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/solarScore")'>Solar Score</a>
-          <a href="" @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='() => forceNavigate("/advanced")'>Advanced</a>
+            <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");ToggleNavMenu();})'>Home</a>
+          <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");ToggleNavMenu();})'>Solar Score</a>
+          <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
           @if(loggedIn == true){
             <p @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
             }else{
@@ -181,7 +181,6 @@
 
   private void forceNavigate(string url)
   {
-    loadingService.ShowLoadingScreen();
     navigationManager.NavigateTo(url,true);
   }
 
@@ -243,8 +242,6 @@
     /// </summary>
     public async void Logout()
     {
-      ToggleNavMenu();
-      loadingService.ShowLoadingScreen();
       await ProtectedSessionStore.DeleteAsync("reportAppliances");
       await ProtectedSessionStore.DeleteAsync("selectedReport");
       await ProtectedSessionStore.DeleteAsync("redirect");
@@ -265,7 +262,6 @@
 
       loggedIn = false;
       userEmail = "";
-      StateHasChanged();
     }
 
     private void Edit(){
