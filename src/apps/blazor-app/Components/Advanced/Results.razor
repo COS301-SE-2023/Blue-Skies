@@ -126,11 +126,12 @@
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 1;
+        int remainingCalls = 100;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value);
             solarScore = result[0];
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];

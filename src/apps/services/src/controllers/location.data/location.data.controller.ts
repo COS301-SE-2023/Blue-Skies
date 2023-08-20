@@ -47,7 +47,7 @@ export default class LocationDataController {
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
     const dlh = parseFloat(daylightHours.replace(',', '.'));
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 1)`;
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 100)`;
     try {
       const request = new tedious.Request(
         query,

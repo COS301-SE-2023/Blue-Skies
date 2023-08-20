@@ -125,7 +125,6 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
-    public bool  foundSolarIrradiation = false;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
@@ -152,9 +151,6 @@
         }
         isLoaded = true;
         loadingService.HideLoadingScreen();
-
-        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<bool>("foundSolarIrradiation");
-        foundSolarIrradiation = tempSolarIrradiation.Value;
 
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
         latitude = tempLatitude.Value;
@@ -237,11 +233,12 @@
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 1;
+        int remainingCalls = 100;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value);
             solarScore = result[0];
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];
