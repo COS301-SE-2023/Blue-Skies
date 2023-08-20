@@ -40,10 +40,10 @@
                     @if (edit)
                     {
                         var reportName = currentReport.reportName;
-                    <Results currentLocationData="currentLocationData"
+                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
                         systems="systems" reportName="@reportName"/>    
                     } else {
-                    <Results currentLocationData="currentLocationData"
+                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
                         systems="systems" />
                     }
                 </div>
@@ -100,6 +100,9 @@
         latitude = lat.Value;
         var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = lng.Value;
+
+        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = sSystem.Value;
 
         await GetLocationData(latitude, longitude);
         if (edit)
