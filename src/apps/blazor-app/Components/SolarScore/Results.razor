@@ -27,6 +27,9 @@
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
+            <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
+                <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
+            </div>
             <div class="my-auto w-full">
                 <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
                     <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
@@ -101,7 +104,7 @@
                             selectedPanels = systems[selectedSystem].numberOfPanels;
                         }
                     }
-                    <p class="text-5xl text-primary-900 font-semibold">@selectedPanels</p>
+                    <p class="text-5xl text-pkrimary-900 font-semibold">@selectedPanels</p>
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
             </div>
