@@ -35,11 +35,16 @@ body {
 
 /* Toast Classes */
 .toast-slide-in {
-    animation: toastSlideIn .3s;
+    animation: toastSlideIn .5s;
 }
 
 .toast-slide-out {
-    animation: toastSlideOut .3s;
+    animation: toastSlideOut .5s;
+}
+
+.toast-progress {
+    animation: toastProgress 4s;
+    animation-timing-function: ease-in-out;
 }
 
 /* Panel and Trees Classes */
@@ -47,7 +52,7 @@ body {
     animation: panelSlideLeft .5s;
     animation-delay: .5s;
     animation-fill-mode: forwards;
-}
+}a
 
 /* Robert Classes */
 .robert-slide-in-right {
@@ -96,6 +101,11 @@ body {
 @keyframes toastSlideOut {
     from { opacity: 1; }
     to { opacity: 0; transform: translateX(-100%); }
+}
+
+@keyframes toastProgress {
+    from { width: 0%; }
+    to { width: 100%; }
 }
 
 
