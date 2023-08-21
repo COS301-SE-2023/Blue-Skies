@@ -7,14 +7,14 @@ namespace BlazorApp.Data
     {
         private double perfectSolarIrradiation = 205;
         private double worstSolarIrradiation = 120;
-        private int previousScore = -1;
 
         public async Task<int[]> GetDataLocationData(
             double latitude,
             double longitude,
             string API_PORT,
             int remainingCalls,
-            double tempSolarIrradiation
+            double tempSolarIrradiation,
+            int previousScore
         )
         {
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
@@ -58,6 +58,7 @@ namespace BlazorApp.Data
                     result[0] = previousScore;
                 }
                 Console.WriteLine("Failed to get data from LocationData");
+                Console.WriteLine("Previous score: " + previousScore);
             }
             return result;
         }
@@ -105,7 +106,6 @@ namespace BlazorApp.Data
             {
                 percentage = 100;
             }
-            previousScore = (int)percentage;
             return (int)percentage;
         }
     }
