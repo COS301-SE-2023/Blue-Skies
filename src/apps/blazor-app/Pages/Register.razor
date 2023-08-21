@@ -22,14 +22,14 @@ else if (logIn)
     <div class="flex fade-in-enter-active p-4 gap-10 md:gap-20 flex-col w-full justify-center z-10 mt-10  items-center">
         <Image ImageName="shapes.svg" css="absolute -top-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
         <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
-        <div class="justify-end pr-20 flex w-full">
-            <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative">
-                <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
-            </a>
-        </div>
-        <Image ImageName="Sun.svg" css="absolute top-0 left-0" alt="Sun"/>
+        <div class="justify-center sm:justify-end -pr-4 xl:pr-20 flex w-full">
+                    <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative z-20">
+                        <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
+                    </a>
+                </div>
+        <Image ImageName="Sun.svg" css="absolute top-0 -left-10 lg:left-0 z-0 w-52 lg:w-fit" alt="Sun"/>
         <Image ImageName="Panels_Trees.svg" css="absolute bottom-0  right-0 transform -scale-x-100" alt="UI Elements"/>
-        <Image ImageName="Robert_Sitting.png" css="absolute robert-slide-in-left bottom-0 -translate-x-full -left-64  h-[600px] " alt="Rob"/>
+        <Image ImageName="Robert_Sitting.png" css="absolute robert-slide-in-left bottom-14 md:bottom-0 -translate-x-full -left-32 sm:-left-44 md:-left-52 xl:-left-64 h-[300px] sm:h-[400px] md:h-[480px] xl:h-[580px] " alt="Rob"/>
 
         <div class="flex justify-center w-full">
             <div class="my-auto max-w-lg w-full text-left z-10">

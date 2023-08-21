@@ -52,7 +52,7 @@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
         @* Log Out Button *@
-        <a href="" @onclick='(() => {Logout();forceNavigate("/");})'>
+        <a @onclick="@(() => Logout())" href="/">
           <div class="@(loggedIn ? "flex" : "hidden") shadow group w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "-translate-y-40") @(currentPage == "dashboard" && !isScrollingDown ? "opacity-100 w-40" : "opacity-0" ) ">
             <Image ImageName="Logout.svg" alt="User Circle" css="w-10 h-10 scale-75" />
             <p class="">Log</p>
