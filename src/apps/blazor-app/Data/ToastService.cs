@@ -8,7 +8,7 @@ namespace BlazorApp.Data {
         public async void ShowToast(string title, string message, string type)
         {
             ShowToastRequested?.Invoke(title, message, type);
-            await Task.Delay(4000);
+            await Task.Delay(6000);
             HideToast();
         }
 

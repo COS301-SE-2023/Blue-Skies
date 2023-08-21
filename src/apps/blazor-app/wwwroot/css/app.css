@@ -1138,6 +1138,10 @@ video {
   width: 100vw;
 }
 
+.w-\[110\%\] {
+  width: 110%;
+}
+
 .w-\[40\%\] {
   width: 40%;
 }
@@ -1157,6 +1161,10 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-\[105\%\] {
+  width: 105%;
 }
 
 .min-w-fit {
@@ -2336,7 +2344,7 @@ body {
 }
 
 .toast-progress {
-  animation: toastProgress 4s;
+  animation: toastProgress 6s;
   animation-timing-function: ease-in-out;
 }
 
@@ -2363,11 +2371,30 @@ a
   animation-fill-mode: forwards;
 }
 
+/* Loading Classes */
+
+.loading-runner {
+  animation: loadingRunner 1.5s infinite ease-in-out;
+}
+
+/* Loading Runner */
+
+@keyframes loadingRunner {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(120%);
+  }
+}
+
 /* Robert Transitions */
 
 @keyframes robertSlideRight {
   from {
-    transform: translateX(100%);
+    opacity: 1;
+    transform: translateX(-100%);
   }
 
   to {
