@@ -18,13 +18,14 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
+<div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="sm:flex-shrink-0  flex flex-col justify-center ">
+    <div class="sm:flex-shrink-0  items-center flex flex-col justify-center ">
         <Map css="scale-90" ImageName="@mapImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@currentLocationData.location" />
     </div>
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+        <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
             <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
@@ -55,8 +56,8 @@
             </div>
         </Card>
         @* Average Energy Production Card *@
-        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 p-4 w-72 h-72  my-auto">
-            <div class="my-auto w-full">
+        <Card css="border-2 scale-90 sm:col-span-2 flex xl:scale-100 border-primary-300 p-4 w-full h-full  my-auto">
+            <div class="my-auto w-full relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
                 </div>
@@ -64,11 +65,37 @@
                 <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                     <p class="text-5xl text-gray-400 font-bold">kw/h</p>
+                    <p class="text-5xl text-gray-400 font-bold">@remainingCalls</p>
+                </div>
+                <div class="flex absolute top-0 right-0 justify-evenly gap-4">
+                    @{
+                        var small = "";
+                        var medium = "";
+                        var large = "";
+                        if (systems!.Count > 0)
+                        {
+                            small = systems[0].inverterOutput + "kw";
+                            medium = systems[1].inverterOutput + "kw";
+                            large = systems[2].inverterOutput + "kw";
+                        }
+                    }
+                    <div onclick="@(() => SetSystemSize(0))"
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@small</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(1))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@medium</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(2))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@large</p>
+                    </div>
                 </div>
             </div>
         </Card>
         @* System used Card *@
-        <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-72 h-72">
+        @* <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-72 h-72">
             <div class="my-auto flex flex-col gap-4 w-full ">
                 <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
                 <div class="flex justify-evenly gap-4">
@@ -108,7 +135,7 @@
                     <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
                 </div>
             </div>
-        </Card>
+        </Card> *@
     </div>
 </div>
 
@@ -128,6 +155,7 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
+    public int remainingCalls = 100;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
@@ -236,7 +264,7 @@
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 100;
+        remainingCalls = 100;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
