@@ -223,7 +223,7 @@ else if (!logIn)
             }
             await ProtectedSessionStore.DeleteAsync("createdReport");
             await GetLocationData();
-            await GetSolarScore();
+            _ = GetSolarScore();
             await GetReportAllAppliance();
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
@@ -240,7 +240,7 @@ else if (!logIn)
         Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await GetLocationData();
-        await GetSolarScore();
+        _ = GetSolarScore();
         updateAppliances();
     }
     private async Task GetSolarScore() 
@@ -249,12 +249,26 @@ else if (!logIn)
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 1;
-        int[] result = await solarCalculator.GetDataLocationData(currentLocationData!.latitude, currentLocationData.longitude, API_PORT, solarScore, remainingCalls);
-        solarScore = result[0];
-        Console.WriteLine("Solar Score: " + solarScore);
-        await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-        StateHasChanged();
+        int remainingCalls = 100;
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        int previousScore = -1;
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
+            int[] result = await solarCalculator.GetDataLocationData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
+            solarScore = result[0];
+            previousScore = solarScore;
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
+            }
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+        }
     }
     private async Task GetSystemsAsync()
     {

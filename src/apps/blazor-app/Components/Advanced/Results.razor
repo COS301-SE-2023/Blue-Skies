@@ -130,9 +130,11 @@
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        int previousScore = -1;
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
             solarScore = result[0];
+            previousScore = solarScore;
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];
             if(previousRemainingCalls != remainingCalls){
