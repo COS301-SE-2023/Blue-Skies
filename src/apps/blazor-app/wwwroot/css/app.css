@@ -1247,8 +1247,8 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.translate-x-1\/2 {
-  --tw-translate-x: 50%;
+.translate-x-1\/3 {
+  --tw-translate-x: 33.333333%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1294,6 +1294,11 @@ video {
 
 .translate-y-8 {
   --tw-translate-y: 2rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-x-1\/2 {
+  --tw-translate-x: 50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -1754,8 +1759,16 @@ video {
   background-color: rgb(255 251 197 / var(--tw-bg-opacity));
 }
 
+.bg-gradient-to-bl {
+  background-image: linear-gradient(to bottom left, var(--tw-gradient-stops));
+}
+
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+}
+
+.bg-gradient-to-l {
+  background-image: linear-gradient(to left, var(--tw-gradient-stops));
 }
 
 .from-primary-400 {
@@ -1768,6 +1781,10 @@ video {
   --tw-gradient-from: #f87171 var(--tw-gradient-from-position);
   --tw-gradient-to: rgb(248 113 113 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.to-primary-500 {
+  --tw-gradient-to: #3871c1 var(--tw-gradient-to-position);
 }
 
 .to-primary-600 {
@@ -1906,6 +1923,10 @@ video {
 
 .pl-20 {
   padding-left: 5rem;
+}
+
+.pl-28 {
+  padding-left: 7rem;
 }
 
 .pl-3 {
@@ -2364,9 +2385,8 @@ body {
   animation-fill-mode: forwards;
 }
 
-a
-
 /* Robert Classes */
+
 .robert-slide-in-right {
   animation: robertSlideRight .5s;
   animation-delay: 1s;
@@ -2401,8 +2421,7 @@ a
 
 @keyframes robertSlideRight {
   from {
-    opacity: 1;
-    transform: translateX(-100%);
+    transform: translateX(100%);
   }
 
   to {
@@ -2849,10 +2868,6 @@ a
 
   .sm\:text-center {
     text-align: center;
-  }
-
-  .sm\:text-right {
-    text-align: right;
   }
 
   .sm\:text-6xl {

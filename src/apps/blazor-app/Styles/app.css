@@ -52,7 +52,7 @@ body {
     animation: panelSlideLeft .5s;
     animation-delay: .5s;
     animation-fill-mode: forwards;
-}a
+}
 
 /* Robert Classes */
 .robert-slide-in-right {
@@ -60,6 +60,7 @@ body {
     animation-delay: 1s;
     animation-fill-mode: forwards;
 }
+
 
 .robert-slide-in-left {
     animation: robertSlideLeft .5s;
@@ -81,7 +82,7 @@ body {
 /* Robert Transitions */
 
 @keyframes robertSlideRight {
-    from { opacity: 1; transform: translateX(-100%); }
+    from { transform: translateX(100%); }
     to { opacity: 1; transform: rotate(-45deg); }
 }
 
