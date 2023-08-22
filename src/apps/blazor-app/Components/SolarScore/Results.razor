@@ -28,9 +28,18 @@
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
-            <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
-                <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
-            </div>
+            @if(remainingCalls == 100) {
+                <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
+                    <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
+                </div>
+            } else if(remainingCalls > 0){ 
+                double percentage = remainingCalls;
+                percentage = Math.Round((percentage / 144)*100, 0);
+
+                <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
+                    <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
+                </div>
+            }
             <div class="my-auto w-full">
                 <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
                     <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
@@ -80,15 +89,15 @@
                         }
                     }
                     <div onclick="@(() => SetSystemSize(0))"
-                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
                         <p class="text-sm font-semibold">@small</p>
                     </div>
                     <div onclick="@(() => SetSystemSize(1))"
-                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
                         <p class="text-sm font-semibold">@medium</p>
                     </div>
                     <div onclick="@(() => SetSystemSize(2))"
-                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
                         <p class="text-sm font-semibold">@large</p>
                     </div>
                 </div>
