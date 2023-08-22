@@ -14,12 +14,14 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     } else {
-        <div class="w-full">
+        <div class="w-full relative">
             <BlazorApp.Components.Home.Hero />
 
             @* How it works *@
-            <div class="mt-20">
-            <BlazorApp.Components.Home.HowItWorks />
+            <Image ImageName="shapes.svg" css="absolute -top-64  z-10 -left-1/2 w-2/3 h-2/3" alt="Shapes"/>
+            <div class="mt-36 relative">
+              <Image ImageName="Robert_Pointing.png" css="absolute top-0 z-20 lg:bottom-10 left-32 robert-slide-up h-72" alt="Rob"/>
+              <BlazorApp.Components.Home.HowItWorks />
             </div>
             
             @* Unlock your full potential *@

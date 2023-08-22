@@ -68,6 +68,12 @@ body {
     animation-fill-mode: forwards;
 }
 
+.robert-slide-up {
+    animation: robertSlideUp .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
 /* Loading Classes */
 .loading-runner {
     animation: loadingRunner 1.5s infinite ease-in-out;
@@ -80,6 +86,10 @@ body {
 }
 
 /* Robert Transitions */
+@keyframes robertSlideUp {
+    from { opacity: 0; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(-75%);}
+}
 
 @keyframes robertSlideRight {
     from { transform: translateX(100%); }
