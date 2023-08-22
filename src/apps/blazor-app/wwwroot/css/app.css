@@ -715,6 +715,38 @@ video {
   top: -66.666667%;
 }
 
+.right-32 {
+  right: 8rem;
+}
+
+.right-20 {
+  right: 5rem;
+}
+
+.-top-4 {
+  top: -1rem;
+}
+
+.-top-40 {
+  top: -10rem;
+}
+
+.right-16 {
+  right: 4rem;
+}
+
+.-top-32 {
+  top: -8rem;
+}
+
+.left-10 {
+  left: 2.5rem;
+}
+
+.left-8 {
+  left: 2rem;
+}
+
 .isolate {
   isolation: isolate;
 }
