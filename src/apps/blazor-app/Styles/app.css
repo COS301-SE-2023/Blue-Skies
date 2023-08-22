@@ -70,7 +70,7 @@ body {
 
 .robert-slide-up {
     animation: robertSlideUp .5s;
-    animation-delay: 1s;
+    animation-timing-function: ease-in-out;
     animation-fill-mode: forwards;
 }
 
@@ -88,7 +88,7 @@ body {
 /* Robert Transitions */
 @keyframes robertSlideUp {
     from { opacity: 0; transform: translateY(0); }
-    to { opacity: 1; transform: translateY(-75%);}
+    to { opacity: 1 !important; transform: translateY(-75%);}
 }
 
 @keyframes robertSlideRight {
