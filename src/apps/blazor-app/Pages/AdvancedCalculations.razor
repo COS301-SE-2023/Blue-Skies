@@ -6,6 +6,7 @@
 @using BlazorApp.Models;
 @using System.Text.Json
 @using BlazorApp.Components.Advanced
+@using BlazorApp.Components.Base
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
@@ -47,7 +48,11 @@
                         systems="systems" />
                     }
                 </div>
+                <div class="flex justify-center items-center w-full  my-7">
+                    <Tabs @bind-Items="tabs"></Tabs>
+                </div>
                 <div class="w-full">
+
                     <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData"
                      reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
                 </div>
@@ -71,6 +76,12 @@
     private int selectedSystem = 0;
     private double longitude = 0;
     private double latitude = 0;
+    private List<TabItemModel> tabs = new List<TabItemModel>
+    {
+        new TabItemModel("Appliances", true),
+        new TabItemModel("Finance", false),
+        new TabItemModel("Fancy", false)
+    };
 
 
     /// <summary>
