@@ -37,6 +37,11 @@
         </content>
     </Button>
 </Card>
+@if (isReportGenerated)
+{
+    <iframe src="@pdfUrl" width="800" height="500">
+    </iframe>
+}
 
 @code {
     [Parameter]
@@ -50,8 +55,8 @@
     [Parameter]
     public EventCallback updateLocation { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-
-
+    private bool isReportGenerated = false;
+    private  string pdfUrl = "";
     public async Task OnSelectedReportChanged(ChangeEventArgs e)
     {
         selectedReport = Convert.ToInt32(e.Value);
@@ -94,6 +99,17 @@
 
     private async void GenerateReport()
     {
-        await JSRuntime.InvokeVoidAsync("GenerateReport");
+        //await JSRuntime.InvokeVoidAsync("GenerateReport");
+        Console.WriteLine("Generating report");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport");
+        request.Headers.Add("Accept", "application/pdf");
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        byte[] pdfBytes  = await response.Content.ReadAsByteArrayAsync();
+
+        pdfUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfBytes)}";
+        isReportGenerated = true;
+        StateHasChanged();
     }
 }
