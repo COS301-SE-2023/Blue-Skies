@@ -42,9 +42,12 @@ export default class LocationDataController {
 
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
-    const { latitude, longitude, location } = req.body;
+    const { latitude, longitude, location, daylightHours, image } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls) VALUES (${latitude}, ${longitude}, '${location}', '', '${dateCreated}', -1, 1)`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const dlh = parseFloat(daylightHours.replace(',', '.'));
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 100)`;
     try {
       const request = new tedious.Request(
         query,
@@ -72,7 +75,9 @@ export default class LocationDataController {
   public updateDataLocationData = async (req: Request, res: Response) => {
     const { data, remainingCalls } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET data = '${data}', remainingCalls = ${remainingCalls} WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -104,7 +109,10 @@ export default class LocationDataController {
   ) => {
     const { daylightHours } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET daylightHours = '${daylightHours}' WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const dlh = parseFloat(daylightHours.replace(',', '.'));
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET daylightHours = '${dlh}' WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -133,7 +141,9 @@ export default class LocationDataController {
   public updateImgLocationData = async (req: Request, res: Response) => {
     const { image } = req.body;
     const { latitude, longitude } = req.params;
-    const query = `UPDATE [dbo].[locationData] SET image = '${image}' WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET image = '${image}' WHERE latitude = ${lat} AND longitude = ${long}`;
     try {
       const request = new tedious.Request(
         query,
@@ -160,7 +170,9 @@ export default class LocationDataController {
   //get solarIrradiation
   public getSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
-    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
     try {
       const request = new tedious.Request(
@@ -204,7 +216,9 @@ export default class LocationDataController {
     res: Response
   ) => {
     const { latitude, longitude } = req.params;
-    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
     try {
       const request = new tedious.Request(
@@ -246,7 +260,9 @@ export default class LocationDataController {
   //delete solarIrradiation
   public deleteSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
-    const query = `DELETE FROM [dbo].[locationData] WHERE latitude = ${latitude} AND longitude = ${longitude}`;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `DELETE FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
 
     try {
       const request = new tedious.Request(
@@ -306,11 +322,13 @@ export default class LocationDataController {
   public getSolarIrradiationData = async (req: Request, res: Response) => {
     console.log('Get Solar Data script started');
     const { latitude, longitude, numYears, numDaysPerYear } = req.body;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
     const previousYear = new Date().getFullYear() - 1;
     try {
       this.executePython('scripts/solarRadiation.py', [
-        latitude,
-        longitude,
+        lat,
+        long,
         previousYear,
         numYears,
         numDaysPerYear,

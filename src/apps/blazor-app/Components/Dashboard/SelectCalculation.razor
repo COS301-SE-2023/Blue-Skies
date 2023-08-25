@@ -4,6 +4,7 @@
 @using System.Text.Json
 @using BlazorApp.Models
 @inject IJSRuntime JSRuntime
+
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
@@ -46,16 +47,22 @@
     public List<ReportModel>? userReports { get; set; }
     [Parameter]
     public DateTime? dateCreated { get; set; }
+    [Parameter]
+    public EventCallback updateLocation { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
 
     public async Task OnSelectedReportChanged(ChangeEventArgs e)
     {
         selectedReport = Convert.ToInt32(e.Value);
-        await ProtectedSessionStore.SetAsync("currentReport", userReports![selectedReport]);
         await selectedReportChanged.InvokeAsync(selectedReport);
+        await updateLocation.InvokeAsync();
         return;
     }
 
+    /// <summary>
+    /// Get the current report from the session storage
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
@@ -85,7 +92,6 @@
         await ProtectedSessionStore.DeleteAsync("createdReport");
     }
 
-    //GenerateReport
     private async void GenerateReport()
     {
         await JSRuntime.InvokeVoidAsync("GenerateReport");

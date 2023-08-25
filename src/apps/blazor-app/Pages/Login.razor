@@ -17,20 +17,20 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     } else {
-        <div class="w-full h-screen overflow-hidden">
+        <div class="w-full h-screen overflow-hidden relative">
             <div class="flex fade-in-enter-active px-10 py-4 gap-20 flex-col w-full justify-center z-10 mt-10  items-center overflow-hidden">
                 <Image ImageName="shapes.svg" css="absolute -top-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
                 <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
-                <div class="justify-start pl-20 flex w-full">
-                    <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative">
+                <div class="justify-start -pl-4 xl:pl-20 flex w-full">
+                    <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative z-20">
                         <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
                     </a>
                 </div>
-                <Image ImageName="Sun.svg" css="absolute top-0 right-0" alt="Sun"/>
-                <Image ImageName="Panels_Trees.svg" css="absolute bottom-0 left-0 " alt="UI Elements"/>
-                <Image ImageName="Robert_Waving.png" css="absolute translate-x-1/2 bottom-10 robert-slide-in-right -right-[200px] h-[800px] " alt="Rob"/>
+                <Image ImageName="Sun.svg" css="absolute top-0 -right-10 lg:right-0 z-0 w-52 lg:w-fit" alt="Sun"/>
+                <Image ImageName="Panels_Trees.svg" css="absolute bottom-0 left-0 z-0" alt="UI Elements"/>
+                <Image ImageName="Robert_Waving.png" css="absolute robert-slide-in-right translate-x-1/2 top-20 lg:bottom-10  -right-20 sm:-right-[100px] lg:-right-[180px]  xl:-right-[200px] h-[300px] md:h-[400px] lg:h-[600px] xl:h-[800px] " alt="Rob"/>
 
-                <div class="flex mx-auto my-auto  items-center justify-center w-full">
+                <div class="flex mx-auto my-auto  items-center justify-center w-full z-20">
                     <div class="my-auto mx-auto max-w-lg w-full text-left">
                         <Heading >
                             <Superscript>

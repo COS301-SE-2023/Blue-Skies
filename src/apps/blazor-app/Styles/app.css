@@ -35,11 +35,16 @@ body {
 
 /* Toast Classes */
 .toast-slide-in {
-    animation: toastSlideIn .3s;
+    animation: toastSlideIn .5s;
 }
 
 .toast-slide-out {
-    animation: toastSlideOut .3s;
+    animation: toastSlideOut .5s;
+}
+
+.toast-progress {
+    animation: toastProgress 6s;
+    animation-timing-function: ease-in-out;
 }
 
 /* Panel and Trees Classes */
@@ -56,13 +61,35 @@ body {
     animation-fill-mode: forwards;
 }
 
+
 .robert-slide-in-left {
     animation: robertSlideLeft .5s;
     animation-delay: 1s;
     animation-fill-mode: forwards;
 }
 
+.robert-slide-up {
+    animation: robertSlideUp .5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+/* Loading Classes */
+.loading-runner {
+    animation: loadingRunner 1.5s infinite ease-in-out;
+}
+
+/* Loading Runner */
+@keyframes loadingRunner {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(120%); }
+}
+
 /* Robert Transitions */
+@keyframes robertSlideUp {
+    from { opacity: 0; transform: translateY(0); }
+    to { opacity: 1 !important; transform: translateY(-75%);}
+}
 
 @keyframes robertSlideRight {
     from { transform: translateX(100%); }
@@ -96,6 +123,11 @@ body {
 @keyframes toastSlideOut {
     from { opacity: 1; }
     to { opacity: 0; transform: translateX(-100%); }
+}
+
+@keyframes toastProgress {
+    from { width: 0%; }
+    to { width: 100%; }
 }
 
 
