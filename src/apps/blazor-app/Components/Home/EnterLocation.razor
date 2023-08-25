@@ -171,7 +171,7 @@
         var apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude},{longitude}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
         data.Add(await FetchWeatherDataAsync(client, apiUrl));
         
-        @* 10 other calls to get the last 10 month's data *@
+        @* 11 other calls to get the last 10 month's data *@
         var currentMonth = DateTime.Now.Month;
         var tasks = new List<Task<WeatherData>>();
 
@@ -216,7 +216,6 @@
                 data.Add(result);
             }
         }
-
 
         @* Get averageSolarIrradiation and daylightHours from the data *@
         var averageSunlightHours = 0f;

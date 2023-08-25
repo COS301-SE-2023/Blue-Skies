@@ -142,6 +142,7 @@
             } else {
                 timesNotUpdated++;
             }
+            previousRemainingCalls = remainingCalls;
             StateHasChanged();
             Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
