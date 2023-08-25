@@ -9,10 +9,15 @@ namespace Api.Controllers;
 public class ReportController : ControllerBase
 {
     private readonly ReportsRepository _reportsRepository;
-
+    private string express = "http://localhost:3333";
     public ReportController()
     {
         _reportsRepository = new ReportsRepository();
+        var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+        if (backendexpress != null)
+        {
+            express = backendexpress;
+        }
     }
 
     [HttpGet]
@@ -135,4 +140,32 @@ public class ReportController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet]
+    [Route("downloadReport")]
+    public async Task<IActionResult> DownloadReport()
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/downloadReport/a");
+            request.Headers.Add("Accept", "application/pdf");
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfStream = await response.Content.ReadAsStreamAsync();
+                return File(pdfStream, "application/pdf", "external.pdf");
+            }
+            else
+            {
+                Console.WriteLine(".NET: Error downloading report");
+                throw new Exception("Error downloading report");
+            }
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }
