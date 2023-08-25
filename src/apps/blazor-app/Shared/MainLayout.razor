@@ -7,6 +7,7 @@
 
 <div class="page"> 
     <main>
+        @* Loading screen *@
         @if(isLoading) {
             <BlazorApp.Section.LoadingScreen/>
         }
@@ -14,6 +15,7 @@
 
         <NavMenu @bind-isScrollingDown="isScrollingDown"/>
 
+    @* Toast implementation *@
         @if(isToastVisible) {
             string move = isScrollingDown ? "-translate-y-20" : "translate-y-0";
             <div class="@move @animation flex-col w-full gap-4 transition-all p-2 duration-300 delay-300 h-20 flex z-50 fixed top-28 left-9">
@@ -23,7 +25,7 @@
             </div>
         }
 
-        <div class="mt-24 w-full overflow-hidden">
+        <div class="mt-24 w-full overflow-hidden relative">
             @Body
         </div>
 
@@ -53,6 +55,7 @@
         toastService.HideToastRequested += HideToast;
     }
 
+@* Loading Service functions *@
     public void ShowLoadingScreen()
     {
 
@@ -66,6 +69,7 @@
         StateHasChanged();
     }
 
+@* Toast Service functions *@
     public void ShowToast(string title, string message, string type) {
         this.title = title;
         this.message = message;
@@ -84,6 +88,9 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Dispose of the services functions in MainLayout.razor
+    /// </summary>
     public void Dispose()
     {
         loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;

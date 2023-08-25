@@ -2,8 +2,6 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
 
-
-
 namespace Api.Controllers;
 
 [ApiController]
@@ -31,6 +29,7 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
     [HttpGet]
     [Route("googlemapskey")]
     public async Task<IActionResult> GetGoogleMapsKey()
@@ -45,7 +44,6 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
-
 
     [HttpGet]
     [Route("getsuntimes")]
@@ -68,7 +66,12 @@ public class LocationDataController : ControllerBase
     {
         try
         {
-            string data = await _locationDataRepository.GetSolarIrradiationData(sd.latitude, sd.longitude, sd.numYears, sd.numDaysPerYear);
+            string data = await _locationDataRepository.GetSolarIrradiationData(
+                sd.latitude,
+                sd.longitude,
+                sd.numYears,
+                sd.numDaysPerYear
+            );
             return Ok(data);
         }
         catch (Exception e)
@@ -77,11 +80,12 @@ public class LocationDataController : ControllerBase
         }
     }
 
-
-
     [HttpGet]
-    [Route("getLocationData/{latitude}/{longitude}")]
-    public async Task<IActionResult> GetLocationData([FromRoute] double latitude, [FromRoute] double longitude)
+    [Route("GetLocationData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
     {
         try
         {
@@ -99,12 +103,18 @@ public class LocationDataController : ControllerBase
     }
 
     [HttpGet]
-    [Route("getLocationDataWithoutImage/{latitude}/{longitude}")]
-    public async Task<IActionResult> GetLocationDataWithoutImage([FromRoute] double latitude, [FromRoute] double longitude)
+    [Route("GetLocationDataWithoutImage/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetLocationDataWithoutImage(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
     {
         try
         {
-            LocationData data = await _locationDataRepository.GetSolarIrradiationWithoutImage(latitude, longitude);
+            LocationData data = await _locationDataRepository.GetSolarIrradiationWithoutImage(
+                latitude,
+                longitude
+            );
             if (data == null)
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -116,17 +126,20 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateLocationData([FromBody] LocationDataCreate locationData)
+    public async Task<IActionResult> CreateLocationData([FromBody] LocationData locationData)
     {
         try
         {
-            if (locationData.coordinates == null)
-            {
-                return StatusCode(400, "Missing data");
-            }
-            string data = await _locationDataRepository.CreateLocationData(locationData.coordinates.latitude, locationData.coordinates.longitude, locationData.location!);
+            string data = await _locationDataRepository.CreateLocationData(
+                locationData.latitude,
+                locationData.longitude,
+                locationData.location!,
+                locationData.daylightHours,
+                locationData.image!
+            );
             if (data.Equals("Solar Irradiation already exists"))
             {
                 return StatusCode(400, "Solar Irradiation already exists for this location");
@@ -138,13 +151,23 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
     [HttpPatch]
     [Route("update/data/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateSolarIrradiation([FromRoute] double latitude, [FromRoute] double longitude, [FromBody] LocationData locationData)
+    public async Task<IActionResult> UpdateDataLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude,
+        [FromBody] LocationData locationData
+    )
     {
         try
         {
-            string data = await _locationDataRepository.UpdateDataLocationData(latitude, longitude, locationData.data!, locationData.remainingCalls!);
+            string data = await _locationDataRepository.UpdateDataLocationData(
+                latitude,
+                longitude,
+                locationData.data!,
+                locationData.remainingCalls
+            );
             if (data.Equals("LocationData not found"))
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -159,11 +182,19 @@ public class LocationDataController : ControllerBase
 
     [HttpPatch]
     [Route("update/image/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateImage([FromRoute] double latitude, [FromRoute] double longitude, [FromBody] LocationData locationData)
+    public async Task<IActionResult> UpdateImage(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude,
+        [FromBody] LocationData locationData
+    )
     {
         try
         {
-            string data = await _locationDataRepository.UpdateImageLocationData(latitude, longitude, locationData.image!);
+            string data = await _locationDataRepository.UpdateImageLocationData(
+                latitude,
+                longitude,
+                locationData.image!
+            );
             if (data.Equals("LocationData not found"))
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -178,11 +209,19 @@ public class LocationDataController : ControllerBase
 
     [HttpPatch]
     [Route("update/daylightHours/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateDaylightHours([FromRoute] double latitude, double longitude, [FromBody] LocationData locationData)
+    public async Task<IActionResult> UpdateDaylightHours(
+        [FromRoute] double latitude,
+        double longitude,
+        [FromBody] LocationData locationData
+    )
     {
         try
         {
-            string data = await _locationDataRepository.UpdateDaylightHoursLocationData(latitude, longitude, locationData.daylightHours!);
+            string data = await _locationDataRepository.UpdateDaylightHoursLocationData(
+                latitude,
+                longitude,
+                locationData.daylightHours!
+            );
             if (data.Equals("LocationData not found"))
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -195,10 +234,12 @@ public class LocationDataController : ControllerBase
         }
     }
 
-
     [HttpDelete]
     [Route("delete/{latitude}/{longitude}")]
-    public async Task<IActionResult> DeleteLocationData([FromRoute] double latitude, [FromRoute] double longitude)
+    public async Task<IActionResult> DeleteLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
     {
         try
         {

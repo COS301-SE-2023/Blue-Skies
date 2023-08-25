@@ -93,8 +93,10 @@ public class ReportsRepository
     public async Task<Reports> CreateReports(
         string reportName,
         int userId,
+        string homeSize,
         int systemId,
-        int locationId
+        double latitude,
+        double longitude
     )
     {
         try
@@ -106,11 +108,15 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"systemId\" : "
                     + systemId
-                    + ",\r\n    \"locationId\" : "
-                    + locationId
-                    + "\r\n}",
+                    + ",\r\n    \"latitude\" : \""
+                    + latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + longitude.ToString().Replace(",", ".")
+                    + "\"\r\n}",
                 null,
                 "application/json"
             );
@@ -123,8 +129,8 @@ public class ReportsRepository
                 rep.reportName = reportName;
                 rep.userId = userId;
                 rep.systemId = systemId;
-                rep.locationId = locationId;
-
+                rep.latitude = latitude;
+                rep.longitude = longitude;
                 Console.WriteLine(".NET: report created successfully");
                 return rep;
             }
@@ -147,8 +153,10 @@ public class ReportsRepository
         int reportId,
         string reportName,
         int userId,
+        string homeSize,
         int systemId,
-        int locationId
+        double latitude,
+        double longitude
     )
     {
         try
@@ -164,11 +172,15 @@ public class ReportsRepository
                     + reportName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"systemId\" : "
                     + systemId
-                    + ",\r\n    \"locationId\" : \""
-                    + locationId
-                    + "\r\n}",
+                    + ",\r\n    \"latitude\" : \""
+                    + latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + longitude.ToString().Replace(",", ".")
+                    + "\"\r\n}",
                 null,
                 "application/json"
             );
@@ -182,7 +194,8 @@ public class ReportsRepository
                 rep.reportName = reportName;
                 rep.userId = userId;
                 rep.systemId = systemId;
-                rep.locationId = locationId;
+                rep.latitude = latitude;
+                rep.longitude = longitude;
                 Console.WriteLine(".NET: report updated successfully");
                 return rep;
             }

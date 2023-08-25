@@ -16,7 +16,6 @@
             }
         </Header>
         <Subscript>
-
             <p class="text-primary-700">The following numbers are based on your location.</p>
         </Subscript>
     </Heading>
@@ -24,7 +23,7 @@
 <div class="flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
     <div class="w-80 mx-auto">
         @{
-            var imageName = currentReport!.image;
+            var imageName = currentLocationData!.image;
         }
         <Map scale="scale-[2.6]" imageName="@imageName" />
     </div>
@@ -46,10 +45,10 @@
             <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
             <div class="flex gap-1 mt-3">
                 @{
-                    var usableHours = 0.0F;
-                    if (currentReport != null)
+                    var usableHours = 0.0;
+                    if (currentLocationData != null)
                     {
-                        usableHours = currentReport!.daylightHours;
+                        usableHours = currentLocationData.daylightHours;
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
@@ -64,9 +63,9 @@
             <div class="flex gap-1 mt-3">
                 @{
                     var avgEnergyProduction = 0.0;
-                    if (currentReport != null && systems != null)
+                    if (currentLocationData != null && systems != null)
                     {
-                        double calc = systems[selectedSystem].numberOfPanels * currentReport!.daylightHours * systems[selectedSystem].solarInput / 1000;
+                        double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
                         avgEnergyProduction = Math.Round(calc, 2);
                     }
                 }
@@ -78,38 +77,64 @@
 </div>
 
 @code {
-    [Parameter]
-    public int solarScore { get; set; }
-    [Parameter]
-    public ReportModel? currentReport { get; set; }
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
     public int selectedSystem { get; set; }
     [Parameter]
     public string? reportName { get; set; }
+    [Parameter]
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    public int solarScore { get; set; }
     private double latitude = 0;
     private double longitude = 0;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the latitude and longitude from the session storage </item>
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetSolarScore function </item>
+    /// </list>
+    /// </summary>    
     protected override async Task OnInitializedAsync()
     {
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
         latitude = tempLatitude.Value;
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         longitude = tempLongitude.Value; 
-        GetSolarScore();   
+
+
+        // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
+        _ = GetSolarScore();
     }
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetDataLocationData function from the solarCalculator </item>
+    ///     <item> Set the solar score to the result from the GetDataLocationData function </item>
+    ///     <item> Set the solar score in the session storage </item>
+    ///     <item> Set the remaining calls to the result from the GetDataLocationData function </item>
+    ///     <item> If the remaining calls is not updated 10 times in a row, stop the function </item>
+    ///     <item> Wait 3 seconds before calling the function again </item>
+    /// </list>
+    /// </summary>
     private async Task GetSolarScore() 
     {
-        int remainingCalls = 1;
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
+        int remainingCalls = 100;
         int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
-        Console.WriteLine("In GetSolarScore function");
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        int previousScore = -1;
         while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, solarScore, remainingCalls);
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
             solarScore = result[0];
+            previousScore = solarScore;
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];
             if(previousRemainingCalls != remainingCalls){

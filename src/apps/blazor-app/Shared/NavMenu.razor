@@ -9,26 +9,31 @@
 @inject BlazorApp.Data.LoadingService loadingService
 
 @{
+  @* Get URI of current page *@
   Uri uri = new Uri(navigationManager.Uri);
   string[] segments = uri.Segments;
-  currentPage = segments[segments.Length - 1];
+  currentPage = segments[segments.Length - 1]; 
 
+  @* Change navbar styling based on scroll position *@
   if (isScrollingDown) 
-    width = loggedIn ? "shadow w-14 h-14 hover:w-60" : "shadow w-14 h-14 hover:w-36"; 
+    width = loggedIn ? "shadow w-14 h-14 hover:w-44" : "shadow w-14 h-14 hover:w-36"; 
   else if(currentPage == "dashboard") 
     width =  "w-14 h-14 opacity-0 -translate-y-20";
   else 
-    width = loggedIn ? "w-60 h-14 -translate-y-20" : "w-36 h-14 -translate-y-20";
+    width = loggedIn ? "w-44 h-14 -translate-y-20" : "w-36 h-14 -translate-y-20";
 }
+
 <div class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-[250ms] w-full z-20 @(isScrollingDown ? "h-0" : "h-24") "></div>
 <header class="fixed h-20 left-0 bg-transparent w-full z-20 transition-all duration-300 delay-[250ms] @(isScrollingDown ? "-top-20" : "top-0")">
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
-      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()"  class="-m-1.5 p-1.5">
+      @* BlueSkies Logo *@
+      <a @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'  class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
-        <BlazorApp.Components.Base.Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
+        <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
       </a>
     </div>
+    @* Mobile Menu Button *@
     <div class="flex lg:hidden">
       <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700" @onclick="ToggleNavMenu">
         <span class="sr-only">Open main menu</span>
@@ -37,43 +42,49 @@
         </svg>
       </button>
     </div>
+    @* Desktop Menu Links *@
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="text-sm font-semibold leading-6 text-gray-900">Home</a>
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");})' class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
+      <a href=""@onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");})' class="text-sm font-semibold leading-6 text-gray-900">Advanced</a>
     </div>
+    @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
-        <a onclick="@(() => logout())" href="/">
+        @* Log Out Button *@
+        <a @onclick="@(() => Logout())" href="/">
           <div class="@(loggedIn ? "flex" : "hidden") shadow group w-14 h-14 hover:w-40 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "-translate-y-40") @(currentPage == "dashboard" && !isScrollingDown ? "opacity-100 w-40" : "opacity-0" ) ">
             <Image ImageName="Logout.svg" alt="User Circle" css="w-10 h-10 scale-75" />
             <p class="">Log</p>
             <p>Out</p>
           </div>
         </a>
-        <a href="@(loggedIn ? "/dashboard" : "/login")" @onclick="() => loadingService.ShowLoadingScreen()">
+        @* Log In and Dashboard Button *@
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate(loggedIn);})'>
           <div class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
             
             @if(loggedIn == true){
-            <p>@userEmail</p>
+            <p>Dashboard</p>
             }else{
                 <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
             }
           </div>
         </a>
-        <a href="/" @onclick="() => loadingService.ShowLoadingScreen()">
+        @* BlueSkies Floating Logo *@
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'>
           <div class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
             <p class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 translate-x-20">Blue Skies</p>
           </div>
         </a>
       </div>
-      @if(currentPage == "dashboard"){
-        
 
+      @* Floating Buttons for Dashboard page *@
+      @if(currentPage == "dashboard"){
         <div class="fixed toast-slide-in top-5 left-3 flex flex-col-reverse justify-start items-start gap-4 z-30 transition-all duration-300 delay-300 @(isScrollingDown? "translate-y-0" : "translate-y-24")">
-          
+            @* Delete Button *@
+            <a href="">
             <div @onclick="Delete" class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
               <div class="scale-75">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -85,12 +96,12 @@
               </div>
               <p class="">Delete</p>
             </div>
-          
-
+          </a>
+          @* Edit Button *@
           <a onclick="@(() => {
              Edit();
              loadingService.ShowLoadingScreen();
-             })" href="/">
+             })" href="">
             <div class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
                 <div class="scale-75">
                   <svg  width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -106,18 +117,19 @@
       }
     </div>
   </nav>
-  <!-- Mobile menu, show/hide based on menu open state. -->
+  @* Mobile menu, show/hide based on menu open state. *@
   @if (collapseNavMenu){
   <div class="lg:hidden" role="dialog" aria-modal="true">
-    <!-- Background backdrop, show/hide based on slide-over state. -->
+    @* Background backdrop, show/hide based on slide-over state. *@
     <div class="fixed inset-0 z-10"></div>
     <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
       <div class="flex px-2 flex-col items-center justify-between w-full ">
         <div class="flex justify-between w-full ">
-          <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="-m-1.5 p-1.5">
+          <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
             <span class="sr-only">BlueSkies</span>
             <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo"/>
           </a>
+          @* Close Button on Mobile Menu *@
           <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700" @onclick="ToggleNavMenu">
             <span class="sr-only">Close menu</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
@@ -125,18 +137,18 @@
             </svg>
           </button>
         </div>
+        @* Mobile Menu Links *@
         <div class="flex flex-col w-full mt-5">
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/" @onclick="() => loadingService.ShowLoadingScreen()">Home</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()">Solar Score</a>
-          <a @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()">Advanced</a>
+            <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");ToggleNavMenu();})'>Home</a>
+          <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");ToggleNavMenu();})'>Solar Score</a>
+          <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
           @if(loggedIn == true){
             <p @onclick="ToggleNavMenu" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
             }else{
                 <p @onclick="ToggleNavMenu" class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">Log In</p>
           }
-          <p class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" onclick="@(() => logout())" >Logout</p>
+          <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href="" onclick="@(() => Logout())" >Logout</a>
         </div>
-        
       </div>
     </div>
   </div>
@@ -144,48 +156,47 @@
 </header>
 
 @code {
-    [Parameter]
-    public bool isDashboard { get; set; } = false;
-    [Parameter]
-    public EventCallback<bool> IsScrollingDownChanged { get; set; }
-    private string width = "";
-    private bool loggedIn = false;
-    private string userEmail = "";
-    private bool collapseNavMenu = false;
-    private string currentPage = "";
+  [Parameter]
+  public bool isDashboard { get; set; } = false;
+  [Parameter]
+  public EventCallback<bool> isScrollingDownChanged { get; set; }
+  [Parameter]
+  public bool isScrollingDown { get; set; } = false;
+  private string width = "";
+  private bool loggedIn = false;
+  private string userEmail = "";
+  private bool collapseNavMenu = false;
+  private string currentPage = "";
+  private ReportModel report = new ReportModel();
+  private string? navMenuCssClass => collapseNavMenu ? "collapse" : null;
+  private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+  private int currentScrollPosition;
 
-    private ReportModel report = new ReportModel();
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+  private void ToggleNavMenu()
+  {
+    collapseNavMenu = !collapseNavMenu;
+  }
 
-    private void ToggleNavMenu()
+  private void forceNavigate(string url)
+  {
+    navigationManager.NavigateTo(url,true);
+  }
+
+  private void forceNavigate(bool loggedIn)
+  {
+    loadingService.ShowLoadingScreen();
+    if (loggedIn)
     {
-        collapseNavMenu = !collapseNavMenu;
+      navigationManager.NavigateTo("/dashboard",true);
+    } else {
+      navigationManager.NavigateTo("/login",true);
+    }
     }
 
-    private int currentScrollPosition;
-    [Parameter]
-    public bool isScrollingDown { get; set; } = false;
-
-    protected override async void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("scrollUtils.getCurrentScrollPosition", DotNetObjectReference.Create(this));
-        }
-    }
-
-    [JSInvokable]
-    public void UpdateScrollPosition(int scrollY)
-    {
-        if (scrollY > currentScrollPosition) isScrollingDown = true; else if (scrollY == 0) isScrollingDown = false;
-
-        currentScrollPosition = scrollY;
-        IsScrollingDownChanged.InvokeAsync(isScrollingDown);
-        StateHasChanged();
-    }
-
+    /// <summary>
+    /// Get User Info from Local Storage
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
       var result = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
@@ -202,13 +213,34 @@
       {
           loggedIn = false;
       }
-
     }
 
-    public async void logout()
+    /// <summary>
+    ///   Get the current scroll position from javascript
+    /// </summary>
+    protected override async void OnAfterRender(bool firstRender)
     {
-      ToggleNavMenu();
-      loadingService.ShowLoadingScreen();
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("scrollUtils.getCurrentScrollPosition", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void UpdateScrollPosition(int scrollY)
+    {
+        if (scrollY > currentScrollPosition) isScrollingDown = true; else if (scrollY == 0) isScrollingDown = false;
+
+        currentScrollPosition = scrollY;
+        isScrollingDownChanged.InvokeAsync(isScrollingDown);
+        StateHasChanged();
+    }
+
+    /// <summary>
+    ///   Log out the user and delete all local storage data
+    /// </summary>
+    public async void Logout()
+    {
       await ProtectedSessionStore.DeleteAsync("reportAppliances");
       await ProtectedSessionStore.DeleteAsync("selectedReport");
       await ProtectedSessionStore.DeleteAsync("redirect");
@@ -217,32 +249,18 @@
       await ProtectedLocalStore.DeleteAsync("userId");
       await ProtectedLocalStore.DeleteAsync("loggedIn");
       await ProtectedSessionStore.DeleteAsync("userReports");
-      await ProtectedSessionStore.DeleteAsync("reportAll");
       await ProtectedSessionStore.DeleteAsync("userReportAllAppliance");
       
       //systems
       await ProtectedSessionStore.DeleteAsync("systems");
-      //advancedCalculationAppliances
-      await ProtectedSessionStore.DeleteAsync("advancedCalculationAppliances");
-      //selectedSystem
-      await ProtectedSessionStore.DeleteAsync("selectedSystem");
-      //location
-      await ProtectedSessionStore.DeleteAsync("location");
-      //SelectedAddress
-      await ProtectedSessionStore.DeleteAsync("selectedAddress");
       await ProtectedSessionStore.DeleteAsync("latitude");
       await ProtectedSessionStore.DeleteAsync("longitude");
       //solarScore
       await ProtectedSessionStore.DeleteAsync("solarScore");
-      //basicCalculation
-      await ProtectedSessionStore.DeleteAsync("basicCalculation");
-      //selectedSystem
-      await ProtectedSessionStore.DeleteAsync("selectedSystem");
       await ProtectedSessionStore.DeleteAsync("parent");
 
       loggedIn = false;
       userEmail = "";
-      StateHasChanged();
     }
 
     private void Edit(){
@@ -254,22 +272,4 @@
       reportManager.DeleteReport();
       StateHasChanged(); 
     }
-   
-   private void ShowModal(){}
-
-    @* private async Task GetReports(int userId){
-      var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get reports");
-        }
-    } *@
-
 } 

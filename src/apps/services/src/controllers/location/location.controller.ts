@@ -2,12 +2,15 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import ILocation from '../../models/location.interface';
 import { connection as conn } from '../../main';
+import { parse } from 'path';
 export default class LocationController {
   public createLocation = (req: Request, res: Response) => {
     const { latitude, longitude } = req.body;
+    let lat = parseFloat(latitude);
+    let long = parseFloat(longitude);
     const query =
       `INSERT INTO [dbo].[locations] (latitude, longitude)` +
-      ` VALUES ('${latitude}', '${longitude}')`;
+      ` VALUES ('${lat}', '${long}')`;
     try {
       const request = new tedious.Request(
         query,

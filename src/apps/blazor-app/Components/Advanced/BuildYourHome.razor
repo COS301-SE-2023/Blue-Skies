@@ -16,6 +16,7 @@
         <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
     </div>
     <div class="w-full flex flex-col justify-center items-center ">
+        @* Home Template Dropdown *@
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
             <select @onchange="ApplyTemplate" id="selectHome"
@@ -27,6 +28,7 @@
             </select>
         </div>
     </div>
+    @* Select System Size *@
     <div class="lg:w-6/12 px-4 flex flex-col justify-center items-center gap-4 my-auto">
         <div class="text-center mt-2 space-y-5 my-auto ">
             <p>System Size</p>
@@ -49,53 +51,71 @@
         </div>
     </div>
 </div>
-
+@* Add Appliances *@
 <div class="hidden lg:flex w-full h-full px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <div class="flex gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
-            <h1 class="text-lg font-medium text-center text-primary-900">Select Appliances</h1>
-            <div class="group">
-                <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                <div class="absolute hidden fade-in-enter-active w-full -top-20 left-64  group-hover:block transition-all duration-500 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                    <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
+            <div class="flex gap-3 w-full relative justify-center">
+                <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
+                <div class="group">
+                        <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                        <div class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                            <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+                        </div>
                 </div>
             </div>
-        </div>
-        @foreach (var appliance in appliances)
-        {
-            <div class="fade-in-enter-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+            @* Tabs to add or remove *@
+            <div class="flex justify-center items-center w-full  my-7">
+                <Tabs @bind-Items="tabs"></Tabs>
             </div>
-        }
+            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+                @if(tabs[0].active) {
+                    @foreach (var appliance in appliances)
+                    {
+                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
+                    }
+                } else {
+                    @foreach (var appliance in appliances) {
+                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
+                    }
+                }
+            </div>
+        </div>
     </div>
     <div class="w-full pl-32 flex flex-col justify-center items-center">
+        @* Home images *@
         <div class="flex pjustify-center items-center h-full">
             @switch (selectedSystem)
             {
                 case 0:
-                    HomeType = "-Home1.svg";
+                    homeType = "-Home1.svg";
                     break;
                 case 1:
-                    HomeType = "-Home2.svg";
+                    homeType = "-Home2.svg";
                     break;
                 case 2:
-                    HomeType = "-Home3.svg";
+                    homeType = "-Home3.svg";
                     break;
                 default:    
-                    HomeType = "-Home1.svg";    
+                    homeType = "-Home1.svg";    
                     break;
             }
             @{
-                HomeImage = HomeSize + HomeType;
+                homeImage = homeSize + homeType;
             }
-            <Image ImageName="@HomeImage" alt="Home" css="w-full h-full scale-90" />
+            <Image ImageName="@homeImage" alt="Home" css="w-full h-full scale-75" />
         </div>
     </div>
+    @* System details *@
     <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
-            <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@systems[selectedSystem].numberOfPanels />
-            <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@systems[selectedSystem].numberOfBatteries />
+            <Appliance ImageName="SolarPanels.svg" name="Number of Panels" count=@systems[selectedSystem].numberOfPanels />
+            <Appliance ImageName="Batteries.svg" name="Number of Batteries" count=@systems[selectedSystem].numberOfBatteries />
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>   
         <div class="flex relative flex-col justify-center w-full">
@@ -103,7 +123,7 @@
                 dlh = 0;
                 if (currentReport != null)
                 {
-                    daylight = (float)Math.Round(currentReport!.daylightHours, 2);
+                    daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
                     dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
                     daylightChart.SetDaylightHours(daylight);
                     daylightChart.SetHours(dlh);
@@ -118,6 +138,7 @@
     </div>
 </div>
 
+@* Appliance Summary *@
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <div class="flex gap-4 justify-start mb-10 relative">
@@ -135,7 +156,7 @@
             if (appliance.quantity > 0)
             {
                 <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                 </div>
             } 
         }
@@ -296,6 +317,12 @@
     public ReportModel? currentReport  { get; set; }
     [Parameter]
     public bool edit { get; set; }
+    [Parameter]
+    public double latitude { get; set; }
+    [Parameter]
+    public double longitude { get; set; }
+    [Parameter]
+    public LocationDataModel? currentLocationData { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
@@ -311,53 +338,60 @@
     float dlh = 0f;
     float daylight = 0f;
     DaylightChart daylightChart = new DaylightChart();
-    private string HomeSize = "Small";
-    private string HomeType = "";
-    private string HomeImage = "";
-    
+    private string homeSize = "Small";
+    private string homeType = "";
+    private string homeImage = "";
 
+
+    /// <summary>
+    /// On initialisation, get the user id from local storage
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        Console.WriteLine("Solar Score: " + solarScore);
         var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
         userId = usId.Value;
+        if (currentReport!.homeSize != null) {
+            homeSize = currentReport.homeSize;
+        }
 
         CalculateRunningHours();
     }
 
+    /// <summary>
+    /// On parameters set, set the appliance quantities to the values from the report
+    /// </summary>
     protected override void OnParametersSet(){
         for (int i = 0; i < reportAllAppliance!.Count; i++)
         {
-            
-        if (reportAllAppliance[i].type!.Equals("Kettle"))
-        {
-            appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Fridge"))
-        {
-            appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
-        {
-            appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("TV"))
-        {
-            appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Computer"))
-        {
-            appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Microwave"))
-        {
-            appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("CCTV"))
-        {
-            appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
-        } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
-        {
-            appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
-        }
-        
+
+            if (reportAllAppliance[i].type!.Equals("Kettle"))
+            {
+                appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Fridge"))
+            {
+                appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+            {
+                appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("TV"))
+            {
+                appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Computer"))
+            {
+                appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Microwave"))
+            {
+                appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("CCTV"))
+            {
+                appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
+            } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+            {
+                appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
+            }
+
         }
         calculationName = currentReport!.reportName;
-        Console.WriteLine("Edit: " + edit);
 
         for (int i = 0; i < appliances.Count; i++)
         {
@@ -369,18 +403,27 @@
             applianceQuantities.Add(appliance);
         }
     }
+
+    /// <summary>
+    /// On selected system changed, update the selected system and calculate the running hours
+    /// </summary>
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
         selectedSystem = Convert.ToInt32(e.Value);
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
+
     private void IncrementApplianceCount(ApplianceModel appliance) {
         appliance.fade = "fade-in-active";
         StateHasChanged();
         appliance.quantity++;
-        updateApplianceStorage();
+        UpdateApplianceStorage();
         CalculateRunningHours();
     }
+
+    /// <summary>
+    /// On appliance count changed, update the appliance count and calculate the running hours
+    /// </summary>
     private async void DecrementApplianceCount(ApplianceModel appliance) {
         if (appliance.quantity == 1) {
             appliance.fade = "fade-out-active";
@@ -393,13 +436,18 @@
         }
         appliance.fade = "fade-in-active";
         StateHasChanged();
-        updateApplianceStorage();
-         CalculateRunningHours();
+        UpdateApplianceStorage();
+        CalculateRunningHours();
     }
-    private async void updateApplianceStorage()
+
+    private async void UpdateApplianceStorage()
     {
         await ProtectedSessionStore.SetAsync("advancedCalculationAppliances", appliances);
     }
+
+    /// <summary>
+    /// On system size changed, update the selected system and calculate the running hours
+    /// </summary>
     private void SetSystemSize(int selection)
     {
         selectedSystem = selection;
@@ -407,11 +455,15 @@
         selectedSystemChanged.InvokeAsync(selectedSystem);
         CalculateRunningHours();
     }
+
+    /// <summary>
+    /// On template changed, update the selected system and appliance quantities
+    /// </summary>
     private void ApplyTemplate(ChangeEventArgs e) {
         switch (e.Value)
         {
             case "2":
-                HomeSize = "Small";
+                homeSize = "Small";
                 selectedSystem = 0;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -424,7 +476,7 @@
 
                 break;
             case "3":
-                HomeSize = "Medium";
+                homeSize = "Medium";
                 selectedSystem = 1;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -436,7 +488,7 @@
                 appliances[7].quantity = 0;
                 break;
             case "4":
-                HomeSize = "Large";
+                homeSize = "Large";
                 selectedSystem = 2;
                 appliances[0].quantity = 2;
                 appliances[1].quantity = 1;
@@ -448,7 +500,7 @@
                 appliances[7].quantity = 1;
                 break;
             default:
-                HomeSize = "Small";
+                homeSize = "Small";
                 selectedSystem = 0;
                 appliances[0].quantity = 1;
                 appliances[1].quantity = 1;
@@ -461,6 +513,7 @@
                 break;
         }
     }
+
     private async void ResetHome(){
         Console.WriteLine("Resetting"); 
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
@@ -476,6 +529,7 @@
         await selectedSystemChanged.InvokeAsync(selectedSystem);
         CalculateRunningHours();
     }
+
     private async void SaveCalculation(){
         ModalPopup.Dismiss();
         ShowLoadingScreen();
@@ -486,15 +540,15 @@
                     + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
-                    + currentReport!.systemId
-                    + ",\r\n    \"locationId\" : \""
-                    + currentReport.locationId
-                    + "\",\r\n    \"daylightHours\" : "
-                    + currentReport.daylightHours
-                    + ",\r\n    \"image\" : \""
-                    + currentReport.image
-                    + "\"\r\n}",
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
+                    + currentReport!.latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + currentReport.longitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"systemId\" : "
+                    + systems[selectedSystem].systemId
+                    + "\r\n}",
         null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
@@ -502,94 +556,88 @@
         {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
-            Console.WriteLine("Report created successfully");
             int reportId = await GetCreatedReportId();
+            await ProtectedSessionStore.SetAsync("createdReport", reportId);
             foreach (var appliance in appliances)
             {
-                await createReportAppliance(reportId, appliance);
+                await CreateReportAppliance(reportId, appliance);
             }
         }
         else
         {
             Console.WriteLine("Failed to create report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
+
     private async Task UpdateCalculation(){
         ShowLoadingScreen();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n    \"reportName\" : \""
+        var content = new StringContent("{\r\n    \"reportId\" : "
+                    + currentReport!.reportId
+                    + ",\r\n    \"reportName\" : \""
                     + calculationName
                     + "\",\r\n    \"userId\" : "
                     + userId
-                    + ",\r\n    \"systemId\" : "
-                    + currentReport!.systemId
-                    + ",\r\n    \"locationId\" : \""
-                    + currentReport.locationId
-                    + "\",\r\n    \"daylightHours\" : "
-                    + currentReport.daylightHours
-                    + ",\r\n    \"image\" : \""
-                    + currentReport.image
-                    + "\"\r\n}", null, "application/json");
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
+                    + currentReport!.latitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"longitude\" : \""
+                    + currentReport.longitude.ToString().Replace(",", ".")
+                    + "\",\r\n    \"systemId\" : "
+                    + systems[selectedSystem].systemId
+                    + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
         if(response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
-            Console.WriteLine("Report updated successfully");
-            int reportId = await GetCreatedReportId();
-
             for (int i = 0; i < 8; i++)
             {
-                Console.WriteLine(i);
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
-                    await updateReportAppliance(reportId, appliances[i]);
+                    await UpdateReportAppliance(currentReport.reportId, appliances[i]);
                 }
             }
+            await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
+
         }
         else
         {
             Console.WriteLine("Failed to update report");
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
-    private async Task updateReportAppliance(int reportId, ApplianceModel appliance){
+
+    private async Task UpdateReportAppliance(int reportId, ApplianceModel appliance){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("ReportAppliance Updated successfully");
-        }
-        else
-        {
-            Console.WriteLine("Failed to update ReportAppliance - " + response.StatusCode);
+            Console.WriteLine("Failed to update ReportAppliance");
         }
     }
-    private async Task createReportAppliance(int reportId, ApplianceModel appliance){
+
+    private async Task CreateReportAppliance(int reportId, ApplianceModel appliance){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
         var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("ReportAppliance created successfully");
-        }
-        else
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
     }
+    
     private async Task<int> GetCreatedReportId(){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
@@ -607,7 +655,8 @@
                 await ProtectedSessionStore.SetAsync("userReports", reports);
             }
             await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-            Console.WriteLine("ReportId: " + reports[reports.Count - 1].reportId);
+            await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
+
             return reports[reports.Count - 1].reportId;
         }
         else
@@ -616,12 +665,12 @@
             return -1;
         }
     }
+    
     private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
+
     private void CalculateRunningHours() {
-        //running Hours = (num batteries * battery storage)  / (sum of all appliances)  
-        // % = (running hours / non-daylight hours) * 100
         int numBatteries = systems[selectedSystem].numberOfBatteries; 
         int batteryStorage = systems[selectedSystem].batterySize *1000; // kwh
         float sumOfAppliances = 0f;
@@ -634,13 +683,11 @@
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - currentReport!.daylightHours;
+        float nonDaylightHours = 24 - (float) (currentLocationData!.daylightHours);
         runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 100)
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("runningHoursPercentage hours: " + runningHoursPercentage);        
     }
-
 }

@@ -59,8 +59,10 @@ public class ReportController : ControllerBase
             var data = await _reportsRepository.CreateReports(
                 report.reportName!,
                 report.userId,
+                report.homeSize!,
                 report.systemId,
-                report.locationId
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }
@@ -81,8 +83,10 @@ public class ReportController : ControllerBase
                 report.reportId,
                 report.reportName!,
                 report.userId,
+                report.homeSize!,
                 report.systemId,
-                report.locationId
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }
