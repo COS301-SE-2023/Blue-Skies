@@ -2,6 +2,7 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
+import puppeteer from 'puppeteer';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
     const { reportName, userId, homeSize, latitude, longitude, systemId } =
@@ -250,5 +251,25 @@ export default class ReportController {
         error: error.message,
       });
     }
+  };
+
+  public downloadReport = async (req: Request, res: Response) => {
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://pptr.dev/', { waitUntil: 'networkidle2' });
+    // Generate a PDF from the page content
+    const pdf = await page.pdf({
+      format: 'A4',
+      displayHeaderFooter: false,
+    });
+
+    await browser.close();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': pdf.length,
+    });
+    res.send(pdf);
   };
 }
