@@ -20,3 +20,5 @@ reportRouter.patch(
   reportController.updateReport
 );
 reportRouter.delete('/delete/:reportId', reportController.deleteReport);
+
+reportRouter.get('/downloadReport/:a', reportController.downloadReport);
