@@ -257,7 +257,9 @@ export default class ReportController {
     // Launch the browser and open a new blank page
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto('https://pptr.dev/', { waitUntil: 'networkidle2' });
+    await page.goto('http://localhost:5135/report/1/1', {
+      waitUntil: 'networkidle2',
+    });
     // Generate a PDF from the page content
     const pdf = await page.pdf({
       format: 'A4',
