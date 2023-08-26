@@ -92,6 +92,11 @@ namespace BlazorApp.Data
             {
                 solarScore = 100;
             }
+            if(solarScore <= 0) {
+                Random random = new Random();
+                solarScore = random.Next(0, 15);
+            }
+
             return (int)solarScore;
         }
 
