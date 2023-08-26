@@ -255,4 +255,31 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpPatch]
+    [Route("update/elevationData/{latitude}/{longitude}")]
+    public async Task<IActionResult> UpdateElevationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude,
+        [FromBody] LocationData locationData
+    )
+    {
+        try
+        {
+            string data = await _locationDataRepository.UpdateElevationData(
+                latitude,
+                longitude,
+                locationData.elevationData!
+            );
+            if (data.Equals("LocationData not found"))
+            {
+                return StatusCode(404, "Solar Irradiation not found");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }
