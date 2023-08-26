@@ -44,7 +44,6 @@ ee.Initialize(credentials=scoped_credentials)
 print('Authenticated successfully.')
 
 def callDatabase(data, amount_of_calls_left):
-    print("Hello")
     url = API_PORT + f"/locationData/update/data/{LATITUDE}/{LONGITUDE}"
 
     payload = json.dumps({
@@ -57,9 +56,8 @@ def callDatabase(data, amount_of_calls_left):
 
     response = requests.request("PATCH", url, headers=headers, data=payload)
 
-    print(response.text)
-
-    
+    if(amount_of_calls_left == 0 and response.status_code != 200):
+        callDatabase(data, amount_of_calls_left)
 
 # Create a rectangle representing the region of interest
 scale = 10
