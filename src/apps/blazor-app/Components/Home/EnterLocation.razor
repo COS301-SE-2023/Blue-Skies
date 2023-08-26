@@ -227,7 +227,6 @@
         string result = "";
         for (int i = MIN; i <= MAX; i++)
         {
-            Console.WriteLine($"Elevation for {i} is {elevations.Get(i)}");
             result += elevations.Get(i) + ",";
         }
         return result;
@@ -403,7 +402,8 @@
     /// </summary>
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
-        Console.WriteLine("ElevationData: " + await getElevationData(latitude, longitude));
+        string  elevationData = await getElevationData(latitude, longitude);
+        Console.WriteLine("Elevation data: " + elevationData);
         var numYears = 3;
         var numDaysPerYear = 48;
         var client = new HttpClient();
@@ -418,8 +418,9 @@
                                     + daylightHours 
                                     + "\",\r\n    \"image\": \"" 
                                     + image 
-                                    + "\"\r\n}", null, "application/json");
-
+                                    + "\" ,\r\n    \"elevationData\": \"" 
+                                    + elevationData +"\"\r\n}", null, "application/json");
+        
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)

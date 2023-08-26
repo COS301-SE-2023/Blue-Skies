@@ -138,7 +138,8 @@ public class LocationDataController : ControllerBase
                 locationData.longitude,
                 locationData.location!,
                 locationData.daylightHours,
-                locationData.image!
+                locationData.image!,
+                locationData.elevationData
             );
             if (data.Equals("Solar Irradiation already exists"))
             {
