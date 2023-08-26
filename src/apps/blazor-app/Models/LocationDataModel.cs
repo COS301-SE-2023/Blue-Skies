@@ -8,4 +8,6 @@ public class LocationDataModel
     public double daylightHours { get; set; }
     public string? image { get; set; }
     public int remainingCalls { get; set; }
+
+    public string? elevationData { get; set; }
 }
