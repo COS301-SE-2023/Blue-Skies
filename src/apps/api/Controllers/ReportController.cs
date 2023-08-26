@@ -142,13 +142,13 @@ public class ReportController : ControllerBase
     }
 
     [HttpGet]
-    [Route("downloadReport")]
-    public async Task<IActionResult> DownloadReport()
+    [Route("downloadReport/{userId}/{reportId}")]
+    public async Task<IActionResult> DownloadReport([FromRoute] int userId, [FromRoute] int reportId)
     {
         try
         {
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/downloadReport/a");
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/downloadReport/" + userId + "/" + reportId);
             request.Headers.Add("Accept", "application/pdf");
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)

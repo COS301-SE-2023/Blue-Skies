@@ -254,10 +254,14 @@ export default class ReportController {
   };
 
   public downloadReport = async (req: Request, res: Response) => {
+    const { userId, reportId } = req.params;
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: false,
+    });
     const page = await browser.newPage();
-    await page.goto('http://localhost:5135/report/1/1', {
+    const frontend_port = process.env.FRONTEND_PORT;
+    await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
       waitUntil: 'networkidle2',
     });
     // Generate a PDF from the page content
