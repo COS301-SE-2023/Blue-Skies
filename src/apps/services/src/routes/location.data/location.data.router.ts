@@ -69,3 +69,9 @@ locationDataRouter.get(
   bodyParser.json(),
   locationDataController.getSolarIrradiationData
 );
+
+locationDataRouter.patch(
+  '/update/elevationData/:latitude/:longitude',
+  bodyParser.json(),
+  locationDataController.updateElevationData
+);
