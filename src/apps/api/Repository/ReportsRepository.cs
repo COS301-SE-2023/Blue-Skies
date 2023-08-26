@@ -1,4 +1,5 @@
 using System.Net;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace Api.Repository;
@@ -284,4 +285,5 @@ public class ReportsRepository
             throw new Exception("Database Error: " + e.Message);
         }
     }
+
 }

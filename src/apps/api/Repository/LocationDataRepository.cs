@@ -400,4 +400,37 @@ public class LocationDataRepository
             throw new Exception("Could not delete LocationData");
         }
     }
+
+    // Update elevation data
+    public async Task<string> UpdateElevationData(
+        double latitude,
+        double longitude,
+        string elevationData
+    )
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/elevationData/" + latitude + "/" + longitude);
+            var content = new StringContent("{\r\n    \"elevationData\": \"" + elevationData + "\"\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return "Elevation in LocationData updated successfully";
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return "LocationData not found";
+            }
+            else
+            {
+                throw new Exception("Error updating Elevation in LocationData");
+            }
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not update Elevation in LocationData");
+        }
+    }
 }

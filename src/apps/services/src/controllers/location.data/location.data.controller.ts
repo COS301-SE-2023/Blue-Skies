@@ -167,6 +167,40 @@ export default class LocationDataController {
     }
   };
 
+  // Update elevationData inside the LocationData table
+  public updateElevationData = async (req: Request, res: Response) => {
+    const { elevationData } = req.body;
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `UPDATE [dbo].[locationData] SET elevationData = '${elevationData}' WHERE latitude = ${lat} AND longitude = ${long}`;
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            console.log(rowCount);
+            res.status(200).json({
+              message: 'updated elevationData in LocationData successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
   //get solarIrradiation
   public getSolarIrradiation = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
@@ -202,6 +236,7 @@ export default class LocationDataController {
           daylightHours: columns[5].value,
           image: columns[6].value,
           remainingCalls: columns[7].value,
+          elevationData: columns[8].value,
         };
       });
 
@@ -218,7 +253,7 @@ export default class LocationDataController {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
-    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+    const query = `SELECT latitude, longitude, location, data, dateCreated, daylightHours, remainingCalls, elevationData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
     try {
       const request = new tedious.Request(
@@ -248,6 +283,7 @@ export default class LocationDataController {
           dateCreated: columns[4].value,
           daylightHours: columns[5].value,
           remainingCalls: columns[6].value,
+          elevationData: columns[7].value,
         };
       });
 
