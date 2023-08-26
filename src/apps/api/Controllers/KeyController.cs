@@ -72,7 +72,7 @@ public class KeyController : ControllerBase
 
     //Delete a key
     [HttpDelete]
-    [Route("delete/{keyId}}")]
+    [Route("delete/{keyId}")]
     public async Task<IActionResult> DeleteKey([FromRoute] int keyId)
     {
         try
