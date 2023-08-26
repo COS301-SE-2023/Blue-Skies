@@ -6,8 +6,9 @@
 <h1>Solar ROI Calculator</h1>
 
 <div class="">
-    <input type="range" min="0" max="7000" step="100" @bind-value="sliderValue" oninput="@UpdateRandomData" />
+    <input type="range" min="0" max="7000" step="100" @bind="sliderValue" />
 </div>
+<p>@sliderValue</p>
 <div class="w-1/2 h-1/2">
     <Chart Config="barConfig"></Chart>
 </div>
@@ -84,21 +85,14 @@
 
     }
 
-    private void UpdateRandomData()
+    private void HandleSliderChange(ChangeEventArgs e)
     {
-        var dataset = barConfig!.Data.Datasets.FirstOrDefault() as BarDataset<int>;
-        if (dataset != null)
+        if (int.TryParse(e.Value!.ToString(), out int newValue))
         {
-            dataset.Clear();
-            var data = new int[4];
-            var list = CalculateROI(sliderValue);
-            foreach (var item in list)
-            {
-                Console.WriteLine(item.ROI);
-            }
-            dataset.AddRange(data);
+            sliderValue = newValue;
         }
     }
+
 
     
 
