@@ -7,4 +7,5 @@ export default class ILocationData {
   daylightHours: number;
   image: string;
   remainingCalls: number;
+  elevationData: string;
 }
