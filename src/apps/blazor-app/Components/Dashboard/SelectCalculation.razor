@@ -102,7 +102,7 @@
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
         Console.WriteLine("Generating report");
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/1/1");
         request.Headers.Add("Accept", "application/pdf");
         var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();

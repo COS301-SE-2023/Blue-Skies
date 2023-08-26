@@ -1,11 +1,14 @@
 @page "/report/{UserId}/{ReportId}"
 @layout AuthLayout
-<div>Hello</div>
+<div>Hello Ruan
+    <br>
+    @UserId
+    <br>
+    @ReportId
+</div>
 
 @code {
     [Parameter] public string UserId { get; set; }
     [Parameter]
-    public string
-    ReportId
-    { get; set; }
+    public string ReportId { get; set; }
 } 
