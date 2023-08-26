@@ -92,7 +92,8 @@ public class LocationDataRepository
         double longitude,
         string location,
         double daylightHours,
-        string image
+        string image,
+        string elevationData
     )
     {
         try
@@ -113,7 +114,8 @@ public class LocationDataRepository
                     + daylightHours
                     + "\",\r\n    \"image\": \""
                     + image
-                    + "\"\r\n}",
+                    + "\",\r\n    \"elevationData\": \""
+                    + elevationData + "\"\r\n}",
                 null,
                 "application/json"
             );
@@ -125,6 +127,7 @@ public class LocationDataRepository
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
+                Console.WriteLine("Solar Irradiation already exists");
                 return "Solar Irradiation already exists";
             }
             else

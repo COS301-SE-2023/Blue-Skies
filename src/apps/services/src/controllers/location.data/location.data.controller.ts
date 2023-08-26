@@ -42,12 +42,19 @@ export default class LocationDataController {
 
   //createSolarIrradiation
   public createSolarIrradiation = async (req: Request, res: Response) => {
-    const { latitude, longitude, location, daylightHours, image } = req.body;
+    const {
+      latitude,
+      longitude,
+      location,
+      daylightHours,
+      image,
+      elevationData,
+    } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
     const dlh = parseFloat(daylightHours.replace(',', '.'));
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 100)`;
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, location, data, dateCreated, daylightHours,image, remainingCalls, elevationData) VALUES (${lat}, ${long}, '${location}', '', '${dateCreated}', ${dlh}, '${image}', 100, '${elevationData}')`;
     try {
       const request = new tedious.Request(
         query,
