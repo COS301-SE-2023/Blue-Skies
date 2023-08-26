@@ -1,0 +1,166 @@
+@* Solar ROI calculator *@
+
+@using ChartJs.Blazor.BarChart
+@using BlazorApp.Models
+
+<h1>Solar ROI Calculator</h1>
+
+<div class="">
+    <input type="range" min="0" max="7000" step="100" @bind-value="sliderValue" oninput="@UpdateRandomData" />
+</div>
+<div class="w-1/2 h-1/2">
+    <Chart Config="barConfig"></Chart>
+</div>
+
+@code {
+    private BarConfig? barConfig;
+    private int sliderValue = 50;
+
+
+    protected override void OnInitialized() {
+        barConfig = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Solar ROI Calculator"
+                },
+                Scales = new BarScales
+                {
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new CategoryAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "System Size",
+                                Display = true
+                            },
+                            GridLines = new GridLines
+                            {
+                                Display = false
+                            }
+                        }
+                    },
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true
+                            },
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "ROI",
+                                Display = true
+                            },
+                            GridLines = new GridLines
+                            {
+                                Display = false
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var labels = new List<string> { "5kw", "8kw", "12kw", "16kw" };
+        var dataset = new BarDataset<int> { BackgroundColor = "#d2d2d2" };
+
+        dataset.HoverBackgroundColor = "#f2f2f2";
+
+        // Example data (replace with your data)
+        dataset.AddRange(new int[] { 200, 300, 250, 400 });
+
+        foreach (var label in labels)
+        {
+            barConfig.Data.Labels.Add(label);
+        }
+        barConfig.Data.Datasets.Add(dataset);
+
+    }
+
+    private void UpdateRandomData()
+    {
+        var dataset = barConfig!.Data.Datasets.FirstOrDefault() as BarDataset<int>;
+        if (dataset != null)
+        {
+            dataset.Clear();
+            var data = new int[4];
+            var list = CalculateROI(sliderValue);
+            foreach (var item in list)
+            {
+                Console.WriteLine(item.ROI);
+            }
+            dataset.AddRange(data);
+        }
+    }
+
+    
+
+    public List<SystemInfo> CalculateROI(double bill, bool pushback = true)
+    {
+        double powerRate = 2.50;
+        double pushbackRate = 0.8;
+        double usagePM = bill / powerRate;
+        List<SystemInfo> systems = new List<SystemInfo>
+        {
+            new SystemInfo
+            {
+                Size = "5kw",
+                Usage = (int)(8 * 72),
+                Cost = 170000
+            },
+            new SystemInfo
+            {
+                Size = "8kw",
+                Usage = (int)(14 * 72),
+                Cost = 226000
+            },
+            new SystemInfo
+            {
+                Size = "12kw",
+                Usage = (int)(20 * 72),
+                Cost = 320000
+            },
+            new SystemInfo
+            {
+                Size = "16kw",
+                Usage = (int)(32 * 72),
+                Cost = 452000
+            }
+        };
+
+        foreach (var el in systems)
+        {
+            el.Coverage = (int)Math.Round(usagePM - el.Usage, 0);
+            el.Extra = 0;
+            if (el.Coverage < 0)
+            {
+                @* el.Extra = (int)Math.Round(-el.Coverage, 0); *@
+                el.Coverage = 0;
+                if (el.Extra > usagePM)
+                {
+                    el.Extra = (int)usagePM;
+                }
+            }
+            el.ExtraSavings = (int)Math.Round(el.Extra * pushbackRate, 0);
+            el.NewBill = (int)Math.Round(el.Coverage * powerRate, 0);
+            el.Savings = (int)Math.Round(bill - el.NewBill, 0);
+
+            if (pushback)
+            {
+                el.Savings += el.ExtraSavings;
+            }
+            el.ROI = Math.Round(el.Cost / (el.Savings * 12), 1);
+        }
+
+        return systems;
+    }
+
+
+}
