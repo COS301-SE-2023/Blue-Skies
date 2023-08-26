@@ -256,9 +256,7 @@ export default class ReportController {
   public downloadReport = async (req: Request, res: Response) => {
     const { userId, reportId } = req.params;
     // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch({
-      headless: false,
-    });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
     const frontend_port = process.env.FRONTEND_PORT;
     await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
