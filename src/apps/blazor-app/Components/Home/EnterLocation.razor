@@ -52,7 +52,7 @@
     private readonly int width = 600;
     private readonly int height = 500;
 
-    private ApiRequests apiRequests = new ApiRequests();
+    private ElevationApiRequests apiRequests = new ElevationApiRequests();
     private Elevations elevations = new Elevations();
 
     /// <summary>
@@ -64,6 +64,9 @@
         parent = par.Value!;
     }
 
+    /// <summary>
+    /// A class to store the elevation data for each location.
+    /// </summary>
     class Elevations
     {
         private readonly ConcurrentDictionary<int, double> data = new ConcurrentDictionary<int, double>();
@@ -83,7 +86,10 @@
         }
     }
 
-    class ApiRequests
+    /// <summary>
+    /// A class to store the api requests for each location.
+    /// </summary>
+    class ElevationApiRequests
     {
         private readonly Dictionary<int, string> data = new Dictionary<int, string>();
         private readonly HttpClient httpClient = new HttpClient();
@@ -185,6 +191,11 @@
         }
     }
     
+    /// <summary>
+    /// <para>Gets the elevation data for the given location.</para>
+    /// <paramref name="latitude"/> The latitude of the location.
+    /// <paramref name="longitude"/> The longitude of the location.
+    /// </summary>
     private async Task<string> getElevationData(double latitude, double longitude) {
         int MIN = -25;
         int MAX = 25;
