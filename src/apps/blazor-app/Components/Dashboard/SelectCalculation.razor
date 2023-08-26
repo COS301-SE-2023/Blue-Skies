@@ -57,6 +57,7 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private bool isReportGenerated = false;
     private  string pdfUrl = "";
+    private int userId = 0;
     public async Task OnSelectedReportChanged(ChangeEventArgs e)
     {
         selectedReport = Convert.ToInt32(e.Value);
@@ -80,6 +81,9 @@
                 setSelectedReport(createdReport);
             }
         }
+
+         var userIdTemp = await ProtectedLocalStore.GetAsync<int>("userId");
+        userId = userIdTemp.Value;
     }
 
     private async void setSelectedReport(int reportId)
@@ -102,7 +106,7 @@
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
         Console.WriteLine("Generating report");
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/1/1");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/" + userId + "/" + userReports![selectedReport].reportId);
         request.Headers.Add("Accept", "application/pdf");
         var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
