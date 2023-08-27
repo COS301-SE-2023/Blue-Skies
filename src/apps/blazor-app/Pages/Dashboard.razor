@@ -3,6 +3,7 @@
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
 @using BlazorApp.Components
+@using BlazorApp.FancyData
 @using BlazorApp.Models
 @using System.Text.Json
 @using ChartJs.Blazor.PieChart
@@ -128,6 +129,10 @@ else if (!logIn)
                             </div>
                         </Card>
                     </div>
+                    <div class="mt-10 w-full">
+                        <FancyData solarIrradiation="@currentLocationData.data" />
+                    </div>
+                    
                 </div>
 
             }
@@ -325,6 +330,8 @@ else if (!logIn)
     /// </list>
     /// </summary>
     public async Task GetLocationData(){
+        
+        
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/"
         + reports[selectedReport].latitude.ToString().Replace(",", ".") + "/" + reports[selectedReport].longitude.ToString().Replace(",", "."));
@@ -333,6 +340,8 @@ else if (!logIn)
         {
             string data = response.Content.ReadAsStringAsync().Result;
             currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+                @* Current location *@
+            Console.WriteLine("Current location: " + currentLocationData.location);
             await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
             await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
         } else {
