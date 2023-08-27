@@ -21,20 +21,35 @@
                 Options = new BarOptions
                 {
                     Responsive = true,
-                    @* Legend = new Legend
+                    Legend = new Legend
                     {
                         Position = Position.Top
-                    }, *@
+                    },
                     Title = new OptionsTitle
                     {
                         Display = true,
-                        Text = "Solar Irradiation Per Month",
+                        Text = "Solar Irradiance Per Month",
                         FontSize = 20,
                     },
-                    Tooltips = new Tooltips
+                    @* Axis Title *@
+                    @* Scales = new BarScales
                     {
-                        Enabled = false
-                    },
+                        YAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = "Solar Irradiance (kWh/m2/day)",
+                                    Display = true
+                                },
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    } *@
                     Scales = new BarScales
                     {
                         YAxes = new List<CartesianAxis>
@@ -44,7 +59,12 @@
                                 Ticks = new LinearCartesianTicks
                                 {
                                     BeginAtZero = true
-                                }
+                                },
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = "Solar Irradiance (W/m2)",
+                                    Display = true
+                                },
                             }
                         }
                     }
