@@ -1,0 +1,41 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Dashboard
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+@inject BlazorApp.Data.SolarCalculator solarCalculator
+@inject BlazorApp.Data.LoadingService loadingService
+
+<div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
+    @* Map Container *@
+    <div class="sm:flex-shrink-0  items-center flex flex-col justify-center shadow-md">
+        <div class=" flex shadow-md transition-all duration-500  bg-gray-200 text-primary-900 hover:scale-110 rounded-xl justify-center items-center w-72 h-72">
+            <div class="my-auto w-full">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                    @* @{
+                        var logo = key!.owner + ".svg";
+                    }
+                    <Image ImageName="@logo" alt="Sale" css="scale-150"/> *@
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3 gap-4">@key!.owner</h1>
+            <div class="flex gap-1 mt-3">
+                <p class="text-l">@key!.description</p>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+            <div class="my-auto w-full relative">
+                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
+                <LocationItem Title="Email" ImageName="Point On Map.svg" Text=@key!.email />
+                <LocationItem Title="Phone Number" ImageName="Point On Map.svg" Text=@key!.phoneNumber />
+            </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public APIKeyModel? key { get; set; }
+}
