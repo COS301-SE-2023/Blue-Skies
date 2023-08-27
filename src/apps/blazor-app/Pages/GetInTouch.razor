@@ -1,0 +1,75 @@
+@page "/getintouch"
+@* @layout MainLayout *@
+@inject ProtectedLocalStorage ProtectedLocalStore;
+@inject ProtectedSessionStorage ProtectedSessionStore;
+@inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
+@using BlazorApp.Models;
+@using System.Text.Json;
+@using BlazorApp.Components.Home;
+@using BlazorApp.Components.GetInTouch;
+
+<PageTitle>Get In Touch</PageTitle>
+
+@* Check for admin *@
+@if (isAd)
+{
+    loadingService.ShowLoadingScreen();
+    NavigationManager.NavigateTo("/admin/keys");
+}
+else
+{
+    <div class="mt-24 text-center">
+    <Heading>
+        <Header>
+            <h1 class="text-3xl">Contact your nearest solar service provider</h1>
+        </Header>
+        <Subscript>
+            <p class="text-primary-700">Lorem ipsum</p>
+        </Subscript>
+    </Heading>
+</div>
+    <div class="fade-in-enter-active">
+        @for (int i = 0; i < keys.Count; i++)
+        {    
+        <div class="w-full">
+            <div class="mt-40 mb-20">
+                <Business key="keys[i]"/>
+            </div>
+        </div>
+        }
+    </div>
+}
+
+
+@code {
+    private bool isAd = false;
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    public List<APIKeyModel> keys = new List<APIKeyModel>();
+
+    /// <summary>
+    /// On page load, check if user is admin.
+    /// Get current location data from session storage.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        await GetKeys();
+        
+    }
+
+     private async Task GetKeys(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/allBusiness");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+}

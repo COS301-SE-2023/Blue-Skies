@@ -53,6 +53,42 @@ public class KeysRepository
         }
     }
 
+    //Get all business keys
+    public async Task<List<Keys>> GetAllBusinessKeys()
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/key/allBusiness");
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var systems = JsonSerializer.Deserialize<List<Keys>>(data);
+                if (systems != null)
+                {
+                    Console.WriteLine(".NET: get all keys system");
+                    return systems;
+                }
+
+                Console.WriteLine(".NET: system is null error");
+                return new List<Keys>();
+            }
+            else
+            {
+                //return empty list
+                Console.WriteLine(".NET: Database Connection Error in function GetAllBusinessKeys");
+                return new List<Keys>();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(".NET: Database Connection Error: " + e.Message);
+            throw new Exception("Database Connection Error");
+        }
+    }
+
     //Create key
     public async Task<Keys> CreateKey(string owner, int remainingCalls, int suspended)
     {
