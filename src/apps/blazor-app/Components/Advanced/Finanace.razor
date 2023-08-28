@@ -5,10 +5,11 @@
 
 <h1>Solar ROI Calculator</h1>
 
-<div class="">
+<div class="flex flex-col justify-center p-4 w-full rounded-3xl bg-gradient-to-br from-primary-400 to-primary-500">
+    <p class="text-center text-white font-semibold">Please enter your monthly bill:</p>
+    <h1 class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-300">R @sliderValue</h1>
     <input type="range" min="1000" max="7000" step="100" @bind="sliderValue" @oninput="HandleSliderChange" />
 </div>
-<p>@sliderValue</p>
 <div class="w-1/2 h-1/2">
     <Chart Config="barConfig"></Chart>
 </div>
@@ -20,7 +21,7 @@
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
 
 
-    protected override void OnInitialized() {
+    protected override  void OnInitialized() {
         barConfig = new BarConfig
         {
             Options = new BarOptions
@@ -64,7 +65,7 @@
                             },
                             ScaleLabel = new ScaleLabel
                             {
-                                LabelString = "ROI",
+                                LabelString = "Years",
                                 Display = true
                             },
                             GridLines = new GridLines
@@ -84,6 +85,7 @@
         // Example data (replace with your data)
         var systems = CalculateROI(sliderValue);
         dataset.AddRange(systems.Select(x => x.ROI));
+        sliderValue = 1500;
         Highlight();
 
         foreach (var label in labels)
@@ -91,7 +93,6 @@
             barConfig.Data.Labels.Add(label);
         }
         barConfig.Data.Datasets.Add(dataset);
-
     }
 
     private void HandleSliderChange(ChangeEventArgs e)

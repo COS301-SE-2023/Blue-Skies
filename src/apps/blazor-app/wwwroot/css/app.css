@@ -1810,6 +1810,11 @@ video {
   background-color: rgb(255 251 197 / var(--tw-bg-opacity));
 }
 
+.bg-red-400 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(248 113 113 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-bl {
   background-image: linear-gradient(to bottom left, var(--tw-gradient-stops));
 }
@@ -1820,6 +1825,10 @@ video {
 
 .bg-gradient-to-l {
   background-image: linear-gradient(to left, var(--tw-gradient-stops));
+}
+
+.bg-gradient-to-t {
+  background-image: linear-gradient(to top, var(--tw-gradient-stops));
 }
 
 .from-primary-400 {
@@ -1834,6 +1843,24 @@ video {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
+.from-primary-200 {
+  --tw-gradient-from: #c7d7f0 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(199 215 240 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-white {
+  --tw-gradient-from: #fff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.from-primary-100 {
+  --tw-gradient-from: #e6ecf8 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(230 236 248 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
 .to-primary-500 {
   --tw-gradient-to: #3871c1 var(--tw-gradient-to-position);
 }
@@ -1844,6 +1871,23 @@ video {
 
 .to-red-600 {
   --tw-gradient-to: #dc2626 var(--tw-gradient-to-position);
+}
+
+.to-primary-400 {
+  --tw-gradient-to: #5c8ed4 var(--tw-gradient-to-position);
+}
+
+.to-primary-200 {
+  --tw-gradient-to: #c7d7f0 var(--tw-gradient-to-position);
+}
+
+.to-primary-300 {
+  --tw-gradient-to: #95b4e4 var(--tw-gradient-to-position);
+}
+
+.bg-clip-text {
+  -webkit-background-clip: text;
+          background-clip: text;
 }
 
 .fill-blue-600 {
@@ -2090,6 +2134,10 @@ video {
   font-weight: 600;
 }
 
+.font-black {
+  font-weight: 900;
+}
+
 .uppercase {
   text-transform: uppercase;
 }
@@ -2241,6 +2289,10 @@ video {
 .text-yellow-accent-500 {
   --tw-text-opacity: 1;
   color: rgb(255 193 8 / var(--tw-text-opacity));
+}
+
+.text-transparent {
+  color: transparent;
 }
 
 .opacity-0 {
