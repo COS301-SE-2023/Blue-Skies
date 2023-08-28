@@ -17,6 +17,7 @@
     private BarConfig? barConfig;
     private int sliderValue = 50;
     private BarDataset<double>? dataset;
+    private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
 
 
     protected override void OnInitialized() {
@@ -77,14 +78,13 @@
         };
 
         var labels = new List<string> { "5kw", "8kw", "12kw", "16kw" };
-        dataset = new BarDataset<double> { BackgroundColor = "#d2d2d2" };
-
+        dataset = new BarDataset<double> { BackgroundColor = colors };
         dataset.HoverBackgroundColor = "#f2f2f2";
 
         // Example data (replace with your data)
         var systems = CalculateROI(sliderValue);
         dataset.AddRange(systems.Select(x => x.ROI));
-
+        Highlight();
 
         foreach (var label in labels)
         {
@@ -102,13 +102,34 @@
             var systems = CalculateROI(sliderValue);
             dataset!.Clear();
             dataset!.AddRange(systems.Select(x => x.ROI)); 
+            Highlight();
             barConfig!.Data.Datasets.Clear();
             barConfig.Data.Datasets.Add(dataset);
         }
     }
 
 
-    
+    private void Highlight(int index = -1)
+    {
+        //calculate min roi in systems
+        var systems = CalculateROI(sliderValue);
+        var min = systems.Min(x => x.ROI);
+
+        if (index == -1)
+        {
+            index = systems.FindIndex(x => x.ROI == min);
+        }
+
+        for (int i = 0; i < colors.Length; i++)
+        {
+            colors[i] = "#d2d2d2";
+            if (i == index)
+            {
+                colors[i] = "#3871C1";
+            }
+        }
+        dataset!.BackgroundColor = colors;
+    }
 
     public List<SystemInfo> CalculateROI(double bill, bool pushback = true)
     {
