@@ -16,6 +16,7 @@
 @code {
     private BarConfig? barConfig;
     private int sliderValue = 50;
+    private BarDataset<double>? dataset;
 
 
     protected override void OnInitialized() {
@@ -28,6 +29,11 @@
                 {
                     Display = true,
                     Text = "Solar ROI Calculator"
+                },
+                Legend = new Legend
+                {
+                    Position = Position.Bottom,
+                    Display = false
                 },
                 Scales = new BarScales
                 {
@@ -52,7 +58,8 @@
                         {
                             Ticks = new LinearCartesianTicks
                             {
-                                BeginAtZero = true
+                                Display = false, 
+                                Min = 0
                             },
                             ScaleLabel = new ScaleLabel
                             {
@@ -70,12 +77,14 @@
         };
 
         var labels = new List<string> { "5kw", "8kw", "12kw", "16kw" };
-        var dataset = new BarDataset<int> { BackgroundColor = "#d2d2d2" };
+        dataset = new BarDataset<double> { BackgroundColor = "#d2d2d2" };
 
         dataset.HoverBackgroundColor = "#f2f2f2";
 
         // Example data (replace with your data)
-        dataset.AddRange(new int[] { 200, 300, 250, 400 });
+        var systems = CalculateROI(sliderValue);
+        dataset.AddRange(systems.Select(x => x.ROI));
+
 
         foreach (var label in labels)
         {
@@ -91,9 +100,8 @@
         {
             sliderValue = newValue;
             var systems = CalculateROI(sliderValue);
-            var dataset = new BarDataset<int> { BackgroundColor = "#d2d2d2" };
-            dataset.HoverBackgroundColor = "#f2f2f2";
-            dataset.AddRange(systems.Select(x => (int)x.ROI)); 
+            dataset!.Clear();
+            dataset!.AddRange(systems.Select(x => x.ROI)); 
             barConfig!.Data.Datasets.Clear();
             barConfig.Data.Datasets.Add(dataset);
         }
