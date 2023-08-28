@@ -13,7 +13,7 @@
     public string? solarIrradiation { get; set; }
     private BarConfig? barConfig;
     private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
-        @*             year               month   solarIrradiation  *@
+    @*The data is structured as: year, month, solarIrradiation  *@
     protected override void OnParametersSet()
     {
         if (solarIrradiation != null)
@@ -125,8 +125,8 @@
             dataValuesForAllYears[i++] = dataValues;
 
         }
-        string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
-        string[] borderColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
+        string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)"};
+        string[] borderColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)", "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
 
         for (int j = 0; j < data.Count; j++)
         {
