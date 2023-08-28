@@ -266,6 +266,7 @@ else if (!logIn)
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             remainingCalls = result[1];
             if(previousRemainingCalls != remainingCalls){
+                await GetLocationData(); // Need to remove this Ruan
                 timesNotUpdated = 0;
             } else {
                 timesNotUpdated++;
