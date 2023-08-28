@@ -13,6 +13,15 @@
     public string? solarIrradiation { get; set; }
     private BarConfig? barConfig;
     private Dictionary<string, float> data = new Dictionary<string, float>();
+        @* OnParameterSet *@
+    protected override void OnParametersSet()
+    {
+        if (solarIrradiation != null)
+        {
+
+            AddDataToChart();
+        }
+    }
     @* OnInitializedAsync *@
     protected override async Task OnInitializedAsync()
     {
@@ -67,6 +76,15 @@
         barConfig.Data.Labels.Add("Nov");
         barConfig.Data.Labels.Add("Dec");
 
+        
+
+        AddDataToChart();
+    }
+
+
+    @* AddDataToChart *@
+    private void AddDataToChart()
+    {
         @* The solarIrradiation: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
         @* Remove the last character in solarIrradiation *@
         solarIrradiation = solarIrradiation.Remove(solarIrradiation.Length - 1);
@@ -86,15 +104,6 @@
                 data.Add(dateByYearMonth, float.Parse(splitItem[1]));
             }
         }
-
-        AddDataToChart();
-
-    }
-
-
-    @* AddDataToChart *@
-    private void AddDataToChart()
-    {
         @* Clear the data *@
         @* /barConfig.Data.Labels.Clear(); *@
         barConfig.Data.Datasets.Clear();
@@ -117,6 +126,7 @@
                 dataValues2020[count2020] = item.Value;
                 count2020++;
             }
+            @* Console.WriteLine(item.Value); *@
         }
         IDataset<float> year2020 = new BarDataset<float>(dataValues2020)
         {
