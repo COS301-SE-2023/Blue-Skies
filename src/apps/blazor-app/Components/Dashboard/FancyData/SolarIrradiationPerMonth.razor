@@ -12,8 +12,8 @@
     [Parameter]
     public string? solarIrradiation { get; set; }
     private BarConfig? barConfig;
-    private Dictionary<string, float> data = new Dictionary<string, float>();
-        @* OnParameterSet *@
+    private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
+        @*             year               month   solarIrradiation  *@
     protected override void OnParametersSet()
     {
         if (solarIrradiation != null)
@@ -21,7 +21,7 @@
             AddDataToChart();
         }
     }
-    @* OnInitializedAsync *@
+
     protected override async Task OnInitializedAsync()
     {
         barConfig = new BarConfig
@@ -82,6 +82,10 @@
     private void AddDataToChart()
     {
         @* The solarIrradiation: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
+        if(solarIrradiation == null || barConfig == null) {
+            return;
+        }
+        data = new Dictionary<string, Dictionary<string, float>>();
         @* Remove the last character in solarIrradiation *@
         solarIrradiation = solarIrradiation.Remove(solarIrradiation.Length - 1);
         @* Split the data *@
@@ -89,64 +93,50 @@
         foreach (var item in splitData)
         {
             string[] splitItem = item.Split(';');
-            string dateByYearMonth = splitItem[0].Substring(0, 7);
+            string[] splitDate = splitItem[0].Split('-');
             @* Check if it is in data first *@
-            if (data.ContainsKey(dateByYearMonth))
+            if (data.ContainsKey(splitDate[0]))
             {
-                data[dateByYearMonth] = (data[dateByYearMonth] + float.Parse(splitItem[1])) / 2;
+                if(data[splitDate[0]].ContainsKey(splitDate[1])) {
+                    data[splitDate[0]][splitDate[1]] = (data[splitDate[0]][splitDate[1]] + float.Parse(splitItem[1])) / 2;
+                } else {
+                    data[splitDate[0]].Add(splitDate[1], float.Parse(splitItem[1]));
+                }
             }
             else
             {
-                data.Add(dateByYearMonth, float.Parse(splitItem[1]));
+                data.Add(splitDate[0], new Dictionary<string, float>());
+                data[splitDate[0]].Add(splitDate[1], float.Parse(splitItem[1]));
             }
         }
         @* Clear the data *@
         @* /barConfig.Data.Labels.Clear(); *@
         barConfig.Data.Datasets.Clear();
-        float[] dataValues2021 = new float[12];
-        float[] dataValues2022 = new float[12];
-        float[] dataValues2020 = new float[12];
-        int count2022 = 0;
-        int count2021 = 0;
-        int count2020 = 0;
+        float[][] dataValuesForAllYears = new float[data.Count][];
+
+        int i = 0;
         foreach (var item in data)
         {
-            if(item.Key.Contains("2022")){
-                dataValues2022[count2022] = item.Value;
-                count2022++; 
-            }else if(item.Key.Contains("2021")){
-                dataValues2021[count2021] = item.Value;
-                count2021++; 
-            } else if (item.Key.Contains("2020"))
+            float[] dataValues = new float[12];
+            foreach (var month in item.Value)
             {
-                dataValues2020[count2020] = item.Value;
-                count2020++;
+                dataValues[int.Parse(month.Key) - 1] = month.Value;
             }
-            @* Console.WriteLine(item.Value); *@
+            dataValuesForAllYears[i++] = dataValues;
+
         }
-        IDataset<float> year2020 = new BarDataset<float>(dataValues2020)
+        string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
+        string[] borderColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
+
+        for (int j = 0; j < data.Count; j++)
         {
-            Label = "2020",
-            BackgroundColor = "rgba(255,193,8, 1)",
-            BorderColor = "rgba(255,193,8, 1)",
-            BorderWidth = 1
-        };
-        IDataset<float> year2021 = new BarDataset<float>(dataValues2021)
-        {
-            Label = "2021",
-            BackgroundColor = "rgba(246,135,18, 1)",
-            BorderColor = "rgba(246,135,18, 1)",
-            BorderWidth = 1
-        };
-        IDataset<float> year2022 = new BarDataset<float>(dataValues2022)
-        {
-            Label = "2022",
-            BackgroundColor = "rgba(0,15,82, 1)",
-            BorderColor = "rgba(0,15,82, 1)",
-            BorderWidth = 1
-        }; 
-        barConfig.Data.Datasets.Add(year2020);
-        barConfig.Data.Datasets.Add(year2021);
-        barConfig.Data.Datasets.Add(year2022);
+            barConfig.Data.Datasets.Add(new BarDataset<float>
+            (dataValuesForAllYears[j]){
+                Label = data.Keys.ElementAt(j),
+                BackgroundColor = backgroundColors[j],
+                BorderColor = borderColors[j],
+                BorderWidth = 1
+            });
+        }
     }
 } 
