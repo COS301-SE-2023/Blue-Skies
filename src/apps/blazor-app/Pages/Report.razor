@@ -1,14 +1,103 @@
 @page "/report/{UserId}/{ReportId}"
+@using System.Text.Json
+@using BlazorApp.Components.Dashboard
 @layout AuthLayout
-<div class="pageA4">Hello Ruan
-    <br>
+<div class="pageA4">
+    @if (isLoaded){
+        <div id="report">
+    <LocationInfo css="mt-8" reports="@allReports" selectedReport="0" currentLocationData="@locationData" systems="@systems" solarScore="999" />
+
+        </div>
+    }
+
     @UserId
-    <br>
-    @ReportId
 </div>
 
 @code {
     [Parameter] public string UserId { get; set; }
     [Parameter]
     public string ReportId { get; set; }
+
+    private ReportModel report = new ReportModel();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private double latitude = 0;
+    private double longitude = 0;
+    private LocationDataModel locationData = new LocationDataModel();
+    private List<ReportModel> allReports = new List<ReportModel>();
+    private List<SystemModel> systems = new List<SystemModel>();
+    private bool isLoaded = false;
+   @* OnInitialized *@
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await GetReport();
+        Console.WriteLine("Current report: " + report.reportId);
+        await GetLocationData();
+        Console.WriteLine("Current location: " + locationData.location);
+        await GetSystemsAsync();
+        Console.WriteLine("Current systems: " + systems.Count);
+        isLoaded = true;
+        StateHasChanged();
+    }
+
+    @* Get report *@
+    private async Task GetReport()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/get/" + ReportId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseStream = await response.Content.ReadAsStringAsync();
+            //JsonSerializer
+            report = JsonSerializer.Deserialize<ReportModel>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            latitude = report.latitude;
+            longitude = report.longitude;
+            @* Clear reports *@
+            allReports.Clear();
+            allReports.Add(report);
+        }else{
+            Console.WriteLine("Report not found");
+        }
+
+    }
+
+    @* Get location Data *@
+    private async Task GetLocationData()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+                @* Current location *@
+            
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+    }
+
+    private async Task GetSystemsAsync()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+    }
+
 } 
