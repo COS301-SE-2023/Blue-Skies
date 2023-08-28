@@ -11,13 +11,13 @@
     @* Map Container *@
     <div class="sm:flex-shrink-0  items-center flex flex-col justify-center shadow-md rounded-3xl">
         <div
-            class="shadow-md transition-all duration-500  bg-gray-200 text-primary-900 hover:scale-110 rounded-3xl justify-center items-center w-[21rem] h-80">
+            class="shadow-md transition-all duration-500  bg-gray-200 text-primary-900 hover:scale-110 rounded-3xl justify-center items-center w-[25rem] h-80">
             <div class="my-auto w-full flex p-2">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 m-3">
-                    @* @{
-                    var logo = key!.owner + ".svg";
+                    @{
+                    var logo = key!.owner + ".png";
                     }
-                    <Image ImageName="@logo" alt="Sale" css="scale-150"/> *@
+                    <Image ImageName="@logo" alt="Sale" css="scale-150"/>
                 </div>
                 <div class="m-3">
                     <h1 class="text-xl text-primary-800 font-semibold mt-3 gap-4">@key!.owner</h1>
