@@ -20,23 +20,24 @@
 else
 {
     <div class="mt-24 text-center">
-    <Heading>
-        <Header>
-            <h1 class="text-3xl">Contact your nearest solar service provider</h1>
-        </Header>
-        <Subscript>
-            <p class="text-primary-700">Lorem ipsum</p>
-        </Subscript>
-    </Heading>
-</div>
+        <Heading>
+            <Header>
+                <h1 class="text-3xl">Contact your nearest solar service provider</h1>
+            </Header>
+            <Subscript>
+                <p class="text-primary-700">Lorem ipsum</p>
+            </Subscript>
+        </Heading>
+    </div>
     <div class="fade-in-enter-active">
+        <Image ImageName="shapes.svg" css="absolute -top-[30rem]  z-10 -left-1/4 w-2/3 h-full rotate-90" alt="Shapes" />
         @for (int i = 0; i < keys.Count; i++)
-        {    
-        <div class="w-full">
-            <div class="mt-40 mb-20">
-                <Business key="keys[i]"/>
+        {
+            <div class="w-full">
+                <div class="mt-40 mb-20">
+                    <Business key="keys[i]" />
+                </div>
             </div>
-        </div>
         }
     </div>
 }
@@ -55,17 +56,22 @@ else
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         await GetKeys();
-        
+
     }
 
-     private async Task GetKeys(){
+    private async Task GetKeys()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/allBusiness");
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
         }
         else
         {
