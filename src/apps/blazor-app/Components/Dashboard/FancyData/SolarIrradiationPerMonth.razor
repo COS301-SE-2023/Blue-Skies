@@ -22,7 +22,10 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    /// <summary>
+    /// Initializes the chart
+    /// </summary>
+    protected override void OnInitialized()
     {
         barConfig = new BarConfig
             {
@@ -78,7 +81,9 @@
     }
 
 
-    @* AddDataToChart *@
+    /// <summary>
+    /// Adds the data to the chart
+    /// </summary>
     private void AddDataToChart()
     {
         @* The solarIrradiation: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
