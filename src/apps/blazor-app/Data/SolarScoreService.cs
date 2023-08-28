@@ -8,6 +8,8 @@ namespace BlazorApp.Data
         private double perfectSolarIrradiation = 205;
         private double worstSolarIrradiation = 120;
 
+        public LocationDataModel? locationData { get; set; }
+
         public async Task<int[]> GetDataLocationData(
             double latitude,
             double longitude,
@@ -39,7 +41,7 @@ namespace BlazorApp.Data
                 {
                     return result;
                 }
-                var locationData = JsonSerializer.Deserialize<LocationDataModel>(data);
+                locationData = JsonSerializer.Deserialize<LocationDataModel>(data);
                 if (locationData == null || locationData.data == null)
                 {
                     return result;
