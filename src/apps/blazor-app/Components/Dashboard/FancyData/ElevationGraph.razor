@@ -8,7 +8,7 @@
 
 @code {
 
-    [Parameter] public string elevationValues { get; set; }
+    [Parameter] public string? elevationValues { get; set; }
     private LineConfig? lineConfig;
     @* OnParametersSet *@
     protected override void OnParametersSet()
@@ -17,7 +17,7 @@
             CalculateData();
         }
     }
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         
         @* Create the chart *@
@@ -54,11 +54,11 @@
     private void CalculateData()
     {
 
-        lineConfig.Data.Labels.Clear();
+        lineConfig!.Data.Labels.Clear();
         lineConfig.Data.Datasets.Clear();
 
         @* Remove the last character *@
-        elevationValues = elevationValues.Remove(elevationValues.Length - 1);
+        elevationValues = elevationValues!.Remove(elevationValues.Length - 1);
 
         @* Split the string into an array of integers *@
         string[] elevationArray = elevationValues.Split(',');
