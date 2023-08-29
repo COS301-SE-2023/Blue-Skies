@@ -13,12 +13,10 @@
 
     public void SetHours(float hours) {
         this.hours = hours;
-        UpdateDataset();
     }
 
     public void SetRemaining(float remaining) {
         this.remaining = remaining;
-        UpdateDataset();
     }
     
     protected override void OnParametersSet()
@@ -66,9 +64,14 @@
         UpdateDataset();
     }
 
-    protected override void OnInitialized()
-    {
-        UpdateDataset();
+    public float[] getData() {
+        float [] data = new float[2];
+        var datasets = pieConfig.Data.Datasets;
+        if (datasets.Count > 0)
+        {
+            data = ((PieDataset<float>)datasets[0]).Data.ToArray();
+        }
+        return data;
     }
 
     public void UpdateDataset() {

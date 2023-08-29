@@ -128,6 +128,13 @@
                     var remaining = (float)Math.Round((24-daylight)-dlh, 2);
                     daylightChart.SetRemaining(remaining);
                     daylightChart.SetHours(dlh);
+                    Console.WriteLine("Here in frontend");
+                    daylightChart.UpdateDataset();
+                    Console.WriteLine("daylightChars's data:");
+                    foreach (var data in daylightChart.getData())
+                    {
+                        Console.WriteLine(data);
+                    }
                 }
             }
             <DaylightChart @ref="daylightChart"/>
