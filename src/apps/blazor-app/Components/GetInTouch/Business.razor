@@ -7,17 +7,18 @@
 @inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject BlazorApp.Data.LoadingService loadingService
 
-<div class="flex self-center items-center gap-4 flex-row justify-center mt-4 md:mt-20">
+<div
+    class="flex self-center items-center gap-4 justify-center mt-4 md:mt-20 @(((id + 1) % 2) == 0 ? "flex-row-reverse" : "flex-row ")">
     @* Map Container *@
     <div class="sm:flex-shrink-0 flex flex-col justify-center shadow-md rounded-3xl">
-        <div
-            class="shadow-md transition-all duration-500  bg-gray-200 text-primary-900 hover:scale-110 rounded-3xl justify-center items-center w-[25rem] h-80">
+        <a href="@key!.website" target="_blank" 
+            class="text-black shadow-md transition-all duration-500 cursor-pointer  bg-gray-200 hover:scale-110 rounded-3xl justify-center items-center w-[25rem] h-80">
             <div class="my-auto w-full flex p-2">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 m-3">
                     @{
-                    var logo = key!.owner + ".png";
+                        var logo = key!.owner + ".png";
                     }
-                    <Image ImageName="@logo" alt="Sale" css="scale-150"/>
+                    <Image ImageName="@logo" alt="Sale" css="scale-150" />
                 </div>
                 <div class="m-3">
                     <h1 class="text-xl text-primary-800 font-semibold mt-3 gap-4">@key!.owner</h1>
@@ -26,18 +27,23 @@
             <div class="flex gap-1 mt-3 m-4">
                 <p class="text-l">@key!.description</p>
             </div>
-        </div>
+        </a>
     </div>
-    <div class="my-auto relative">
+    <div class="my-auto relative px-20">
         <div class="p-3">
             <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
         </div>
         <div class="p-3">
+            <a href="https://mail.google.com/" target="_blank">
             <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
+            </a>
         </div>
         <div class="p-3">
             <LocationItem Title="Phone Number" ImageName="Phone.svg" Text=@key!.phoneNumber />
         </div>
+    </div>
+    <div class="my-auto relative">
+        <Image ImageName="Robert_Pointing.png" css="h-72" alt="Rob"/>
     </div>
 </div>
 
@@ -45,4 +51,6 @@
 @code {
     [Parameter]
     public APIKeyModel? key { get; set; }
+    [Parameter]
+    public int id { get; set; }
 }
