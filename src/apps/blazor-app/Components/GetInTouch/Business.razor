@@ -11,7 +11,7 @@
     class="flex self-center items-center gap-4 justify-center mt-4 md:mt-20 @(((id + 1) % 2) == 0 ? "flex-row-reverse" : "flex-row ")">
     @* Map Container *@
     <div class="sm:flex-shrink-0 flex flex-col justify-center shadow-md rounded-3xl">
-        <a href="@key!.website" target="_blank" 
+        <a href="@key!.website" target="_blank"
             class="text-black shadow-md transition-all duration-500 cursor-pointer  bg-gray-200 hover:scale-110 rounded-3xl justify-center items-center w-[25rem] h-80">
             <div class="my-auto w-full flex p-2">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 m-3">
@@ -29,13 +29,13 @@
             </div>
         </a>
     </div>
-    <div class="my-auto relative px-20">
+    <div class="my-auto relative px-20 max-w-[50rem]">
         <div class="p-3">
             <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
         </div>
         <div class="p-3">
             <a href="https://mail.google.com/" target="_blank">
-            <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
+                <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
             </a>
         </div>
         <div class="p-3">
@@ -43,7 +43,23 @@
         </div>
     </div>
     <div class="my-auto relative">
-        <Image ImageName="Robert_Pointing.png" css="h-72" alt="Rob"/>
+        @{
+            switch (id % 4)
+            {
+                case 0:
+                    <Image ImageName="Robert_Pointing_Left.png" css="h-96" alt="Rob" />
+                    break;
+                case 1:
+                    <Image ImageName="Robert_Pointing_Right.png" css="h-96" alt="Rob" />
+                    break;
+                case 2:
+                    <Image ImageName="Robert_Holding_Panel_Hand_Out.png" css="h-96" alt="Rob" />
+                    break;
+                case 3:
+                    <Image ImageName="Robert_Leaning_Panel.png" css="h-96" alt="Rob" />
+                    break;
+            }
+        }
     </div>
 </div>
 
