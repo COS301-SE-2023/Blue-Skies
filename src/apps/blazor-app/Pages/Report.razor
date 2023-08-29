@@ -14,11 +14,11 @@
 </div>
 
 @code {
-    [Parameter] public string UserId { get; set; }
+    [Parameter] public string? UserId { get; set; }
     [Parameter]
-    public string ReportId { get; set; }
+    public string? ReportId { get; set; }
 
-    private ReportModel report = new ReportModel();
+    private ReportModel? report = new ReportModel();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0;
     private double longitude = 0;
@@ -32,6 +32,11 @@
     {
         
         await GetReport();
+        if(report == null)
+        {
+            Console.WriteLine("Report not found");
+            return;
+        }
         Console.WriteLine("Current report: " + report.reportId);
         await GetLocationData();
         Console.WriteLine("Current location: " + locationData.location);
@@ -50,8 +55,23 @@
         if (response.IsSuccessStatusCode)
         {
             var responseStream = await response.Content.ReadAsStringAsync();
-            //JsonSerializer
-            report = JsonSerializer.Deserialize<ReportModel>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            if (responseStream is null)
+            {
+                Console.WriteLine("Report not found");
+                return;
+            }
+
+            report = JsonSerializer.Deserialize<ReportModel>(responseStream, options);
+                
+            if(report == null){
+                Console.WriteLine("Report not found");
+                return;
+            }
             latitude = report.latitude;
             longitude = report.longitude;
             @* Clear reports *@
