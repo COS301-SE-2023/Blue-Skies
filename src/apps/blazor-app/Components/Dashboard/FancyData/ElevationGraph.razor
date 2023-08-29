@@ -13,9 +13,9 @@
     @* OnParametersSet *@
     protected override void OnParametersSet()
     {
-        @* if(elevationValues != null){
+        if(elevationValues != null){
             CalculateData();
-        } *@
+        }
     }
     protected override async Task OnInitializedAsync()
     {
@@ -41,29 +41,12 @@
                                 {
                                     LabelString = "Height",
                                     Display = true,
-                                },
-                                @* Ticks = new LinearCartesianTicks
-                                {
-                                    Min = min,
-                                    Max = max
-                                } *@
+                                }
                             }
-                        },
-                        @* XAxes = new List<CartesianAxis>
-                        {
-                            new LinearCartesianAxis
-                            {
-                                ScaleLabel = new ScaleLabel
-                                {
-                                    LabelString = "Distance",
-                                    Display = true
-                                },
-                            }
-                        } *@
+                        }
                 }
             }      
         };
-        CalculateData();
         
     }
 
@@ -71,7 +54,9 @@
     private void CalculateData()
     {
 
-        
+        lineConfig.Data.Labels.Clear();
+        lineConfig.Data.Datasets.Clear();
+
         @* Remove the last character *@
         elevationValues = elevationValues.Remove(elevationValues.Length - 1);
 
@@ -81,11 +66,11 @@
         @* Find max and min *@
         int max = elevationInts.Max();
         int min = elevationInts.Min();
-        @* lineConfig.Data.Labels.AddRange(new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }); *@
-        lineConfig.Data.Labels.Clear();
+        int count = - 1 * elevationInts.Length / 2 * 100;
         for (int i = 0; i < elevationInts.Length; i++)
         {
-            lineConfig.Data.Labels.Add(i.ToString());
+            lineConfig.Data.Labels.Add(count.ToString());
+            count += 100;
         }
 
         @* Add the data to the chart *@
@@ -97,7 +82,6 @@
             BorderWidth = 1,
             Fill = FillingMode.Disabled
         };
-        lineConfig.Data.Datasets.Clear();
         lineConfig.Data.Datasets.Add(dataset1);
     }
 } 
