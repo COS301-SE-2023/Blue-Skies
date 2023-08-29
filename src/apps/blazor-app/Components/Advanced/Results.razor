@@ -122,29 +122,17 @@
     /// </summary>
     private async Task GetSolarScore() 
     {
+        solarCalculator.reset();
         if(API_PORT == null) {
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 100;
-        int timesNotUpdated = 0;
-        int previousRemainingCalls = remainingCalls;
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        int previousScore = -1;
-        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
-            solarScore = result[0];
-            previousScore = solarScore;
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, API_PORT, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            remainingCalls = result[1];
-            if(previousRemainingCalls != remainingCalls){
-                timesNotUpdated = 0;
-            } else {
-                timesNotUpdated++;
-            }
-            previousRemainingCalls = remainingCalls;
             StateHasChanged();
-            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
         }
     }
