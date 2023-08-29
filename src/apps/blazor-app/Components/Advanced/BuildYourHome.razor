@@ -125,13 +125,21 @@
                 {
                     daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
                     dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
-                    daylightChart.SetDaylightHours(daylight);
+                    var remaining = (float)Math.Round((24-daylight)-dlh, 2);
+                    daylightChart.SetRemaining(remaining);
                     daylightChart.SetHours(dlh);
                 }
             }
             <DaylightChart @ref="daylightChart"/>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                <p class="text-5xl text-primary-900 font-semibold">@{
+                        if(dlh == (24 - daylight)) {
+                            <p>@dlh+</p>
+                        } else {
+                            <p>@dlh</p>
+                        }
+                    }
+                </p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -435,9 +443,9 @@
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
-        StateHasChanged();
         UpdateApplianceStorage();
         CalculateRunningHours();
+        StateHasChanged();
     }
 
     private async void UpdateApplianceStorage()
