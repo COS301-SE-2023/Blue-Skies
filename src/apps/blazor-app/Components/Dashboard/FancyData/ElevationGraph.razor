@@ -1,0 +1,103 @@
+@using ChartJs.Blazor.LineChart
+
+@namespace BlazorApp.FancyData
+
+<div>
+    <Chart Config="lineConfig"></Chart>
+</div>
+
+@code {
+
+    [Parameter] public string elevationValues { get; set; }
+    private LineConfig? lineConfig;
+    @* OnParametersSet *@
+    protected override void OnParametersSet()
+    {
+        @* if(elevationValues != null){
+            CalculateData();
+        } *@
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        
+        @* Create the chart *@
+        lineConfig =  new LineConfig
+        {
+            Options = new LineOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Elevation Data"
+                },
+                Scales = new Scales
+                {   
+                        YAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = "Height",
+                                    Display = true,
+                                },
+                                @* Ticks = new LinearCartesianTicks
+                                {
+                                    Min = min,
+                                    Max = max
+                                } *@
+                            }
+                        },
+                        @* XAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = "Distance",
+                                    Display = true
+                                },
+                            }
+                        } *@
+                }
+            }      
+        };
+        CalculateData();
+        
+    }
+
+    @* Calculate Data *@
+    private void CalculateData()
+    {
+
+        
+        @* Remove the last character *@
+        elevationValues = elevationValues.Remove(elevationValues.Length - 1);
+
+        @* Split the string into an array of integers *@
+        string[] elevationArray = elevationValues.Split(',');
+        int[] elevationInts = Array.ConvertAll(elevationArray, int.Parse);
+        @* Find max and min *@
+        int max = elevationInts.Max();
+        int min = elevationInts.Min();
+        @* lineConfig.Data.Labels.AddRange(new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }); *@
+        lineConfig.Data.Labels.Clear();
+        for (int i = 0; i < elevationInts.Length; i++)
+        {
+            lineConfig.Data.Labels.Add(i.ToString());
+        }
+
+        @* Add the data to the chart *@
+        IDataset<int> dataset1 = new LineDataset<int>(elevationInts)
+        {
+            Label = "Elevation",
+            BackgroundColor = "rgba(0,15,82, 1)",
+            BorderColor = "rgba(0,15,82, 1)",
+            BorderWidth = 1,
+            Fill = FillingMode.Disabled
+        };
+        lineConfig.Data.Datasets.Clear();
+        lineConfig.Data.Datasets.Add(dataset1);
+    }
+} 
