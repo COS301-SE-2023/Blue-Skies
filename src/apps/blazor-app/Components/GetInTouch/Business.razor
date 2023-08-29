@@ -7,9 +7,9 @@
 @inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject BlazorApp.Data.LoadingService loadingService
 
-<div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
+<div class="flex self-center items-center gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="sm:flex-shrink-0  items-center flex flex-col justify-center shadow-md rounded-3xl">
+    <div class="sm:flex-shrink-0 flex flex-col justify-center shadow-md rounded-3xl">
         <div
             class="shadow-md transition-all duration-500  bg-gray-200 text-primary-900 hover:scale-110 rounded-3xl justify-center items-center w-[25rem] h-80">
             <div class="my-auto w-full flex p-2">
@@ -28,21 +28,16 @@
             </div>
         </div>
     </div>
-    <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
-        <div class="my-auto w-full relative">
-            <div class="p-3">
-                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
-            </div>
-            <div class="p-3">
-                <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
-            </div>
-            <div class="p-3">
-                <LocationItem Title="Phone Number" ImageName="Phone.svg" Text=@key!.phoneNumber />
-            </div>
+    <div class="my-auto relative">
+        <div class="p-3">
+            <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
         </div>
-    </div>
-    <div>
-        
+        <div class="p-3">
+            <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
+        </div>
+        <div class="p-3">
+            <LocationItem Title="Phone Number" ImageName="Phone.svg" Text=@key!.phoneNumber />
+        </div>
     </div>
 </div>
 
