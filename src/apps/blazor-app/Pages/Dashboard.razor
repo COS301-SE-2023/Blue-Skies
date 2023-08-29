@@ -250,32 +250,20 @@ else if (!logIn)
     }
     private async Task GetSolarScore() 
     {
+        solarCalculator.reset();
         if(API_PORT == null) {
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int remainingCalls = 100;
-        int timesNotUpdated = 0;
-        int previousRemainingCalls = remainingCalls;
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        int previousScore = -1;
-        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
-            int[] result = await solarCalculator.GetDataLocationData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
-            solarScore = result[0];
-            previousScore = solarScore;
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            remainingCalls = result[1];
-            if(previousRemainingCalls != remainingCalls){
-                if(solarCalculator.locationData != null) {
-                    currentLocationData = solarCalculator.locationData;
-                }
-                timesNotUpdated = 0;
-            } else {
-                timesNotUpdated++;
+            if(solarCalculator.locationData != null) {
+                currentLocationData = solarCalculator.locationData;
             }
-            previousRemainingCalls = remainingCalls;
             StateHasChanged();
-            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
         }
     }
