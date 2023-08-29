@@ -2,23 +2,54 @@
 
 @using ChartJs.Blazor.BarChart
 @using BlazorApp.Models
+@using BlazorApp.Components.Base
 
-<h1>Solar ROI Calculator</h1>
+<Heading css="mb-16 mt-16 max-w-3xl mx-auto">
+    <Superscript><h1 class="text-center">Potential Savings and</h1></Superscript >
+    <Header><h1 class="text-center">Solar ROI Calculator</h1></Header>
+    <Subscript><p class="text-center">All calculations are derived from the monthly bill. Please keep in mind that these calculations are approximate, and costs may vary among different solar installers."</p></Subscript>
+</Heading>
 
-<div class="flex flex-col justify-center p-4 w-full rounded-3xl bg-gradient-to-br from-primary-400 to-primary-500">
+<div class="flex mb-10 flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
     <p class="text-center text-white font-semibold">Please enter your monthly bill:</p>
-    <h1 class="text-center text-4xl font-black text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-300">R @sliderValue</h1>
-    <input type="range" min="1000" max="7000" step="100" @bind="sliderValue" @oninput="HandleSliderChange" />
+    <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @sliderValue</h1>
+    <input type="range" class="accent-primary-800  cursor-pointer w-2/3 " min="1000" max="7000" step="100" @bind="sliderValue" @oninput="HandleSliderChange" />
 </div>
-<div class="w-1/2 h-1/2">
-    <Chart Config="barConfig"></Chart>
+
+<div class="flex gap-5 justify-center items-center">
+    <div class="w-1/2 h-1/2 mt-10">
+        <Chart Config="barConfig"></Chart>
+    </div>
+    <div class="flex w-1/2 flex-col gap-4 p-2 justify-center">
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+            <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
+                <p class="text-center text-xl font-bold text-primary-100">Potential Payback</p>
+                <p class="text-center text-xl font-bold text-primary-200">in years</p>
+            </div>
+            <div class="w-1/2 h-full flex justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                <p class="text-center text-xl font-bold">@min</p>
+            </div>
+        </div>
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+            <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
+                <p class="text-center text-xl font-bold text-primary-100">Savings</p>
+                <p class="text-center text-xl font-bold text-primary-200">per month</p>
+            </div>
+            <div class="w-1/2 h-full flex justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                <p class="text-center text-xl font-bold">R @activeSystem?.Savings</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 @code {
     private BarConfig? barConfig;
-    private int sliderValue = 50;
+    private int sliderValue = 1500;
     private BarDataset<double>? dataset;
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
+    private double min = 0;
+    private SystemInfo? activeSystem;
+
 
 
     protected override  void OnInitialized() {
@@ -29,8 +60,7 @@
                 Responsive = true,
                 Title = new OptionsTitle
                 {
-                    Display = true,
-                    Text = "Solar ROI Calculator"
+                    Display = false,
                 },
                 Legend = new Legend
                 {
@@ -114,7 +144,7 @@
     {
         //calculate min roi in systems
         var systems = CalculateROI(sliderValue);
-        var min = systems.Min(x => x.ROI);
+        min = systems.Min(x => x.ROI);
 
         if (index == -1)
         {
@@ -127,6 +157,7 @@
             if (i == index)
             {
                 colors[i] = "#3871C1";
+                activeSystem = systems[i];
             }
         }
         dataset!.BackgroundColor = colors;
