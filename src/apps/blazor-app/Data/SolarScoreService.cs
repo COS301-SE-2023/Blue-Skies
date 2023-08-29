@@ -9,25 +9,23 @@ namespace BlazorApp.Data
         private double worstSolarIrradiation = 120;
 
         public LocationDataModel? locationData { get; set; }
+        public int previousScore { get; set; } = -1;
+        public int timesNotUpdated { get; set; } = 0;
+        public int remainingCalls { get; set; } = 100;
+        public int previousRemainingCalls { get; set; } = 100;
 
-        public async Task<int[]> GetDataLocationData(
+        public async Task<int> GetSolarScoreFromData(
             double latitude,
             double longitude,
             string API_PORT,
-            int remainingCalls,
-            double tempSolarIrradiation,
-            int previousScore
+            double tempSolarIrradiation
         )
         {
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
             System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
-            int[] result = { getPercentage(tempSolarIrradiation), remainingCalls };
-            if(result [0] > 100) 
-            {
-                result[0] = 100;
-            }
+            int result = getSolarScoreFromInitialData(tempSolarIrradiation);
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -46,22 +44,32 @@ namespace BlazorApp.Data
                 {
                     return result;
                 }
-                result[1] = locationData.remainingCalls;
+                remainingCalls = locationData.remainingCalls;
+                Console.WriteLine("Remaining calls: " + remainingCalls + " vs " + previousRemainingCalls);
+                if(previousRemainingCalls != remainingCalls)
+                {
+                    timesNotUpdated = 0;
+                } else
+                {
+                    timesNotUpdated++;
+                }
+                previousRemainingCalls = remainingCalls;
                 if(locationData.remainingCalls >= 100)
                 {
                     return result;
                 }
-                result[0] = calculateSolarScore(locationData.data);
+                result = calculateSolarScore(locationData.data);
             }
             else
             {
                 if(previousScore != -1)
                 {
-                    result[0] = previousScore;
+                    result = previousScore;
                 }
                 Console.WriteLine("Failed to get data from LocationData");
                 Console.WriteLine("Previous score: " + previousScore);
             }
+            previousScore = result;
             return result;
         }
 
@@ -114,6 +122,22 @@ namespace BlazorApp.Data
                 percentage = 100;
             }
             return (int)percentage;
+        }
+
+        public void reset() {
+            previousScore = -1;
+            timesNotUpdated = 0;
+            remainingCalls = 100;
+            previousRemainingCalls = 100;
+        }
+
+        public int getSolarScoreFromInitialData(double tempSolarIrradiation) {
+            var result = getPercentage(tempSolarIrradiation);
+            if(result > 100) 
+            {
+                result = 100;
+            }
+            return result;
         }
     }
 }
