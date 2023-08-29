@@ -19,8 +19,8 @@
 }
 else
 {
-    <div class="mt-24 text-center">
-        <Heading css="w-1/2 mx-auto">
+    <div class="sm:mt-24 mt-20 text-center">
+        <Heading css="mx-auto sm:w-1/2 w-[90%]">
             <Header>
                 <h1 class="text-3xl font-bold">Contact your nearest solar service provider</h1>
             </Header>
@@ -33,12 +33,12 @@ else
     </div>
     <div class="fade-in-enter-active">
         <Image ImageName="shapes.svg"
-            css="absolute -top-[10%] transform scale-[1.7] -z-20 -left-[57%]  w-2/3 h-full -rotate-90" alt="Shapes" />
+            css="absolute -top-[10%] sm:transform scale-[1.7] -z-20 -left-[57%]  w-2/3 h-full -rotate-90" alt="Shapes" />
         <Image ImageName="shapes.svg"
-            css="absolute top-[5%] transform scale-[1.6] -z-20 -right-[57%]  w-2/3 h-full -rotate-90" alt="Shapes" />
+            css="absolute top-[5%] sm:transform scale-[1.6] -z-20 -right-[57%]  w-2/3 h-full -rotate-90" alt="Shapes" />
         @for (int i = 0; i < keys.Count; i++)
         {
-            <div class="w-full mt-40 mb-20 ">
+            <div class="w-full sm:mt-40 mt-20 mb-20 ">
                 <Business key="keys[i]" id="i" />
             </div>
         }
