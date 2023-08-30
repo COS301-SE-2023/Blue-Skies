@@ -1,16 +1,37 @@
 @page "/report/{UserId}/{ReportId}"
 @using System.Text.Json
+@using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
 @layout AuthLayout
-<div class="pageA4">
+<div class="pageA4 mx-auto">
     @if (isLoaded){
-        <div id="report">
-    <LocationInfo css="mt-8" reports="@allReports" selectedReport="0" currentLocationData="@locationData" systems="@systems" solarScore="999" />
+    <div id="report">
+        <LocationInfo css="mt-8" reports="@allReports" selectedReport="0" currentLocationData="@locationData" systems="@systems" solarScore="999" />
 
+
+        @* Fancy Data *@
+        <div class="w-full">
+        <Card>
+            <Heading>
+                <Header>
+                    <h1 class="text-xl">Fancy Data</h1>
+                </Header>
+                <Subscript>
+                    <p>More information about your area</p>
+                </Subscript>
+            </Heading>
+            <div class="flex w-full">
+                <div class="w-full">
+                    <SolarIrradiationPerMonth solarIrradiation="@locationData.data" />
+                </div>
+            </div>
+            <div class="w-full">
+                <ElevationGraph elevationValues="@locationData.elevationData" />
+            </div>
+            </Card>
         </div>
+    </div>
     }
-
-    @UserId
 </div>
 
 @code {
@@ -42,8 +63,8 @@
         Console.WriteLine("Current location: " + locationData.location);
         await GetSystemsAsync();
         Console.WriteLine("Current systems: " + systems.Count);
-        isLoaded = true;
         StateHasChanged();
+        isLoaded = true;
     }
 
     @* Get report *@
