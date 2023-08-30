@@ -78,7 +78,7 @@ a,
   width: 21cm;
   min-height: 29.7cm;
   padding: 2cm;
-  margin: 0cm auto;
+  /* margin: 0cm auto; */
   /* border: 1px #d3d3d3 solid; */
   background: white;
 }
