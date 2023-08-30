@@ -149,4 +149,84 @@ describe('LocationDataController', () => {
       });
     });
   });
+
+  // updateDataLocationData
+  describe('updateDataLocationData', () => {
+    // should return 200 if the query is successful
+    it('should return 200 if the query is successful', async () => {
+      mockRequest = {
+        body: {
+          data: 'test',
+          remainingCalls: 5,
+        },
+        params: {
+          latitude: '1',
+          longitude: '1',
+        },
+      };
+
+      locationDataController.updateDataLocationData(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'updated data in LocationData successfully.',
+      });
+    });
+
+    // should return 400 if the query is unsuccessful
+    it('should return 400 if the query is unsuccessful', async () => {
+      mockRequest = {
+        body: {
+          data: 'test',
+          remainingCalls: 5,
+        },
+        params: {
+          latitude: '1',
+          longitude: '1',
+        },
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+      locationDataController.updateDataLocationData(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+
+    // should return 500 if an error is thrown
+    it('should return 500 if an error is thrown', async () => {
+      mockRequest = {
+        body: {
+          data: 'test',
+          remainingCalls: 5,
+        },
+        params: {
+          latitude: '1',
+          longitude: '1',
+        },
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Mock Error');
+        }
+      );
+      locationDataController.updateDataLocationData(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
 });
