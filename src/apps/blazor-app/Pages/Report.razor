@@ -3,7 +3,9 @@
 @using ChartJs.Blazor.PieChart
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
+@using ChartJs.Blazor.PolarAreaChart
 @inject BlazorApp.Data.SolarCalculator solarCalculator
+
 @layout AuthLayout
 <div class="pageA4 mx-auto">
     @if (isLoaded)
@@ -82,6 +84,25 @@
                 <div>
                     <Image ImageName="@homeSize" alt="House" css="scale-50" />
                 </div>
+
+                <div class="w-full flex">
+                    <div class="w-1/2">
+                        <div class="w-full flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
+                            <div class="flex flex-col justify-center w-full">
+                                <Chart Config="pieConfig"></Chart>
+                                <p class="text-center text-base text-primary-900 font-semibold">
+                                    @locationData.daylightHours h</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="w-1/2">
+                        <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
+                        <Chart Config="polarAreaConfig"></Chart>
+                    </div>
+                </div>
             </div>
             @* Fancy Data *@
             <div class="w-full">
@@ -119,6 +140,7 @@
     private bool isLoaded = false;
     private string? homeSize = "Small";
     private PieConfig pieConfig = new PieConfig();
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     public string solarScore = "";
     public string avgEnergyProduction = "";
@@ -155,6 +177,7 @@
         }
         await GetSolarScore();
         GetAvgEnergyProduction();
+        renderCharts();
         isLoaded = true;
         StateHasChanged();
 
@@ -278,6 +301,241 @@
     {
         avgEnergyProduction = Math.Round(system.numberOfPanels *
         locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";
+    }
+
+    @* renderCharts *@
+    private void renderCharts()
+    {
+        pieConfig = new PieConfig(true)
+            {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 3,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Running Hours",
+                        FontSize = 20,
+                        Position = Position.Bottom,
+                        LineHeight = 4,
+                    },
+                    Circumference = 3,
+                    Rotation = -9.341,
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 2000,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false,
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    CutoutPercentage = 80
+                }
+            };
+
+        float hours = (float)locationData!.daylightHours;
+        float remaining = (float)Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
+            {
+                BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
+            };
+        pieConfig.Data.Datasets.Add(pieDataset);
+
+
+        polarAreaConfig = new PolarAreaConfig()
+            {
+                Options = new PolarAreaOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 1.5,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 2000,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            Display = false,
+                        }
+                    }
+
+                }
+            };
+
+
+        polarAreaConfig.Data.Datasets.Clear();
+        polarAreaConfig.Data.Labels.Clear();
+        int countData = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                countData++;
+            }
+        }
+
+        int[] powerUsageData = new int[countData];
+        int counter = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage;
+                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type);
+                counter++;
+            }
+        }
+
+        PolarAreaDataset<int> polarDataset;
+        switch (counter)
+        {
+            case 0:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 1:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 2:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 3:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 4:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 5:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 6:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 7:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 8:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18), // orange
+ColorUtil.ColorHexString(255,193,8), // yellow
+ColorUtil.ColorHexString(56,113,193),// l blue
+ColorUtil.ColorHexString(0,15,82), // blue
+}
+                    };
+                break;
+            default:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+}
+                    };
+                break;
+        }
+
+        polarAreaConfig.Data.Datasets.Add(polarDataset);
+
     }
 
 }
