@@ -23,5 +23,5 @@ reportRouter.delete('/delete/:reportId', reportController.deleteReport);
 
 reportRouter.get(
   '/downloadReport/:userId/:reportId',
-  // reportController.downloadReport
+  reportController.downloadReport
 );
