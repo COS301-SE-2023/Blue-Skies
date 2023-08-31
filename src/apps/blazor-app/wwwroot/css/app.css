@@ -1065,6 +1065,10 @@ video {
   height: 40%;
 }
 
+.h-\[8cm\] {
+  height: 8cm;
+}
+
 .h-fit {
   height: -moz-fit-content;
   height: fit-content;
@@ -1080,14 +1084,6 @@ video {
 
 .h-screen {
   height: 100vh;
-}
-
-.h-\[5cm\] {
-  height: 5cm;
-}
-
-.h-\[8cm\] {
-  height: 8cm;
 }
 
 .w-1\/2 {
@@ -1198,6 +1194,10 @@ video {
   width: 40%;
 }
 
+.w-\[8cm\] {
+  width: 8cm;
+}
+
 .w-auto {
   width: auto;
 }
@@ -1213,14 +1213,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[5cm\] {
-  width: 5cm;
-}
-
-.w-\[8cm\] {
-  width: 8cm;
 }
 
 .min-w-fit {
@@ -1364,6 +1356,12 @@ video {
 .scale-150 {
   --tw-scale-x: 1.5;
   --tw-scale-y: 1.5;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-50 {
+  --tw-scale-x: .5;
+  --tw-scale-y: .5;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
