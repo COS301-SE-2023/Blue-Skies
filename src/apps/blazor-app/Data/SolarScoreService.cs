@@ -46,15 +46,16 @@ namespace BlazorApp.Data
                 }
                 remainingCalls = locationData.remainingCalls;
                 Console.WriteLine("Remaining calls: " + remainingCalls + " vs " + previousRemainingCalls);
-                if(previousRemainingCalls != remainingCalls)
+                if (previousRemainingCalls != remainingCalls)
                 {
                     timesNotUpdated = 0;
-                } else
+                }
+                else
                 {
                     timesNotUpdated++;
                 }
                 previousRemainingCalls = remainingCalls;
-                if(locationData.remainingCalls >= 100)
+                if (locationData.remainingCalls >= 100)
                 {
                     return result;
                 }
@@ -62,7 +63,7 @@ namespace BlazorApp.Data
             }
             else
             {
-                if(previousScore != -1)
+                if (previousScore != -1)
                 {
                     result = previousScore;
                 }
@@ -73,7 +74,7 @@ namespace BlazorApp.Data
             return result;
         }
 
-        private int calculateSolarScore(string data)
+        public int calculateSolarScore(string data)
         {
             string input = data;
             decimal total = 0;
@@ -92,7 +93,7 @@ namespace BlazorApp.Data
                 total += decimal.Parse(newDataPoint.Substring(solarScoreIndex + 1));
                 i++;
             }
-            if(i == 0)
+            if (i == 0)
             {
                 return 0;
             }
@@ -102,7 +103,8 @@ namespace BlazorApp.Data
             {
                 solarScore = 100;
             }
-            if(solarScore <= 0) {
+            if (solarScore <= 0)
+            {
                 Random random = new Random();
                 solarScore = random.Next(0, 15);
             }
@@ -117,23 +119,26 @@ namespace BlazorApp.Data
             if (percentage < 0)
             {
                 percentage = 0;
-            } else if (percentage > 100)
+            }
+            else if (percentage > 100)
             {
                 percentage = 100;
             }
             return (int)percentage;
         }
 
-        public void reset() {
+        public void reset()
+        {
             previousScore = -1;
             timesNotUpdated = 0;
             remainingCalls = 100;
             previousRemainingCalls = 100;
         }
 
-        public int getSolarScoreFromInitialData(double tempSolarIrradiation) {
+        public int getSolarScoreFromInitialData(double tempSolarIrradiation)
+        {
             var result = getPercentage(tempSolarIrradiation);
-            if(result > 100) 
+            if (result > 100)
             {
                 result = 100;
             }

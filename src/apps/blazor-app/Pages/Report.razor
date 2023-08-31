@@ -1,7 +1,9 @@
 @page "/report/{UserId}/{ReportId}"
 @using System.Text.Json
+@using ChartJs.Blazor.PieChart
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 @layout AuthLayout
 <div class="pageA4 mx-auto">
     @if (isLoaded)
@@ -23,9 +25,10 @@
                         </div>
                         <div class="flex flex-col w-fit mx-auto space-y-2">
                             <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
-                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="123" />
+                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
                             <div class="translate-x-1">
-                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg" Text="456" />
+                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                                    Text="@avgEnergyProduction" />
                             </div>
                         </div>
                     </div>
@@ -46,6 +49,38 @@
                         <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
                         <p class="text-5xl text-gray-400 font-bold">kw</p>
                     </div>
+                </div>
+            </div>
+
+            <div>
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Appliances</h1>
+                    </Header>
+                    <Subscript>
+                        <p>What do you want to run in a power outage?</p>
+                    </Subscript>
+                </Heading>
+                <div class="flex flex-wrap justify-center gap-2">
+                    @{
+                        for (int i = 0; i < reportAllAppliance.Count; i++)
+                        {
+                            if (reportAllAppliance[i].numberOfAppliances != 0)
+                            {
+                                var appliance = reportAllAppliance[i].type;
+                                var count = reportAllAppliance[i].numberOfAppliances;
+                                string iconName = appliance + ".svg";
+                                <Appliance css="scale-75" ImageName="@iconName" Name="@appliance" Count="@count" />
+                            }
+                        }
+                        if (reportAllAppliance.Count == 0)
+                        {
+                            <p class="text-center">No appliances added</p>
+                        }
+                    }
+                </div>
+                <div>
+                    <Image ImageName="@homeSize" alt="House" css="scale-50" />
                 </div>
             </div>
             @* Fancy Data *@
@@ -82,6 +117,11 @@
     private LocationDataModel locationData = new LocationDataModel();
     private SystemModel system = new SystemModel();
     private bool isLoaded = false;
+    private string? homeSize = "Small";
+    private PieConfig pieConfig = new PieConfig();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    public string solarScore = "";
+    public string avgEnergyProduction = "";
     @* OnInitialized *@
 
     protected override async Task OnInitializedAsync()
@@ -97,8 +137,27 @@
         await GetLocationData();
         Console.WriteLine("Current location: " + locationData.location);
         await GetSystemAsync(report.systemId);
-        StateHasChanged();
+        await GetReportAllAppliance();
+        Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
+
+
+        if (system.systemSize.Equals("Small"))
+        {
+            homeSize = report.homeSize + "-Home1.svg";
+        }
+        else if (system.systemSize.Equals("Medium"))
+        {
+            homeSize = report.homeSize + "-Home2.svg";
+        }
+        else
+        {
+            homeSize = report.homeSize + "-Home3.svg";
+        }
+        await GetSolarScore();
+        GetAvgEnergyProduction();
         isLoaded = true;
+        StateHasChanged();
+
     }
 
     @* Get report *@
@@ -176,6 +235,49 @@
         {
             Console.WriteLine("Failed to get systems");
         }
+    }
+
+    @* Get report All Appliance *@
+    private async Task GetReportAllAppliance()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/get/" + ReportId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseStream = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+            if (responseStream is null)
+            {
+                Console.WriteLine("Report not found");
+                return;
+            }
+
+            reportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(responseStream, options)!;
+        }
+        else
+        {
+            Console.WriteLine("Report not found");
+        }
+
+    }
+
+    private async Task GetSolarScore()
+    {
+        int temp = solarCalculator.calculateSolarScore(locationData.data);
+        Console.WriteLine("Solar Score: " + temp);
+        solarScore = temp.ToString();
+    }
+
+    @* Calculate Average Energy Production *@
+    private async Task GetAvgEnergyProduction()
+    {
+        avgEnergyProduction = Math.Round(system.numberOfPanels *
+        locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";
     }
 
 }
