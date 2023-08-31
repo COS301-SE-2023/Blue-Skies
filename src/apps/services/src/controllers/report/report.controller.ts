@@ -2,7 +2,7 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
-// import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
     const { reportName, userId, homeSize, latitude, longitude, systemId } =
@@ -253,27 +253,27 @@ export default class ReportController {
     }
   };
 
-  // public downloadReport = async (req: Request, res: Response) => {
-  //   const { userId, reportId } = req.params;
-  //   // Launch the browser and open a new blank page
-  //   const browser = await puppeteer.launch();
-  //   const page = await browser.newPage();
-  //   const frontend_port = process.env.FRONTEND_PORT;
-  //   await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
-  //     waitUntil: 'networkidle2',
-  //   });
-  //   // Generate a PDF from the page content
-  //   const pdf = await page.pdf({
-  //     format: 'A4',
-  //     displayHeaderFooter: false,
-  //   });
+  public downloadReport = async (req: Request, res: Response) => {
+    const { userId, reportId } = req.params;
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    const frontend_port = process.env.FRONTEND_PORT;
+    await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
+      waitUntil: 'networkidle2',
+    });
+    // Generate a PDF from the page content
+    const pdf = await page.pdf({
+      format: 'A4',
+      displayHeaderFooter: false,
+    });
 
-  //   await browser.close();
+    await browser.close();
 
-  //   res.set({
-  //     'Content-Type': 'application/pdf',
-  //     'Content-Length': pdf.length,
-  //   });
-  //   res.send(pdf);
-  // };
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': pdf.length,
+    });
+    res.send(pdf);
+  };
 }
