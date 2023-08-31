@@ -17,6 +17,7 @@ keyRouter.post(
   keyController.createBusinessKey
 );
 keyRouter.get('/all', keyController.getAllKeys);
+keyRouter.get('/allBusiness', keyController.getAllBusinessKeys);
 keyRouter.get('/:keyId', keyController.getKey);
 keyRouter.patch('/update/:keyId', bodyParser.json(), keyController.updateKey);
 keyRouter.patch(

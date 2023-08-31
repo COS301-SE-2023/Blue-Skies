@@ -29,6 +29,21 @@ public class KeyController : ControllerBase
         }
     }
 
+    // all business
+    [HttpGet("allBusiness")]
+    public async Task<IActionResult> GetAllBusinessKeys()
+    {
+        try
+        {
+            var keys = await _keysRepository.GetAllBusinessKeys();
+            return Ok(keys);
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+        }
+    }
+
     //create key
     [HttpPost("create")]
     public async Task<IActionResult> CreateKey([FromBody] Keys keys)
