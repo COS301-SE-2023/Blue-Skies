@@ -1,7 +1,7 @@
 @using BlazorApp.Components.Base
 @using BlazorApp.Models
 @* tabs *@
-<div class="flex bg-primary-100 gap-4 max-w-lg  p-1 w-full rounded-xl">
+<div class="flex bg-primary-100 gap-4 p-1 w-full rounded-xl">
     @foreach (var item in Items)
     {
         <div @onclick="@(() => toggleActive(item.title))" class="w-full">
