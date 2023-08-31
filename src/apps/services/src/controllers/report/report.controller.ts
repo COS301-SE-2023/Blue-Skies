@@ -261,7 +261,7 @@ export default class ReportController {
       );
       // Launch the browser and open a new blank page
       const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
       });
       const page = await browser.newPage();
       const frontend_port = process.env.FRONTEND_PORT;
