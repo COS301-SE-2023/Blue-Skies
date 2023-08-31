@@ -1,0 +1,354 @@
+@page "/admin/stats"
+@layout AdminLayout
+@using ChartJs.Blazor.PieChart
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.RadarChart
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Admin
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedLocalStorage ProtectedLocalStore;
+@inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
+
+<PageTitle>Blue Skies - Stats</PageTitle>
+
+<div class="mt-2 pr-10 pb-10 slide-in-enter-active">
+    <div class="flex w-full justify-between p-4">
+        <div class="">
+            <Heading>
+                <Superscript>
+                    <h2>Website</h2>
+                </Superscript>
+                <Header>
+                    <h1>Statistics</h1>
+                </Header>
+            </Heading>
+        </div>
+
+    </div>
+
+    <div class="flex flex-col gap-20">
+        <div class="flex flex-row">
+            <div class="w-full">
+                <Chart Config="pieConfig"></Chart>
+            </div>
+            <div class="w-full">
+                <Chart Config="radarConfig"></Chart>
+            </div>
+        </div>
+        <diiv class="flex flex-row gap-10 ml-20">
+            <div class="w-1/2 mx-auto">
+                <Chart Config="barConfig"></Chart>
+            </div>
+            @* <div class="w-1/2 mx-auto my-auto">
+            <Heading>
+            <Superscript>
+            <h2>Total API Subscriptions</h2>
+            </Superscript>
+            <Header>
+            <h1 class="">@keyCount</h1>
+            </Header>
+            </Heading>
+            <Heading css="mt-10">
+            <Superscript>
+            <h2>Total Accounts Suspended</h2>
+            </Superscript>
+            <Header>
+            <h1>@suspendedCount</h1>
+            </Header>
+            </Heading>
+            </div> *@
+        </diiv>
+    </div>
+</div>
+
+@code {
+    private int keyCount = 0;
+    private int maxRadarCount = 0;
+    private int suspendedCount = 0;
+    private PieConfig? pieConfig;
+    private BarConfig? barConfig;
+    public RadarConfig? radarConfig;
+    private List<UserModel> users = new List<UserModel>();
+    private string[] radarTypes = new string[] { "Small", "Medium", "Large", "Custom" };
+    private int[] radarCount = new int[4] { 0, 0, 0, 0 };
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    protected override void OnInitialized()
+    {
+        renderCharts();
+        loadingService.HideLoadingScreen();
+    }
+
+    private void renderCharts()
+    {
+        @* **************************************** Radar Chart Config ************************************************ *@
+        radarConfig = new RadarConfig
+            {
+                Options = new RadarOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Popular System",
+                        FontSize = 20,
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            BeginAtZero = true,
+                            Max = 10,
+                        }
+                    }
+
+                },
+            };
+
+
+        foreach (string label in radarTypes)
+        {
+            radarConfig.Data.Labels.Add(label);
+        }
+
+        @* **************************************** Bar Chart Config ************************************************ *@
+        barConfig = new BarConfig
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Legend = new Legend
+                    {
+                        Position = Position.Top
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Number of",
+                        FontSize = 20,
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = false
+                    },
+                    Scales = new BarScales
+                    {
+                        YAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    BeginAtZero = true
+                                }
+                            }
+                        }
+                    }
+
+                }
+            };
+
+
+
+        IDataset<int> dataset2 = new BarDataset<int>(new[] { 30 })
+            {
+                Label = "Total reports generated",
+                BackgroundColor = "rgba(54, 162, 235, 0.2)",
+                BorderColor = "rgba(54, 162, 235, 1)",
+                BorderWidth = 1
+            };
+
+        @* _config.Data.Labels.AddRange(Months.Take(InitalCount)); *@
+        barConfig.Data.Datasets.Add(dataset2);
+
+        @* **************************************** Pie Chart Config ************************************************ *@
+        pieConfig = new PieConfig(true)
+            {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Active Users",
+                        FontSize = 20,
+                    },
+                    Legend = new Legend
+                    {
+                        Position = Position.Right
+                    },
+                }
+            };
+
+        foreach (string color in new[] { "Remaining", "Past 3 months", "Past month", "Past week" })
+        {
+            pieConfig.Data.Labels.Add(color);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsers();
+        await GetSystemUsage();
+        await GetKeys();
+        var ans = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        if (!ans.Value)
+        {
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/unauthorized");
+        }
+    }
+
+    private async Task GetSystemUsage()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/AdminStats/all");
+        var response = await client.SendAsync(request);
+        List<SystemUsage>? systems = null;
+        if (response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            if (data != null)
+            {
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    })!;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to retrieve system usage");
+        }
+
+        if (systems != null && systems.Count > 0 && radarConfig != null)
+        {
+            maxRadarCount = (int)(systems.Max(x => x.count) * 1.25);
+            for (int i = 0; i < systems.Count; i++)
+            {
+                radarTypes[i] = systems[i].type!;
+                radarCount[i] = systems[i].count;
+            }
+            IDataset<int> dataset3 = new RadarDataset<int>(radarCount)
+                {
+                    Label = "Average System Size",
+                    BackgroundColor = "rgba(255,99,132,0.2)",
+                    BorderColor = "rgba(255,99,132,1)",
+                    PointBackgroundColor = "rgba(255,99,132,1)",
+                    PointBorderColor = "#fff",
+                    PointHoverBackgroundColor = "#fff",
+                    PointHoverBorderColor = "rgba(255,99,132,1)",
+                };
+
+            radarConfig.Data.Datasets.Clear();
+            radarConfig.Options.Scale.Ticks.Max = maxRadarCount;
+            radarConfig.Data.Datasets.Add(dataset3);
+        }
+    }
+
+    private async Task GetUsers()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count })
+                {
+                    Label = "Signed up users",
+                    BackgroundColor = "rgba(255,99,132,0.2)",
+                    BorderColor = "rgba(255,99,132,1)",
+                    BorderWidth = 1
+                };
+            if (barConfig != null)
+            {
+                barConfig.Data.Datasets.Add(dataset1);
+            }
+
+            @* This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the
+            remaining users and adds them to the pie chart *@
+        if (users != null && users.Count > 0)
+            {
+                var week = 0;
+                var month = 0;
+                var threeMonths = 0;
+                var remaining = 0;
+                foreach (UserModel user in users)
+                {
+                    if (user.lastLoggedIn > DateTime.Now.AddDays(-7))
+                    {
+                        week++;
+                    }
+                    else if (user.lastLoggedIn > DateTime.Now.AddMonths(-1))
+                    {
+                        month++;
+                    }
+                    else if (user.lastLoggedIn > DateTime.Now.AddMonths(-3))
+                    {
+                        threeMonths++;
+                    }
+                    else
+                    {
+                        remaining++;
+                    }
+                }
+
+                PieDataset<int> dataset = new PieDataset<int>(new[] { remaining, threeMonths, month, week })
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(255, 99, 132), // Slice 1 aka "Red"
+                            ColorUtil.ColorHexString(255, 205, 86), // Slice 2 aka "Yellow"
+                            ColorUtil.ColorHexString(75, 192, 192), // Slice 3 aka "Green"
+                            ColorUtil.ColorHexString(54, 162, 235), // Slice 4 aka "Blue"
+                        }
+                    };
+                if (pieConfig != null)
+                {
+                    pieConfig.Data.Datasets.Add(dataset);
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to Get users");
+        }
+    }
+
+    private async Task GetKeys()
+    {
+        List<APIKeyModel> keys = new List<APIKeyModel>();
+
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            keyCount = keys.Count;
+            suspendedCount = 0;
+            foreach (APIKeyModel item in keys)
+            {
+                if (item.suspended == 1)
+                {
+                    suspendedCount++;
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed To Get Keys");
+        }
+    }
+}

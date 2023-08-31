@@ -1,0 +1,237 @@
+@page "/admin/appliances"
+@layout AdminLayout
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Admin
+@using BlazorApp.Components
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedLocalStorage ProtectedLocalStore;
+@inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.LoadingService loadingService
+
+<PageTitle>Blue Skies - Appliances</PageTitle>
+
+<div class="slide-in-enter-active mt-2">
+    <div class="flex w-full justify-around p-4">
+        <div class="">
+            <Heading>
+                <Superscript>
+                    <h2>Mangage All</h2>
+                </Superscript>
+                <Header>
+                    <h1>Appliances</h1>
+                </Header>
+            </Heading>
+        </div>
+        <div class="flex  gap-10 items-center">
+            <div @onclick="ModalPopup.Show">
+                <Button style="outline">
+                    <content>Delete</content>
+                </Button>
+            </div>
+            <div @onclick="AddAppliance">
+                <Button style="pill">
+                    <content>Add</content>
+                </Button>
+            </div>
+
+        </div>
+    </div>
+
+    <ModalPopup @ref="ModalPopup" Title="Delete Account?">
+        <ChildContent>
+            <p>Are you sure that you want to delete this Appliance?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="deleteAppliances">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
+
+    <div class="relative overflow-x-auto  mt-2">
+        <table class="w-full  text-sm text-left ">
+            <thead class="text-xs bg-primary-50  uppercase ">
+                <tr>
+                    <th scope="col" class="px-6 py-3 ">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </th>
+                    <th>Icon</th>
+                    <th scope="col" class="px-6 py-3  ">
+                        Appliance Type
+                    </th>
+                    <th scope="col" class="px-6 py-3 ">
+                        Power usage
+                    </th>
+                    <th scope="col" class="px-6 py-3 "></th>
+                </tr>
+            </thead>
+            <tbody>
+                @* For each appliance *@
+                @foreach (var appliance in appliances)
+                {
+                    <ApplianceEntry recordState="appliance.recordState != null ? true : false" appliance="appliance"
+                        OnSelect="AddDeleteArr" OnSave="SaveAppliance" />
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private Toast successToast { get; set; } = new Toast();
+    private Toast deleteToast { get; set; } = new Toast();
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    public bool recordState { get; set; } = false;
+
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
+    private List<int> deleteArr = new List<int>();
+
+    public void toggleRecordState(int state)
+    {
+        recordState = !recordState;
+    }
+
+    //Get All Appliances
+    private async Task deleteAppliances()
+    {
+        ModalPopup.Dismiss();
+        foreach (int id in deleteArr)
+        {
+            await DeleteAppliance(id);
+        }
+        deleteArr.Clear();
+        await GetAppliances();
+        Console.WriteLine("Delete");
+    }
+    private void AddDeleteArr(int id)
+    {
+        if (deleteArr.Contains(id))
+        {
+            deleteArr.Remove(id);
+        }
+        else
+        {
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach (int i in deleteArr)
+        {
+            Console.WriteLine(i);
+        }
+    }
+
+    //Delete Appliance
+    private async Task DeleteAppliance(int id)
+    {
+        ModalPopup.Dismiss();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/appliance/delete");
+        var content = new StringContent("{\r\n \"applianceId\": " + id + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            @* deleteToast.Show("Appliance Deleted", "The appliance has been deleted successfully", "error"); *@
+            toastService.ShowToast("Appliance Deleted", "The appliance has been deleted successfully", "error");
+            await GetAppliances();
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAppliances();
+        loadingService.HideLoadingScreen();
+    }
+
+    private async Task GetAppliances()
+    {
+        var client = new HttpClient();
+
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/appliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+
+    }
+
+    private void AddAppliance()
+    {
+        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0, recordState = true });
+    }
+
+    private async Task SaveAppliance(ApplianceModel appliance)
+    {
+        if (appliance.applianceId == -1)
+        {
+            Console.WriteLine("Add Appliance");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
+            var content = new StringContent("{\r\n \"type\": \"" + appliance.type + "\",\r\n \"powerUsage\": " +
+            appliance.powerUsage
+            + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                @* successToast.Show("Appliance Added", "The appliance has been added successfully", "success"); *@
+                toastService.ShowToast("Appliance Added", "The appliance has been added successfully", "success");
+                await GetAppliances();
+            }
+            else
+            {
+                Console.WriteLine("Failed");
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+
+        }
+        else
+        {
+            Console.WriteLine("Update Appliance");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
+            var content = new StringContent("{\r\n \"applianceId\": " + appliance.applianceId + ",\r\n \"type\": \"" +
+            appliance.type + "\",\r\n \"powerUsage\": " + appliance.powerUsage + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                @* successToast.Show("Appliance Updated", "The appliance has been updated successfully", "success"); *@
+                toastService.ShowToast("Appliance Updated", "The appliance has been updated successfully", "success");
+                await GetAppliances();
+            }
+            else
+            {
+                Console.WriteLine("Failed");
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+        }
+    }
+}

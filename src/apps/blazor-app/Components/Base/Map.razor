@@ -7,9 +7,12 @@
 }
 
 <div class="relative @css">
-    <Image ImageName="map_image.png" alt="Map" css="w-full h-full object-cover brightness-75 contrast-125 saturate-[.1] rounded-2xl" />
+    @{
+        string s = getImageName();
+    }  
+    <Image ImageName="@s" alt="Map" css="w-full h-full object-cover brightness-75 contrast-125 saturate-[.1] rounded-2xl" />
     <div class="w-[40%] h-[40%] rounded-3xl border-[6px] border-yellow-accent-500 z-10  absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-clip">
-        <Image ImageName="map_image.png" alt="Map" css="@secondImageCss" />
+        <Image ImageName="@imageName" alt="Map" css="@secondImageCss" />
     </div>
 </div>
 
@@ -19,5 +22,11 @@
     public string? css { get; set; }
     [Parameter]
     public string? scale { get; set; } = "scale-[2.5]";
+    [Parameter]
+    public string? imageName { get; set; }
+
+    private string getImageName(){
+        return imageName!;
+    }
 }
 

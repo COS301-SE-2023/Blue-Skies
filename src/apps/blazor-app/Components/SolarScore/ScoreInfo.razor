@@ -1,0 +1,90 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Models
+
+<div class="px-2 sm:px-5">
+    <div class="mt-20 text-center">
+        <Heading>
+            <Header>
+                <h1 class="text-3xl">What does this mean?</h1>
+            </Header>
+            <Subscript>
+                <p class="text-primary-700 mt-2">Your solar score measures your area's solar panel suitability based on
+                    the yearly sunlight received at your address.</p>
+            </Subscript>
+        </Heading>
+    </div>
+    <div class="flex flex-col pl-28 justify-center items-center lg:flex-row w-full">
+        <div @onclick="setImage" class="w-full">
+            <Accordion items="@accordionItems" columns="1" style="rounded" />
+        </div>
+        @{Console.WriteLine(graphicName);}
+        <Image ImageName="@graphicName" css="mt-5 w-2/3 lg:w-1/2"/>
+    </div>
+</div>
+
+@code{
+    public string graphicName = "Excellent.svg";
+    public List<AccordionItemModel> accordionItems { get; set; } = new List<AccordionItemModel>{
+        new AccordionItemModel(
+            "Excellent",
+            "80 - 100% Your area is excellent for solar installation. Solar installation is highly recommended based on the amount of sun in your area.",
+            false
+        ),
+        new AccordionItemModel(
+            "Good",
+            "60 - 79% Your area is good for solar installation. Solar installation would work well for your area.",
+            false
+        ),
+        new AccordionItemModel(
+            "Average",
+            "40 - 59% Your are  has the capacity to accommodate solar energy, though it may not be good. While solar could definitely be considered, other options would possibly work better, such as batteries charging with Eskom power.",
+            false
+        ),
+        new AccordionItemModel(
+            "Low",
+            "20 - 39% Your area is bad for solar. It is worthwhile to explore alternative solutions, instead of relying solely on solar. Batteries that charge on Eskom power will prove to be a highly effective solution.",
+            false
+        ),
+        new AccordionItemModel(
+            "Unfeasible",
+            "0 - 19% Solar for your are would be unfeasible. It is worthwhile to explore alternative solutions, such as batteries that charge on Eskom power.",
+            false
+        )
+    };
+
+    public void setImage()
+    {
+        for (int i = 0; i < accordionItems.Count ; i++)
+        {
+            if (accordionItems[i].active)
+            {
+                ToggleGraphic(i);
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// <para>Sets the graphic based on the accordion item selected</para>
+    /// <paramref name="type"/> is the index of the accordion item selected
+    /// </summary>
+    public void ToggleGraphic(int type)
+    {
+        switch (type)
+        {
+            case 0: graphicName = "Excellent.svg";
+                break;
+            case 1: graphicName = "Good.svg";
+                break;
+            case 2: graphicName = "Average.svg";
+                break;
+            case 3: graphicName = "Low.svg";
+                break;
+            case 4: graphicName = "Unfeasible.svg";
+                break;
+            default:
+                break;
+        }
+    }
+
+}

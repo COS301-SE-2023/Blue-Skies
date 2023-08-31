@@ -1,171 +1,202 @@
 @page "/dashboard"
 @layout MainLayout
-@inject ProtectedLocalStorage ProtectedLocalStore
-@inject NavigationManager NavigationManager
 @using BlazorApp.Components.Base
 @using BlazorApp.Components.Dashboard
+@using BlazorApp.Components
 @using BlazorApp.Models
 @using System.Text.Json
 @using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.PolarAreaChart
+@inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ReportManager reportManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
-<div class="fade-in-enter-active">
-    @if (!isLoaded) {}
-    else if (!logIn)
+@if (!isLoaded) {}
+else if (!logIn)
     {
-        ProtectedLocalStore.SetAsync("redirect", "dashboard");
+        ProtectedSessionStore.SetAsync("redirect", "dashboard");
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/login");
     }
     else if (isAd)
     {
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     }
     else
     {
-        @if (reports.Count > 0)
-        {
-            <div class="flex flex-col justify-center items-center px-10">
-                @{
-                    if (reports.Count > selectedReport)
-                    {
-                    selectedDate = reports[selectedReport].dateCreated;
+        <div class="fade-in-active px-1 md:px-5">
+            @if (reports.Count > 0)
+            {
+                <div class="flex flex-col justify-center items-center px-10">
+                    @{
+                        if (reports.Count > selectedReport)
+                        {
+                            selectedDate = reports[selectedReport].dateCreated;
+                        }
                     }
-                }
-                <SelectCalculation @bind-selectedReport="selectedReport" userReports="userReportNames"
-                    dateCreated="selectedDate" />
-                <LocationInfo css="mt-8" selectedReport="selectedReport" reportAll="reportAll" />
-                <div class="mt-10 w-full">
-                    <Card>
-                        <Heading>
-                            <Header>
-                                <h1 class="text-xl">Appliances</h1>
-                            </Header>
-                            <Subscript>
-                                <p>What do you want to run in a power outage?</p>
-                            </Subscript>
-                        </Heading>
-                        <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
-                            <div class="flex gap-4 justify-evenly scale-90">
-                                @{
-                                    updateAppliances();
-                                    for (int i = 0; i < reportAllAppliance.Count; i++)
-                                    {
-                                        if (reportAllAppliance[i].numberOfAppliances != 0)
+                    <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" updateLocation="updateLocationData"/>
+                    <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" solarScore="solarScore" />
+                    <div class="mt-10 w-full">
+                        <Card>
+                            <Heading>
+                                <Header>
+                                    <h1 class="text-xl">Appliances</h1>
+                                </Header>
+                                <Subscript>
+                                    <p>What do you want to run in a power outage?</p>
+                                </Subscript>
+                            </Heading>
+                            <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                                <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
+                                    @{
+                                        for (int i = 0; i < reportAllAppliance.Count; i++)
                                         {
-                                            var appliance = reportAllAppliance[i].type;
-                                            var count = reportAllAppliance[i].numberOfAppliances;
-                                            string iconName = appliance + ".svg";
-                                            <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                            if (reportAllAppliance[i].numberOfAppliances != 0)
+                                            {
+                                                var appliance = reportAllAppliance[i].type;
+                                                var count = reportAllAppliance[i].numberOfAppliances;
+                                                string iconName = appliance + ".svg";
+                                                <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                            }
+                                        }
+                                        if (reportAllAppliance.Count == 0)
+                                        {
+                                            <p class="text-center">No appliances added</p>
                                         }
                                     }
-                                    if (reportAllAppliance.Count == 0)
-                                    {
-                                        <p class="text-center">No appliances added</p>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div class="flex w-full mt-5">
-                            <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
-                                <div class="flex items-center text-left gap-2">
-                                    <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
-                                    <p class="">Usable Sunlight</p>
                                 </div>
-                                <div class="flex relative flex-col justify-center w-full">
-                                    <Chart Config="pieConfig"></Chart>
-                                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                                        <p class="text-5xl text-primary-900 font-semibold">
-                                            @reportAll[selectedReport].daylightHours</p>
-                                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                            </div>
+                            <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
+                                <div class="w-full flex flex-col gap-4 justify-start items-center">
+                                    <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
+                                    <div class="flex relative flex-col justify-center w-full">
+                                        <Chart Config="pieConfig"></Chart>
+                                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                            <p class="text-5xl text-primary-900 font-semibold">
+                                                @currentLocationData.daylightHours</p>
+                                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-full">
+                                    @{
+                                        var imageName = "";
+                                        if (reports.Count > selectedReport)
+                                        {
+                                            var sysId = reports[selectedReport].systemId;
+                                            var sysSize = "Small";
+                                            foreach (var sys in systems)
+                                            {
+                                                if (sys.systemId == sysId)
+                                                {
+                                                    sysSize = sys.systemSize;
+                                                }
+                                            }
+                                            if (sysSize != null)
+                                            {
+                                                if (sysSize.Equals("Small"))
+                                                {
+                                                    imageName = reports[selectedReport].homeSize + "-Home1.svg";
+                                                }
+                                                else if (sysSize.Equals("Medium"))
+                                                {
+                                                    imageName = reports[selectedReport].homeSize + "-Home2.svg";
+                                                }
+                                                else
+                                                {
+                                                    imageName = reports[selectedReport].homeSize + "-Home3.svg";
+                                                }
+                                            }
+                                        }
+                                    }
+                                    <Image ImageName=@imageName alt="House" css="scale-90" />
+                                </div>
+                                <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+                                    <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                                    <div class="flex relative flex-col justify-center w-full">
+                                        <Chart Config="polarAreaConfig"></Chart>
                                     </div>
                                 </div>
                             </div>
-                            <div class="w-full">
-                                @{
-                                    var imageName = "";
-                                    if (reportAll.Count > selectedReport)
-                                    {
-                                        var sysSize = reportAll[selectedReport].systemSize;
-                                        if (sysSize != null)
-                                        {
-                                            if (sysSize.Equals("Small"))
-                                            {
-                                                imageName = "House 3.svg";
-                                            }
-                                            else if (sysSize.Equals("Medium"))
-                                            {
-                                                imageName = "House 2.svg";
-                                            }
-                                            else
-                                            {
-                                                imageName = "House 1.svg";
-                                            }
-                                        }   
-                                    }
-                                }
-                                <Image ImageName=@imageName alt="House" css="scale-90" />
-                            </div>
-                            <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                @* <div class="flex items-center text-left gap-2">
-                                    <div class="w-2 h-2 bg-primary-400 rounded-full"></div>
-                                    <p class="">High Energy Consumption</p>
-                                    </div> *@
-                                <div class="flex relative flex-col justify-center w-full">
-                                    <Chart Config="polarAreaConfig"></Chart>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    </div>
                 </div>
-            </div>
 
-        }
-        else
-        {
-            <div class="flex flex-col justify-center items-center px-10">
-                <div class="flex flex-col justify-center items-center">
-                    <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br />
-                    <p class="text-center">You have no reports. Create a report to get started.</p>
+            }
+            else
+            {
+                <div class="flex flex-col justify-center items-center px-10 mt-10">
+                    <div class="flex flex-col justify-center items-center">
+                        <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br />
+                        <p class="text-center">You have no reports. Create a report to get started.</p>
+                    </div>
+                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Button style="pill" css="h-14">
+                            <content>
+                                <p @onclick='() => CreateReport()' class="text-sm font-semibold hover:text-white">Create a Report </p>
+                            </content>
+                        </Button>
+                    </div>
                 </div>
-                <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-                    <Button style="pill" css="h-14">
-                        <content>
-                            <p @onclick='() => NavigationManager.NavigateTo("/advanced")'
-                                class="text-sm font-semibold hover:text-white">Create a Report</p>
-                        </content>
-                    </Button>
+            }
+        </div>
+
+        <ModalPopup @ref="modalPopup" Title="Delete Record?">
+            <ChildContent>
+                <p>Are you sure that you want to delete this record?</p>
+                <div class="flex flex-row gap-4 justify-center">
+                    <div @onclick="Delete">
+                        <Button style="danger">
+                            <content>
+                                delete
+                            </content>
+                        </Button>
+                    </div>
+                    <div @onclick="modalPopup.Dismiss">
+                        <Button style="outline-danger">
+                            <content>Cancel</content>
+                        </Button>
+                    </div>
                 </div>
-            </div>
-        }
+            </ChildContent>
+        </ModalPopup>
+    
     }
-</div>
+
 
 @code {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
-    private List<string> userReportNames = new List<string>();
-    private List<ReportAllModel> reportAll = new List<ReportAllModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
-
+    private List<SystemModel> systems = new List<SystemModel>();
     private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
-    private int selectedReport = 0;
+    [Parameter]
+    public int selectedReport { get; set;}
     private DateTime selectedDate;
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+    private ModalPopup modalPopup { get; set; } = new ModalPopup();
+    public LocationDataModel currentLocationData  = new LocationDataModel();
+    public int solarScore = 0;
 
+    /// <summary>
+    /// Load the user's reports and all appliances
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        selectedReport = 0;
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
@@ -173,23 +204,107 @@
         isAd = isAdmin.Value;
         userId = usId.Value;
 
+        await GetSystemsAsync();       
         await GetUserReports();
-        await GetReportAll();
-        await GetReportAllAppliance();
-        if (reportAll.Count > 0)
+        var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
+        int createdReport = cReport.Value;
+
+        if (reports.Count > 0)
         {
+            if (createdReport != 0)
+            {   
+                for (int i = 0; i < reports.Count; i++)
+                {
+                    if (reports[i].reportId == createdReport)
+                    {
+                     selectedReport = i;
+                    }
+                }
+            }
+            await ProtectedSessionStore.DeleteAsync("createdReport");
+            await GetLocationData();
+            _ = GetSolarScore();
+            await GetReportAllAppliance();
+            await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
             renderCharts();
         }
-        loadingService.HideLoadingScreen(); 
+        loadingService.HideLoadingScreen();
+        reportManager.EditReportRequested += Edit;
+        reportManager.DeleteReportRequested += ShowModal;
+        isLoaded = true;
     }
 
-    private void updateAppliances()
+    public async Task updateLocationData()
+    {
+        Console.WriteLine("Update Location Data");
+        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
+        await GetLocationData();
+        _ = GetSolarScore();
+        updateAppliances();
+    }
+    private async Task GetSolarScore() 
+    {
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
+        int remainingCalls = 100;
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        int previousScore = -1;
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
+            int[] result = await solarCalculator.GetDataLocationData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
+            solarScore = result[0];
+            previousScore = solarScore;
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
+            }
+            previousRemainingCalls = remainingCalls;
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+        }
+    }
+    private async Task GetSystemsAsync()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+            if (systems.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("systems", systems);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+    }
+
+    private void Dispose() {
+        reportManager.EditReportRequested -= Edit;
+        reportManager.DeleteReportRequested -= ShowModal;
+    }
+    private async void updateAppliances()
     {
         reportAllAppliance.Clear();
-        if (reportAll.Count > 0)
+        if (reports.Count > 0)
         {
-            int reportId = reportAll[selectedReport].reportId;
+            int reportId = reports[selectedReport].reportId;
             foreach (var reportAllApp in allReportAllAppliance)
             {
                 if (reportAllApp.reportId == reportId)
@@ -199,6 +314,31 @@
             }
             updateCharts();
         }
+        await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
+    }
+    
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
+    ///     <item>If the data does not exist print error.</item>
+    /// </list>
+    /// </summary>
+    public async Task GetLocationData(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/"
+        + reports[selectedReport].latitude.ToString().Replace(",", ".") + "/" + reports[selectedReport].longitude.ToString().Replace(",", "."));
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+        return;
     }
 
     private async Task GetUserReports()
@@ -215,43 +355,12 @@
                 })!;
             if (reports.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReports", reports);
+                await ProtectedSessionStore.SetAsync("userReports", reports);
             }
         }
         else
         {
             Console.WriteLine("Failed to get user reports");
-        }
-    }
-
-    private async Task GetReportAll()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAll/user/" + userId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Successfully got report all");
-            var data = await response.Content.ReadAsStringAsync();
-            reportAll = JsonSerializer.Deserialize<List<ReportAllModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-            if (reportAll.Count > 0)
-            {
-                await ProtectedLocalStore.SetAsync("reportAll", reportAll);
-            }
-            foreach (var report in reportAll)
-            {
-                userReportNames.Add(report.reportName!);
-            }
-        isLoaded = true;
-
-        }
-        else
-        {
-            Console.WriteLine("Failed to get report all");
         }
     }
 
@@ -269,7 +378,7 @@
                 })!;
             if (allReportAllAppliance.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
+                await ProtectedSessionStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
             }
         }
         else
@@ -362,7 +471,6 @@
             };
         updateCharts();
     }
-
     private void updateCharts()
     {
         @* **************************************** Pie Chart Update Data ************************************************ *@
@@ -372,17 +480,17 @@
         {
             pieConfig.Data.Labels.Add(color);
         }
-        if (reportAll.Count > 0)
-        { 
-            float hours = reportAll[selectedReport].daylightHours;
+        if (reports.Count > 0)
+        {
+            float hours = (float) currentLocationData!.daylightHours;
             float remaining = (float)Math.Round(13 - hours, 2);
             PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-            {
-                BackgroundColor = new[] {
-                    ColorUtil.ColorHexString(56,113,193),
-                    ColorUtil.ColorHexString(156,163,175),
-                },
-            };
+                {
+                    BackgroundColor = new[] {
+                        ColorUtil.ColorHexString(56,113,193),
+                        ColorUtil.ColorHexString(156,163,175),
+                    },
+                };
             if (pieConfig != null)
             {
                 pieConfig.Data.Datasets.Add(pieDataset);
@@ -391,6 +499,7 @@
 
 
         @* **************************************** Polar Area Chart Update Data ************************************************ *@
+
         polarAreaConfig.Data.Datasets.Clear();
         polarAreaConfig.Data.Labels.Clear();
         int countData = 0;
@@ -401,7 +510,7 @@
                 countData++;
             }
         }
-        
+
         int[] powerUsageData = new int[countData];
         int counter = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)
@@ -418,94 +527,93 @@
         {
             case 0:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 1:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 2:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 3:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(255,193,8),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 4:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
-                Console.WriteLine("4");
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(255,193,8),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 5:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82),
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(255,193,8),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 6:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(0,15,82),
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(255,193,8),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 7:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                            ColorUtil.ColorHexString(246,135,18),
+                            ColorUtil.ColorHexString(255,193,8),
+                            ColorUtil.ColorHexString(56,113,193),
+                            ColorUtil.ColorHexString(0,15,82),
+                        }
+                    };
                 break;
             case 8:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
+                    {
+                        BackgroundColor = new[] {
                         ColorUtil.ColorHexString(246,135,18),
                         ColorUtil.ColorHexString(255,193,8),
                         ColorUtil.ColorHexString(56,113,193),
@@ -514,21 +622,78 @@
                         ColorUtil.ColorHexString(255,193,8), // yellow
                         ColorUtil.ColorHexString(56,113,193),// l blue
                         ColorUtil.ColorHexString(0,15,82), // blue
-                    }
-                };
+                        }
+                    };
                 break;
             default:
                 polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
-                    }
-                };
+                    {
+                        BackgroundColor = new[] {
+                            ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+                        }
+                    };
                 break;
         }
         if (polarAreaConfig != null)
         {
             polarAreaConfig.Data.Datasets.Add(polarDataset);
+        }
+    }
+    private Task CreateReport()
+    {
+        loadingService.ShowLoadingScreen();
+        NavigationManager.NavigateTo("/advanced");
+        return Task.CompletedTask;
+    }
+    private void ShowModal()
+    {
+        modalPopup.Show();
+        StateHasChanged();
+        Console.WriteLine("Modal shown");
+    }
+
+    /// <summary>
+    /// Edit the current report
+    /// </summary>
+    private async void Edit()
+    {
+        loadingService.ShowLoadingScreen();
+        await ProtectedSessionStore.SetAsync("edit", true);
+        NavigationManager.NavigateTo("/advanced");
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Delete the current report
+    /// </summary>
+     private async Task Delete(){
+        modalPopup.Dismiss();
+        await DeleteFromDatabase();
+    }
+
+    /// <summary>
+    /// Delete the current report from the database
+    /// </summary>
+    private async Task DeleteFromDatabase()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
+        
+        var content = new StringContent("{\r\n \"reportId\": " + reports[selectedReport].reportId + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            toastService.ShowToast("Deleted Calculation", "Report successfuly deleted.", "success");
+            Console.WriteLine("Report succesfully deleted");
+            reports.RemoveAt(selectedReport);
+            selectedReport = 0;
+            await updateLocationData();
+            StateHasChanged();
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete report");
         }
     }
 }

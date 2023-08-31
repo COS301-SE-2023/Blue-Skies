@@ -1,49 +1,70 @@
 @page "/solarscore"
-@layout MainLayout
-@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@* @layout MainLayout *@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
-@using BlazorApp.Components.Hero;
-@using BlazorApp.Section;
+@using BlazorApp.Components.Home;
+@using BlazorApp.Components.SolarScore;
 
 <PageTitle>Solar Score</PageTitle>
 
-
-@if (isAd) {
+@* Check for admin *@
+@if (isAd)
+{
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
-} 
-else {      
-<div class="fade-in-enter-active">
-    <div class="w-full">
-        @if (solarScore != 0)
-        {
-        <div class="mb-20"><BlazorApp.Section.Results/></div>
-        } else {
-            <EnterLocation/>
-        }
-        <div class="mt-40 mb-20"><BlazorApp.Section.ScoreInfo/></div>
-        <div class="mt-32 mb-10"><BlazorApp.Section.NextSteps/></div>
+}
+else
+{
+    <div class="fade-in-enter-active">
+        <div class="w-full">
+            @if (latitude != 0 && longitude != 0)
+            {
+                <div class="mb-20">
+                    <Results latitude="latitude" longitude="longitude"/>
+                </div>
+            }
+            else
+            {
+                <EnterLocation />
+            }
+            <div class="mt-40 mb-20">
+                <ScoreInfo />
+            </div>
+            <div class="mt-32 mb-10">
+                <NextSteps />
+            </div>
+        </div>
     </div>
-</div>
 }
 
 
 @code {
     private bool isAd = false;
-    private bool loading = true;
-    private int solarScore = 0;
+    private double latitude = 0;
+    private double longitude = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    /// <summary>
+    /// On page load, check if user is admin.
+    /// Get current location data from session storage.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        var selected = await ProtectedLocalStore.GetAsync<bool>("SelectedAddress");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var score = await ProtectedSessionStore.GetAsync<int>("solarScore");
-        var load = await ProtectedSessionStore.GetAsync<bool>("loading");
+        @* var locationData = await ProtectedSessionStore.GetAsync<LocationDataModel>("currentLocationData"); *@
+        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = lat.Value;
+        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = lng.Value;
+        Console.WriteLine("Latitude: " + latitude);
+        Console.WriteLine("Longitude: " + longitude);
         await ProtectedSessionStore.SetAsync("parent", "solarScore");
-        solarScore = score.Value;
         isAd = isAdmin.Value;
+        if (latitude == 0 && longitude == 0){
+            loadingService.HideLoadingScreen();
+        }
     }
-   
 }

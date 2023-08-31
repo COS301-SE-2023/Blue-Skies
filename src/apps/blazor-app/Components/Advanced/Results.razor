@@ -1,0 +1,165 @@
+@using BlazorApp.Components.Base
+@inject NavigationManager NavigationManager
+@inject BlazorApp.Data.SolarCalculator solarCalculator
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<div class="mt-20 text-center">
+    <Heading>
+        <Header>
+            @if (reportName != null)
+            {
+                <h1 class="text-3xl">@reportName</h1>
+            }
+            else
+            {
+                <h1 class="text-3xl">Your results in numbers</h1>
+            }
+        </Header>
+        <Subscript>
+            <p class="text-primary-700">The following numbers are based on your location.</p>
+        </Subscript>
+    </Heading>
+</div>
+<div class="flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
+    <div class="w-80 mx-auto">
+        @{
+            var imageName = currentLocationData!.image;
+        }
+        <Map scale="scale-[2.6]" imageName="@imageName" />
+    </div>
+    <div class="flex mx-auto flex-col px-2 sm:flex-row gap-5">
+        <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative">
+            @if(remainingCalls == 100) {
+                <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
+                    <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
+                </div>
+            } else if(remainingCalls > 0){ 
+                double percentage = remainingCalls;
+                percentage = Math.Round((percentage / 144)*100, 0);
+                <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
+                    <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
+                </div>
+                <div class="flex w-full absolute bottom-3 right-2">
+                    <p class="text-xs ml-4 text-primary-900 font-medium">Fetching data</p>
+                </div>
+            }
+            <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+                <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
+            </div>
+            <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
+            <div class="flex gap-1 mt-0">
+                <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
+                <p class="text-3xl text-gray-400 font-bold">%</p>
+            </div>
+        </Card>
+        <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                <Image ImageName="History.svg" alt="Sale" css="scale-150" />
+            </div>
+            <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+            <div class="flex gap-1 mt-3">
+                @{
+                    var usableHours = 0.0;
+                    if (currentLocationData != null)
+                    {
+                        usableHours = currentLocationData.daylightHours;
+                    }
+                }
+                <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
+                <p class="text-3xl text-gray-400 font-bold">h</p>
+            </div>
+        </Card>
+        <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto">
+            <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16">
+                <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
+            </div>
+            <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+            <div class="flex gap-1 mt-3">
+                @{
+                    var avgEnergyProduction = 0.0;
+                    if (currentLocationData != null && systems != null)
+                    {
+                        double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
+                        avgEnergyProduction = Math.Round(calc, 2);
+                    }
+                }
+                <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                <p class="text-3xl text-gray-400 font-bold">kw/h</p>
+            </div>
+        </Card>
+    </div>
+</div>
+
+@code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    [Parameter]
+    public List<SystemModel>? systems { get; set; }
+    [Parameter]
+    public int selectedSystem { get; set; }
+    [Parameter]
+    public string? reportName { get; set; }
+    [Parameter]
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    public int solarScore { get; set; }
+    private double latitude = 0;
+    private double longitude = 0;
+    private int remainingCalls = 100;
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the latitude and longitude from the session storage </item>
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetSolarScore function </item>
+    /// </list>
+    /// </summary>    
+    protected override async Task OnInitializedAsync()
+    {
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = tempLatitude.Value;
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = tempLongitude.Value; 
+
+
+        // Remove warning but still does not wait for the function to complete since this is the while loop that is running in the background
+        _ = GetSolarScore();
+    }
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item> Get the solar score from the session storage </item>
+    ///     <item> Call the GetDataLocationData function from the solarCalculator </item>
+    ///     <item> Set the solar score to the result from the GetDataLocationData function </item>
+    ///     <item> Set the solar score in the session storage </item>
+    ///     <item> Set the remaining calls to the result from the GetDataLocationData function </item>
+    ///     <item> If the remaining calls is not updated 10 times in a row, stop the function </item>
+    ///     <item> Wait 3 seconds before calling the function again </item>
+    /// </list>
+    /// </summary>
+    private async Task GetSolarScore() 
+    {
+        if(API_PORT == null) {
+            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
+            return;
+        }
+        int timesNotUpdated = 0;
+        int previousRemainingCalls = remainingCalls;
+        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        int previousScore = -1;
+        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
+            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
+            solarScore = result[0];
+            previousScore = solarScore;
+            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
+            remainingCalls = result[1];
+            if(previousRemainingCalls != remainingCalls){
+                timesNotUpdated = 0;
+            } else {
+                timesNotUpdated++;
+            }
+            previousRemainingCalls = remainingCalls;
+            StateHasChanged();
+            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+        }
+    }
+}

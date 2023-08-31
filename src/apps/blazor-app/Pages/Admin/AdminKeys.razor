@@ -1,0 +1,230 @@
+@page "/admin/keys"
+@layout AdminLayout
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Admin
+@using BlazorApp.Components
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedLocalStorage ProtectedLocalStore;
+@inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.LoadingService loadingService
+
+<PageTitle>Blue Skies - Keys</PageTitle>
+
+<div class="slide-in-enter-active mt-2">
+    <div class="flex w-full justify-around p-4">
+        <div class="">
+            <Heading>
+                <Superscript>
+                    <h2>Manage all</h2>
+                </Superscript>
+                <Header>
+                    <h1>API Keys</h1>
+                </Header>
+            </Heading>
+        </div>
+        <div class="flex  gap-10 items-center">
+          <div @onclick="ModalPopup.Show">
+              <Button style="outline">
+                  <content>Delete</content>
+             </Button>
+            </div>
+            <div @onclick="AddKey">
+                <Button style="pill">
+                   <content>Add</content>
+                </Button>
+            </div>
+        </div>
+    </div>
+
+    <ModalPopup @ref="ModalPopup" Title="Delete Account?">
+        <ChildContent>
+            <p>Are you sure that you want to delete this account?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="DeleteKeys">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
+                </div>
+                <div @onclick="ModalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
+
+
+    <div class="relative overflow-x-auto  mt-2">
+        <table class="w-full text-sm text-center ">
+            <thead class="text-xs bg-primary-50  uppercase ">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left">
+                        <input type="checkbox" class="form-checkbox h-5 w-5  " />
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Suspend
+                    </th>
+                    <th scope="col" class="px-6 py-3  ">
+                        Owner
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Monthly API usage
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var key in keys)
+                {
+                    <KeyEntry recordState="key.recordState" key="key" OnSelect="AddDeleteArr" OnSave="SaveKey" OnSuspendChange="ToggleSuspend"/>     
+                }              
+            </tbody>
+        </table>
+ </div>
+</div>
+
+@code {
+    @inject IJSRuntime JSRuntime;
+
+    private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    private List<APIKeyModel> keys = new List<APIKeyModel>();
+    private List<int> deleteArr = new List<int>();
+
+    private void ShowModal()
+    {
+        ModalPopup.Show();
+    }
+
+    private async Task DeleteKeys(){
+        foreach(int id in deleteArr){
+            await DeleteKey(id);
+        }
+        deleteArr.Clear();
+        await GetKeys();
+        @* deleteToast.Show("Deleted", "The record entry was successfuly deleted.", "error"); *@
+        toastService.ShowToast("Record Deleted", "The record entry was successfuly deleted.", "error");
+
+    }
+    private void AddDeleteArr(int id){
+        if(deleteArr.Contains(id)){
+            deleteArr.Remove(id);
+        }else{
+            deleteArr.Add(id);
+        }
+        //Print deleteArr
+        foreach(int i in deleteArr){
+            Console.WriteLine(i);
+        }
+    }
+
+    private async Task DeleteKey(int id)
+    {
+        ModalPopup.Dismiss();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/key/delete");
+        var content = new StringContent("{\r\n  \"keyId\": " + id +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            await GetKeys();
+            Console.WriteLine("Delete");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete");
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetKeys();
+        loadingService.HideLoadingScreen();
+    }
+
+    private async Task GetKeys(){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+    }
+
+    private void AddKey()
+    {
+        keys.Add(new APIKeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
+        @* successToast.Show("Added", "A new record entry was added.", "success");  *@
+        toastService.ShowToast("Record Added", "A new record entry was added.", "success");
+    }
+
+    private async Task ToggleSuspend(APIKeyModel key) {
+        Console.WriteLine("Toggle Suspend API Key");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
+            var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetKeys();
+            }
+            else
+            {
+                Console.WriteLine("Failed");
+                 Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+    }
+
+    private async Task SaveKey(APIKeyModel key)
+    {
+        @* successToast.Show("Saved", "The record entry was successfuly saved.", "success"); *@
+        toastService.ShowToast("Record Saved", "The record entry was successfuly saved.", "success");
+        if(key.keyId == -1){
+            Console.WriteLine("Add API Key");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
+            var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetKeys();
+            }
+            else
+            {
+                Console.WriteLine("Failed");
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+
+        }else{
+            Console.WriteLine("Update API Key");
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
+            var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await GetKeys();
+            }
+            else
+            {
+                Console.WriteLine("Failed");
+                 Console.WriteLine(await response.Content.ReadAsStringAsync());
+            }
+        }
+    }
+}

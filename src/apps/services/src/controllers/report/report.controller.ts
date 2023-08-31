@@ -2,16 +2,16 @@ import * as tedious from 'tedious';
 import { Request, Response } from 'express';
 import IReport from '../../models/report.interface';
 import { connection as conn } from '../../main';
+import puppeteer from 'puppeteer';
 export default class ReportController {
   public createReport = (req: Request, res: Response) => {
-    const { reportName, userId, basicCalculationId, solarScore, runningTime } =
+    const { reportName, userId, homeSize, latitude, longitude, systemId } =
       req.body;
-
+    console.log(reportName);
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
     const query =
-      `INSERT INTO [dbo].[reports] (reportName, userId, basicCalculationId, solarScore, runningTime, dateCreated)` +
-      ` VALUES ('${reportName}', ${userId}, ${basicCalculationId}, ${solarScore}, ${runningTime}, '${dateCreated}')`;
+      `INSERT INTO [dbo].[reports] (reportName, userId, homeSize, latitude, longitude, systemId, dateCreated)` +
+      ` VALUES ('${reportName}', ${userId}, '${homeSize}', ${latitude}, ${longitude}, ${systemId}, '${dateCreated}')`;
 
     try {
       const request = new tedious.Request(
@@ -67,10 +67,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          homeSize: columns[3].value,
+          systemId: columns[4].value,
+          latitude: columns[5].value,
+          longitude: columns[6].value,
+          dateCreated: columns[7].value,
         };
 
         reports.push(report);
@@ -114,10 +115,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          homeSize: columns[3].value,
+          systemId: columns[4].value,
+          latitude: columns[5].value,
+          longitude: columns[6].value,
+          dateCreated: columns[7].value,
         };
 
         reports.push(report);
@@ -161,10 +163,11 @@ export default class ReportController {
           reportId: columns[0].value,
           reportName: columns[1].value,
           userId: columns[2].value,
-          basicCalculationId: columns[3].value,
-          solarScore: columns[4].value,
-          runningTime: columns[5].value,
-          dateCreated: columns[6].value,
+          homeSize: columns[3].value,
+          systemId: columns[4].value,
+          latitude: columns[5].value,
+          longitude: columns[6].value,
+          dateCreated: columns[7].value,
         };
       });
 
@@ -178,10 +181,11 @@ export default class ReportController {
 
   public updateReport = (req: Request, res: Response) => {
     const { reportId } = req.params;
-    const { reportName, userId, basicCalculationId, solarScore, runningTime } =
+    const { reportName, userId, homeSize, latitude, longitude, systemId } =
       req.body;
+
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, basicCalculationId = ${basicCalculationId}, solarScore = ${solarScore}, runningTime = ${runningTime}` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, homeSize = '${homeSize}', latitude = ${latitude}, longitude = ${longitude}, systemId = ${systemId}` +
       `WHERE reportId = ${reportId}`;
 
     try {
@@ -247,5 +251,29 @@ export default class ReportController {
         error: error.message,
       });
     }
+  };
+
+  public downloadReport = async (req: Request, res: Response) => {
+    const { userId, reportId } = req.params;
+    // Launch the browser and open a new blank page
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    const frontend_port = process.env.FRONTEND_PORT;
+    await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
+      waitUntil: 'networkidle2',
+    });
+    // Generate a PDF from the page content
+    const pdf = await page.pdf({
+      format: 'A4',
+      displayHeaderFooter: false,
+    });
+
+    await browser.close();
+
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Length': pdf.length,
+    });
+    res.send(pdf);
   };
 }

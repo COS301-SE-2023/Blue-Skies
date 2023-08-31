@@ -9,10 +9,15 @@ namespace Api.Controllers;
 public class ReportController : ControllerBase
 {
     private readonly ReportsRepository _reportsRepository;
-
+    private string express = "http://localhost:3333";
     public ReportController()
     {
         _reportsRepository = new ReportsRepository();
+        var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+        if (backendexpress != null)
+        {
+            express = backendexpress;
+        }
     }
 
     [HttpGet]
@@ -32,7 +37,7 @@ public class ReportController : ControllerBase
 
     [HttpGet]
     [Route("getUserReports/{userId}")]
-    public async Task<IActionResult> GetAllReports([FromRoute] int userId)
+    public async Task<IActionResult> GetUserReports([FromRoute] int userId)
     {
         try
         {
@@ -57,11 +62,12 @@ public class ReportController : ControllerBase
         try
         {
             var data = await _reportsRepository.CreateReports(
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.homeSize!,
+                report.systemId,
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }
@@ -80,11 +86,12 @@ public class ReportController : ControllerBase
         {
             var data = await _reportsRepository.UpdateReports(
                 report.reportId,
-                report.reportName ?? "default",
+                report.reportName!,
                 report.userId,
-                report.basicCalculationId,
-                report.solarScore,
-                report.runningTime
+                report.homeSize!,
+                report.systemId,
+                report.latitude,
+                report.longitude
             );
             return Ok(data);
         }
@@ -97,7 +104,7 @@ public class ReportController : ControllerBase
     //delete a report
     [HttpDelete]
     [Route("delete")]
-    public async Task<IActionResult> DeleteReport([FromBody] ReportAll report)
+    public async Task<IActionResult> DeleteReport([FromBody] Reports report)
     {
         try
         {
@@ -133,4 +140,32 @@ public class ReportController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    [HttpGet]
+    [Route("downloadReport/{userId}/{reportId}")]
+    public async Task<IActionResult> DownloadReport([FromRoute] int userId, [FromRoute] int reportId)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/report/downloadReport/" + userId + "/" + reportId);
+            request.Headers.Add("Accept", "application/pdf");
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var pdfStream = await response.Content.ReadAsStreamAsync();
+                return File(pdfStream, "application/pdf", "external.pdf");
+            }
+            else
+            {
+                Console.WriteLine(".NET: Error downloading report");
+                throw new Exception("Error downloading report");
+            }
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }

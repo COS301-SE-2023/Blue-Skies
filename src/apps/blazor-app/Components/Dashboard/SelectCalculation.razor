@@ -1,17 +1,19 @@
 @using BlazorApp.Components.Base
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
+@inject IJSRuntime JSRuntime
 
-<Card css="flex w-full justify-evenly">
+<Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
     <div class="flex flex-col justify-center items-center ">
         <div class="w-60  my-auto">
             <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-            <select @onchange="OnSelectedReportChanged"
+            <select @onchange="OnSelectedReportChanged" id="selectReport"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
                 @for (int i = 0; i < userReports!.Count; i++)
                 {
-                    <option value="@i">@userReports[i]</option>
+                    <option value="@i">@userReports[i].reportName</option>
                 }
                 @if (userReports.Count == 0)
                 {
@@ -29,12 +31,17 @@
             <h1 class="text-lg">@date</h1>
         </Header>
     </Heading>
-    <Button style="pill" css="h-14">
+    <Button style="pill" css="h-14 max-w-sm">
         <content>
-            <a href="#" class="text-sm font-semibold hover:text-white">Generate Report</a>
+            <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
         </content>
     </Button>
 </Card>
+@if (isReportGenerated)
+{
+    <iframe src="@pdfUrl" width="800" height="500">
+    </iframe>
+}
 
 @code {
     [Parameter]
@@ -42,14 +49,71 @@
     [Parameter]
     public EventCallback<int> selectedReportChanged { get; set; }
     [Parameter]
-    public List<string>? userReports { get; set; }
+    public List<ReportModel>? userReports { get; set; }
     [Parameter]
     public DateTime? dateCreated { get; set; }
+    [Parameter]
+    public EventCallback updateLocation { get; set; }
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-
-    public Task OnSelectedReportChanged(ChangeEventArgs e)
+    private bool isReportGenerated = false;
+    private  string pdfUrl = "";
+    private int userId = 0;
+    public async Task OnSelectedReportChanged(ChangeEventArgs e)
     {
         selectedReport = Convert.ToInt32(e.Value);
-        return selectedReportChanged.InvokeAsync(selectedReport);
+        await selectedReportChanged.InvokeAsync(selectedReport);
+        await updateLocation.InvokeAsync();
+        return;
+    }
+
+    /// <summary>
+    /// Get the current report from the session storage
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
+        int createdReport = cReport.Value;
+
+        if (userReports!.Count > 0)
+        {
+            if (createdReport != 0)
+            {
+                setSelectedReport(createdReport);
+            }
+        }
+
+         var userIdTemp = await ProtectedLocalStore.GetAsync<int>("userId");
+        userId = userIdTemp.Value;
+    }
+
+    private async void setSelectedReport(int reportId)
+    {
+        for (int i = 0; i < userReports!.Count; i++)
+        {
+            if (userReports[i].reportId == reportId)
+            {
+                selectedReport = i;
+                await ProtectedSessionStore.SetAsync("currentReport", userReports![selectedReport]);
+                await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectReport').value = " + selectedReport + ";");
+                await selectedReportChanged.InvokeAsync(selectedReport);
+            }
+        }
+        await ProtectedSessionStore.DeleteAsync("createdReport");
+    }
+
+    private async void GenerateReport()
+    {
+        //await JSRuntime.InvokeVoidAsync("GenerateReport");
+        Console.WriteLine("Generating report");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/" + userId + "/" + userReports![selectedReport].reportId);
+        request.Headers.Add("Accept", "application/pdf");
+        var response = await client.SendAsync(request);
+        response.EnsureSuccessStatusCode();
+        byte[] pdfBytes  = await response.Content.ReadAsByteArrayAsync();
+
+        pdfUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfBytes)}";
+        isReportGenerated = true;
+        StateHasChanged();
     }
 }

@@ -1,0 +1,31 @@
+ @using BlazorApp.Components.Base
+@using BlazorApp.Models
+
+ <div class="mb-9">
+    <div class="w-fit mx-auto text-center my-20">
+      <Heading>
+        <Header>
+          <h1 class="text-4xl font-bold tracking-tight text-primary-950 md:text-5xl">Frequently Asked Questions</h1>
+        </Header>
+        <Subscript>
+          <h1 class="mt-4">Discover answers to common solar energy questions.</h1>
+        </Subscript>
+      </Heading>
+    </div>
+
+    <div class="">
+        <Accordion items="@AccordionItems"/>
+    </div>
+  </div>
+
+  @code {
+    List<AccordionItemModel> AccordionItems { get; set; } = new List<AccordionItemModel>
+      {
+        new AccordionItemModel("What is a Solar Score?", "A solar score measures your property's solar potential based on sunlight availability, shading, and local weather patterns. It estimates of solar panels in generating electricity for your location", false),
+        new AccordionItemModel("What appliances can I run on solar?", "The appliances you can run on solar depend on system size. Small setups may power lights, fans, laptops, and smartphones. Larger ones can run refrigerators, air conditioners, washers, and EVs.", false),
+        new AccordionItemModel("What are the benefits of solar panels?", "Solar panels offer renewable energy, reduced bills, eco-friendliness, energy independence, incentives, and low maintenance.", false),
+        new AccordionItemModel("Will solar panels work during cloudy or rainy days?", "Yes, they work but with reduced efficiency. They generate power from sunlight, even on overcast days, though less than under direct sunlight.", false),
+        new AccordionItemModel("How much money can I save by using solar energy?", "Savings vary by location, panel size, electricity rates, and incentives. Long-term, solar can substantially lower bills and may lead to surplus energy sales.", false),
+        new AccordionItemModel("Can I install solar panels myself?", "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation.", false)
+      };
+  }

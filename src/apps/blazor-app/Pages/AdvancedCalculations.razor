@@ -5,69 +5,181 @@
 @inject NavigationManager NavigationManager;
 @using BlazorApp.Models;
 @using System.Text.Json
-@using BlazorApp.Components
+@using BlazorApp.Components.Advanced
+@using BlazorApp.Components.Base
 @inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.LoadingService loadingService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-    <div class="fade-in-enter-active">
-        @if(!isLoaded){}
-        else if (!logIn) {
-            ProtectedLocalStore.SetAsync("redirect", "advanced");
+<div class="fade-in-enter-active">
+    @if (isLoaded) {
+        @* Check if user is logged in *@
+        if (!logIn)
+        {
+            ProtectedSessionStore.SetAsync("redirect", "advanced");
+            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/login");
-        } else  if (isAd) {
-            NavigationManager.NavigateTo("/admin/keys");  
-        } else if (solarScore == 0) {
+        }
+        @* Check if logged in user is admin *@
+        else if (isAd)
+        {
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/admin/keys");
+        }
+        else if (longitude == 0 && latitude == 0)
+        {
             @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-
+            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/solarScore");
-        } else {
-        <div class="w-full">
-            <div class="mb-20"><BlazorApp.Section.AdvancedResults solarScore="solarScore" basicCalculation="basicCalculation" systems="systems"/></div>
-            <div class="w-full">
-                <BlazorApp.Section.BuildYourHome @bind-selectedSystem="selectedSystem"  appliances="@appliances" systems="systems" basicCalc="basicCalculation" solarScore="solarScore"/>    
-            </div>
-        </div>
         }
-    </div>
+        else
+        {
+            <div class="w-full px-20 ">
+                <div class="mb-20">
+                    @* Load data to edit advanced calculations or display active calculation*@
+                    @if (edit)
+                    {
+                        var reportName = currentReport.reportName;
+                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
+                        systems="systems" reportName="@reportName"/>    
+                    } else {
+                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
+                        systems="systems" />
+                    }
+                </div>
+                <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
+                    <Tabs @bind-Items="tabs"></Tabs>
+                </div>
+                <div class="w-full">
+                    @if(tabs[0].active) {
+                        <div class="fade-in-active">
+                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
+                        </div>
+                    }
+                    else if (tabs[1].active) {
+                        <div class="fade-in-active">
+                            <Finanace />
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+     }
+</div>
 
 @code {
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
-    private bool loading = false;
+    private bool edit = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-
-    private BasicCalculationModel basicCalculation = new BasicCalculationModel();
     private List<SystemModel> systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private ReportModel currentReport = new ReportModel(); 
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int selectedSystem = 0;
-    private int solarScore = 0;
+    private double longitude = 0;
+    private double latitude = 0;
+    private List<TabItemModel> tabs = new List<TabItemModel>
+    {
+        new TabItemModel("Appliances", true),
+        new TabItemModel("Finance", false),
+        new TabItemModel("Fancy", false)
+    };
 
 
+    /// <summary>
+///     <list type="bullet">
+///         <item>Check if user is logged in</item>
+///         <item>Check if logged in user is admin</item>
+///         <item>Check if the user has created a solar score</item>
+///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
+///         <item>Get the location data from the database</item>
+///         <item>Get all the appliances and systems from the database</item>
+///         <item>Set the selected system to the current report system</item>
+///     </list>
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
-        logIn = loggedIn.Value;
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
+        logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         isLoaded = true;
-        var bCalc = await ProtectedSessionStore.GetAsync<BasicCalculationModel>("basicCalculation");
-        Console.WriteLine("Value" + bCalc);
-        var sScore = await ProtectedSessionStore.GetAsync<int>("solarScore");
+
+        @* Get the current report either half populated from the solarScore page or a fully populated if editing an existing report *@
+        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
+        edit = editing.Value;
+
+        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
+        latitude = lat.Value;
+        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
+        longitude = lng.Value;
+
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
-        solarScore = sScore.Value;
-        basicCalculation = bCalc.Value!;
-        
-        var load = await ProtectedSessionStore.GetAsync<bool>("load");
-        loading = load.Value;
+
+        await GetLocationData(latitude, longitude);
+        if (edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            currentReport = rep.Value!;
+            var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
+            reportAllAppliance = reportAllAppl.Value!;
+        } else {
+            currentReport.latitude = latitude;
+            currentReport.longitude = longitude;
+        }
+
         await GetAppliancesAsync();
         await GetSystemsAsync();
+        for (int i = 0; i < systems.Count; i++)
+        {
+            if (currentReport.systemId == systems[i].systemId)
+            {
+                selectedSystem = i;
+            }  
+        }
+        loadingService.HideLoadingScreen();
+
     }
 
-    private async Task GetSystemsAsync(){
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
+    ///     <item>If the data does not exist print error.</item>
+    /// </list>
+    /// </summary>
+    public async Task GetLocationData(double latitude, double longitude){
+        string lat = latitude.ToString().Replace(",", ".");
+        string lon = longitude.ToString().Replace(",", ".");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + lat + "/" + lon);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found in Results");
+        }
+        return;
+    }
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the systems from the database</item>
+    ///     <item>Save the systems to the systems variable</item>
+    ///     <item>Save the systems to the session storage</item>
+    /// </list>
+    /// </summary>
+    private async Task GetSystemsAsync()
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
         var response = await client.SendAsync(request);
@@ -81,7 +193,7 @@
                 })!;
             if (systems.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("systems", systems);
+                await ProtectedSessionStore.SetAsync("systems", systems);
             }
         }
         else
@@ -90,6 +202,13 @@
         }
     }
 
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the appliances from the database</item>
+    ///     <item>Save the appliances to the appliances variable</item>
+    ///     <item>Save the appliances to the session storage</item>
+    /// </list>
+    /// </summary>
     private async Task GetAppliancesAsync()
     {
         var client = new HttpClient();
@@ -105,7 +224,7 @@
                 })!;
             if (appliances.Count > 0)
             {
-                await ProtectedLocalStore.SetAsync("reportAppliances", appliances);
+                await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
             }
         }
         else

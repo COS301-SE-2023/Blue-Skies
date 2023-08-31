@@ -1,4 +1,4 @@
-#py GetSunTimes.py 40.730610 -73.935242 2023
+#python3 GetSunTimes.py 40.730610 -73.935242 2023
 
 import sys
 import requests

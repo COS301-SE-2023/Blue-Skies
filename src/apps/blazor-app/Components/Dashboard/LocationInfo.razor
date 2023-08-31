@@ -1,32 +1,34 @@
 @using BlazorApp.Components.Base
 @inject ProtectedLocalStorage ProtectedLocalStore
-<div class="flex w-full gap-3 @css">
-    <div class="w-2/3">
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<div class="flex w-full justify-center md:flex-row flex-col gap-3 @css">
+    <div class="w-full md:w-2/3">
         <Card>
             <Heading>
                 <Header>
                     <h1 class="text-xl">Location</h1>
                 </Header>
             </Heading>
-            <div class="flex gap-4 mt-4 my-auto items-center">
-                <div class="">
-                    <Image ImageName="Solarscore.png" css="w-60 h-60" alt="Solar Score" />
+            <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+                <div class="w-80">
+                    <Map scale="scale-[2.6]" imageName="@currentLocationData!.image"/>
                 </div>
                 <div class="flex flex-col justify-start gap-10">
                     @{
                         var location = "";
-                        var solarScore = "";
+                        var sScore = "";
                         var avgEnergyProduction = "";
-                        if (reportAll != null)
+                        if (reports != null)
                         {
-                            location = reportAll[selectedReport].location;
-                            solarScore = reportAll[selectedReport].solarScore + "%";
-                            avgEnergyProduction = Math.Round(reportAll[selectedReport].numberOfPanels *
-                            reportAll[selectedReport].daylightHours * reportAll[selectedReport].solarInput /1000, 2) + " kw/h";
+                            location = currentLocationData.location;
+                            sScore = solarScore + "%";
+                            avgEnergyProduction = Math.Round(systems![selectedSystem].numberOfPanels *
+                            currentLocationData.daylightHours * systems[selectedSystem].solarInput /1000, 2) + " kw/h";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
-                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@solarScore />
+                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
                     <div class="translate-x-1">
                         <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
                             Text=@avgEnergyProduction />
@@ -35,7 +37,7 @@
             </div>
         </Card>
     </div>
-    <div class="w-1/3">
+    <div class="w-full md:w-1/3">
         <Card css="h-full">
             <div class="flex flex-col justify-center">
                 <Heading>
@@ -48,11 +50,12 @@
                         var numPanels = 0;
                         var numBatteries = 0;
                         var systemSize = 0;
-                        if (reportAll != null)
+                        var system = systems?.Find(x => x.systemId == reports?[selectedReport].systemId);
+                        if (reports != null)
                         {
-                            systemSize = reportAll[selectedReport].inverterOutput;
-                            numPanels = reportAll[selectedReport].numberOfPanels;
-                            numBatteries = reportAll[selectedReport].numberOfBatteries;
+                            systemSize = system!.inverterOutput;
+                            numPanels = system.numberOfPanels;
+                            numBatteries = system.numberOfBatteries;
                         }
                     }
                     <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
@@ -68,11 +71,28 @@
 </div>
 
 @code {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     [Parameter]
     public string? css { get; set; }
     [Parameter]
-    public List<ReportAllModel>? reportAll { get; set; }
+    public List<ReportModel>? reports { get; set; }
     [Parameter]
     public int selectedReport { get; set; }
+    [Parameter]
+    public LocationDataModel? currentLocationData { get; set; }
+    [Parameter]
+    public List<SystemModel>? systems { get; set; }
+    [Parameter]
+    public int solarScore { get; set; } 
+    public int selectedSystem { get; set; }
 
+    protected override void OnInitialized(){
+        for (int i = 0; i < systems!.Count; i++)
+        {
+            if (reports![selectedReport].systemId == systems[i].systemId)
+            {
+                selectedSystem = i;    
+            }
+        }
+    }
 }

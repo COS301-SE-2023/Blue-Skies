@@ -10,15 +10,10 @@ body {
 .fade-in-enter-active {
     animation: fadeIn .6s;
 }
-/* Fade-In Transition */
+
+/* Fade Transition */
 .fade-in-active {
     animation: fadeIn .3s;
-}
-
-/* Slide-In Transition */
-.slide-in-enter-active {
-    animation: slideIn .6s;
-    animation-delay: 50ms;
 }
 
 .fade-active {
@@ -29,19 +24,96 @@ body {
     animation: fade-out .3s;
 }
 
+/* Slide-In Transition */
+.slide-in-enter-active {
+    animation: slideIn .6s;
+    animation-delay: 50ms;
+}
+.slide-in-active {
+    animation: slideIn .3s;
+}
+
+/* Toast Classes */
 .toast-slide-in {
-    animation: toastSlideIn .3s;
+    animation: toastSlideIn .5s;
 }
 
 .toast-slide-out {
-    animation: toastSlideOut .3s;
+    animation: toastSlideOut .5s;
 }
 
-/* Fade-Out Transition */
+.toast-progress {
+    animation: toastProgress 6s;
+    animation-timing-function: ease-in-out;
+}
+
+/* Panel and Trees Classes */
+.panel-trees-slide-in-left {
+    animation: panelSlideLeft .5s;
+    animation-delay: .5s;
+    animation-fill-mode: forwards;
+}
+
+/* Robert Classes */
+.robert-slide-in-right {
+    animation: robertSlideRight .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+
+.robert-slide-in-left {
+    animation: robertSlideLeft .5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+.robert-slide-up {
+    animation: robertSlideUp .5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+/* Loading Classes */
+.loading-runner {
+    animation: loadingRunner 1.5s infinite ease-in-out;
+}
+
+/* Loading Runner */
+@keyframes loadingRunner {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(120%); }
+}
+
+/* Robert Transitions */
+@keyframes robertSlideUp {
+    from { opacity: 0; transform: translateY(0); }
+    to { opacity: 1 !important; transform: translateY(-75%);}
+}
+
+@keyframes robertSlideRight {
+    from { transform: translateX(100%); }
+    to { opacity: 1; transform: rotate(-45deg); }
+}
+
+@keyframes robertSlideLeft {
+    from { transform: translateX(-100%) rotate(90deg); }
+    to { opacity: 1; transform: rotate(60deg) translateX(14px);}
+}
+
+/* Panels and Trees UI Transitions */
+
+@keyframes panelSlideLeft {
+    from { opacity: 0; transform: translateX(-150%); }
+    to { opacity: 1;  transform: translateX(0);}
+}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(1%); }
     to { opacity: 1;}
 }
+
+
+/* Toast Transitions */
 
 @keyframes toastSlideIn {
     from { opacity: 0; transform: translateX(-100%); }
@@ -52,6 +124,14 @@ body {
     from { opacity: 1; }
     to { opacity: 0; transform: translateX(-100%); }
 }
+
+@keyframes toastProgress {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+
+/* Page Transitionsj */
 
 @keyframes slideIn {
     from { opacity: 0; transform: translateY(-10%); }
@@ -67,3 +147,4 @@ body {
     from { opacity: 1; }
     to { opacity: 0; }
 }  
+  

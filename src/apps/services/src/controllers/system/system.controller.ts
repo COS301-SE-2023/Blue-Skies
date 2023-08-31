@@ -91,6 +91,8 @@ export default class SystemController {
     }
   };
 
+  
+
   public getSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;
     let system: ISystem;
