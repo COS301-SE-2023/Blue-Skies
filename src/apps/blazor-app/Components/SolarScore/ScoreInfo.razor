@@ -17,12 +17,13 @@
         <div @onclick="setImage" class="w-full">
             <Accordion items="@accordionItems" columns="1" style="rounded" />
         </div>
+        @{Console.WriteLine(graphicName);}
         <Image ImageName="@graphicName" css="mt-5 w-2/3 lg:w-1/2"/>
     </div>
 </div>
 
 @code{
-    public string graphicName = "Graphic.svg";
+    public string graphicName = "Excellent.svg";
     public List<AccordionItemModel> accordionItems { get; set; } = new List<AccordionItemModel>{
         new AccordionItemModel(
             "Excellent",
@@ -71,15 +72,15 @@
     {
         switch (type)
         {
-            case 0: graphicName = "Graphic.svg";
+            case 0: graphicName = "Excellent.svg";
                 break;
-            case 1: graphicName = "Graphic-Good.svg";
+            case 1: graphicName = "Good.svg";
                 break;
-            case 2: graphicName = "Graphic-Average.svg";
+            case 2: graphicName = "Average.svg";
                 break;
-            case 3: graphicName = "Graphic-Low.svg";
+            case 3: graphicName = "Low.svg";
                 break;
-            case 4: graphicName = "Graphic-Unfeasible.svg";
+            case 4: graphicName = "Unfeasible.svg";
                 break;
             default:
                 break;
