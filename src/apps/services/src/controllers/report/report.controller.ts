@@ -269,6 +269,7 @@ export default class ReportController {
 
       await page.goto(`${frontend_port}/report/${userId}/${reportId}`);
       await page.waitForSelector('#report');
+
       // Generate a PDF from the page content
       const pdf = await page.pdf({
         format: 'A4',

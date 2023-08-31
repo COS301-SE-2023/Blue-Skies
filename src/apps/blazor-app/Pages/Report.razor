@@ -7,6 +7,9 @@
     @if (isLoaded)
     {
         <div id="report">
+            <div class="mx-auto w-fit">
+                <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
+            </div>
             <div class="w-full">
                 <div class="">
                     <Heading>
@@ -28,13 +31,21 @@
                     </div>
                 </div>
                 <div>
-                    <Card>
-                        <Heading>
-                            <Header>
-                                <h1 class="text-xl text-start">System Size</h1>
-                            </Header>
-                        </Heading>
-                    </Card>
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl text-start">System Size</h1>
+                        </Header>
+                    </Heading>
+                    <div class="w-fit mx-auto flex space-x-3">
+                        <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
+                            Count="@system.numberOfPanels" />
+                        <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
+                            Count="@system.numberOfBatteries" />
+                    </div>
+                    <div class="flex w-full justify-center items-center gap-1 mt-4">
+                        <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
+                        <p class="text-5xl text-gray-400 font-bold">kw</p>
+                    </div>
                 </div>
             </div>
             @* Fancy Data *@
@@ -49,7 +60,7 @@
                 </Heading>
                 <div class="flex w-full">
                     <div class="w-full">
-                        <SolarIrradiationPerMonth solarIrradiation="@locationData.data" />
+                        <SolarIrradiationPerMonth solarIrradiation="@locationData.data" animated="false" />
                     </div>
                 </div>
                 <div class="w-full">
@@ -69,8 +80,7 @@
     private double latitude = 0;
     private double longitude = 0;
     private LocationDataModel locationData = new LocationDataModel();
-    private List<ReportModel> allReports = new List<ReportModel>();
-    private List<SystemModel> systems = new List<SystemModel>();
+    private SystemModel system = new SystemModel();
     private bool isLoaded = false;
     @* OnInitialized *@
 
@@ -86,8 +96,7 @@
         Console.WriteLine("Current report: " + report.reportId);
         await GetLocationData();
         Console.WriteLine("Current location: " + locationData.location);
-        await GetSystemsAsync();
-        Console.WriteLine("Current systems: " + systems.Count);
+        await GetSystemAsync(report.systemId);
         StateHasChanged();
         isLoaded = true;
     }
@@ -121,9 +130,6 @@
             }
             latitude = report.latitude;
             longitude = report.longitude;
-            @* Clear reports *@
-            allReports.Clear();
-            allReports.Add(report);
         }
         else
         {
@@ -152,15 +158,15 @@
         }
     }
 
-    private async Task GetSystemsAsync()
+    private async Task GetSystemAsync(int systemId)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/get/" + systemId);
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+            system = JsonSerializer.Deserialize<SystemModel>(data, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive =
                 true

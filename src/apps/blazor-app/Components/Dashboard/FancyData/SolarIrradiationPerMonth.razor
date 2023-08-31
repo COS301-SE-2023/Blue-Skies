@@ -11,6 +11,10 @@
     public string? solarIrradiation { get; set; }
     private BarConfig? barConfig;
     private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
+    
+    [Parameter]
+    public bool animated { get; set; } = true;
+
     @*The data is structured as: year, month, solarIrradiation  *@
     protected override void OnParametersSet()
     {
@@ -25,6 +29,7 @@
     /// </summary>
     protected override void OnInitialized()
     {
+        if(animated == true){
         barConfig = new BarConfig
             {
                 Options = new BarOptions
@@ -58,10 +63,53 @@
                             }
                         }
                     }
+                    
 
                 }
             };
+        } else {
+            barConfig = new BarConfig
+            {
+                Options = new BarOptions
+                {
+                    Responsive = true,
+                    Legend = new Legend
+                    {
+                        Position = Position.Top
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Text = "Solar Irradiance Per Month",
+                        FontSize = 20,
+                    },
+                    Scales = new BarScales
+                    {
+                        YAxes = new List<CartesianAxis>
+                        {
+                            new LinearCartesianAxis
+                            {
+                                Ticks = new LinearCartesianTicks
+                                {
+                                    BeginAtZero = true
+                                },
+                                ScaleLabel = new ScaleLabel
+                                {
+                                    LabelString = "Solar Irradiance (W/m2)",
+                                    Display = true
+                                },
+                            }
+                        }
+                    },
+                    Animation = new Animation
+                    {
+                        Duration = 0
+                    }
+                    
 
+                }
+            };
+        }
         @* Add all the months in the year *@
         barConfig.Data.Labels.Add("Jan");
         barConfig.Data.Labels.Add("Feb");
