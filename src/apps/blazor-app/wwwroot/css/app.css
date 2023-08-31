@@ -1082,6 +1082,14 @@ video {
   height: 100vh;
 }
 
+.h-\[5cm\] {
+  height: 5cm;
+}
+
+.h-\[8cm\] {
+  height: 8cm;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -1205,6 +1213,14 @@ video {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-\[5cm\] {
+  width: 5cm;
+}
+
+.w-\[8cm\] {
+  width: 8cm;
 }
 
 .min-w-fit {

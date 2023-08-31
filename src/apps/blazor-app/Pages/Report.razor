@@ -4,36 +4,61 @@
 @using BlazorApp.Components.Dashboard
 @layout AuthLayout
 <div class="pageA4 mx-auto">
-    @if (isLoaded){
-    <div id="report">
-        <LocationInfo css="mt-8" reports="@allReports" selectedReport="0" currentLocationData="@locationData" systems="@systems" solarScore="999" />
-
-
-        @* Fancy Data *@
-        <div class="w-full">
-        <Card>
-            <Heading>
-                <Header>
-                    <h1 class="text-xl">Fancy Data</h1>
-                </Header>
-                <Subscript>
-                    <p>More information about your area</p>
-                </Subscript>
-            </Heading>
-            <div class="flex w-full">
-                <div class="w-full">
-                    <SolarIrradiationPerMonth solarIrradiation="@locationData.data" />
+    @if (isLoaded)
+    {
+        <div id="report">
+            <div class="w-full">
+                <div class="">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Location</h1>
+                        </Header>
+                    </Heading>
+                    <div class="flex-col">
+                        <div class="h-[8cm] w-[8cm] mx-auto">
+                            <Map imageName="@locationData.image" />
+                        </div>
+                        <div class="flex flex-col w-fit mx-auto space-y-2">
+                            <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
+                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="123" />
+                            <div class="translate-x-1">
+                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg" Text="456" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <Card>
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl text-start">System Size</h1>
+                            </Header>
+                        </Heading>
+                    </Card>
                 </div>
             </div>
+            @* Fancy Data *@
             <div class="w-full">
-                <ElevationGraph elevationValues="@locationData.elevationData" />
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Fancy Data</h1>
+                    </Header>
+                    <Subscript>
+                        <p>More information about your area</p>
+                    </Subscript>
+                </Heading>
+                <div class="flex w-full">
+                    <div class="w-full">
+                        <SolarIrradiationPerMonth solarIrradiation="@locationData.data" />
+                    </div>
+                </div>
+                <div class="w-full">
+                    <ElevationGraph elevationValues="@locationData.elevationData" />
+                </div>
             </div>
-            </Card>
         </div>
-    </div>
     }
 </div>
-
 @code {
     [Parameter] public string? UserId { get; set; }
     [Parameter]
@@ -47,13 +72,13 @@
     private List<ReportModel> allReports = new List<ReportModel>();
     private List<SystemModel> systems = new List<SystemModel>();
     private bool isLoaded = false;
-   @* OnInitialized *@
+    @* OnInitialized *@
 
     protected override async Task OnInitializedAsync()
     {
-        
+
         await GetReport();
-        if(report == null)
+        if (report == null)
         {
             Console.WriteLine("Report not found");
             return;
@@ -77,9 +102,9 @@
         {
             var responseStream = await response.Content.ReadAsStringAsync();
             var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
+                {
+                    PropertyNameCaseInsensitive = true
+                };
 
             if (responseStream is null)
             {
@@ -88,8 +113,9 @@
             }
 
             report = JsonSerializer.Deserialize<ReportModel>(responseStream, options);
-                
-            if(report == null){
+
+            if (report == null)
+            {
                 Console.WriteLine("Report not found");
                 return;
             }
@@ -98,7 +124,9 @@
             @* Clear reports *@
             allReports.Clear();
             allReports.Add(report);
-        }else{
+        }
+        else
+        {
             Console.WriteLine("Report not found");
         }
 
@@ -108,15 +136,18 @@
     private async Task GetLocationData()
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" +
+        longitude);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
             locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-                @* Current location *@
-            
-        } else {
+            @* Current location *@
+
+        }
+        else
+        {
             Console.WriteLine("Location data not found in Results");
         }
     }
@@ -141,4 +172,4 @@
         }
     }
 
-} 
+}
