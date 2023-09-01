@@ -14,32 +14,35 @@
             <div class="mx-auto w-fit">
                 <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
             </div>
-            <div class="w-full">
-                <div class="">
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl">Location</h1>
-                        </Header>
-                    </Heading>
-                    <div class="flex-col">
-                        <div class="h-[8cm] w-[8cm] mx-auto">
-                            <Map imageName="@locationData.image" />
-                        </div>
-                        <div class="flex flex-col w-fit mx-auto space-y-2">
-                            <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
-                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
-                            <div class="translate-x-1">
-                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
-                                    Text="@avgEnergyProduction" />
+            <div class="space-y-2">
+                <div class="w-full">
+                    <div class="">
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Location</h1>
+                            </Header>
+                        </Heading>
+                        <div class="flex-col">
+                            <div class="h-[8cm] w-[8cm] mx-auto">
+                                <Map imageName="@locationData.image" />
+                            </div>
+                            <div class="flex flex-col w-fit mx-auto space-y-2">
+                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
+                                <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
+                                <div class="translate-x-1">
+                                    <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                                        Text="@avgEnergyProduction" />
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
-                <div>
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl text-start">System Size</h1>
-                        </Header>
+                <div class="w-full">
+                        <Heading>
+                            <Header>
+                                <h1 class=" text-xl text-start">System Size</h1>
+                    </Header>
                     </Heading>
                     <div class="w-fit mx-auto flex space-x-3">
                         <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
@@ -52,75 +55,74 @@
                         <p class="text-5xl text-gray-400 font-bold">kw</p>
                     </div>
                 </div>
-            </div>
-
-            <div>
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl">Appliances</h1>
-                    </Header>
-                    <Subscript>
-                        <p>What do you want to run in a power outage?</p>
-                    </Subscript>
-                </Heading>
-                <div class="flex flex-wrap justify-center gap-2">
-                    @{
-                        for (int i = 0; i < reportAllAppliance.Count; i++)
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Appliances</h1>
+                        </Header>
+                        <Subscript>
+                            <p>What do you want to run in a power outage?</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="flex flex-wrap justify-center gap-2">
+                @{
+                    for (int i = 0; i < reportAllAppliance.Count; i++)
+                    {
+                        if (reportAllAppliance[i].numberOfAppliances != 0)
                         {
-                            if (reportAllAppliance[i].numberOfAppliances != 0)
-                            {
-                                var appliance = reportAllAppliance[i].type;
-                                var count = reportAllAppliance[i].numberOfAppliances;
-                                string iconName = appliance + ".svg";
-                                <Appliance css="scale-75" ImageName="@iconName" Name="@appliance" Count="@count" />
-                            }
-                        }
-                        if (reportAllAppliance.Count == 0)
-                        {
-                            <p class="text-center">No appliances added</p>
+                            var appliance = reportAllAppliance[i].type;
+                            var count = reportAllAppliance[i].numberOfAppliances;
+                            string iconName = appliance + ".svg";
+                                    <Appliance css="scale-75" ImageName="@iconName" Name="@appliance" Count="@count" />
                         }
                     }
-                </div>
-                <div>
-                    <Image ImageName="@homeSize" alt="House" css="scale-50" />
-                </div>
+                    if (reportAllAppliance.Count == 0)
+                    {
+                                <p class="text-center">No appliances added</p>
+                    }
+                }
+                    </div>
+                    <div>
+                        <Image ImageName="@homeSize" alt="House" css="scale-50" />
+                    </div>
 
-                <div class="w-full flex">
-                    <div class="w-1/2">
-                        <div class="w-full flex flex-col gap-4 justify-start items-center">
-                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
-                            <div class="flex flex-col justify-center w-full">
-                                <Chart Config="pieConfig"></Chart>
-                                <p class="text-center text-base text-primary-900 font-semibold">
-                                    @locationData.daylightHours h</p>
+                    <div class="w-full flex">
+                        <div class="w-1/2">
+                            <div class="w-full flex flex-col gap-4 justify-start items-center">
+                                <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
+                                <div class="flex flex-col justify-center w-full">
+                                    <Chart Config="pieConfig"></Chart>
+                                    <p class="text-center text-base text-primary-900 font-semibold">
+                                @locationData.daylightHours h</p>
+                                </div>
                             </div>
+
                         </div>
 
-                    </div>
-
-                    <div class="w-1/2">
-                        <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
-                        <Chart Config="polarAreaConfig"></Chart>
+                        <div class="w-1/2">
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
+                            <Chart Config="polarAreaConfig"></Chart>
+                        </div>
                     </div>
                 </div>
-            </div>
-            @* Fancy Data *@
-            <div class="w-full">
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl">Fancy Data</h1>
-                    </Header>
-                    <Subscript>
-                        <p>More information about your area</p>
-                    </Subscript>
-                </Heading>
-                <div class="flex w-full">
+        @* Fancy Data *@
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Fancy Data</h1>
+                        </Header>
+                        <Subscript>
+                            <p>More information about your area</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="flex w-full">
+                        <div class="w-full">
+                            <SolarIrradiationPerMonth solarIrradiation="@locationData.data" animated="false" />
+                        </div>
+                    </div>
                     <div class="w-full">
-                        <SolarIrradiationPerMonth solarIrradiation="@locationData.data" animated="false" />
+                        <ElevationGraph elevationValues="@locationData.elevationData" animated="false" />
                     </div>
-                </div>
-                <div class="w-full">
-                    <ElevationGraph elevationValues="@locationData.elevationData" animated="false" />
                 </div>
             </div>
         </div>
@@ -328,8 +330,8 @@
                     Rotation = -9.341,
                     Animation = new ArcAnimation
                     {
-                        AnimateRotate = true,
-                        Duration = 2000,
+                        AnimateRotate = false,
+                        Duration = 0,
 
                     },
                     Tooltips = new Tooltips
@@ -343,7 +345,8 @@
                         Mode = InteractionMode.Index,
                         Intersect = false
                     },
-                    CutoutPercentage = 80
+                    CutoutPercentage = 80,
+
                 }
             };
 
@@ -371,8 +374,8 @@ ColorUtil.ColorHexString(156,163,175),
                     },
                     Animation = new ArcAnimation
                     {
-                        AnimateRotate = true,
-                        Duration = 2000,
+                        AnimateRotate = false,
+                        Duration = 0,
 
                     },
                     Tooltips = new Tooltips

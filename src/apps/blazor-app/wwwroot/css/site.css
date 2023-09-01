@@ -87,3 +87,9 @@ a,
   size: A4;
   margin: 0;
 }
+
+@media print {
+  .new-page {
+    page-break-before: always;
+  }
+}
