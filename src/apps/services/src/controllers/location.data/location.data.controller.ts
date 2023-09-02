@@ -9,7 +9,7 @@ export default class LocationDataController {
       const key: string = process.env.MAP_BOX_API_KEY;
       res.status(200).json(key);
     } catch (error) {
-      res.status(500).json({ error: error });
+      res.status(500).json({ error: error.message });
     }
   };
 
