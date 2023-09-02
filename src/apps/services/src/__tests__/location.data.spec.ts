@@ -47,9 +47,34 @@ describe('LocationDataController', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+  // getMapBoxApiKey
+  describe('getMapBoxApiKey', () => {
+    // should return 200 if the query is successful
+    it('should return 200 if the query is successful', async () => {
+      process.env.MAP_BOX_API_KEY = 'test';
+      locationDataController.getMapBoxApiKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith('test');
+    });
+  });
 
+  // getGoogleApiKey
+  describe('getGoogleApiKey', () => {
+    // should return 200 if the query is successful
+    it('should return 200 if the query is successful', async () => {
+      process.env.GOOGLE_API_KEY = 'test';
+      locationDataController.getGoogleApiKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith('test');
+    });
+  });
   //   createSolarIrradiation
-
   describe('createSolarIrradiation', () => {
     // should return 200 if the query is successful
     it('should return 200 if the query is successful', async () => {
