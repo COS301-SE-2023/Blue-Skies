@@ -330,7 +330,7 @@ export default class LocationDataController {
 
       conn.execSql(request);
     } catch (error) {
-      res.status(500).json({ error: error });
+      res.status(500).json({ error: error.message });
     }
   };
   //create a function to execute python script
