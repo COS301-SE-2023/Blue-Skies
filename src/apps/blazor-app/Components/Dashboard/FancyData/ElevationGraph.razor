@@ -41,16 +41,16 @@
                         Scales = new Scales
                         {
                             YAxes = new List<CartesianAxis>
-{
-new LinearCartesianAxis
-{
-ScaleLabel = new ScaleLabel
-{
-LabelString = "Height",
-Display = true,
-}
-}
-}
+                            {
+                                new LinearCartesianAxis
+                                {
+                                    ScaleLabel = new ScaleLabel
+                                    {
+                                        LabelString = "Height",
+                                        Display = true,
+                                    }
+                                }
+                            }
                         },
 
                     }
@@ -71,16 +71,16 @@ Display = true,
                         Scales = new Scales
                         {
                             YAxes = new List<CartesianAxis>
-{
-new LinearCartesianAxis
-{
-ScaleLabel = new ScaleLabel
-{
-LabelString = "Height",
-Display = true,
-}
-}
-}
+                            {
+                                new LinearCartesianAxis
+                                {
+                                    ScaleLabel = new ScaleLabel
+                                    {
+                                        LabelString = "Height",
+                                        Display = true,
+                                    }
+                                }
+                            }
                         },
                         Animation = new Animation
                         {
@@ -96,35 +96,71 @@ Display = true,
     @* Calculate Data *@
     private void CalculateData()
     {
-
         lineConfig!.Data.Labels.Clear();
         lineConfig.Data.Datasets.Clear();
 
-        @* Remove the last character *@
-        elevationValues = elevationValues!.Remove(elevationValues.Length - 1);
+        Console.WriteLine(elevationValues);
 
-        @* Split the string into an array of integers *@
-        string[] elevationArray = elevationValues.Split(',');
-        int[] elevationInts = Array.ConvertAll(elevationArray, int.Parse);
-        @* Find max and min *@
-        int max = elevationInts.Max();
-        int min = elevationInts.Min();
-        int count = -1 * elevationInts.Length / 2 * 100;
-        for (int i = 0; i < elevationInts.Length; i++)
+        elevationValues = elevationValues.Replace("[", "");
+        elevationValues = elevationValues.Replace("]", "");
+        double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        double[] xValues = new double[dataArr.Length / 2 + 1];
+        double[] yValues = new double[dataArr.Length / 2 + 1];
+        for (int i = 0; i < dataArr.Length; i++)
         {
-            lineConfig.Data.Labels.Add(count.ToString());
-            count += 100;
+            if(i % 2 == 0)
+            {
+                xValues[i / 2] = dataArr[i];
+                if(dataArr[i] > 180) {
+                    xValues[i / 2] = dataArr[i] - 360;
+                    Console.WriteLine(xValues[i / 2]);
+                }
+            }
+            else
+            {
+                yValues[i / 2] = Math.Round(dataArr[i], 2);   
+
+            }
+        }
+        xValues[xValues.Length - 1] = xValues[0];
+        yValues[yValues.Length - 1] = yValues[0];
+
+        @* Put the first half of the array to the back of the array *@
+        double[] tempX = new double[xValues.Length];
+        double[] tempY= new double[yValues.Length];
+        for (int i = 0; i < xValues.Length; i++)
+        {
+            tempX[i] = xValues[i];
+            tempY[i] = yValues[i];
+        }
+        for (int i = 0; i < xValues.Length; i++)
+        {
+            if (i < xValues.Length / 2)
+            {
+                xValues[i] = tempX[i + xValues.Length / 2];
+                yValues[i] = tempY[i + xValues.Length / 2];
+            }
+            else
+            {
+                xValues[i] = tempX[i - xValues.Length / 2];
+                yValues[i] = tempY[i - xValues.Length / 2];
+            }
+        }
+
+        for (int i = 0; i < xValues.Length; i++)
+        {
+            lineConfig.Data.Labels.Add(xValues[i].ToString());
         }
 
         @* Add the data to the chart *@
-        IDataset<int> dataset1 = new LineDataset<int>(elevationInts)
-            {
-                Label = "Elevation",
-                BackgroundColor = "rgba(0,15,82, 1)",
-                BorderColor = "rgba(0,15,82, 1)",
-                BorderWidth = 1,
-                Fill = FillingMode.Disabled
-            };
+        IDataset<double> dataset1 = new LineDataset<double>(yValues)
+        {
+            Label = "Elevation",
+            BackgroundColor = "rgba(0,15,82, 1)",
+            BorderColor = "rgba(0,15,82, 1)",
+            BorderWidth = 1,
+            Fill = FillingMode.Disabled
+        };
         lineConfig.Data.Datasets.Add(dataset1);
     }
 }
