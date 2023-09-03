@@ -50,6 +50,13 @@
     </div>
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
+      <div class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
+          <Button css="shadow rounded-full" style="pill">
+            <content>
+              <p>Help?</p>
+            </content>
+          </Button>
+      </div>
       <div class="fixed top-5 right-3 flex flex-col-reverse justify-end items-end gap-4 z-30">
         @* Log Out Button *@
         <a @onclick="@(() => Logout())" href="/">
