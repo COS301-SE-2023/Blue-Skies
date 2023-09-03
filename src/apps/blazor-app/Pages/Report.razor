@@ -164,12 +164,12 @@
         await GetReportAllAppliance();
         Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
 
-
-        if (system.systemSize.Equals("Small"))
+        var systemSize = system.systemSize!;
+        if (systemSize.Equals("Small"))
         {
             homeSize = report.homeSize + "-Home1.svg";
         }
-        else if (system.systemSize.Equals("Medium"))
+        else if (systemSize.Equals("Medium"))
         {
             homeSize = report.homeSize + "-Home2.svg";
         }
@@ -177,7 +177,7 @@
         {
             homeSize = report.homeSize + "-Home3.svg";
         }
-        await GetSolarScore();
+        GetSolarScore();
         GetAvgEnergyProduction();
         renderCharts();
         isLoaded = true;
@@ -291,15 +291,15 @@
 
     }
 
-    private async Task GetSolarScore()
+    private void GetSolarScore()
     {
-        int temp = solarCalculator.calculateSolarScore(locationData.data);
+        int temp = solarCalculator.calculateSolarScore(locationData.data!);
         Console.WriteLine("Solar Score: " + temp);
         solarScore = temp.ToString();
     }
 
     @* Calculate Average Energy Production *@
-    private async Task GetAvgEnergyProduction()
+    private void GetAvgEnergyProduction()
     {
         avgEnergyProduction = Math.Round(system.numberOfPanels *
         locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";

@@ -98,7 +98,11 @@
     {
         lineConfig!.Data.Labels.Clear();
         lineConfig.Data.Datasets.Clear();
-
+        if (elevationValues == null)
+        {
+            Console.WriteLine("No elevation data");
+            return;
+        }
         elevationValues = elevationValues.Replace("[", "");
         elevationValues = elevationValues.Replace("]", "");
         double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
