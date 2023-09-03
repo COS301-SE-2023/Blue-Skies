@@ -26,18 +26,21 @@ else
                     <Results latitude="latitude" longitude="longitude"/>
                 </div>
                 <div class="-mb-80">
-                    <Image ImageName="shapes.svg" css="absolute -top-10 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  mw-2/3 -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
-                    <Image ImageName="Robert_Sitting_On_Panel.png" css="-z-10 ml-20 mt-60  robert-slide-up h-52 md:h-72" alt="Rob"/>
+                    <Image ImageName="shapes.svg" css="absolute -top-10 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
+                    <Image ImageName="Robert_Sitting_On_Panel.png" css="-z-10 ml-20 mt-60 robert-slide-up h-52 md:h-72" alt="Rob"/>
                 </div>
             }
             else
             {
                 <EnterLocation />
             }
-            <div class=" mb-20">
+            <div class="relative -mb-20">
                 <ScoreInfo />
+                <Image ImageName="shapes.svg" css="absolute rotate-45 -bottom-3/4  mt-10 -right-[55%] scale-150 z-10  w-3/4 h-3/4" alt="Shapes"/>
             </div>
-            <div class="mt-32 mb-10">
+            <div class="relative mt-32 mb-10 ">
+                <Image ImageName="shapes.svg" css="absolute rotate-45 -top-80 -left-1/2 scale-150 z-10  w-3/4 h-3/4" alt="Shapes"/>
+                <Image ImageName="Robert_Standing2.png" css="-z-10 ml-40 mt-80 -mb-96 robert-slide-up h-52 md:h-72" alt="Rob"/>
                 <NextSteps />
             </div>
         </div>
