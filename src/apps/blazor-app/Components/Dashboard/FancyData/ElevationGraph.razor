@@ -99,8 +99,6 @@
         lineConfig!.Data.Labels.Clear();
         lineConfig.Data.Datasets.Clear();
 
-        Console.WriteLine(elevationValues);
-
         elevationValues = elevationValues.Replace("[", "");
         elevationValues = elevationValues.Replace("]", "");
         double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
@@ -113,7 +111,6 @@
                 xValues[i / 2] = dataArr[i];
                 if(dataArr[i] > 180) {
                     xValues[i / 2] = dataArr[i] - 360;
-                    Console.WriteLine(xValues[i / 2]);
                 }
             }
             else
