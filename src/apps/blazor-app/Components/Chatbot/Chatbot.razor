@@ -6,36 +6,32 @@
 @* Namespace chatbot *@
 @namespace BlazorApp.Chatbot
 
-<div class="">
-  <div class="text-center">
-    Robert Chatbot
-  </div>
-
-
-  <div class="w-full">
+<div class="w-[30%] mx-auto">
+  <div class="w-full space-y-2">
     @foreach (Message mess in _conversationHistory)
     {
-      <div>
-        @if (mess.role == "user")
-        {
-          <div class="text-right">
-            @mess.content
-          </div>
-        }
-        else if (mess.role != "system")
-        {
-          <div class="text-left">
-            @mess.content
-          </div>
-        }
+    <div>
+      @if (mess.role == "user")
+      {
+      <div class= "ml-auto text-black w-fit rounded-lg bg-slate-100 p-2">
+        @mess.content
       </div>
+      }
+      else if (mess.role != "system")
+      {
+      <div class="mr-auto text-white w-fit rounded-lg bg-blue-500 p-2">
+        @mess.content
+      </div>
+      }
+    </div>
     }
   </div>
+  <div class="w-fit mx-auto">
+    <textarea id="message" rows="2" class="p-2.5 w-[400px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Write your thoughts here..." @bind-value="_userQuestion" @bind-value:event="oninput"
+      @onkeypress="HandleKeyPress" disabled="@_isSendingMessage"/>
 
-  <div class="w-100 mx-auto">
-    <textarea rows="2" placeholder="Ask your question..." @bind-value="_userQuestion" @bind-value:event="oninput"
-      @onkeypress="HandleKeyPress" disabled="@_isSendingMessage" />
   </div>
+
 </div>
 
 
