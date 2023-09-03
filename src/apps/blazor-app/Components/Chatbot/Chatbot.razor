@@ -1,0 +1,119 @@
+@using BlazorApp.Models
+@using System.Text.Json
+@using Newtonsoft.Json
+
+
+@* Namespace chatbot *@
+@namespace BlazorApp.Chatbot
+
+<div class="">
+  <div class="text-center">
+    Robert Chatbot
+  </div>
+
+
+  <div class="w-full">
+    @foreach (Message mess in _conversationHistory)
+    {
+      <div>
+        @if (mess.role == "user")
+        {
+          <div class="text-right">
+            @mess.content
+          </div>
+        }
+        else if (mess.role != "system")
+        {
+          <div class="text-left">
+            @mess.content
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="w-100 mx-auto">
+    <textarea rows="2" placeholder="Ask your question..." @bind-value="_userQuestion" @bind-value:event="oninput"
+      @onkeypress="HandleKeyPress" disabled="@_isSendingMessage" />
+  </div>
+</div>
+
+
+@code {
+  private string _userQuestion = string.Empty;
+  private readonly List<Message> _conversationHistory = new();
+  private bool _isSendingMessage;
+  private readonly string _chatBotKnowledgeScope = "" +
+  "Your name is Robert, You are an assistant that help users navigate and use a website called BlueSkies" +
+  "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on BlueSkies?\" . Keep your responses to 15 words or less";
+
+  protected override Task OnInitializedAsync()
+  {
+    _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
+    return base.OnInitializedAsync();
+  }
+  private async Task HandleKeyPress(KeyboardEventArgs e)
+  {
+    if (e.Key is not "Enter") return;
+    await SendMessage();
+  }
+
+  private async Task SendMessage()
+  {
+    Console.WriteLine("userQuestion: " + _userQuestion);
+    if (string.IsNullOrWhiteSpace(_userQuestion)) return;
+
+    AddUserQuestionToConversation();
+    StateHasChanged();
+    await CreateCompletion();
+    ClearInput();
+    StateHasChanged();
+  }
+
+  private void AddUserQuestionToConversation()
+  => _conversationHistory.Add(new Message { role = "user", content = _userQuestion });
+
+
+  private async Task CreateCompletion()
+  {
+    Console.WriteLine("CreateCompletion");
+    var postData = new
+    {
+      model = "gpt-3.5-turbo",
+      messages = _conversationHistory.ToArray(),
+    };
+
+    string jsonContent = JsonConvert.SerializeObject(postData);
+
+    Console.WriteLine("jsonContent: " + jsonContent);
+
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+    request.Headers.Add("Authorization", "Bearer ");
+    var content = new StringContent(jsonContent, null, "application/json");
+    request.Content = content;
+    var response = await client.SendAsync(request);
+    if (response.IsSuccessStatusCode)
+    {
+      var chatCompletionResponse = await response.Content.ReadFromJsonAsync<ChatbotResponse>();
+      Message temp = chatCompletionResponse!.choices.First().message;
+      _conversationHistory.Add(temp);
+    }
+    else
+    {
+      Console.WriteLine("response.StatusCode: " + response.StatusCode);
+      Console.WriteLine("response.ReasonPhrase: " + response.ReasonPhrase);
+      Console.WriteLine("response.Content: " + response.Content);
+      _conversationHistory.Add(new Message { role = "assitant", content = "Sorry, I don't know how to answer that." });
+    }
+
+
+
+  }
+
+  private void ClearInput()
+  {
+    _userQuestion = string.Empty;
+
+  }
+}
