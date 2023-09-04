@@ -9,8 +9,8 @@ namespace BlazorApp.Models
     public string? _object { get; set; }
     public int created { get; set; }
     public string? model { get; set; }
-    public Choice[] choices { get; set; }
-    public Usage usage { get; set; }
+    public Choice[]? choices { get; set; }
+    public Usage? usage { get; set; }
   }
 
   public class Usage
@@ -23,7 +23,7 @@ namespace BlazorApp.Models
   public class Choice
   {
     public int index { get; set; }
-    public Message message { get; set; }
+    public Message? message { get; set; }
     public string? finish_reason { get; set; }
   }
 
