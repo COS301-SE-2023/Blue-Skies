@@ -16,18 +16,18 @@ public class BusinessRequestDataController : ControllerBase
         _businessRequestDataRepository = new BusinessRequestDataRepository();
     }
 
-    // [HttpPost("create")]
-    // public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
-    // {
-    //     try
-    //     {
-    //         var data = await _businessRequestDataRepository.CreateBusinessRequestData(businessRequestData.key!, businessRequestData.data!);
-    //         return Ok(data);
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
-    //     }
-    // }
+    [HttpPost("post")]
+    public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
+    {
+        try
+        {
+            var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+        }
+    }
 
 }
