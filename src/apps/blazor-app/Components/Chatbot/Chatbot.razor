@@ -28,7 +28,7 @@
   </div>
   <div class="w-fit mx-auto">
     <textarea id="message" rows="2" class="p-2.5 w-[400px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Write your thoughts here..." @bind-value="_userQuestion" @bind-value:event="oninput"
-      @onkeypress="HandleKeyPress" disabled="@_isSendingMessage"/>
+      @onkeypress="HandleKeyPress"/>
 
   </div>
 
@@ -39,7 +39,6 @@
   private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
   private string _userQuestion = string.Empty;
   private readonly List<Message> _conversationHistory = new();
-  private bool _isSendingMessage;
   private readonly string _chatBotKnowledgeScope = "" +
   "Your name is Robert, You are an assistant that help users navigate and use a website called BlueSkies" +
   "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on BlueSkies?\" . Keep your responses to 15 words or less";
@@ -80,7 +79,6 @@
 
   private async Task CreateCompletion()
   {
-    Console.WriteLine("CreateCompletion");
     var postData = new
     {
       model = "gpt-3.5-turbo",
@@ -88,8 +86,6 @@
     };
 
     string jsonContent = JsonConvert.SerializeObject(postData);
-
-    Console.WriteLine("jsonContent: " + jsonContent);
 
     var client = new HttpClient();
     var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
@@ -100,8 +96,8 @@
     if (response.IsSuccessStatusCode)
     {
       var chatCompletionResponse = await response.Content.ReadFromJsonAsync<ChatbotResponse>();
-      Message temp = chatCompletionResponse!.choices.First().message;
-      _conversationHistory.Add(temp);
+      Message? temp = chatCompletionResponse!.choices!.First().message;
+      _conversationHistory.Add(temp!);
     }
     else
     {
