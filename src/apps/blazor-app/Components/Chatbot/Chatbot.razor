@@ -36,17 +36,26 @@
 
 
 @code {
+  private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
   private string _userQuestion = string.Empty;
   private readonly List<Message> _conversationHistory = new();
   private bool _isSendingMessage;
   private readonly string _chatBotKnowledgeScope = "" +
   "Your name is Robert, You are an assistant that help users navigate and use a website called BlueSkies" +
   "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on BlueSkies?\" . Keep your responses to 15 words or less";
-
-  protected override Task OnInitializedAsync()
+  private string chatbotApiKey = "";
+  protected override async Task OnInitializedAsync()
   {
+    @* Get Api Key *@
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/chatbotApiKey");
+    var response = await client.SendAsync(request);
+    if (response.StatusCode == System.Net.HttpStatusCode.OK){
+            chatbotApiKey = await response.Content.ReadAsStringAsync();
+    }
+    chatbotApiKey = chatbotApiKey.Trim('"');
     _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
-    return base.OnInitializedAsync();
+    @* return base.OnInitializedAsync(); *@
   }
   private async Task HandleKeyPress(KeyboardEventArgs e)
   {
@@ -56,13 +65,12 @@
 
   private async Task SendMessage()
   {
-    Console.WriteLine("userQuestion: " + _userQuestion);
     if (string.IsNullOrWhiteSpace(_userQuestion)) return;
 
     AddUserQuestionToConversation();
     StateHasChanged();
-    await CreateCompletion();
     ClearInput();
+    await CreateCompletion();
     StateHasChanged();
   }
 
@@ -85,7 +93,7 @@
 
     var client = new HttpClient();
     var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
-    request.Headers.Add("Authorization", "Bearer ");
+    request.Headers.Add("Authorization", "Bearer " + chatbotApiKey);
     var content = new StringContent(jsonContent, null, "application/json");
     request.Content = content;
     var response = await client.SendAsync(request);
