@@ -7,6 +7,7 @@
 @inject NavigationManager navigationManager
 @inject BlazorApp.Data.ReportManager reportManager
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.TutorialService tutorialService
 
 @{
   @* Get URI of current page *@
@@ -50,7 +51,7 @@
     </div>
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      <div class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
+      <div @onclick="ShowTutorial" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
           <Button style="pill">
             <content>
               <p>Help?</p>
@@ -180,6 +181,9 @@
   private int currentScrollPosition;
 
 
+private void ShowTutorial(){
+  tutorialService.ShowTutorial();
+}
   private void ToggleNavMenu()
   {
     collapseNavMenu = !collapseNavMenu;

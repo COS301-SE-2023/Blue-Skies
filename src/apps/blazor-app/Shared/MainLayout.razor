@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.TutorialService tutorialService
 @using BlazorApp.Components
+@using BlazorApp.Components.Tutorial
 
 <PageTitle>Blue Skies</PageTitle>
 
@@ -18,12 +20,20 @@
     @* Toast implementation *@
         @if(isToastVisible) {
             string move = isScrollingDown ? "-translate-y-20" : "translate-y-0";
-            <div class="@move @animation flex-col w-full gap-4 transition-all p-2 duration-300 delay-300 h-20 flex z-50 fixed top-28 left-9">
+            <div class="@move @toastAnimation flex-col w-full gap-4 transition-all p-2 duration-300 delay-300 h-20 flex z-50 fixed top-28 left-9">
                 <Toast Type="@type" Title="@title">
                     <p>@message</p>
                 </Toast>
             </div>
         }
+
+        @* Tutorial implementation *@
+        @if(isTutorialVisible) {
+            <div class="flex @tutorialAnimation justify-center items-center w-full h-full fixed top-0 left-0 z-50">
+                <Tutorial />
+            </div>
+        }
+
 
         <div class="mt-24 w-full overflow-hidden relative">
             @Body
@@ -38,8 +48,10 @@
 @code {
     private bool isLoading = false;
     private bool isToastVisible = false;
+    private bool isTutorialVisible = false;
     private bool isScrollingDown = false;
-    private string animation = "toast-slide-in";
+    private string toastAnimation = "toast-slide-in";
+    private string tutorialAnimation = "fade-active";
     private string title = "";
     private string message = "";
     private string type = "";
@@ -53,6 +65,9 @@
         loadingService.HideLoadingScreenRequested += HideLoadingScreen;
         toastService.ShowToastRequested += ShowToast;
         toastService.HideToastRequested += HideToast;
+        tutorialService.ShowTutorialRequested += ShowTutorial;
+        tutorialService.HideTutorialRequested += HideTutorial;
+
     }
 
 @* Loading Service functions *@
@@ -69,19 +84,36 @@
         StateHasChanged();
     }
 
+@* Tutorial Service Functions *@
+    public void ShowTutorial()
+    {
+        tutorialAnimation = "fade-active";
+        isTutorialVisible = true;
+        StateHasChanged();
+    }
+
+    public async void HideTutorial()
+    {
+        tutorialAnimation = "fade-out-active";
+        StateHasChanged();
+        await Task.Delay(300);
+        isTutorialVisible = false;
+        StateHasChanged();
+    }
+
 @* Toast Service functions *@
     public void ShowToast(string title, string message, string type) {
         this.title = title;
         this.message = message;
         this.type = type;
 
-        animation = "toast-slide-in";
+        toastAnimation = "toast-slide-in";
         isToastVisible = true;
         StateHasChanged();
     }
 
     public async void HideToast() {
-        animation = "toast-slide-out";
+        toastAnimation = "toast-slide-out";
         StateHasChanged();
         await Task.Delay(300);
         isToastVisible = false;

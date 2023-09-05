@@ -1,22 +1,13 @@
+@using BlazorApp.Data;
+@inject TutorialService tutorialService
 
-<div class="@show brightness-50 bg-black w-full h-full flex fixed top-0 left-0">
-<p>Hello World!</p>
-
+<div class="opacity-60 bg-black w-full h-full flex fixed top-0 left-0">
 </div>
+    <p @onclick="HideTutorial" class="fixed top-20 left-20 text-white text-4xl">Hello World!</p>
 
 @code {
-    protected override void OnInitialized()
+    public void HideTutorial()
     {
-        
-    }
-    private string show = "hidden";
-    private void Show()
-    {
-        show = "block";
-    }
-
-    private void Hide()
-    {
-        show = "hidden";
+        tutorialService.HideTutorial();
     }
 }

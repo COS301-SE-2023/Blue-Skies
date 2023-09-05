@@ -20,6 +20,7 @@ body {
     animation: fade .6s;
 }
 
+
 .fade-out-active {
     animation: fade-out .3s;
 }
