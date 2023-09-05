@@ -12,6 +12,7 @@ builder.Services.AddScoped<LoadingService>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<ReportManager>();
 builder.Services.AddScoped<SolarCalculator>();
+builder.Services.AddScoped<TutorialService>();
 
 var app = builder.Build();
 
