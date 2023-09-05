@@ -260,7 +260,8 @@ else if (!logIn)
             solarScore = await solarCalculator.GetSolarScoreFromData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             if(solarCalculator.locationData != null) {
-                currentLocationData = solarCalculator.locationData;
+                currentLocationData.data = solarCalculator.locationData.data;
+                currentLocationData.elevationData = solarCalculator.locationData.elevationData;
             }
             StateHasChanged();
             Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
