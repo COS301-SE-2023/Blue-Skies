@@ -2,7 +2,7 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-<div class="opacity-80 bg-black w-full h-full flex fixed top-0 left-0">
+<div class="opacity-80 bg-slate-950 w-full h-full flex fixed top-0 left-0">
 </div>
 <div class="absolute top-0 left-0 w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
@@ -29,10 +29,8 @@
         </Button>
     </div>
 </div>
-    <div @onclick="HideTutorial" class="fixed w-14 h-14 cursor-pointer top-10 right-10 text-white  text-4xl">
-        <span class="material-icons">
-            X
-        </span>
+    <div @onclick="HideTutorial" class="fixed w-14 h-14 cursor-pointer top-10 right-10 text-white font-bold text-4xl">
+        X
     </div>
     <div class="absolute top-80 right-32">
         <div class="relative w-full h-full">
