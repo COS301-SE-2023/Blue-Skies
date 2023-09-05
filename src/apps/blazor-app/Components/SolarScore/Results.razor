@@ -27,17 +27,19 @@
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
-        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72">
-            @if(solarCalculator.remainingCalls == 100) {
+        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
+            @if(remainingCalls == 100) {
                 <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
                     <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
                 </div>
             } else if(solarCalculator.remainingCalls > 0){ 
                 double percentage = solarCalculator.remainingCalls;
                 percentage = Math.Round((percentage / 144)*100, 0);
-
                 <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
                     <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
+                </div>
+                <div class="flex w-full absolute bottom-3 right-2">
+                    <p class="text-xs ml-4 text-primary-900 font-medium">Fetching data</p>
                 </div>
             }
             <div class="my-auto w-full">
