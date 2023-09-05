@@ -49,10 +49,6 @@
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private double latitude = 0;
     private double longitude = 0;
-    private readonly int zoom = 19;
-    private readonly int width = 600;
-    private readonly int height = 500;
-
     /// <summary>
     /// Gets the parent page from the session storage.
     /// </summary>
@@ -60,28 +56,6 @@
     {
         var par = await ProtectedSessionStore.GetAsync<string>("parent");
         parent = par.Value!;
-    }
-
-    /// <summary>
-    /// A class to store the elevation data for each location.
-    /// </summary>
-    class Elevations
-    {
-        private readonly ConcurrentDictionary<int, double> data = new ConcurrentDictionary<int, double>();
-
-        public void Set(int id, double elevation)
-        {
-            data[id] = elevation;
-        }
-
-        public double Get(int id)
-        {
-            if (data.TryGetValue(id, out double elevation))
-            {
-                return elevation;
-            }
-            return 0.0; // You may want to handle this case differently
-        }
     }
 
     /// <summary>
@@ -140,7 +114,7 @@
             currentLocationData.daylightHours = data[0];
             await ProtectedSessionStore.SetAsync("tempSolarIrradiation", double.Parse(data[1].ToString()));
 
-            imageBytes = await DownloadImageFromGoogleMapsService();
+            imageBytes = await sharedLocationDataModel.DownloadImageFromGoogleMapsService(latitude, longitude);
             await sharedLocationDataModel.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
         }
 
@@ -158,18 +132,6 @@
             NavigationManager.NavigateTo("/solarScore", true);
             ShowLoadingScreen();
         }
-    }
-    
-
-    /// <summary>
-    /// Downloads the image from the Google Maps Static API returns it as a byte array.
-    /// </summary>
-    private async Task<byte[]> DownloadImageFromGoogleMapsService()
-    {
-        byte[] imageBytes = new byte[0];
-        var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-        return imageBytes;
     }
 
     /// <summary>
