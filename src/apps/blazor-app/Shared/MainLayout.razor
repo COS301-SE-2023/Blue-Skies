@@ -28,17 +28,6 @@
         }
 
         @* Tutorial implementation *@
-        @if(isIntroTutorialVisible) {
-            <div class="flex @tutorialAnimation justify-center items-center w-full h-full fixed top-0 left-0 z-50">
-                <IntroTutorial />
-            </div>
-        }
-
-        @if(isHomeTutorialVisible) {
-            <div class="flex @tutorialAnimation justify-center items-center w-full h-full fixed top-0 left-0 z-50">
-                <HomeTutorial />
-            </div>
-        }
 
 
         <div class="mt-24 w-full overflow-hidden relative">
@@ -54,8 +43,8 @@
 @code {
     private bool isLoading = false;
     private bool isToastVisible = false;
-    private bool isIntroTutorialVisible = false;
-    private bool isHomeTutorialVisible = false;
+    private string activeTutorial = "Intro";
+    private bool isTutorialVisible = false;
     private bool isScrollingDown = false;
     private string toastAnimation = "toast-slide-in";
     private string tutorialAnimation = "fade-active";
@@ -72,10 +61,7 @@
         loadingService.HideLoadingScreenRequested += HideLoadingScreen;
         toastService.ShowToastRequested += ShowToast;
         toastService.HideToastRequested += HideToast;
-        tutorialService.ShowIntroTutorialRequested += ShowIntroTutorial;
-        tutorialService.HideIntroTutorialRequested += HideIntroTutorial;
-        tutorialService.ShowHomeTutorialRequested += ShowHomeTutorial;
-        tutorialService.HideHomeTutorialRequested += HideHomeTutorial;
+
     }
 
 @* Loading Service functions *@
@@ -93,37 +79,22 @@
     }
 
 @* Tutorial Service Functions *@
-    public void ShowIntroTutorial()
+    public void ShowTutorial()
     {
         tutorialAnimation = "fade-active";
-        isIntroTutorialVisible = true;
+        isTutorialVisible = true;
         StateHasChanged();
     }
 
-    public async void HideIntroTutorial()
+    public async void HideTutorial()
     {
         tutorialAnimation = "fade-out-active";
         StateHasChanged();
         await Task.Delay(300);
-        isIntroTutorialVisible = false;
+        isTutorialVisible = false;
         StateHasChanged();
     }
 
-    public void ShowHomeTutorial()
-    {
-        tutorialAnimation = "fade-active";
-        isHomeTutorialVisible = true;
-        StateHasChanged();
-    }
-    
-    public async void HideHomeTutorial()
-    {
-        tutorialAnimation = "fade-out-active";
-        StateHasChanged();
-        await Task.Delay(300);
-        isHomeTutorialVisible = false;
-        StateHasChanged();
-    }
 
 @* Toast Service functions *@
     public void ShowToast(string title, string message, string type) {

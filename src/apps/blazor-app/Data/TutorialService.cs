@@ -1,24 +1,20 @@
 namespace BlazorApp.Data {
     public class TutorialService {
-        public event Action? ShowIntroTutorialRequested;
-        public event Action? ShowHomeTutorialRequested;
-        public event Action? HideHomeTutorialRequested;
-        public event Action? HideIntroTutorialRequested;
+        public event Action? ShowTutorialModaRequested;
+        public event Action? HideTutorialModalRequested;
 
-        public void ShowIntroTutorial() {
-            ShowIntroTutorialRequested?.Invoke();
+        public event Action<string>? ToggleTutorialRequested;
+
+        public void ShowTutorial() {
+            ShowTutorialModaRequested?.Invoke();
         }
 
-        public void HideIntroTutorial() {
-            HideIntroTutorialRequested?.Invoke();
+        public void HideTutorial() {
+            HideTutorialModalRequested?.Invoke();
         }
 
-        public void ShowHomeTutorial() {
-            ShowHomeTutorialRequested?.Invoke();
-        }
-
-        public void HideHomeTutorial() {
-            HideHomeTutorialRequested?.Invoke();
+        public void ToggleTutorial(string tutorialName) {
+            ToggleTutorialRequested?.Invoke(tutorialName);
         }
     }
 }

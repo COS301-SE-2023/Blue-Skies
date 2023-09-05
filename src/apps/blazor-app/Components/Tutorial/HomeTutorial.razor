@@ -2,7 +2,7 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-<div class="opacity-95 bg-slate-950 w-full h-full flex fixed top-0 left-0">
+<div class="opacity-95 bg-primary-950 w-full h-full flex fixed top-0 left-0">
 </div>
 <div class="absolute top-0 left-0 w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
@@ -44,6 +44,6 @@
         .TypeString("Select a specific section of the home page that you require assistance with, and I will guide you through its functionality step by step", 20);
     public void HideTutorial()
     {
-        tutorialService.HideHomeTutorial();
+        tutorialService.HideTutorial();
     }
 }
