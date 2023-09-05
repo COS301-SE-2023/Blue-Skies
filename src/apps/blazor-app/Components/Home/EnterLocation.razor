@@ -52,9 +52,6 @@
     private readonly int width = 600;
     private readonly int height = 500;
 
-    private ElevationApiRequests apiRequests = new ElevationApiRequests();
-    private Elevations elevations = new Elevations();
-
     /// <summary>
     /// Gets the parent page from the session storage.
     /// </summary>
@@ -84,38 +81,6 @@
             }
             return 0.0; // You may want to handle this case differently
         }
-    }
-
-    /// <summary>
-    /// A class to store the api requests for each location.
-    /// </summary>
-    class ElevationApiRequests
-    {
-        private readonly Dictionary<int, string> data = new Dictionary<int, string>();
-        private readonly HttpClient httpClient = new HttpClient();
-
-        public void Set(int id, string url)
-        {
-            data[id] = url;
-        }
-
-        public async Task CallApiAsync(int id, Elevations elevations)
-        {
-            string? apiUrl;
-            if (data.TryGetValue(id, out apiUrl) && apiUrl != null)
-            {
-                HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
-                var responseData = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(responseBody);
-                
-                if (responseData.elevation != null && responseData.elevation.HasValues)
-                {
-                    double elevationValue = (double)responseData.elevation[0];
-                    elevations.Set(id, elevationValue);
-                }
-            }
-        }   
     }
 
     /// <summary>
@@ -197,39 +162,12 @@
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
     private async Task<string> getElevationData(double latitude, double longitude) {
-        int MIN = -25;
-        int MAX = 25;
-        string url = "https://api.open-meteo.com/v1/elevation";
-
-        for (int i = MIN; i <= MAX; i++)
-        {
-            double newLongitude = longitude - (i * 0.000897);
-            apiRequests.Set(i, $"{url}?latitude={latitude}&longitude={newLongitude}");
-        }
-
-        var dataflowBlock = new ActionBlock<int>(
-            async id =>
-            {
-                await apiRequests.CallApiAsync(id, elevations);
-            },
-            new ExecutionDataflowBlockOptions
-            {
-                MaxDegreeOfParallelism = 10
-            });
-
-        for (int i = MIN; i <= MAX; i++)
-        {
-            dataflowBlock.Post(i);
-        }
-
-        dataflowBlock.Complete();
-        await dataflowBlock.Completion;
-        string result = "";
-        for (int i = MIN; i <= MAX; i++)
-        {
-            result += elevations.Get(i) + ",";
-        }
-        return result;
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude},{longitude}";
+        Console.WriteLine("URL: " + url);
+        var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
     }
 
     /// <summary>

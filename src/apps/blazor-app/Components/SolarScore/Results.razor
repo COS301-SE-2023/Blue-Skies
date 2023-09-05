@@ -32,8 +32,8 @@
                 <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
                     <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
                 </div>
-            } else if(remainingCalls > 0){ 
-                double percentage = remainingCalls;
+            } else if(solarCalculator.remainingCalls > 0){ 
+                double percentage = solarCalculator.remainingCalls;
                 percentage = Math.Round((percentage / 144)*100, 0);
                 <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
                     <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
@@ -156,7 +156,8 @@
     [Parameter]
     public double longitude  { get; set; }
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
-    private int solarScore = 100;
+    ProtectedBrowserStorageResult<double> tempSolarIrradiation;
+    private int solarScore = 0;
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
@@ -165,13 +166,17 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
-    public int remainingCalls = 100;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        if(API_PORT != null) {
+            solarScore = solarCalculator.getSolarScoreFromInitialData(tempSolarIrradiation.Value);
+        }
+        
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
         System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -270,29 +275,16 @@
     /// </summary>
     private async Task GetSolarScore() 
     {
+        solarCalculator.reset();
         if(API_PORT == null) {
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        remainingCalls = 100;
-        int timesNotUpdated = 0;
-        int previousRemainingCalls = remainingCalls;
-        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        int previousScore = -1;
-        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
-            solarScore = result[0];
-            previousScore = solarScore;
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, API_PORT, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            remainingCalls = result[1];
-            if(previousRemainingCalls != remainingCalls){
-                timesNotUpdated = 0;
-            } else {
-                timesNotUpdated++;
-            }
-            previousRemainingCalls = remainingCalls;
             StateHasChanged();
-            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
         }
     }
