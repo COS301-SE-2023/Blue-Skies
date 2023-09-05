@@ -105,8 +105,7 @@ namespace BlazorApp.Data
             }
             if (solarScore <= 0)
             {
-                Random random = new Random();
-                solarScore = random.Next(0, 15);
+                solarScore = 4;
             }
 
             return (int)solarScore;
@@ -143,6 +142,26 @@ namespace BlazorApp.Data
                 result = 100;
             }
             return result;
+        }
+
+        public double getPowerSaved(double annualKWGenerated) {
+            return annualKWGenerated * 10 / 1000;
+        }
+
+        public double getCO2Saved(double annualKWGenerated) {
+            return getPowerSaved(annualKWGenerated) * 1.03 * 1000;
+        }
+
+        public double waterSaved(double annualKWGenerated) {
+            return getPowerSaved(annualKWGenerated) * 1.45 * 1000;
+        }
+
+        public double coalNotBurnt(double annualKWGenerated) {
+            return getPowerSaved(annualKWGenerated) * 0.56 * 1000;
+        }
+
+        public double treesPlanted(double annualKWGenerated) {
+            return getPowerSaved(annualKWGenerated) * 0.01808;
         }
     }
 }
