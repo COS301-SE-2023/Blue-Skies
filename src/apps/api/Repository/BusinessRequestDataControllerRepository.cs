@@ -9,6 +9,7 @@ namespace Api.Repository;
 
 public class BusinessRequestDataRepository
 {
+    private SharedUtils.locationDataModel locationData = new SharedUtils.locationDataModel();
     private string express = "http://localhost:3333";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public BusinessRequestDataRepository()
