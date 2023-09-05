@@ -1,0 +1,18 @@
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div class="opacity-95 bg-primary-950 w-full h-full flex fixed top-0 left-0"></div>
+<div class="absolute top-0 left-0 w-full">
+    @ChildContent
+</div>
+<div @onclick="HideTutorial" class="fixed w-14 h-14 cursor-pointer top-10 right-10 text-white font-bold text-4xl">
+    X
+</div>
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    public void HideTutorial()
+    {
+        tutorialService.HideTutorial();
+    }
+}
