@@ -28,7 +28,23 @@
         }
 
         @* Tutorial implementation *@
-
+        @if(isTutorialVisible) {
+            <div class="flex @tutorialAnimation justify-center items-center w-full h-full fixed top-0 left-0 z-50">
+                <TutorialModal>
+                    @switch (activeTutorial)
+                    {
+                        case "Intro":
+                            <IntroTutorial />
+                            break;
+                        case "Home":
+                            <HomeTutorial />
+                            break;
+                        default:
+                            break;
+                    }
+                </TutorialModal>
+            </div>
+        }
 
         <div class="mt-24 w-full overflow-hidden relative">
             @Body
@@ -94,6 +110,12 @@
         StateHasChanged();
         await Task.Delay(300);
         isTutorialVisible = false;
+        StateHasChanged();
+    }
+
+    public void ToggleTutorial(string tutorial)
+    {
+        activeTutorial = tutorial;
         StateHasChanged();
     }
 
