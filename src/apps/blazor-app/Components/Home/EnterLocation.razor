@@ -133,8 +133,8 @@
 
 
         byte[] imageBytes = new byte[0];
-        bool exists = await GetLocationData(latitude, longitude);
-        if (!exists)
+        currentLocationData = await sharedLocationDataModel.GetLocationData(latitude, longitude);
+        if (currentLocationData.data == null)
         {
             float[] data = await sharedLocationDataModel.getInitialData(latitude, longitude);
             currentLocationData.daylightHours = data[0];
@@ -157,31 +157,6 @@
         {
             NavigationManager.NavigateTo("/solarScore", true);
             ShowLoadingScreen();
-        }
-    }
-
-    /// <summary>
-    /// <list type="bulltet">
-    ///     <item>Tries to get the location data from the database.</item>
-    ///     <item>If the data exists: save it's data to the currentLocationData variable and return true.</item>
-    ///     <item>If the data does not exist: return false.</item>
-    /// </list>
-    /// <paramref name="latitude"/> The latitude of the current location.
-    /// <paramref name="longitude"/> The longitude of the current location.
-    /// </summary>
-    public async Task<bool> GetLocationData(double latitude, double longitude){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Location data found");
-            string data = response.Content.ReadAsStringAsync().Result;
-            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data);
-            return true;
-        } else {
-            Console.WriteLine("Location data not found - fetching data instead");
-            return false;
         }
     }
     

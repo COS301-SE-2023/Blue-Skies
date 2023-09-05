@@ -2,10 +2,15 @@
 
 using System;
 using System.Text.Json;
+using System.Net.Http;
+using System.Net.Http.Json;
+
 namespace SharedUtils;
 
 public class locationDataModel
 {
+    private string mapboxAccessToken = "";
+
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
@@ -181,7 +186,7 @@ public class locationDataModel
     /// <paramref name="apiUrl"/> The url to the api.
     /// </summary>
     #pragma warning disable CS8603
-    private async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
+    public async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
     {
         try
         {
@@ -207,4 +212,112 @@ public class locationDataModel
         // If any error occurred, return null or an appropriate default value
         return null;
     }
+
+    /// <summary>
+    /// <list type="bulltet">
+    ///     <item>Tries to get the location data from the database.</item>
+    ///     <item>If the data exists: save it's data to the currentLocationData variable and return true.</item>
+    ///     <item>If the data does not exist: return false.</item>
+    /// </list>
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
+    /// </summary>
+    public async Task<LocationDataModel> GetLocationData(double latitude, double longitude){
+        LocationDataModel locationData = new LocationDataModel();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Location data found");
+            string data = response.Content.ReadAsStringAsync().Result;
+            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found - fetching data instead");
+        }
+        return locationData;
+    }
+
+    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
+    {     
+        if(mapboxAccessToken == "") {
+            await GetMapboxAccessToken();
+        }
+
+        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+
+        string requestUrl = $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
+
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            List<LocationSuggestion> suggestions = mapResponse?.Features ?? new List<LocationSuggestion>();
+            if (suggestions.Count == 0)
+            {
+                suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
+            }
+            return suggestions;
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or exceptions
+            Console.WriteLine(ex.Message);
+            return new List<LocationSuggestion>();
+        }
+    }
+
+    public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
+    {
+        if(mapboxAccessToken == "") {
+            await GetMapboxAccessToken();
+        }
+        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+        string requestUrl = $"{baseUrl}{longitude},{latitude}.json?&access_token={mapboxAccessToken}";
+
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            return mapResponse?.Features[0].Place_Name ?? "";
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or exceptions
+            Console.WriteLine(ex.Message);
+            return "";
+        }
+    }
+
+    private async Task GetMapboxAccessToken() {
+        HttpClient httpClient = new HttpClient();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/mapboxkey");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK){
+            mapboxAccessToken = await response.Content.ReadAsStringAsync();
+        }
+        mapboxAccessToken = mapboxAccessToken.Trim('"');
+    }
+
+     /// <summary>
+    /// Downloads the image from the Google Maps Static API returns it as a byte array.
+    /// </summary>
+    public async Task<byte[]> DownloadImageFromGoogleMapsService(double latitude, double longitude)
+    {
+        int zoom = 19;
+        int width = 600;
+        int height = 500;
+        byte[] imageBytes = new byte[0];
+        var googleMapsService = new GoogleMapsService(new HttpClient());
+        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        return imageBytes;
+    }
 }
+
+
+public class GeocodingResponse
+{
+    public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
+}
+
