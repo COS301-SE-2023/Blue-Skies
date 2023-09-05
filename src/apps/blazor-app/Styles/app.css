@@ -62,6 +62,12 @@ body {
     animation-fill-mode: forwards;
 }
 
+.robert-slide-in-tutorial {
+    animation: robertSlideRight .3s;
+    animation-delay: .5s;
+    animation-fill-mode: forwards;
+}
+
 
 .robert-slide-in-left {
     animation: robertSlideLeft .5s;
