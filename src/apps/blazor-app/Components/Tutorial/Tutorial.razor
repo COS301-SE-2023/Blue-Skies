@@ -1,0 +1,22 @@
+
+<div class="@show brightness-50 bg-black w-full h-full flex fixed top-0 left-0">
+<p>Hello World!</p>
+
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        
+    }
+    private string show = "hidden";
+    private void Show()
+    {
+        show = "block";
+    }
+
+    private void Hide()
+    {
+        show = "hidden";
+    }
+}
