@@ -2,9 +2,7 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-<div class="opacity-95 bg-primary-950 w-full h-full flex fixed top-0 left-0">
-</div>
-<div class="absolute top-0 left-0 w-full">
+
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick="ShowHomeTutorial">
@@ -30,7 +28,7 @@
             </content>
         </Button>
     </div>
-</div>
+
     <div @onclick="HideTutorial" class="fixed w-14 h-14 cursor-pointer top-10 right-10 text-white font-bold text-4xl">
         X
     </div>
