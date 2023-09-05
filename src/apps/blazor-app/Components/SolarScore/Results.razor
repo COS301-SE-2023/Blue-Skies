@@ -28,7 +28,7 @@
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
-            @if(remainingCalls == 100) {
+            @if(solarCalculator.remainingCalls == 100) {
                 <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
                     <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
                 </div>

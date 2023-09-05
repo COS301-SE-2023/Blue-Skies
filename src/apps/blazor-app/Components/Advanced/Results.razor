@@ -142,7 +142,6 @@
             Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
             return;
         }
-        int timesNotUpdated = 0;
         int previousRemainingCalls = remainingCalls;
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
         while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
