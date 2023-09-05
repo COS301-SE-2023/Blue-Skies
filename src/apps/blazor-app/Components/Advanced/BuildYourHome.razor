@@ -29,7 +29,7 @@
         </div>
     </div>
     @* Select System Size *@
-    <div class="lg:w-6/12 px-4 flex flex-col justify-center items-center gap-4 my-auto">
+    <div class="lg:w-6/12 px-4 z-30 flex flex-col justify-center items-center gap-4 my-auto">
         <div class="text-center mt-2 space-y-5 my-auto ">
             <p>System Size</p>
             <div class="flex space-x-9">
@@ -52,7 +52,7 @@
     </div>
 </div>
 @* Add Appliances *@
-<div class="hidden lg:flex w-full h-full px-4">
+<div class="hidden lg:flex w-full h-full -mt-5 px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
         <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
             <div class="flex gap-3 w-full relative justify-center">
@@ -65,7 +65,8 @@
                 </div>
             </div>
             @* Tabs to add or remove *@
-            <div class="flex justify-center items-center w-full  my-7">
+            <div class="flex flex-col gap-2 justify-center items-center w-full  my-7">
+                @* <Tabs @bind-Items="categories"></Tabs> *@
                 <Tabs @bind-Items="tabs"></Tabs>
             </div>
             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
@@ -107,11 +108,11 @@
             @{
                 homeImage = homeSize + homeType;
             }
-            <Image ImageName="@homeImage" alt="Home" css="w-full h-full scale-75" />
+            <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full" />
         </div>
     </div>
     @* System details *@
-    <div class="w-6/12 px-4 flex flex-col justify-center items-center gap-4">
+    <div class="w-6/12 px-1 -mt-40 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
             <Appliance ImageName="SolarPanels.svg" name="Number of Panels" count=@systems[selectedSystem].numberOfPanels />
@@ -333,6 +334,12 @@
     {
         new TabItemModel("Add", true),
         new TabItemModel("Remove", false)
+    };
+    private List<TabItemModel> categories = new List<TabItemModel>
+    {
+        new TabItemModel("Kitchen", true),
+        new TabItemModel("Entertainment", false),
+        new TabItemModel("General", false)
     };
     float runningHoursPercentage = 0f;
     float dlh = 0f;

@@ -10,7 +10,6 @@ import { keyRouter } from './key/key.router';
 import { trainingDataRouter } from './training.data/training.data.router';
 import { locationDataRouter } from './location.data/location.data.router';
 import { reportAllApplianceRouter } from './report.all.appliances/report.all.appliances.router';
-import { locationRouter } from './location/location.router';
 const router = Router();
 
 router.get('/', testHelloWorld);
@@ -24,6 +23,5 @@ router.use('/key', keyRouter);
 router.use('/trainingData', trainingDataRouter);
 router.use('/locationData', locationDataRouter);
 router.use('/reportAllAppliance', reportAllApplianceRouter);
-router.use('/location', locationRouter);
 
 export default router;
