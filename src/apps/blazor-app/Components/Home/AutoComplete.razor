@@ -65,7 +65,7 @@
 </div>
 
 @code {
-    private SharedUtils.otherDataModel dataModel = new SharedUtils.otherDataModel();
+    private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
@@ -93,7 +93,7 @@
         if(e.Value != null && e.Value.ToString() != "")
         {
             searchQuery = e.Value.ToString()!;
-            suggestions = await dataModel.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery));
+            suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery));
         } else {
             suggestions = new List<LocationSuggestion>();
         }

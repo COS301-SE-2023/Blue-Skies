@@ -43,7 +43,7 @@
 
 
 @code {
-    private SharedUtils.locationDataModel sharedLocationDataModel = new SharedUtils.locationDataModel();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private LocationDataModel? currentLocationData = new LocationDataModel();
     public string parent = "index";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
@@ -107,15 +107,15 @@
 
 
         byte[] imageBytes = new byte[0];
-        currentLocationData = await sharedLocationDataModel.GetLocationData(latitude, longitude);
+        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
         if (currentLocationData.data == null)
         {
-            float[] data = await sharedLocationDataModel.getInitialData(latitude, longitude);
+            float[] data = await locationDataClass.getInitialData(latitude, longitude);
             currentLocationData.daylightHours = data[0];
             await ProtectedSessionStore.SetAsync("tempSolarIrradiation", double.Parse(data[1].ToString()));
 
-            imageBytes = await sharedLocationDataModel.DownloadImageFromGoogleMapsService(latitude, longitude);
-            await sharedLocationDataModel.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
+            imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
+            await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
         }
 
         await ProtectedSessionStore.SetAsync("parent", "");

@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 
 namespace SharedUtils;
 
-public class locationDataModel
+public class locationDataClass
 {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
@@ -252,7 +252,7 @@ public class locationDataModel
     }
 }
 
-public class systemDataModel {
+public class systemClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
@@ -284,7 +284,7 @@ public class systemDataModel {
     }
 }
 
-public class applianceDataModel {
+public class applianceClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     /// <summary>
     /// <list type="bullet">
@@ -315,7 +315,7 @@ public class applianceDataModel {
     }
 }
 
-public class otherDataModel {
+public class otherDataClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private string mapboxAccessToken = "";
     public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
