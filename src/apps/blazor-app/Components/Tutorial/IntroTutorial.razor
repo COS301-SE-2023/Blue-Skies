@@ -2,16 +2,18 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-<div class="opacity-80 bg-slate-950 w-full h-full flex fixed top-0 left-0">
+<div class="opacity-95 bg-slate-950 w-full h-full flex fixed top-0 left-0">
 </div>
 <div class="absolute top-0 left-0 w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
-        <Button style="outline-light">
-            <content>
-                <p>Home</p>
-            </content>
-        </Button>
+        <div @onclick="ShowHomeTutorial">
+            <Button style="outline-light">
+                <content>
+                    <p>Home</p>
+                </content>
+            </Button>
+        </div>
         <Button style="outline-light">
             <content>
                 <p>Solar Score</p>
@@ -50,5 +52,11 @@
     public void HideTutorial()
     {
         tutorialService.HideIntroTutorial();
+    }
+
+    public void ShowHomeTutorial()
+    {
+        HideTutorial();
+        tutorialService.ShowHomeTutorial();
     }
 }

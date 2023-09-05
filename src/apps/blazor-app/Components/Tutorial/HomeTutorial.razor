@@ -2,29 +2,24 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-<div class="opacity-80 bg-slate-950 w-full h-full flex fixed top-0 left-0">
+<div class="opacity-95 bg-slate-950 w-full h-full flex fixed top-0 left-0">
 </div>
 <div class="absolute top-0 left-0 w-full">
-    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
+    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <Button style="outline-light">
             <content>
-                <p>Home</p>
+                <p>Navigation</p>
             </content>
         </Button>
         <Button style="outline-light">
             <content>
-                <p>Solar Score</p>
+                <p>Enter Location</p>
             </content>
         </Button>
         <Button style="outline-light">
             <content>
-                <p>Advanced Calculation</p>
-            </content>
-        </Button>
-        <Button style="outline-light">
-            <content>
-                <p>Dashboard</p>
+                <p>Frequently Asked Questions</p>
             </content>
         </Button>
     </div>
@@ -46,9 +41,9 @@
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-        .TypeString("Please choose a page for which you'd like assistance, and I'll provide guidance on all its various elements.", 20);
+        .TypeString("Select a specific section of the home page that you require assistance with, and I will guide you through its functionality step by step", 20);
     public void HideTutorial()
     {
-        tutorialService.HideIntroTutorial();
+        tutorialService.HideHomeTutorial();
     }
 }
