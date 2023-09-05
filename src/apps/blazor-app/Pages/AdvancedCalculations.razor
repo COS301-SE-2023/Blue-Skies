@@ -69,9 +69,9 @@
 </div>
 
 @code {
-    private SharedUtils.locationDataModel locationData = new SharedUtils.locationDataModel();
-    private SharedUtils.systemDataModel systemData = new SharedUtils.systemDataModel();
-    private SharedUtils.applianceDataModel applianceData = new SharedUtils.applianceDataModel();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
+    private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
@@ -125,7 +125,7 @@
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
 
-        currentLocationData = await locationData.GetLocationData(latitude, longitude);
+        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
@@ -137,13 +137,13 @@
             currentReport.longitude = longitude;
         }
 
-        appliances = await applianceData.GetAppliancesAsync();
+        appliances = await applianceDataClass.GetAppliancesAsync();
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
         }
 
-        systems = await systemData.GetSystemsAsync();
+        systems = await systemDataClass.GetSystemsAsync();
         if (systems.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("systems", systems);

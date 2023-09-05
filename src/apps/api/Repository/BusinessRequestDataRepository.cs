@@ -9,8 +9,8 @@ namespace Api.Repository;
 
 public class BusinessRequestDataRepository
 {
-    private SharedUtils.locationDataModel sharedLocationDataModel = new SharedUtils.locationDataModel();
-    private SharedUtils.otherDataModel sharedOtherDataModel = new SharedUtils.otherDataModel();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private string express = "http://localhost:3333";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public BusinessRequestDataRepository()
@@ -75,13 +75,13 @@ public class BusinessRequestDataRepository
            
             switch(data!.ToLower()){
                 case "solar score" : 
-                    LocationDataModel exists = await sharedLocationDataModel.GetLocationData(latitude, longitude);
+                    LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
                     if (exists.data == null)
                     {
-                        await sharedLocationDataModel.getInitialData(latitude, longitude);
-                        byte[] imageBytes = await sharedLocationDataModel.DownloadImageFromGoogleMapsService(latitude, longitude);
-                        var location = await sharedOtherDataModel.GetLocationNameFromCoordinates(latitude, longitude);
-                        await sharedLocationDataModel.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
+                        await locationDataClass.getInitialData(latitude, longitude);
+                        byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
+                        var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+                        await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
                     var dataType = new HttpRequestMessage(
@@ -93,7 +93,6 @@ public class BusinessRequestDataRepository
                     break;
                 default : 
                     throw new Exception("Error: Not a valid option chosen for data type");
-                    break;
             }
             
            return await dataTypeResponse.Content.ReadAsStringAsync();
