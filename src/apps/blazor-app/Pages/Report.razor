@@ -1,14 +1,544 @@
 @page "/report/{UserId}/{ReportId}"
-@layout AuthLayout
-<div>Hello Ruan
-    <br>
-    @UserId
-    <br>
-    @ReportId
-</div>
+@using System.Text.Json
+@using ChartJs.Blazor.PieChart
+@using BlazorApp.FancyData
+@using BlazorApp.Components.Dashboard
+@using ChartJs.Blazor.PolarAreaChart
+@inject BlazorApp.Data.SolarCalculator solarCalculator
 
+@layout AuthLayout
+<div class="pageA4 mx-auto">
+    @if (isLoaded)
+    {
+        <div id="report">
+            <div class="mx-auto w-fit">
+                <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
+            </div>
+            <div class="space-y-2">
+                <div class="w-full">
+                    <div class="">
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Location</h1>
+                            </Header>
+                        </Heading>
+                        <div class="flex-col">
+                            <div class="h-[8cm] w-[8cm] mx-auto">
+                                <Map imageName="@locationData.image" />
+                            </div>
+                            <div class="flex flex-col w-fit mx-auto space-y-2">
+                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
+                                <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
+                                <div class="translate-x-1">
+                                    <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                                        Text="@avgEnergyProduction" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="w-full">
+                        <Heading>
+                            <Header>
+                                <h1 class=" text-xl text-start">System Size</h1>
+                    </Header>
+                    </Heading>
+                    <div class="w-fit mx-auto flex space-x-3">
+                        <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
+                            Count="@system.numberOfPanels" />
+                        <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
+                            Count="@system.numberOfBatteries" />
+                    </div>
+                    <div class="flex w-full justify-center items-center gap-1 mt-4">
+                        <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
+                        <p class="text-5xl text-gray-400 font-bold">kw</p>
+                    </div>
+                </div>
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Appliances</h1>
+                        </Header>
+                        <Subscript>
+                            <p>What do you want to run in a power outage?</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="flex flex-wrap justify-center gap-2">
+                @{
+                    for (int i = 0; i < reportAllAppliance.Count; i++)
+                    {
+                        if (reportAllAppliance[i].numberOfAppliances != 0)
+                        {
+                            var appliance = reportAllAppliance[i].type;
+                            var count = reportAllAppliance[i].numberOfAppliances;
+                            string iconName = appliance + ".svg";
+                                    <Appliance css="scale-75" ImageName="@iconName" Name="@appliance" Count="@count" />
+                        }
+                    }
+                    if (reportAllAppliance.Count == 0)
+                    {
+                                <p class="text-center">No appliances added</p>
+                    }
+                }
+                    </div>
+                    <div>
+                        <Image ImageName="@homeSize" alt="House" css="scale-50" />
+                    </div>
+
+                    <div class="w-full flex">
+                        <div class="w-1/2">
+                            <div class="w-full flex flex-col gap-4 justify-start items-center">
+                                <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
+                                <div class="flex flex-col justify-center w-full">
+                                    <Chart Config="pieConfig"></Chart>
+                                    <p class="text-center text-base text-primary-900 font-semibold">
+                                @locationData.daylightHours h</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="w-1/2">
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
+                            <Chart Config="polarAreaConfig"></Chart>
+                        </div>
+                    </div>
+                </div>
+        @* Fancy Data *@
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Fancy Data</h1>
+                        </Header>
+                        <Subscript>
+                            <p>More information about your area</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="flex w-full">
+                        <div class="w-full">
+                            <SolarIrradiationPerMonth solarIrradiation="@locationData.data" animated="false" />
+                        </div>
+                    </div>
+                    <div class="w-full">
+                        <ElevationGraph elevationValues="@locationData.elevationData" animated="false" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 @code {
-    [Parameter] public string UserId { get; set; }
+    [Parameter] public string? UserId { get; set; }
     [Parameter]
-    public string ReportId { get; set; }
-} 
+    public string? ReportId { get; set; }
+
+    private ReportModel? report = new ReportModel();
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private double latitude = 0;
+    private double longitude = 0;
+    private LocationDataModel locationData = new LocationDataModel();
+    private SystemModel system = new SystemModel();
+    private bool isLoaded = false;
+    private string? homeSize = "Small";
+    private PieConfig pieConfig = new PieConfig();
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    public string solarScore = "";
+    public string avgEnergyProduction = "";
+    @* OnInitialized *@
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await GetReport();
+        if (report == null)
+        {
+            Console.WriteLine("Report not found");
+            return;
+        }
+        Console.WriteLine("Current report: " + report.reportId);
+        await GetLocationData();
+        Console.WriteLine("Current location: " + locationData.location);
+        await GetSystemAsync(report.systemId);
+        await GetReportAllAppliance();
+        Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
+
+        var systemSize = system.systemSize!;
+        if (systemSize.Equals("Small"))
+        {
+            homeSize = report.homeSize + "-Home1.svg";
+        }
+        else if (systemSize.Equals("Medium"))
+        {
+            homeSize = report.homeSize + "-Home2.svg";
+        }
+        else
+        {
+            homeSize = report.homeSize + "-Home3.svg";
+        }
+        GetSolarScore();
+        GetAvgEnergyProduction();
+        renderCharts();
+        isLoaded = true;
+        StateHasChanged();
+
+    }
+
+    @* Get report *@
+    private async Task GetReport()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/get/" + ReportId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseStream = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+            if (responseStream is null)
+            {
+                Console.WriteLine("Report not found");
+                return;
+            }
+
+            report = JsonSerializer.Deserialize<ReportModel>(responseStream, options);
+
+            if (report == null)
+            {
+                Console.WriteLine("Report not found");
+                return;
+            }
+            latitude = report.latitude;
+            longitude = report.longitude;
+        }
+        else
+        {
+            Console.WriteLine("Report not found");
+        }
+
+    }
+
+    @* Get location Data *@
+    private async Task GetLocationData()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" +
+        longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            @* Current location *@
+
+        }
+        else
+        {
+            Console.WriteLine("Location data not found in Results");
+        }
+    }
+
+    private async Task GetSystemAsync(int systemId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/get/" + systemId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            system = JsonSerializer.Deserialize<SystemModel>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+    }
+
+    @* Get report All Appliance *@
+    private async Task GetReportAllAppliance()
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/get/" + ReportId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseStream = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+            if (responseStream is null)
+            {
+                Console.WriteLine("Report not found");
+                return;
+            }
+
+            reportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(responseStream, options)!;
+        }
+        else
+        {
+            Console.WriteLine("Report not found");
+        }
+
+    }
+
+    private void GetSolarScore()
+    {
+        int temp = solarCalculator.calculateSolarScore(locationData.data!);
+        Console.WriteLine("Solar Score: " + temp);
+        solarScore = temp.ToString();
+    }
+
+    @* Calculate Average Energy Production *@
+    private void GetAvgEnergyProduction()
+    {
+        avgEnergyProduction = Math.Round(system.numberOfPanels *
+        locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";
+    }
+
+    @* renderCharts *@
+    private void renderCharts()
+    {
+        pieConfig = new PieConfig(true)
+            {
+                Options = new PieOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 3,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Running Hours",
+                        FontSize = 20,
+                        Position = Position.Bottom,
+                        LineHeight = 4,
+                    },
+                    Circumference = 3,
+                    Rotation = -9.341,
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = false,
+                        Duration = 0,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false,
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    CutoutPercentage = 80,
+
+                }
+            };
+
+        float hours = (float)locationData!.daylightHours;
+        float remaining = (float)Math.Round(13 - hours, 2);
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
+            {
+                BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
+            };
+        pieConfig.Data.Datasets.Add(pieDataset);
+
+
+        polarAreaConfig = new PolarAreaConfig()
+            {
+                Options = new PolarAreaOptions
+                {
+                    Responsive = true,
+                    AspectRatio = 1.5,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = false,
+                        Duration = 0,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            Display = false,
+                        }
+                    }
+
+                }
+            };
+
+
+        polarAreaConfig.Data.Datasets.Clear();
+        polarAreaConfig.Data.Labels.Clear();
+        int countData = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                countData++;
+            }
+        }
+
+        int[] powerUsageData = new int[countData];
+        int counter = 0;
+        for (int i = 0; i < reportAllAppliance.Count; i++)
+        {
+            if (reportAllAppliance[i].numberOfAppliances != 0)
+            {
+                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage;
+                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type);
+                counter++;
+            }
+        }
+
+        PolarAreaDataset<int> polarDataset;
+        switch (counter)
+        {
+            case 0:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 1:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 2:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 3:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 4:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 5:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 6:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 7:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+}
+                    };
+                break;
+            case 8:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(246,135,18),
+ColorUtil.ColorHexString(255,193,8),
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(0,15,82),
+ColorUtil.ColorHexString(246,135,18), // orange
+ColorUtil.ColorHexString(255,193,8), // yellow
+ColorUtil.ColorHexString(56,113,193),// l blue
+ColorUtil.ColorHexString(0,15,82), // blue
+}
+                    };
+                break;
+            default:
+                polarDataset = new PolarAreaDataset<int>(powerUsageData)
+                    {
+                        BackgroundColor = new[] {
+ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
+}
+                    };
+                break;
+        }
+
+        polarAreaConfig.Data.Datasets.Add(polarDataset);
+
+    }
+
+}
