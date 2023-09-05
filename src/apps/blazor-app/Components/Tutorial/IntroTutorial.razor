@@ -2,7 +2,7 @@
 @inject TutorialService tutorialService
 @using BlazorTypewriter;
 
-
+    
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick="ShowHomeTutorial">
@@ -42,7 +42,7 @@
 
     </div>
 
-    <Image ImageName="Robert_Standing2.png" css="absolute  -bottom-40 -rotate-12  -right-48  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
+    <Image ImageName="Robert_Standing2.png" css="absolute bottom-0 -rotate-12  -right-48  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
