@@ -9,8 +9,6 @@ namespace SharedUtils;
 
 public class locationDataModel
 {
-    private string mapboxAccessToken = "";
-
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
@@ -186,7 +184,7 @@ public class locationDataModel
     /// <paramref name="apiUrl"/> The url to the api.
     /// </summary>
     #pragma warning disable CS8603
-    public async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
+    private async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
     {
         try
         {
@@ -238,6 +236,88 @@ public class locationDataModel
         return locationData;
     }
 
+    
+    /// <summary>
+    /// Downloads the image from the Google Maps Static API returns it as a byte array.
+    /// </summary>
+    public async Task<byte[]> DownloadImageFromGoogleMapsService(double latitude, double longitude)
+    {
+        int zoom = 19;
+        int width = 600;
+        int height = 500;
+        byte[] imageBytes = new byte[0];
+        var googleMapsService = new GoogleMapsService(new HttpClient());
+        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
+        return imageBytes;
+    }
+}
+
+public class systemDataModel {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the systems from the database</item>
+    ///     <item>Save the systems to the systems variable</item>
+    ///     <item>Save the systems to the session storage</item>
+    /// </list>
+    /// </summary>
+    public async Task<List<SystemModel>> GetSystemsAsync()
+    {
+        List<SystemModel> systems = new List<SystemModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed in Results when getting systems");
+        }
+        return systems;
+    }
+}
+
+public class applianceDataModel {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    /// <summary>
+    /// <list type="bullet">
+    ///     <item>Get all the appliances from the database</item>
+    ///     <item>Save the appliances to the appliances variable</item>
+    ///     <item>Save the appliances to the session storage</item>
+    /// </list>
+    /// </summary>
+    public async Task<List<ApplianceModel>> GetAppliancesAsync()
+    {
+        var appliances = new List<ApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Appliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed in Results when getting appliances");
+        }
+        return appliances;
+    }
+}
+
+public class otherDataModel {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private string mapboxAccessToken = "";
     public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
     {     
         if(mapboxAccessToken == "") {
@@ -300,24 +380,8 @@ public class locationDataModel
         mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
-     /// <summary>
-    /// Downloads the image from the Google Maps Static API returns it as a byte array.
-    /// </summary>
-    public async Task<byte[]> DownloadImageFromGoogleMapsService(double latitude, double longitude)
+    private class GeocodingResponse
     {
-        int zoom = 19;
-        int width = 600;
-        int height = 500;
-        byte[] imageBytes = new byte[0];
-        var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-        return imageBytes;
+        public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
     }
 }
-
-
-public class GeocodingResponse
-{
-    public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
-}
-

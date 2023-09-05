@@ -10,6 +10,7 @@ namespace Api.Repository;
 public class BusinessRequestDataRepository
 {
     private SharedUtils.locationDataModel sharedLocationDataModel = new SharedUtils.locationDataModel();
+    private SharedUtils.otherDataModel sharedOtherDataModel = new SharedUtils.otherDataModel();
     private string express = "http://localhost:3333";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public BusinessRequestDataRepository()
@@ -63,7 +64,7 @@ public class BusinessRequestDataRepository
             var latitude = requestData.latitude;
             var longitude = requestData.longitude;
             
-            if (!await IsKeyValid(key)){
+            if (!await IsKeyValid(key!)){
                 throw new Exception("Invalid API key");
             }
           
@@ -72,14 +73,14 @@ public class BusinessRequestDataRepository
             var client = new HttpClient();
             var dataTypeResponse = new HttpResponseMessage();
            
-            switch(data.ToLower()){
+            switch(data!.ToLower()){
                 case "solar score" : 
                     LocationDataModel exists = await sharedLocationDataModel.GetLocationData(latitude, longitude);
                     if (exists.data == null)
                     {
                         await sharedLocationDataModel.getInitialData(latitude, longitude);
                         byte[] imageBytes = await sharedLocationDataModel.DownloadImageFromGoogleMapsService(latitude, longitude);
-                        var location = await sharedLocationDataModel.GetLocationNameFromCoordinates(latitude, longitude);
+                        var location = await sharedOtherDataModel.GetLocationNameFromCoordinates(latitude, longitude);
                         await sharedLocationDataModel.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
