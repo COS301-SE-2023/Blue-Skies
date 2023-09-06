@@ -67,8 +67,7 @@ public class locationDataClass {
 
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
-        string  elevationData = await GetElevationData(latitude, longitude);
-        Console.WriteLine("Elevation data: " + elevationData);
+        string elevationData = await GetElevationData(latitude, longitude);
         var numYears = 3;
         var numDaysPerYear = 48;
         var client = new HttpClient();
@@ -115,7 +114,6 @@ public class locationDataClass {
     /// </summary>
     public async Task<string> GetElevationData(double latitude, double longitude) {
         string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
-        Console.WriteLine("URL: " + url);
         var client = new HttpClient();
         var response = await client.GetAsync(url);
         response.EnsureSuccessStatusCode();
@@ -129,7 +127,7 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the current location.
     /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
     /// </summary>
-    public async Task<float[]> GetInitialData(double latitude, double longitude)
+    public async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
     {
         var data = new List<WeatherData>();
         // Initial api key to get the last 15 day's of information:
@@ -222,7 +220,10 @@ public class locationDataClass {
         averageSunlightHours = (float)Math.Round(averageSunlightHours, 2);
         averageSolarIrradiation = averageSolarIrradiation / data.Count;
 
-        return new float[] { averageSunlightHours, (float)averageSolarIrradiation };
+        InitialDataModel initialData = new InitialDataModel();
+        initialData.averageSunlightHours = averageSunlightHours;
+        initialData.averageSolarIrradiation = averageSolarIrradiation;
+        return initialData;
     }
 
     /// <summary>
