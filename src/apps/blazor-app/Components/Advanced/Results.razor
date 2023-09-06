@@ -103,7 +103,6 @@
     public int solarScore { get; set; }
     private double latitude = 0;
     private double longitude = 0;
-    private int remainingCalls = 100;
 
     /// <summary>
     /// <list type="bullet">
@@ -138,13 +137,9 @@
     private async Task GetSolarScore() 
     {
         solarCalculator.reset();
-        if(API_PORT == null) {
-            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
-            return;
-        }
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
         while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, API_PORT, tempSolarIrradiation.Value);
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             StateHasChanged();
             Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
