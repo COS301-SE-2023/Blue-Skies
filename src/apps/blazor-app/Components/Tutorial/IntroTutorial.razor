@@ -29,9 +29,7 @@
                 </content>
             </Button>
         </div>
-        <div @onclick="HideTutorial" class="fixed w-14 h-14 cursor-pointer top-10 right-10 text-white font-bold text-4xl">
-            X
-        </div>
+    </div>
         <div class="absolute top-80 right-24">
             <div class="relative w-full h-full">
                 <svg width="602" height="178" viewBox="0 0 642 218" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -40,8 +38,7 @@
                 <p class="absolute top-1/2 -translate-y-6 ml-16 w-max max-w-md left-0"><Typewriter Builder="@typewriter" /></p>
             </div>
         </div>
-        <Image ImageName="Robert_Standing2.png" css="absolute -bottom-40 -rotate-12  -right-48  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
-    </div>
+        <Image ImageName="Robert_Standing2.png" css="absolute -bottom-40 -rotate-12  -right-40  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
