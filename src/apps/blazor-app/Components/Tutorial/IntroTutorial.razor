@@ -20,11 +20,13 @@
                     </content>
                 </Button>
             </div>
-            <Button style="outline-light">
-                <content>
-                    <p>Advanced Calculation</p>
-                </content>
-            </Button>
+            <div @onclick="@(() => ShowTutorial("Advanced"))">
+                <Button style="outline-light">
+                    <content>
+                        <p>Advanced Calculation</p>
+                    </content>
+                </Button>
+            </div>
             <Button style="outline-light">
                 <content>
                     <p>Dashboard</p>

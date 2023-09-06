@@ -787,6 +787,30 @@ video {
   right: -8rem;
 }
 
+.-right-52 {
+  right: -13rem;
+}
+
+.-bottom-44 {
+  bottom: -11rem;
+}
+
+.-bottom-4 {
+  bottom: -1rem;
+}
+
+.-bottom-36 {
+  bottom: -9rem;
+}
+
+.-right-60 {
+  right: -15rem;
+}
+
+.-bottom-32 {
+  bottom: -8rem;
+}
+
 .isolate {
   isolation: isolate;
 }
