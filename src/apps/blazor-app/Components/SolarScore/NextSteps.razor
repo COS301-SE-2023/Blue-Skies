@@ -108,8 +108,7 @@
             </div>
             <Button css="mt-10 w-fit mx-auto" style="outline">
                 <content>
-
-                    <div class="flex items-center space-x-3">
+                    <div @onclick="GetInTouch" class="flex items-center space-x-3">
                         <p> Get in touch</p>
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
                             <path d="M9.4043 2.6543L15.7499 8.99995L9.4043 15.3456" stroke="#3A3A77" stroke-width="1.5"
@@ -144,5 +143,10 @@
     {
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/advanced");
+    }
+
+    private void GetInTouch()
+    {
+        NavigationManager.NavigateTo("/getintouch");
     }
 }
