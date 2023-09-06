@@ -125,7 +125,7 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the current location.
     /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
     /// </summary>
-    public async Task<float[]> GetInitialData(double latitude, double longitude)
+    public async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
     {
         var data = new List<WeatherData>();
         // Initial api key to get the last 15 day's of information:
@@ -215,7 +215,10 @@ public class locationDataClass {
         averageSunlightHours = (float)Math.Round(averageSunlightHours, 2);
         averageSolarIrradiation = averageSolarIrradiation / data.Count;
 
-        return new float[] { averageSunlightHours, (float)averageSolarIrradiation };
+        InitialDataModel initialData = new InitialDataModel();
+        initialData.averageSunlightHours = averageSunlightHours;
+        initialData.averageSolarIrradiation = averageSolarIrradiation;
+        return initialData;
     }
 
     /// <summary>

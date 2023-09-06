@@ -110,9 +110,9 @@
         currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
         if (currentLocationData.data == null)
         {
-            float[] data = await locationDataClass.GetInitialData(latitude, longitude);
-            currentLocationData.daylightHours = data[0];
-            await ProtectedSessionStore.SetAsync("tempSolarIrradiation", double.Parse(data[1].ToString()));
+            var data = await locationDataClass.GetInitialData(latitude, longitude);
+            currentLocationData.daylightHours = data.averageSunlightHours;
+            await ProtectedSessionStore.SetAsync("tempSolarIrradiation", data.averageSolarIrradiation);
 
             imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
             await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
