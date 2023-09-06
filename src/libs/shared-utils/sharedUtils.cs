@@ -298,9 +298,9 @@ public class systemClass {
         return systems;
     }
 
-    public async Task<SystemModel> GetSystem(int systemId)
+    public async Task<SystemModel?> GetSystem(int systemId)
     {
-        SystemModel system = new SystemModel();
+        SystemModel? system = null;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/get/" + systemId);
         var response = await client.SendAsync(request);
@@ -319,6 +319,41 @@ public class systemClass {
         }
         return system;
     }
+
+    public async Task<bool> DeleteSystem(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/system/delete");
+        var content = new StringContent("{\r\n \"systemId\": " + id + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> CreateSystem(SystemModel system) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
+        var content = new StringContent("{\r\n \"systemSize\": \"" + system.systemSize + "\",\r\n \"inverterOutput\": " +
+        system.inverterOutput + ",\r\n \"numberOfPanels\": " + system.numberOfPanels + ",\r\n \"batterySize\": " +
+        system.batterySize + ",\r\n \"numberOfBatteries\": " + system.numberOfBatteries + ",\r\n \"solarInput\": " +
+        system.solarInput + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> UpdateSystem(SystemModel system) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/System/update");
+        var content = new StringContent("{\r\n \"systemId\": " + system.systemId + ",\r\n \"inverterOutput\": " +
+        system.inverterOutput + ",\r\n \"numberOfPanels\": " + system.numberOfPanels + ",\r\n \"batterySize\": " +
+        system.batterySize + ",\r\n \"numberOfBatteries\": " + system.numberOfBatteries + ",\r\n \"solarInput\": " +
+        system.solarInput + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
 }
 
 public class reportClass {
@@ -594,6 +629,28 @@ public class otherDataClass {
         mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
+    public async Task<List<SystemUsage>?> GetAllAdminStats() {
+        List<SystemUsage>? systems = null;
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/AdminStats/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            if (data != null)
+            {
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Failed to retrieve system usage");
+        }
+        return systems;
+    }
     private class GeocodingResponse
     {
         public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
@@ -653,6 +710,22 @@ public class keyClass {
 
 public class userClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    public async Task<List<UserModel>?> getAllUsers() {
+        List<UserModel>? users = null;
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        return users;
+    }
 
     public async Task<UserModel?> Login(string email, string password, string repassword) {
         var client = new HttpClient();

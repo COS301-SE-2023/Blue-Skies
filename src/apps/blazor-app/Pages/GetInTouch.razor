@@ -59,6 +59,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        keys = await keysClass.GetAllKeys();
+        var result = await keysClass.GetAllKeys();
+        if(result != null) {
+            keys = result;
+        }
     }
 }
