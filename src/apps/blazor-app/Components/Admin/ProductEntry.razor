@@ -69,12 +69,12 @@
     public bool recordState { get; set; } = false;
 
     [Parameter]
-    public ProductModel? product { get; set; }
+    public SystemModel? product { get; set; }
 
     [Parameter]
     public EventCallback<int> OnSelect { get; set; }
     [Parameter]
-    public EventCallback<ProductModel> OnSave { get; set; }
+    public EventCallback<SystemModel> OnSave { get; set; }
 
     protected override void OnInitialized()
     {
@@ -110,7 +110,7 @@
     {
         if (product != null)
         {
-            var returnProduct = new ProductModel
+            var returnProduct = new SystemModel
             {
                 systemId = product.systemId,
                 systemSize = systemSize,

@@ -46,7 +46,7 @@ public class KeyController : ControllerBase
 
     //create key
     [HttpPost("create")]
-    public async Task<IActionResult> CreateKey([FromBody] Keys keys)
+    public async Task<IActionResult> CreateKey([FromBody] KeyModel keys)
     {
         try
         {
@@ -62,7 +62,7 @@ public class KeyController : ControllerBase
 
     //create business key
     [HttpPost("createBusiness")]
-    public async Task<IActionResult> CreateBusinessKey([FromBody] Keys keys)
+    public async Task<IActionResult> CreateBusinessKey([FromBody] KeyModel keys)
     {
         try
         {
@@ -108,7 +108,7 @@ public class KeyController : ControllerBase
     //Update a key
     [HttpPatch]
     [Route("update")]
-    public async Task<IActionResult> UpdateKey([FromBody] Keys key)
+    public async Task<IActionResult> UpdateKey([FromBody] KeyModel key)
     {
         try
         {
@@ -130,7 +130,7 @@ public class KeyController : ControllerBase
     //Update Business a key
     [HttpPatch]
     [Route("updateBusiness")]
-    public async Task<IActionResult> UpdateBusinessKey([FromBody] Keys key)
+    public async Task<IActionResult> UpdateBusinessKey([FromBody] KeyModel key)
     {
         try
         {

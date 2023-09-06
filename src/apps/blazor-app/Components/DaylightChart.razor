@@ -56,14 +56,14 @@
                 }
             };
     }
-
     public void UpdateDataset()
     {
         pieConfig.Data.Datasets.Clear();
+        pieConfig.Data.Labels.Clear();
 
-        foreach (string color in new[] { "Runnable Hours", "Remaining" })
+        foreach (string label in new[] { "Runnable Hours", "Remaining" })
         {
-            pieConfig.Data.Labels.Add(color);
+            pieConfig.Data.Labels.Add(label);
         }
         float remaining = (24 - daylightHours) - hours;
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })

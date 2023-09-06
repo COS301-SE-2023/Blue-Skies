@@ -28,12 +28,12 @@
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
-            @if(remainingCalls == 100) {
+            @if(solarCalculator.remainingCalls == 100) {
                 <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
                     <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
                 </div>
-            } else if(remainingCalls > 0){ 
-                double percentage = remainingCalls;
+            } else if(solarCalculator.remainingCalls > 0){ 
+                double percentage = solarCalculator.remainingCalls;
                 percentage = Math.Round((percentage / 144)*100, 0);
                 <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
                     <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
@@ -151,12 +151,15 @@
 
 
 @code {
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
     public double latitude  { get; set; }
     [Parameter]
     public double longitude  { get; set; }
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
-    private int solarScore = 100;
+    ProtectedBrowserStorageResult<double> tempSolarIrradiation;
+    private int solarScore = 0;
     public List<SystemModel> systems = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
@@ -165,22 +168,30 @@
     public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? mapImage = "";
-    public int remainingCalls = 100;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
+        if(API_PORT != null) {
+            solarScore = solarCalculator.getSolarScoreFromInitialData(tempSolarIrradiation.Value);
+        }
+        
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
         System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
         
-        await GetLocationData(latitude, longitude);
-        mapImage = currentLocationData.image;
-        await GetSystems();
+        var locationData = await locationDataClass.GetLocationData(latitude, longitude);
+        if(locationData != null && locationData.data != null) {
+            currentLocationData = locationData;
+            mapImage = currentLocationData.image;
+        }
+
+        systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)
         {
             double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
@@ -203,32 +214,6 @@
     }
 
     /// <summary>
-    /// <list type="bullet">
-    ///     <item>Tries to get the location data from the database.</item>
-    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
-    ///     <item>If the data does not exist print error.</item>
-    /// </list>
-    /// <paramref name="latitude"/> The latitude of the location.
-    /// <paramref name="longitude"/> The longitude of the location.
-    /// </summary>
-    public async Task GetLocationData(double latitude, double longitude){
-        string lat = latitude.ToString().Replace(",", ".");
-        string lon = longitude.ToString().Replace(",", ".");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + lat + "/" + lon);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Location data found");
-            string data = response.Content.ReadAsStringAsync().Result;
-            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-        } else {
-            Console.WriteLine("Location data not found in Results");
-        }
-        return;
-    }
-
-    /// <summary>
     /// <para>This function is called when the user selects a system size and it updates the selected system and the average energy production</para>
     /// <paramref name="selection"/> The index of the selected system.
     /// </summary>
@@ -244,55 +229,16 @@
     }
 
     /// <summary>
-    /// This function is called to get the systems from the API and store them in the systems list
-    /// </summary>
-    private async Task GetSystems()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions {
-                PropertyNameCaseInsensitive = true
-            })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed");
-        }
-        return;
-    }
-
-    /// <summary>
     /// This function is called in the background to update the solar score
     /// </summary>
     private async Task GetSolarScore() 
     {
-        if(API_PORT == null) {
-            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
-            return;
-        }
-        remainingCalls = 100;
-        int timesNotUpdated = 0;
-        int previousRemainingCalls = remainingCalls;
-        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        int previousScore = -1;
-        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
-            solarScore = result[0];
-            previousScore = solarScore;
+        solarCalculator.reset();
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("solarScore")) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            remainingCalls = result[1];
-            if(previousRemainingCalls != remainingCalls){
-                timesNotUpdated = 0;
-            } else {
-                timesNotUpdated++;
-            }
-            previousRemainingCalls = remainingCalls;
             StateHasChanged();
-            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
         }
     }

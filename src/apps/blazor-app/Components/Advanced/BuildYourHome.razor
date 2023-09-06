@@ -137,14 +137,22 @@
                 if (currentReport != null)
                 {
                     daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
+
                     dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
                     @* daylightChart.SetDaylightHours(daylight);
-            daylightChart.SetHours(dlh); *@
+                    daylightChart.SetHours(dlh); *@
                 }
             }
             <DaylightChart hours="@daylight" daylightHours="@dlh" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                <p class="text-5xl text-primary-900 font-semibold">@{
+                        if(dlh == (24 - daylight)) {
+                            <p>@dlh+</p>
+                        } else {
+                            <p>@dlh</p>
+                        }
+                    }
+                </p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -335,6 +343,9 @@
 </div>
 
 @code {
+    private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
+
+    private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -488,9 +499,9 @@ new TabItemModel("General", false)
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
-        StateHasChanged();
         UpdateApplianceStorage();
         CalculateRunningHours();
+        StateHasChanged();
     }
 
     private async void UpdateApplianceStorage()
@@ -589,40 +600,22 @@ new TabItemModel("General", false)
     {
         ModalPopup.Dismiss();
         ShowLoadingScreen();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
-        var content = new StringContent(
-        "{\r\n \"reportName\" : \""
-        + calculationName
-        + "\",\r\n \"userId\" : "
-        + userId
-        + ",\r\n \"homeSize\" : \""
-        + homeSize
-        + "\",\r\n \"latitude\" : \""
-        + currentReport!.latitude.ToString().Replace(",", ".")
-        + "\",\r\n \"longitude\" : \""
-        + currentReport.longitude.ToString().Replace(",", ".")
-        + "\",\r\n \"systemId\" : "
-        + systems[selectedSystem].systemId
-        + "\r\n}",
-        null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
+        if(await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
-            int reportId = await GetCreatedReportId();
-            await ProtectedSessionStore.SetAsync("createdReport", reportId);
-            foreach (var appliance in appliances)
+            reports = await reportClass.GetUserReports(userId);
+            if (reports.Count > 0)
             {
-                await CreateReportAppliance(reportId, appliance);
+                await ProtectedSessionStore.SetAsync("userReports", reports);
+                await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
+                await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
+                
+                foreach (var appliance in appliances)
+                {
+                    await reportApplianceClass.CreateReportAppliance(reports[reports.Count - 1].reportId, appliance);
+                }
             }
-        }
-        else
-        {
-            Console.WriteLine("Failed to create report");
-        }
+        } 
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
@@ -630,106 +623,24 @@ new TabItemModel("General", false)
     private async Task UpdateCalculation()
     {
         ShowLoadingScreen();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n \"reportId\" : "
-        + currentReport!.reportId
-        + ",\r\n \"reportName\" : \""
-        + calculationName
-        + "\",\r\n \"userId\" : "
-        + userId
-        + ",\r\n \"homeSize\" : \""
-        + homeSize
-        + "\",\r\n \"latitude\" : \""
-        + currentReport!.latitude.ToString().Replace(",", ".")
-        + "\",\r\n \"longitude\" : \""
-        + currentReport.longitude.ToString().Replace(",", ".")
-        + "\",\r\n \"systemId\" : "
-        + systems[selectedSystem].systemId
-        + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
+        if(await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
+
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
             for (int i = 0; i < 8; i++)
             {
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
-                    await UpdateReportAppliance(currentReport.reportId, appliances[i]);
+                    await reportApplianceClass.UpdateReportAppliance(currentReport.reportId, appliances[i]);
                 }
             }
             await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
-
-        }
-        else
-        {
-            Console.WriteLine("Failed to update report");
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
-
-    private async Task UpdateReportAppliance(int reportId, ApplianceModel appliance)
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
-        var content = new StringContent("{\r\n \"reportId\": " + reportId + ",\r\n \"applianceId\": " + appliance.applianceId +
-        ",\r\n \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Failed to update ReportAppliance");
-        }
-    }
-
-    private async Task CreateReportAppliance(int reportId, ApplianceModel appliance)
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
-        var content = new StringContent("{\r\n \"reportId\": " + reportId + ",\r\n \"applianceId\": " + appliance.applianceId +
-        ",\r\n \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
-        }
-    }
-
-    private async Task<int> GetCreatedReportId()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-            if (reports.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReports", reports);
-            }
-            await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-            await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
-
-            return reports[reports.Count - 1].reportId;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get user reports");
-            return -1;
-        }
-    }
-
-    private void ShowLoadingScreen()
-    {
+    
+    private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
 
