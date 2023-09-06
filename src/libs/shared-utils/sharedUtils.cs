@@ -16,7 +16,7 @@ public class locationDataClass {
     public async Task<LocationDataModel> GetLocationData(double latitude, double longitude){
         LocationDataModel locationData = new LocationDataModel();
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -33,10 +33,11 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude){
-        LocationDataModel locationData = new LocationDataModel();
+    public async Task<LocationDataModel?> getElevationData(double latitude, double longitude) {
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
+        Console.WriteLine("URL: " + url);
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude + "/" + longitude);
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
@@ -73,9 +74,9 @@ public class locationDataClass {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
         var content = new StringContent("{\r\n    \"latitude\": \"" 
-                                    + latitude 
+                                    + latitude.ToString().Replace(",",".") 
                                     + "\",\r\n    \"longitude\": \"" 
-                                    + longitude 
+                                    + longitude.ToString().Replace(",",".") 
                                     + "\",\r\n    \"location\": \"" 
                                     + location 
                                     + "\",\r\n    \"daylightHours\" : \"" 
@@ -87,11 +88,12 @@ public class locationDataClass {
         
         request.Content = content;
         var response = await client.SendAsync(request);
+        
         if (response.IsSuccessStatusCode)
         {
             client = new HttpClient();
             request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
-            content = new StringContent("{\r\n    \"latitude\": "+ latitude + ",\r\n    \"longitude\": " + longitude + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
+            content = new StringContent("{\r\n    \"latitude\": "+ latitude.ToString().Replace(",",".") + ",\r\n    \"longitude\": " + longitude.ToString().Replace(",",".") + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
             request.Content = content;
             response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -112,7 +114,7 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
     public async Task<string> GetElevationData(double latitude, double longitude) {
-        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude},{longitude}";
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
         Console.WriteLine("URL: " + url);
         var client = new HttpClient();
         var response = await client.GetAsync(url);
@@ -133,7 +135,10 @@ public class locationDataClass {
         // Initial api key to get the last 15 day's of information:
         var client = new HttpClient();
         var apiKey = Environment.GetEnvironmentVariable("VISUAL_CROSSING_WEATHER_API_KEY");
-        var apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude},{longitude}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
+        var apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
+       
+        Console.WriteLine("client: "+client.ToString());
+        Console.WriteLine("url: "+apiUrl);
         data.Add(await FetchWeatherDataAsync(client, apiUrl));
         
         //  11 other calls to get the last 10 month's data
@@ -158,7 +163,7 @@ public class locationDataClass {
                 monthString = "0" + monthString;
             }
             client = new HttpClient();
-            apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude},{longitude}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
+            apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
 
             // Asynchronously fetch the data and add the task to the list
             tasks.Add(FetchWeatherDataAsync(client, apiUrl));
@@ -228,6 +233,7 @@ public class locationDataClass {
     #pragma warning disable CS8603
     private async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
     {
+      
         try
         {
             var response = await client.GetAsync(apiUrl);
@@ -252,6 +258,8 @@ public class locationDataClass {
         // If any error occurred, return null or an appropriate default value
         return null;
     }
+
+    
     /// <summary>
     /// Downloads the image from the Google Maps Static API returns it as a byte array.
     /// </summary>
@@ -451,9 +459,9 @@ public class reportClass {
                     + ",\r\n    \"homeSize\" : \""
                     + homeSize
                     + "\",\r\n    \"latitude\" : \""
-                    + latitude
+                    + latitude.ToString().Replace(",",".")
                     + "\",\r\n    \"longitude\" : \""
-                    + longitude
+                    + longitude.ToString().Replace(",",".")
                     + "\",\r\n    \"systemId\" : "
                     + systemId
                     + "\r\n}", null, "application/json");
@@ -602,7 +610,7 @@ public class otherDataClass {
             await GetMapboxAccessToken();
         }
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-        string requestUrl = $"{baseUrl}{longitude},{latitude}.json?&access_token={mapboxAccessToken}";
+        string requestUrl = $"{baseUrl}{longitude.ToString().Replace(",",".")},{latitude.ToString().Replace(",",".")}.json?&access_token={mapboxAccessToken}";
 
         try
         {
