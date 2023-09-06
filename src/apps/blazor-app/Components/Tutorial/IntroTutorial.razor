@@ -6,18 +6,20 @@
         
         <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Select a page</h1>
         <div class="w-full mt-10 flex gap-6 justify-center">
-            <div @onclick="ShowHomeTutorial">
+            <div @onclick="@(() => ShowTutorial("Home"))">
                 <Button style="outline-light">
                     <content>
                         <p>Home</p>
                     </content>
                 </Button>
             </div>
-            <Button style="outline-light">
-                <content>
-                    <p>Solar Score</p>
-                </content>
-            </Button>
+            <div @onclick="@(() => ShowTutorial("SolarScore"))">
+                <Button style="outline-light">
+                    <content>
+                        <p>Solar Score</p>
+                    </content>
+                </Button>
+            </div>
             <Button style="outline-light">
                 <content>
                     <p>Advanced Calculation</p>
@@ -42,14 +44,14 @@
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-        .TypeString("Please choose a page for which you'd like assistance, and I'll provide guidance on all its various elements.", 20);
+        .TypeString("Please choose a page for which you'd like assistance, and I'll provide guidance on all its various elements.", 10);
     public void HideTutorial()
     {
         tutorialService.HideTutorial();
     }
 
-    public void ShowHomeTutorial()
+    public void ShowTutorial(string tutorialName)
     {
-        tutorialService.ToggleTutorial("Home");
+        tutorialService.ToggleTutorial(tutorialName);
     }
 }
