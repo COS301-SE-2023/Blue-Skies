@@ -1,8 +1,6 @@
 @using BlazorTypewriter;
 
-<div class="opacity-95 bg-primary-950 w-full h-full flex fixed top-0 left-0">
-</div>
-<div class="absolute top-0 left-0 w-full">
+<div class="relative h-full w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <Button style="outline-light">
@@ -21,7 +19,6 @@
             </content>
         </Button>
     </div>
-</div>
     
     <div class="absolute top-80 right-32">
         <div class="relative w-full h-full">
@@ -34,6 +31,7 @@
     </div>
 
     <Image ImageName="Robert_Standing2.png" css="absolute  -bottom-40 -rotate-12  -right-48  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
+</div>
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
