@@ -5,6 +5,7 @@ namespace BlazorApp.Data
 {
     public class SolarCalculator
     {
+        private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
         private double perfectSolarIrradiation = 205;
         private double worstSolarIrradiation = 120;
 
@@ -22,29 +23,10 @@ namespace BlazorApp.Data
             double tempSolarIrradiation
         )
         {
-            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
-            System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-            customCulture.NumberFormat.NumberDecimalSeparator = ".";
-            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
             int result = getSolarScoreFromInitialData(tempSolarIrradiation);
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude + "/" + longitude
-            );
-            var response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                if (data.Equals("Solar Irradiation not found"))
-                {
-                    return result;
-                }
-                locationData = JsonSerializer.Deserialize<LocationDataModel>(data);
-                if (locationData == null || locationData.data == null)
-                {
-                    return result;
-                }
+            var locationData = await locationDataClass.GetLocationDataNoImage(latitude, longitude);
+
+            if (locationData != null && locationData.data != null) {
                 remainingCalls = locationData.remainingCalls;
                 Console.WriteLine("Remaining calls: " + remainingCalls + " vs " + previousRemainingCalls);
                 if (previousRemainingCalls != remainingCalls)

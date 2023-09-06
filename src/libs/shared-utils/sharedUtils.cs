@@ -1,6 +1,4 @@
-﻿// Import json
-
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -11,19 +9,49 @@ public class locationDataClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
-    /// <para>Gets the elevation data for the given location.</para>
-    /// <paramref name="latitude"/> The latitude of the location.
-    /// <paramref name="longitude"/> The longitude of the location.
+    /// Get's the location data from the database.
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<string> getElevationData(double latitude, double longitude) {
-        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude},{longitude}";
-        Console.WriteLine("URL: " + url);
+    public async Task<LocationDataModel> GetLocationData(double latitude, double longitude){
+        LocationDataModel locationData = new LocationDataModel();
         var client = new HttpClient();
-        var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            string data = response.Content.ReadAsStringAsync().Result;
+            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found - fetching data instead");
+        }
+        return locationData;
     }
-
+    
+    /// <summary>
+    /// Get's the location data from the database except for the image.
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
+    /// </summary>
+    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude){
+        LocationDataModel locationData = new LocationDataModel();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            if (data.Equals("Solar Irradiation not found"))
+            {
+                return null;
+            }
+            data = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found - fetching data instead");
+        }
+        return null;
+    }
+    
     /// <summary>
     /// <list type="number">
     ///     <item>Creates a new row in the database for the location data. </item>
@@ -38,7 +66,7 @@ public class locationDataClass {
 
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
-        string  elevationData = await getElevationData(latitude, longitude);
+        string  elevationData = await GetElevationData(latitude, longitude);
         Console.WriteLine("Elevation data: " + elevationData);
         var numYears = 3;
         var numDaysPerYear = 48;
@@ -79,12 +107,27 @@ public class locationDataClass {
     }
 
     /// <summary>
+    /// <para>Gets the elevation data for the given location.</para>
+    /// <paramref name="latitude"/> The latitude of the location.
+    /// <paramref name="longitude"/> The longitude of the location.
+    /// </summary>
+    public async Task<string> GetElevationData(double latitude, double longitude) {
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude},{longitude}";
+        Console.WriteLine("URL: " + url);
+        var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    
+    /// <summary>
     /// <para>Calls the weather visualcrossing api to get quick initial data.</para>
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
     /// </summary>
-    public async Task<float[]> getInitialData(double latitude, double longitude)
+    public async Task<float[]> GetInitialData(double latitude, double longitude)
     {
         var data = new List<WeatherData>();
         // Initial api key to get the last 15 day's of information:
@@ -209,32 +252,6 @@ public class locationDataClass {
         // If any error occurred, return null or an appropriate default value
         return null;
     }
-
-    /// <summary>
-    /// <list type="bulltet">
-    ///     <item>Tries to get the location data from the database.</item>
-    ///     <item>If the data exists: save it's data to the currentLocationData variable and return true.</item>
-    ///     <item>If the data does not exist: return false.</item>
-    /// </list>
-    /// <paramref name="latitude"/> The latitude of the current location.
-    /// <paramref name="longitude"/> The longitude of the current location.
-    /// </summary>
-    public async Task<LocationDataModel> GetLocationData(double latitude, double longitude){
-        LocationDataModel locationData = new LocationDataModel();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" + longitude);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Location data found");
-            string data = response.Content.ReadAsStringAsync().Result;
-            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-        } else {
-            Console.WriteLine("Location data not found - fetching data instead");
-        }
-        return locationData;
-    }
-    
     /// <summary>
     /// Downloads the image from the Google Maps Static API returns it as a byte array.
     /// </summary>
@@ -260,7 +277,7 @@ public class systemClass {
     ///     <item>Save the systems to the session storage</item>
     /// </list>
     /// </summary>
-    public async Task<List<SystemModel>> GetSystemsAsync()
+    public async Task<List<SystemModel>> GetAllSystems()
     {
         List<SystemModel> systems = new List<SystemModel>();
         var client = new HttpClient();
@@ -279,6 +296,28 @@ public class systemClass {
             Console.WriteLine("Failed in Results when getting systems");
         }
         return systems;
+    }
+
+    public async Task<SystemModel> GetSystem(int systemId)
+    {
+        SystemModel system = new SystemModel();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/get/" + systemId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            system = JsonSerializer.Deserialize<SystemModel>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive =
+            true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+        return system;
     }
 }
 
@@ -306,10 +345,101 @@ public class reportClass {
         return reports;
     }
 
+    public async Task<ReportModel?> GetReport(int reportId)
+    {
+        ReportModel? report = null;
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/get/" + reportId);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseStream = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions 
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            return JsonSerializer.Deserialize<ReportModel>(responseStream, options);
+        }
+        else
+        {
+            Console.WriteLine("Report not found");
+        }
+        return report;
+    }
+
+    // <summary>
+    /// Create a new report in the database
+    /// </summary>
+    public async Task<bool> CreateReport(string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
+        var content = new StringContent(
+            "{\r\n    \"reportName\" : \""
+                    + calculationName
+                    + "\",\r\n    \"userId\" : "
+                    + userId
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
+                    + latitude
+                    + "\",\r\n    \"longitude\" : \""
+                    + longitude
+                    + "\",\r\n    \"systemId\" : "
+                    + systemId
+                    + "\r\n}",
+        null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Failed to create report");
+        }
+        return false;
+    }
+    
+    /// <summary>
+    /// Updates the report in the database
+    public async Task<bool> UpdateReport(int reportId, string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
+        var content = new StringContent("{\r\n    \"reportId\" : "
+                    + reportId
+                    + ",\r\n    \"reportName\" : \""
+                    + calculationName
+                    + "\",\r\n    \"userId\" : "
+                    + userId
+                    + ",\r\n    \"homeSize\" : \""
+                    + homeSize
+                    + "\",\r\n    \"latitude\" : \""
+                    + latitude
+                    + "\",\r\n    \"longitude\" : \""
+                    + longitude
+                    + "\",\r\n    \"systemId\" : "
+                    + systemId
+                    + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return true;
+
+        }
+        else
+        {
+            Console.WriteLine("Failed to update report");
+        }
+        return false;
+    }
+
     /// <summary>
     /// Delete the current report from the database
     /// </summary>
-    public async Task<bool> DeleteFromDatabase(int reportId)
+    public async Task<bool> DeleteReport(int reportId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
@@ -328,25 +458,13 @@ public class reportClass {
         return false;
     }
 
-    public async Task<List<ReportAllApplianceModel>> GetReportAllAppliance()
-    {
-        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+    public async Task<byte[]> GenerateReport(int userId, int reportId) {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/" + userId + "/" + reportId);
+        request.Headers.Add("Accept", "application/pdf");
         var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get allReportAllAppliance");
-        }
-        return allReportAllAppliance;
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadAsByteArrayAsync();
     }
 }
 
@@ -359,7 +477,7 @@ public class applianceClass {
     ///     <item>Save the appliances to the session storage</item>
     /// </list>
     /// </summary>
-    public async Task<List<ApplianceModel>> GetAppliancesAsync()
+    public async Task<List<ApplianceModel>> GetAllAppliances()
     {
         var appliances = new List<ApplianceModel>();
         var client = new HttpClient();
@@ -378,6 +496,36 @@ public class applianceClass {
             Console.WriteLine("Failed in Results when getting appliances");
         }
         return appliances;
+    }
+
+    public async Task<bool> CreateAppliance(string type, int powerUsage) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
+        var content = new StringContent("{\r\n \"type\": \"" + type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
+        var content = new StringContent("{\r\n \"applianceId\": " + applianceId + ",\r\n \"type\": \"" +
+        type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> DeleteAppliance(int id)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/appliance/delete");
+        var content = new StringContent("{\r\n \"applianceId\": " + id + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+            
     }
 }
 
@@ -449,5 +597,138 @@ public class otherDataClass {
     private class GeocodingResponse
     {
         public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
+    }
+}
+
+public class keyClass {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    public async Task<List<KeyModel>?> GetAllKeys()
+    {
+        List<KeyModel>? keys = null;
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/allBusiness");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            keys = JsonSerializer.Deserialize<List<KeyModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed");
+        }
+        return keys;
+    }
+
+    public async Task<bool> DeleteKey(int keyId) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/key/delete");
+        var content = new StringContent("{\r\n  \"keyId\": " + keyId +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> UpdateKey(KeyModel key) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
+        var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> CreateKey(KeyModel key) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
+        var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+}
+
+public class userClass {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    public async Task<UserModel?> Login(string email, string password, string repassword) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/auth/login");
+        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+
+        if(response.IsSuccessStatusCode){
+            return await response.Content.ReadFromJsonAsync<UserModel>();        
+        } else {
+            Console.WriteLine("Failed to Login");
+            Console.WriteLine(response.StatusCode);
+        }
+        return null;
+    }
+
+    public async Task<bool> Register(string email, string password, string repassword) {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/auth/register");
+        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+
+        return response.IsSuccessStatusCode;
+    }
+}
+
+public class reportApplianceClass {
+    string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    public async Task CreateReportAppliance(int reportId, ApplianceModel appliance){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
+        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
+        }
+    }
+
+    public async Task UpdateReportAppliance(int reportId, ApplianceModel appliance){
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
+        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if(response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            Console.WriteLine("Failed to update ReportAppliance");
+        }
+    }
+}
+
+public class reportAllApplianceClass {
+    string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllAppliance()
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
     }
 }

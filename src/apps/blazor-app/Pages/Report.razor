@@ -129,6 +129,10 @@
     }
 </div>
 @code {
+    private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter] public string? UserId { get; set; }
     [Parameter]
     public string? ReportId { get; set; }
@@ -150,145 +154,42 @@
 
     protected override async Task OnInitializedAsync()
     {
-
-        await GetReport();
-        if (report == null)
+        report = await reportClass.GetReport(int.Parse(ReportId!));   
+        if (report != null)
         {
-            Console.WriteLine("Report not found");
-            return;
-        }
-        Console.WriteLine("Current report: " + report.reportId);
-        await GetLocationData();
-        Console.WriteLine("Current location: " + locationData.location);
-        await GetSystemAsync(report.systemId);
-        await GetReportAllAppliance();
-        Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
-
-        var systemSize = system.systemSize!;
-        if (systemSize.Equals("Small"))
-        {
-            homeSize = report.homeSize + "-Home1.svg";
-        }
-        else if (systemSize.Equals("Medium"))
-        {
-            homeSize = report.homeSize + "-Home2.svg";
-        }
-        else
-        {
-            homeSize = report.homeSize + "-Home3.svg";
-        }
-        GetSolarScore();
-        GetAvgEnergyProduction();
-        renderCharts();
-        isLoaded = true;
-        StateHasChanged();
-
-    }
-
-    @* Get report *@
-    private async Task GetReport()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/get/" + ReportId);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var responseStream = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-            if (responseStream is null)
-            {
-                Console.WriteLine("Report not found");
-                return;
-            }
-
-            report = JsonSerializer.Deserialize<ReportModel>(responseStream, options);
-
-            if (report == null)
-            {
-                Console.WriteLine("Report not found");
-                return;
-            }
             latitude = report.latitude;
             longitude = report.longitude;
-        }
-        else
-        {
-            Console.WriteLine("Report not found");
-        }
+            Console.WriteLine("Current report: " + report.reportId);
+            system = await systemClass.GetSystem(report.systemId);
 
-    }
+            locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            Console.WriteLine("Current location: " + locationData.location);
+            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
+            Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
 
-    @* Get location Data *@
-    private async Task GetLocationData()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude + "/" +
-        longitude);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            string data = response.Content.ReadAsStringAsync().Result;
-            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-            @* Current location *@
+            var systemSize = system.systemSize!;
 
-        }
-        else
-        {
-            Console.WriteLine("Location data not found in Results");
-        }
-    }
+            GetSolarScore();
+            GetAvgEnergyProduction();
+            renderCharts();
+            isLoaded = true;
+            StateHasChanged();
 
-    private async Task GetSystemAsync(int systemId)
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/get/" + systemId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            system = JsonSerializer.Deserialize<SystemModel>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get systems");
-        }
-    }
-
-    @* Get report All Appliance *@
-    private async Task GetReportAllAppliance()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/get/" + ReportId);
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            var responseStream = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-
-            if (responseStream is null)
+            if (systemSize.Equals("Small"))
             {
-                Console.WriteLine("Report not found");
-                return;
+                homeSize = report.homeSize + "-Home1.svg";
             }
-
-            reportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(responseStream, options)!;
-        }
-        else
-        {
+            else if (systemSize.Equals("Medium"))
+            {
+                homeSize = report.homeSize + "-Home2.svg";
+            }
+            else
+            {
+                homeSize = report.homeSize + "-Home3.svg";
+            }
+        } else {
             Console.WriteLine("Report not found");
         }
-
     }
 
     private void GetSolarScore()

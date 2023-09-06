@@ -323,7 +323,7 @@
 
     private async Task GetKeys()
     {
-        List<APIKeyModel> keys = new List<APIKeyModel>();
+        List<KeyModel> keys = new List<KeyModel>();
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
@@ -331,14 +331,14 @@
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
+            keys = JsonSerializer.Deserialize<List<KeyModel>>(data, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive =
                 true
                 })!;
             keyCount = keys.Count;
             suspendedCount = 0;
-            foreach (APIKeyModel item in keys)
+            foreach (KeyModel item in keys)
             {
                 if (item.suspended == 1)
                 {
