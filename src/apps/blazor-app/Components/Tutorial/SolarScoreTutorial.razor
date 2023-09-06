@@ -1,0 +1,48 @@
+@using BlazorTypewriter;
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div @onclick="GoBack" class="fixed w-14 h-14 cursor-pointer top-10 left-10 z-30 text-white font-bold text-2xl">
+    Back
+</div>
+
+<div class="relative h-full w-full">
+    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Info Page</h1>
+    <div class="w-full mt-10 flex gap-6 justify-center">
+        <Button style="outline-light">
+            <content>
+                <p>Results</p>
+            </content>
+        </Button>
+        <Button style="outline-light">
+            <content>
+                <p>Solar Score explanation</p>
+            </content>
+        </Button>
+        <Button style="outline-light">
+            <content>
+                <p>Next Steps</p>
+            </content>
+        </Button>
+    </div>
+    
+    <div class="absolute top-80 right-24">
+            <div class="relative w-full h-full">
+                <svg width="602" height="178" viewBox="0 0 642 218" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 32C0 14.3269 14.3269 0 32 0H598.232C615.905 0 630.232 14.3269 630.232 32V173.098C630.232 178.034 632.266 182.753 635.856 186.141V186.141C651.935 201.323 631.664 226.477 613.412 213.991L610.887 212.264C607.815 210.162 604.172 209.054 600.449 209.09L32.3065 214.532C14.5144 214.703 0 200.327 0 182.534V32Z" fill="white"/>
+                </svg>
+                <p class="absolute top-1/3 -translate-y-4 ml-16 w-max max-w-md left-0"><Typewriter Builder="@typewriter" /></p>
+            </div>
+        </div>
+        <Image ImageName="Robert_Standing4.png" css="absolute -bottom-40 -rotate-12  -right-36  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
+</div>
+
+@code {
+    TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+        .TypeString("Select a specific section of the home page that you require assistance with, and I will guide you through its functionality step by step.", 20);
+
+    private void GoBack()
+    {
+        tutorialService.ToggleTutorial("Intro");
+        StateHasChanged();
+    }
+}
