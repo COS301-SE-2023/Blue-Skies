@@ -7,8 +7,7 @@ using System.Net.Http.Json;
 
 namespace SharedUtils;
 
-public class locationDataClass
-{
+public class locationDataClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
@@ -235,7 +234,6 @@ public class locationDataClass
         }
         return locationData;
     }
-
     
     /// <summary>
     /// Downloads the image from the Google Maps Static API returns it as a byte array.
@@ -281,6 +279,74 @@ public class systemClass {
             Console.WriteLine("Failed in Results when getting systems");
         }
         return systems;
+    }
+}
+
+public class reportClass {
+    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    public async Task<List<ReportModel>> GetUserReports(int userId)
+    {
+        List<ReportModel> reports = new List<ReportModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get user reports");
+        }
+        return reports;
+    }
+
+    /// <summary>
+    /// Delete the current report from the database
+    /// </summary>
+    public async Task<bool> DeleteFromDatabase(int reportId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
+        
+        var content = new StringContent("{\r\n \"reportId\": " + reportId + "\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return true;
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete report");
+        }
+        return false;
+    }
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllAppliance()
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
     }
 }
 

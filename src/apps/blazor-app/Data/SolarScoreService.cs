@@ -14,10 +14,11 @@ namespace BlazorApp.Data
         public int remainingCalls { get; set; } = 100;
         public int previousRemainingCalls { get; set; } = 100;
 
+        private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
         public async Task<int> GetSolarScoreFromData(
             double latitude,
             double longitude,
-            string API_PORT,
             double tempSolarIrradiation
         )
         {
