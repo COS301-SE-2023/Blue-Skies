@@ -81,6 +81,7 @@ public class BusinessRequestDataRepository
                         await locationDataClass.GetInitialData(latitude, longitude);
                         byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
                         var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+                        
                         await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
