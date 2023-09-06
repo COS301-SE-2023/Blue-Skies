@@ -28,7 +28,6 @@ namespace BlazorApp.Data
 
             if (locationData != null && locationData.data != null) {
                 remainingCalls = locationData.remainingCalls;
-                Console.WriteLine("Remaining calls: " + remainingCalls + " vs " + previousRemainingCalls);
                 if (previousRemainingCalls != remainingCalls)
                 {
                     timesNotUpdated = 0;
