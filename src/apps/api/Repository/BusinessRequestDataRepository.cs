@@ -35,7 +35,7 @@ public class BusinessRequestDataRepository
         {
             var responseContent = await keysResponse.Content.ReadAsStringAsync();
 
-            var keysData = JsonConvert.DeserializeObject<List<Keys>>(responseContent);
+            var keysData = JsonConvert.DeserializeObject<List<KeyModel>>(responseContent);
 
             foreach (var keyData in keysData!)
             {
@@ -78,7 +78,7 @@ public class BusinessRequestDataRepository
                     LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
                     if (exists.data == null)
                     {
-                        await locationDataClass.getInitialData(latitude, longitude);
+                        await locationDataClass.GetInitialData(latitude, longitude);
                         byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
                         var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
                         await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);

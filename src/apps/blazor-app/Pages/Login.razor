@@ -74,6 +74,7 @@
     }
 
 @code {
+    private SharedUtils.userClass userClass = new SharedUtils.userClass();
     public string? email { get; set; }
     public string? password { get; set; }
 
@@ -119,51 +120,35 @@ private async Task HandleSubmit()
 
     public async Task HandleValidSubmit()
     {
-        Console.WriteLine("OnValidSubmit");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/auth/login");
-        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + password + "\"\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-
-        if(response.IsSuccessStatusCode){
-            Console.WriteLine("Success");
+        UserModel? result = await userClass.Login(email!, password!, password!);
+        if(result != null) {
             showError = "hidden";
-            //Navigate to home page 
-            UserModel? data= await response.Content.ReadFromJsonAsync<UserModel>();
 
             await ProtectedLocalStore.SetAsync("loggedIn", true);
-            if (email != null)
-            {
-            await ProtectedLocalStore.SetAsync("userEmail", email);
+
+            if (email != null) {
+                await ProtectedLocalStore.SetAsync("userEmail", email);
             } else {
                 await ProtectedLocalStore.SetAsync("userEmail", "");
             }
-            if (data != null)
-            {
-                await ProtectedLocalStore.SetAsync("userId", data.userId);
-                if(data.userRole == 1){
-                    await ProtectedLocalStore.SetAsync("isAdmin", true);
-                    loadingService.ShowLoadingScreen();
-                    NavigationManager.NavigateTo("/admin/keys");              
-                }
-                else{
-                    await ProtectedLocalStore.SetAsync("isAdmin", false);
-                    await ProtectedLocalStore.DeleteAsync("redirect");
-                    loadingService.ShowLoadingScreen();
-                    NavigationManager.NavigateTo("/" + redirect);
-                }
-            } else {
-                await ProtectedLocalStore.SetAsync("userId", "");
-                await ProtectedLocalStore.SetAsync("isAdmin", false);
-                await ProtectedLocalStore.SetAsync("loggedIn", false);
+            
+            await ProtectedLocalStore.SetAsync("userId", result.userId);
+            if(result.userRole == 1){
+                await ProtectedLocalStore.SetAsync("isAdmin", true);
+                loadingService.ShowLoadingScreen();
+                NavigationManager.NavigateTo("/admin/keys");              
             }
-      
-        }else{
+            else{
+                await ProtectedLocalStore.SetAsync("isAdmin", false);
+                await ProtectedLocalStore.DeleteAsync("redirect");
+                loadingService.ShowLoadingScreen();
+                NavigationManager.NavigateTo("/" + redirect);
+            }
+        } else {
             Console.WriteLine("Failed");
-            string message = await response.Content.ReadAsStringAsync();
+            @* string message = await response.Content.ReadAsStringAsync();
             errorMessage = message;
-             showError = "block";
+             showError = "block"; *@
         }
     }
 

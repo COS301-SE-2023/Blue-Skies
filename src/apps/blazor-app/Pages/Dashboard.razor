@@ -178,6 +178,7 @@ else if (!logIn)
 
 
 @code {
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
@@ -212,7 +213,7 @@ else if (!logIn)
         isAd = isAdmin.Value;
         userId = usId.Value;
 
-        systems = await systemClass.GetSystemsAsync();
+        systems = await systemClass.GetAllSystems();
         if (systems.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("systems", systems);
@@ -248,7 +249,7 @@ else if (!logIn)
 
             _ = GetSolarScore();
 
-            allReportAllAppliance = await reportClass.GetReportAllAppliance();
+            allReportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
             if (allReportAllAppliance.Count > 0)
             {
                 await ProtectedSessionStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
@@ -596,7 +597,7 @@ else if (!logIn)
     /// </summary>
      private async Task Delete(){
         modalPopup.Dismiss();
-        if(await reportClass.DeleteFromDatabase(reports[selectedReport].reportId)) {
+        if(await reportClass.DeleteReport(reports[selectedReport].reportId)) {
             toastService.ShowToast("Deleted Calculation", "Report successfuly deleted.", "success");
             Console.WriteLine("Report succesfully deleted");
             reports.RemoveAt(selectedReport);

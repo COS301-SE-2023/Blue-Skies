@@ -110,7 +110,7 @@
         currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
         if (currentLocationData.data == null)
         {
-            float[] data = await locationDataClass.getInitialData(latitude, longitude);
+            float[] data = await locationDataClass.GetInitialData(latitude, longitude);
             currentLocationData.daylightHours = data[0];
             await ProtectedSessionStore.SetAsync("tempSolarIrradiation", double.Parse(data[1].ToString()));
 

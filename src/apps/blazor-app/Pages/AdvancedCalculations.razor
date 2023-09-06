@@ -137,13 +137,13 @@
             currentReport.longitude = longitude;
         }
 
-        appliances = await applianceDataClass.GetAppliancesAsync();
+        appliances = await applianceDataClass.GetAllAppliances();
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
         }
 
-        systems = await systemDataClass.GetSystemsAsync();
+        systems = await systemDataClass.GetAllSystems();
         if (systems.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("systems", systems);
