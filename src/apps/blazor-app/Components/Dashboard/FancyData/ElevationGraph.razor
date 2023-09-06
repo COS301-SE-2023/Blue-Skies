@@ -147,13 +147,14 @@
         };
         lineConfig.Data.Datasets.Add(elevationDataset);
 
-        addSunDataSet(55, 90, "Equinox", xValues, yValues, "rgba(255,193,8, 1)");
         addSunDataSet(35, 60, "June solstice", xValues, yValues, "rgba(246,135,18, 1)");
+        addSunDataSet(55, 90, "Equinox", xValues, yValues, "rgba(255,193,8, 1)");
         addSunDataSet(80, 120, "December solstice", xValues, yValues, "rgba(0,15,82, 1)");
 
         @* Set the max YAxes to 1.25 the max value of the highest elevation point *@
+        Console.WriteLine("Max Y: " + yValues.Max());
         double maxY = Math.Max(yValues.Max(), 80) * 1.25;
-        
+
         lineConfig.Options.Scales = new Scales
         {
             YAxes = new List<CartesianAxis>
