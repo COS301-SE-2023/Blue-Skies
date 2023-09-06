@@ -27,11 +27,13 @@
                     </content>
                 </Button>
             </div>
-            <Button style="outline-light">
-                <content>
-                    <p>Dashboard</p>
-                </content>
-            </Button>
+            <div @onclick="@(() => ShowTutorial("Dashboard"))">
+                <Button style="outline-light">
+                    <content>
+                        <p>Dashboard</p>
+                    </content>
+                </Button>
+            </div>
         </div>
     </div>
         <div class="absolute top-80 right-24">
