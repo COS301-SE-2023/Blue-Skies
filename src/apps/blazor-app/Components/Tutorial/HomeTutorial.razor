@@ -1,4 +1,9 @@
 @using BlazorTypewriter;
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div @onclick="GoBack" class="fixed w-14 h-14 cursor-pointer top-10 left-10 z-30 text-white font-bold text-2xl">
+    Back
+</div>
 
 <div class="relative h-full w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
@@ -33,5 +38,11 @@
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-        .TypeString("Select a specific section of the home page that you require assistance with, and I will guide you through its functionality step by step", 20);
+        .TypeString("Select a specific section of the home page that you require assistance with, and I will guide you through its functionality step by step.", 20);
+
+    private void GoBack()
+    {
+        tutorialService.ToggleTutorial("Intro");
+        StateHasChanged();
+    }
 }
