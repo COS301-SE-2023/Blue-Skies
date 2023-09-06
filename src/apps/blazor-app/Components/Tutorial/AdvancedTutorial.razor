@@ -9,21 +9,26 @@
 </div>
 
 <div class="relative fade-active h-full w-full">
-    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
+    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Advanced Calculation Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <Button style="outline-light">
             <content>
-                <p>Navigation</p>
+                <p>Appliances</p>
             </content>
         </Button>
         <Button style="outline-light">
             <content>
-                <p>Enter Location</p>
+                <p>Finances</p>
             </content>
         </Button>
         <Button style="outline-light">
             <content>
-                <p>Frequently Asked Questions</p>
+                <p>Fancy Data</p>
+            </content>
+        </Button>
+        <Button style="outline-light">
+            <content>
+                <p>Rooftop Analysis</p>
             </content>
         </Button>
     </div>
@@ -36,12 +41,12 @@
                 <p class="absolute top-1/3 -translate-y-4 ml-16 w-max max-w-md left-0"><Typewriter Builder="@typewriter" /></p>
             </div>
         </div>
-        <Image ImageName="Robert_Standing3.png" css="absolute -bottom-40 -rotate-12  -right-36  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
+        <Image ImageName="Robert_Standing4.png" css="absolute -bottom-40 -rotate-12  -right-32  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
 </div>
 
 @code {
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-        .TypeString("Select a specific section of the Home page that you require assistance with, and I will guide you through its functionality step by step.", 10);
+        .TypeString("Select a specific section of the Advanced Calculation page that you require assistance with, and I will guide you through its functionality step by step.", 10);
 
     private void GoBack()
     {
