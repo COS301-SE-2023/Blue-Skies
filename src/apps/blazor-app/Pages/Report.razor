@@ -160,7 +160,10 @@
             latitude = report.latitude;
             longitude = report.longitude;
             Console.WriteLine("Current report: " + report.reportId);
-            system = await systemClass.GetSystem(report.systemId);
+            var result = await systemClass.GetSystem(report.systemId);
+            if(result != null) {
+                system = result;
+            }
 
             locationData = await locationDataClass.GetLocationData(latitude, longitude);
             Console.WriteLine("Current location: " + locationData.location);

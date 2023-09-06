@@ -66,8 +66,7 @@ public class locationDataClass {
 
     public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
     {
-        string  elevationData = await GetElevationData(latitude, longitude);
-        Console.WriteLine("Elevation data: " + elevationData);
+        string elevationData = await GetElevationData(latitude, longitude);
         var numYears = 3;
         var numDaysPerYear = 48;
         var client = new HttpClient();
@@ -113,7 +112,6 @@ public class locationDataClass {
     /// </summary>
     public async Task<string> GetElevationData(double latitude, double longitude) {
         string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude},{longitude}";
-        Console.WriteLine("URL: " + url);
         var client = new HttpClient();
         var response = await client.GetAsync(url);
         response.EnsureSuccessStatusCode();
