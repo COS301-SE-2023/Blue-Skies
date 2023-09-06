@@ -44,6 +44,7 @@
 }
 
 @code {
+    private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     [Parameter]
     public int selectedReport { get; set; }
     [Parameter]
@@ -105,14 +106,8 @@
     {
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
         Console.WriteLine("Generating report");
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/" + userId + "/" + userReports![selectedReport].reportId);
-        request.Headers.Add("Accept", "application/pdf");
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        byte[] pdfBytes  = await response.Content.ReadAsByteArrayAsync();
-
-        pdfUrl = $"data:application/pdf;base64,{Convert.ToBase64String(pdfBytes)}";
+        var data = Convert.ToBase64String(await reportClass.GenerateReport(userId, userReports![selectedReport].reportId));
+        pdfUrl = $"data:application/pdf;base64,{data}";
         isReportGenerated = true;
         StateHasChanged();
     }
