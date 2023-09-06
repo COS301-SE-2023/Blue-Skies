@@ -21,38 +21,6 @@ public class BusinessRequestDataRepository
             express = backendexpress;
         }
     }
-
-    private async Task<bool> IsKeyValid(String key){
-        var client = new HttpClient();
-        //get and compare key with keys from db
-        var keysRequest = new HttpRequestMessage(
-            HttpMethod.Get,
-            express + "/api/key/all"
-        );
-        var keysResponse = await client.SendAsync(keysRequest);
-
-        if (keysResponse.IsSuccessStatusCode)
-        {
-            var responseContent = await keysResponse.Content.ReadAsStringAsync();
-
-            var keysData = JsonConvert.DeserializeObject<List<KeyModel>>(responseContent);
-
-            foreach (var keyData in keysData!)
-            {
-                if (keyData.APIKey == key)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        else
-        {
-            // Handle unsuccessful response
-            throw new Exception("Error fetching keys");
-        }
-    }
     
     public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     {
@@ -64,10 +32,6 @@ public class BusinessRequestDataRepository
             var latitude = requestData.latitude;
             var longitude = requestData.longitude;
             
-            if (!await IsKeyValid(key!)){
-                throw new Exception("Invalid API key");
-            }
-          
             //create data if not created yet
 
             var client = new HttpClient();
@@ -78,15 +42,17 @@ public class BusinessRequestDataRepository
                     LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
                     if (exists.data == null)
                     {
+                        
                         await locationDataClass.GetInitialData(latitude, longitude);
                         byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
                         var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+                        
                         await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
                     var dataType = new HttpRequestMessage(
                         HttpMethod.Get, 
-                        express + "/api/locationData/withoutImage/{" + longitude + "}/{" + latitude + "}"
+                        express + "/api/locationData/withoutImage/{" + longitude.ToString().Replace(",",".") + "}/{" + latitude.ToString().Replace(",",".") + "}"
                     );
                     dataTypeResponse = await client.SendAsync(dataType);
 
