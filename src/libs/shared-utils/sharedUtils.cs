@@ -79,7 +79,7 @@ public class locationDataClass {
                                     + "\",\r\n    \"location\": \"" 
                                     + location 
                                     + "\",\r\n    \"daylightHours\" : \"" 
-                                    + daylightHours 
+                                    + daylightHours.ToString().Replace(",",".") 
                                     + "\",\r\n    \"image\": \"" 
                                     + image 
                                     + "\" ,\r\n    \"elevationData\": \"" 
