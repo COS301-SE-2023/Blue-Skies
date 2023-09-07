@@ -8,6 +8,5 @@ public class LocationData
     public DateTime? dateCreated { get; set; }
     public double daylightHours { get; set; }
     public int? remainingCalls { get; set; }
-
     public string? elevationData { get; set; }
 }

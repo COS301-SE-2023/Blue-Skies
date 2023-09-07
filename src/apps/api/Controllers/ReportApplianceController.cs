@@ -25,7 +25,10 @@ public class ReportApplianceController : ControllerBase
             var data = await _reportsRepository.CreateReportAppliance(
                 report.reportId,
                 report.applianceId,
-                report.numberOfAppliances
+                report.numberOfAppliances,
+                report.applianceModel,
+                report.powerUsage,
+                report.durationUsed
             );
             return Ok(data);
         }
