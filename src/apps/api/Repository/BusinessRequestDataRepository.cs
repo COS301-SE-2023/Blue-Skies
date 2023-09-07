@@ -52,11 +52,13 @@ public class BusinessRequestDataRepository
 
                     var dataType = new HttpRequestMessage(
                         HttpMethod.Get, 
-                        API_PORT + "/api/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",",".")
+                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
                     );
-                    Console.WriteLine("Im here: " + API_PORT + "/api/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
+                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",",".")
+                );
+                    client = new HttpClient();
                     dataTypeResponse = await client.SendAsync(dataType);
-                    Console.WriteLine("Im here2: " + dataTypeResponse.Content.ReadAsStringAsync().Result);
+                    Console.WriteLine("Response: " + dataTypeResponse);
                     break;
                 default : 
                     throw new Exception("Error: Not a valid option chosen for data type");
