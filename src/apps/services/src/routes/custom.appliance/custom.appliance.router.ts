@@ -21,3 +21,8 @@ customApplianceRouter.get(
   '/all',
   customAppliancesController.getAllCustomAppliances
 );
+
+customApplianceRouter.delete(
+  '/delete/:customApplianceId',
+  customAppliancesController.deleteCustomAppliance
+);
