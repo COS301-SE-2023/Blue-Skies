@@ -4,10 +4,10 @@ import IAppliance from '../../models/appliance.interface';
 import { connection as conn } from '../../main';
 export default class ApplianceController {
   public createAppliance = (req: Request, res: Response) => {
-    const { type, powerUsage } = req.body;
+    const { type, powerUsage, durationUsed } = req.body;
     const query =
-      `INSERT INTO [dbo].[appliances] (type, powerUsage)` +
-      ` VALUES ('${type}', ${powerUsage})`;
+      `INSERT INTO [dbo].[appliances] (type, powerUsage, durationUsed)` +
+      ` VALUES ('${type}', ${powerUsage}, ${durationUsed})`;
 
     try {
       const request = new tedious.Request(
@@ -19,7 +19,6 @@ export default class ApplianceController {
               error: err.message,
             });
           } else {
-            
             console.log('Express: Appliance created successfully.');
             return res.status(200).json({
               message: 'Appliance created successfully.',
@@ -68,6 +67,7 @@ export default class ApplianceController {
           applianceId: columns[0].value,
           type: columns[1].value,
           powerUsage: columns[2].value,
+          durationUsed: columns[3].value,
         };
         appliances.push(appliance);
       });
@@ -113,6 +113,7 @@ export default class ApplianceController {
           applianceId: columns[0].value,
           type: columns[1].value,
           powerUsage: columns[2].value,
+          durationUsed: columns[3].value,
         };
       });
 
@@ -127,9 +128,9 @@ export default class ApplianceController {
 
   public updateAppliance = (req: Request, res: Response) => {
     const { applianceId } = req.params;
-    const { type, powerUsage } = req.body;
+    const { type, powerUsage, durationUsed } = req.body;
     const query =
-      `UPDATE [dbo].[appliances] SET type = '${type}', powerUsage = ${powerUsage}` +
+      `UPDATE [dbo].[appliances] SET type = '${type}', powerUsage = ${powerUsage}, durationUsed = ${durationUsed}` +
       `WHERE applianceId = ${applianceId}`;
 
     try {
