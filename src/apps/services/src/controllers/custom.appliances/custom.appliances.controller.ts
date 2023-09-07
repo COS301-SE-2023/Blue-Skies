@@ -37,4 +37,45 @@ export default class CustomAppliancesController {
       });
     }
   }
+
+  //   Get all Custom Appliances
+
+  public getAllCustomAppliances(req: Request, res: Response) {
+    try {
+      const query = `SELECT * FROM [dbo].[customAppliances]`;
+      const customAppliances: ICustomAppliance[] = [];
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number, rows: any) => {
+          if (err) {
+            console.log('Express: ' + err.message);
+            res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            console.log('Express: Custom appliances retrieved successfully.');
+            res.status(200).json(customAppliances);
+          }
+        }
+      );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        const customAppliance: ICustomAppliance = {
+          customApplianceId: columns[0].value,
+          type: columns[1].value,
+          model: columns[2].value,
+          powerUsage: columns[3].value,
+        };
+        customAppliances.push(customAppliance);
+      });
+
+      //   Execute SQL statement
+      conn.execSql(request);
+    } catch (error) {
+      console.log('Express: ' + error.message);
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  }
 }
