@@ -78,4 +78,37 @@ export default class CustomAppliancesController {
       });
     }
   }
+
+  //   Delete a custom appliance
+
+  public deleteCustomAppliance(req: Request, res: Response) {
+    try {
+      const { customApplianceId } = req.params;
+      const query = `DELETE FROM [dbo].[customAppliances] WHERE customApplianceId = ${customApplianceId}`;
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            console.log('Express: ' + err.message);
+            res.status(400).json({
+              error: err.message,
+            });
+          } else {
+            console.log('Express: Custom appliance deleted successfully.');
+            res.status(200).json({
+              message: 'Custom appliance deleted successfully.',
+            });
+          }
+        }
+      );
+
+      //   Execute SQL statement
+      conn.execSql(request);
+    } catch (error) {
+      console.log('Express: ' + error.message);
+      res.status(500).json({
+        error: error.message,
+      });
+    }
+  }
 }
