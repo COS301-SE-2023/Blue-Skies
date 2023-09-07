@@ -16,3 +16,8 @@ customApplianceRouter.post(
   bodyParser.json(),
   customAppliancesController.createCustomAppliance
 );
+
+customApplianceRouter.get(
+  '/all',
+  customAppliancesController.getAllCustomAppliances
+);
