@@ -43,19 +43,20 @@ public class BusinessRequestDataRepository
                     if (exists.data == null)
                     {
                         
-                        await locationDataClass.GetInitialData(latitude, longitude);
+                        var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
                         byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
                         var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
-                        
-                        await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
+                       
+                        await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
                     var dataType = new HttpRequestMessage(
                         HttpMethod.Get, 
-                        express + "/api/locationData/withoutImage/{" + longitude.ToString().Replace(",",".") + "}/{" + latitude.ToString().Replace(",",".") + "}"
+                        API_PORT + "/api/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",",".")
                     );
+                    Console.WriteLine("Im here: " + API_PORT + "/api/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
                     dataTypeResponse = await client.SendAsync(dataType);
-
+                    Console.WriteLine("Im here2: " + dataTypeResponse.Content.ReadAsStringAsync().Result);
                     break;
                 default : 
                     throw new Exception("Error: Not a valid option chosen for data type");
