@@ -4,10 +4,17 @@ import IReportAppliance from '../../models/report.appliance.interface';
 import { connection as conn } from '../../main';
 export default class ReportApplianceController {
   public createReportAppliance = (req: Request, res: Response) => {
-    const { reportId, applianceId, numberOfAppliances } = req.body;
-    const query =
-      `INSERT INTO [dbo].[reportAppliances] (applianceId, reportId, numberOfAppliances)` +
-      ` VALUES ('${applianceId}', ${reportId}, ${numberOfAppliances})`;
+    const {
+      reportId,
+      applianceId,
+      numberOfAppliances,
+      applianceModel,
+      powerUsage,
+      durationUsed,
+    } = req.body;
+
+    const floatDurationUsed = parseFloat(durationUsed.replace(',', '.'));
+    const query = `INSERT INTO [dbo].[reportAppliances] (reportId, applianceId, numberOfAppliances, applianceModel, powerUsage, durationUsed) VALUES (${reportId}, ${applianceId}, ${numberOfAppliances}, '${applianceModel}', ${powerUsage}, ${floatDurationUsed})`;
 
     try {
       const request = new tedious.Request(
@@ -63,6 +70,9 @@ export default class ReportApplianceController {
           reportId: columns[0].value,
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
+          applianceModel: columns[3].value,
+          powerUsage: columns[4].value,
+          durationUsed: columns[5].value,
         };
 
         reportAppliances.push(reportAppliance);
@@ -106,6 +116,9 @@ export default class ReportApplianceController {
           reportId: columns[0].value,
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
+          applianceModel: columns[3].value,
+          powerUsage: columns[4].value,
+          durationUsed: columns[5].value,
         };
         reportAppliances.push(reportAppliance);
       });
@@ -148,6 +161,9 @@ export default class ReportApplianceController {
           reportId: columns[0].value,
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
+          applianceModel: columns[3].value,
+          powerUsage: columns[4].value,
+          durationUsed: columns[5].value,
         };
         reportAppliances.push(reportAppliance);
       });
@@ -190,6 +206,9 @@ export default class ReportApplianceController {
           reportId: columns[0].value,
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
+          applianceModel: columns[3].value,
+          powerUsage: columns[4].value,
+          durationUsed: columns[5].value,
         };
       });
 

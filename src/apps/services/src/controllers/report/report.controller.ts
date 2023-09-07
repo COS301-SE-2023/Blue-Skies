@@ -7,7 +7,6 @@ export default class ReportController {
   public createReport = (req: Request, res: Response) => {
     const { reportName, userId, homeSize, latitude, longitude, systemId } =
       req.body;
-    console.log(reportName);
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const query =
       `INSERT INTO [dbo].[reports] (reportName, userId, homeSize, latitude, longitude, systemId, dateCreated)` +
