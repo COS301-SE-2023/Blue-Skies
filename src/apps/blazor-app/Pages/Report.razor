@@ -4,7 +4,6 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
 @using ChartJs.Blazor.PolarAreaChart
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 @layout AuthLayout
 <div class="pageA4 mx-auto">
@@ -129,6 +128,7 @@
     }
 </div>
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
