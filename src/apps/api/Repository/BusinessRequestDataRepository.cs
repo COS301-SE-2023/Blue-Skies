@@ -37,9 +37,7 @@ public class BusinessRequestDataRepository
             var client = new HttpClient();
             var dataTypeResponse = new HttpResponseMessage();
            
-            switch(data!.ToLower()){
-                case "solar score" : 
-                    LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
+            LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
                     if (exists.data == null)
                     {
                         
@@ -50,15 +48,10 @@ public class BusinessRequestDataRepository
                         await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
                     }
 
-                    var dataType = new HttpRequestMessage(
-                        HttpMethod.Get, 
-                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
-                    );
-                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",",".")
-                );
-                    client = new HttpClient();
-                    dataTypeResponse = await client.SendAsync(dataType);
-                    Console.WriteLine("Response: " + dataTypeResponse);
+            switch(data!.ToLower()){
+                case "solar score" : 
+                    String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
+                    dataTypeResponse.Content = new StringContent(content);
                     break;
                 default : 
                     throw new Exception("Error: Not a valid option chosen for data type");
@@ -66,37 +59,6 @@ public class BusinessRequestDataRepository
             
            return await dataTypeResponse.Content.ReadAsStringAsync();
            
-
-
-
-
-
-            // var request = new HttpRequestMessage(
-            //     HttpMethod.Post, 
-            //     express + "/api/locationData/create"
-            // );
-
-
-
-
-
-            // var content = new StringContent("{\r\n    \"latitude\": " + latitude +",\r\n    \"longitude\": " + longitude + "\"\r\n}", null, "application/json"); 
-            // request.Content = content;
-
-          
-            // var response = await client.SendAsync(request);
-            // if (response.IsSuccessStatusCode)
-            // {
-            //     return "Solar Irradiation created successfully";
-            // }
-            // else if (response.StatusCode == HttpStatusCode.BadRequest)
-            // {
-            //     return "Solar Irradiation already exists";
-            // }
-            // else
-            // {
-            //     throw new Exception("Error creating solar irradiation");
-            // }
         }
         catch (System.Exception)
         {
@@ -104,4 +66,17 @@ public class BusinessRequestDataRepository
             throw new Exception("Could not create solar irradiation");
         }
     }
+
+    private async Task<String> solarScore(HttpClient client, HttpResponseMessage dataTypeResponse, float latitude, float longitude){
+         var dataType = new HttpRequestMessage(
+                        HttpMethod.Get, 
+                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
+                    );
+                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
+                    client = new HttpClient();
+                    dataTypeResponse = await client.SendAsync(dataType);
+                    Console.WriteLine("Response: " + dataTypeResponse);
+                    return await dataTypeResponse.Content.ReadAsStringAsync();
+    }
+    
 }
