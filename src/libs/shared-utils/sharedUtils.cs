@@ -791,7 +791,10 @@ public class reportApplianceClass {
     }
 }
 
+
 public class reportAllApplianceClass {
+
+    
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<List<ReportAllApplianceModel>> GetReportAllAppliance()
@@ -813,5 +816,31 @@ public class reportAllApplianceClass {
             Console.WriteLine("Failed to get allReportAllAppliance");
         }
         return allReportAllAppliance;
+    }
+}
+
+public class customAplianceClass {
+    string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    // Get all the custom appliances from the database
+    public async Task<List<CustomApplianceModel>> GetAllCustomAppliances()
+    {
+        List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/CustomAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            customAppliances = JsonSerializer.Deserialize<List<CustomApplianceModel>>(data, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            })!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get custom appliances");
+        }
+        return customAppliances;
     }
 }
