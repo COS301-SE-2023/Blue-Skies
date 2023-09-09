@@ -28,13 +28,17 @@ public class CustomApplianceRepository
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var body = await response.Content.ReadAsStringAsync();
-            var customAppliances = JsonSerializer.Deserialize<List<CustomAppliance>>(body);
-            return customAppliances;
+            if (body is null)
+            {
+                return new List<CustomAppliance>();
+            }
+            List<CustomAppliance> customAppliances = JsonSerializer.Deserialize<List<CustomAppliance>>(body)!;
+            return customAppliances!;
         }
         //Bad Request
         else if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            return null;
+            throw new Exception("Bad Request");
         }
         else
         {
@@ -68,7 +72,7 @@ public class CustomApplianceRepository
         //Bad Request
         else if (response.StatusCode == HttpStatusCode.BadRequest)
         {
-            return null;
+            throw new Exception("Bad Request");
         }
         else
         {
