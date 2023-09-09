@@ -4,7 +4,6 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject BlazorApp.Data.LoadingService loadingService
 
 
@@ -151,6 +150,7 @@
 
 
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]

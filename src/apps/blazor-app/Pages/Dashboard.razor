@@ -15,7 +15,6 @@
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -178,6 +177,7 @@ else if (!logIn)
 
 
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
