@@ -1,10 +1,9 @@
-namespace DataHandler;
+namespace DataHandlers;
 
 using System;
-using System.Text.Json;
 
 
-public class SolarCalculatorHandler
+public class SolarDataHandler
 {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private double perfectSolarIrradiation = 205;
@@ -15,8 +14,6 @@ public class SolarCalculatorHandler
     public int timesNotUpdated { get; set; } = 0;
     public int remainingCalls { get; set; } = 100;
     public int previousRemainingCalls { get; set; } = 100;
-
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<int> GetSolarScoreFromData(
         double latitude,

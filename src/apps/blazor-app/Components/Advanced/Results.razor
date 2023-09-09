@@ -1,6 +1,5 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
@@ -91,7 +90,8 @@
 </div>
 
 @code {
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
