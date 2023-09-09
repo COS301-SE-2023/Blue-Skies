@@ -23,14 +23,14 @@ public class CustomApplianceController : ControllerBase
         try
         {
             var data = await _customApplianceRepository.GetAllCustomAppliances();
-            if (data == null)
-            {
-                return BadRequest("Unable to retrieve custom appliances");
-            }
             return Ok(data);
         }
         catch (Exception e)
         {
+            if (e.Message == "Bad Request")
+            {
+                return BadRequest("Unable to retrieve custom appliances");
+            }
             return StatusCode(500, e.Message);
         }
     }
@@ -42,7 +42,7 @@ public class CustomApplianceController : ControllerBase
     {
         try
         {
-            var data = await _customApplianceRepository.CreateCustomAppliance(customAppliance.type, customAppliance.model, customAppliance.powerUsage);
+            var data = await _customApplianceRepository.CreateCustomAppliance(customAppliance.type!, customAppliance.model!, customAppliance.powerUsage);
             if (data == null)
             {
                 return BadRequest("Unable to create custom appliance");
@@ -51,6 +51,10 @@ public class CustomApplianceController : ControllerBase
         }
         catch (Exception e)
         {
+            if (e.Message == "Bad Request")
+            {
+                return BadRequest("Unable to create custom appliance");
+            }
             return StatusCode(500, e.Message);
         }
     }
