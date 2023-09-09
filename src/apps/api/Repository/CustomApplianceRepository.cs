@@ -42,4 +42,38 @@ public class CustomApplianceRepository
         }
     }
 
+    // Create custom appliance
+    public async Task<CustomAppliance> CreateCustomAppliance(string type, string model, int powerUsage)
+    {
+        Console.WriteLine("Creating custom appliance");
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{express}/api/customAppliance/create");
+        var body = JsonSerializer.Serialize(new
+        {
+            type = type,
+            model = model,
+            powerUsage = powerUsage
+        });
+        request.Content = new StringContent(body, null, "application/json");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            CustomAppliance cp = new CustomAppliance();
+            cp.type = type;
+            cp.model = model;
+            cp.powerUsage = powerUsage;
+            cp.customApplianceId = -1;
+            return cp;
+        }
+        //Bad Request
+        else if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return null;
+        }
+        else
+        {
+            throw new Exception("Unable to create custom appliance");
+        }
+    }
+
 }
