@@ -50,7 +50,8 @@ public class BusinessRequestDataRepository
 
             switch(data!.ToLower()){
                 case "solar score" : 
-                    String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
+                    var content = await GetSolarScore((double)latitude, (double)longitude);
+                   
                     dataTypeResponse.Content = new StringContent(content);
                     break;
                 default : 
@@ -67,16 +68,34 @@ public class BusinessRequestDataRepository
         }
     }
 
-    private async Task<String> solarScore(HttpClient client, HttpResponseMessage dataTypeResponse, float latitude, float longitude){
-         var dataType = new HttpRequestMessage(
+    private async Task<String> solarScore(HttpClient client, double latitude, double longitude){
+        var numYears = 3;
+        var numDaysPerYear = 48;
+        var dataType = new HttpRequestMessage(
                         HttpMethod.Get, 
                         API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
                     );
-                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
-                    client = new HttpClient();
-                    dataTypeResponse = await client.SendAsync(dataType);
-                    Console.WriteLine("Response: " + dataTypeResponse);
-                    return await dataTypeResponse.Content.ReadAsStringAsync();
+
+        client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
+        var content = new StringContent("{\r\n    \"latitude\": "+ latitude.ToString().Replace(",",".") + ",\r\n    \"longitude\": " + longitude.ToString().Replace(",",".") + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
+        request.Content = content;
+        var response = await client.SendAsync(request);
+        var data = await response.Content.ReadAsStringAsync();
+        return data;
     }
-    
+    private async Task<String> GetSolarScore(double latitude, double longitude) 
+    {
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        int solarScore=0;
+        
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, 0);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+
+        }
+        return solarScore.ToString();
+    }
 }
