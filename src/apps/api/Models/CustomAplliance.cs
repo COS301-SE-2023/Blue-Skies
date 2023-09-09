@@ -3,7 +3,7 @@
 public class CustomAppliance
 {
     // customApplianceId
-    public int customApplianceId { get; set; }
+    public int? customApplianceId { get; set; }
     // type
     public string type { get; set; }
     // model
