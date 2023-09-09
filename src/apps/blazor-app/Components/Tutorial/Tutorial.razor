@@ -1,0 +1,16 @@
+@using BlazorTypewriter;
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div class="relative fade-active h-full w-full">
+    <p>@tutorialName</p>
+</div>
+
+@code {
+    [Parameter]
+    public string? tutorialName { get; set; }
+
+
+    TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+        .TypeString("Select a specific section of the Solar Score page that you require assistance with, and I will guide you through its functionality step by step.", 10);
+
+}
