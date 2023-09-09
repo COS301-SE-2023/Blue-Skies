@@ -815,6 +815,10 @@ video {
   bottom: 480px;
 }
 
+.right-28 {
+  right: 7rem;
+}
+
 .isolate {
   isolation: isolate;
 }
