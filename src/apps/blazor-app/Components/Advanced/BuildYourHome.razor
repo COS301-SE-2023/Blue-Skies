@@ -346,6 +346,7 @@
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
 
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
+    private SharedUtils.customAplianceClass customAplianceClass = new SharedUtils.customAplianceClass();
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -374,6 +375,7 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
+    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>(); 
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Add", true),
@@ -407,6 +409,9 @@
         }
 
         CalculateRunningHours();
+         @* Get custom Appliances *@
+        customAppliances = await customAplianceClass.GetAllCustomAppliances();
+        Console.WriteLine(JsonSerializer.Serialize(customAppliances));
     }
 
     /// <summary>
@@ -462,6 +467,8 @@
             appliance.quantity = appliances[i].quantity;
             applianceQuantities.Add(appliance);
         }
+
+       
     }
 
     /// <summary>
