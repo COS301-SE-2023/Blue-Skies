@@ -54,4 +54,25 @@ public class CustomApplianceController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    // Delete custom appliance
+    [HttpDelete]
+    [Route("delete/{customApplianceId}")]
+    public async Task<IActionResult> DeleteCustomAppliance([FromRoute] int customApplianceId)
+    {
+        try
+        {
+            var data = await _customApplianceRepository.DeleteCustomAppliance(customApplianceId);
+            if (data == false)
+            {
+                return BadRequest("Unable to delete custom appliance");
+            }
+            return Ok("Custom appliance deleted");
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
 }

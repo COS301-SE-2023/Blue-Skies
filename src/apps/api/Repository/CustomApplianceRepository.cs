@@ -76,4 +76,25 @@ public class CustomApplianceRepository
         }
     }
 
+    // Delete custom appliance
+    public async Task<bool> DeleteCustomAppliance(int customApplianceId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Delete, $"{express}/api/customAppliance/delete/{customApplianceId}");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            return true;
+        }
+        //Bad Request
+        else if (response.StatusCode == HttpStatusCode.BadRequest)
+        {
+            return false;
+        }
+        else
+        {
+            throw new Exception("Unable to delete custom appliance");
+        }
+    }
+
 }
