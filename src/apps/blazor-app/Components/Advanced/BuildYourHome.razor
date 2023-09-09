@@ -375,16 +375,16 @@
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
-{
-new TabItemModel("Add", true),
-new TabItemModel("Remove", false)
-};
+    {
+        new TabItemModel("Add", true),
+        new TabItemModel("Remove", false)
+    };
     private List<TabItemModel> categories = new List<TabItemModel>
-{
-new TabItemModel("Kitchen", true),
-new TabItemModel("Entertainment", false),
-new TabItemModel("General", false)
-};
+    {
+        new TabItemModel("Kitchen", true),
+        new TabItemModel("Entertainment", false),
+        new TabItemModel("General", false)
+    };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
     float daylight = 0f;

@@ -7,4 +7,6 @@ public class Appliances
     public string? type { get; set; }
 
     public int powerUsage { get; set; }
+
+    public float durationUsed { get; set; }
 }
