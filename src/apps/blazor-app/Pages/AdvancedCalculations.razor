@@ -12,7 +12,8 @@
 
 <PageTitle>Advanced Calculations</PageTitle>
 <div class="fade-in-enter-active">
-    @if (isLoaded) {
+    @if (isLoaded)
+    {
         @* Check if user is logged in *@
         if (!logIn)
         {
@@ -35,37 +36,41 @@
         }
         else
         {
-            <div class="w-full px-20 ">
-                <div class="mb-20">
+                    <div class="w-full px-20 ">
+                        <div class="mb-20">
                     @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
                         var reportName = currentReport.reportName;
-                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
-                        systems="systems" reportName="@reportName"/>    
-                    } else {
-                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
-                        systems="systems" />
+                                <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
+                                    systems="systems" reportName="@reportName"/>    
                     }
-                </div>
-                <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
-                    <Tabs @bind-Items="tabs"></Tabs>
-                </div>
-                <div class="w-full">
-                    @if(tabs[0].active) {
-                        <div class="fade-in-active">
-                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
+                    else
+                    {
+                                <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
+                                    systems="systems" />
+                    }
                         </div>
-                    }
-                    else if (tabs[1].active) {
-                        <div class="fade-in-active">
-                            <Finanace />
+                        <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
+                            <Tabs @bind-Items="tabs"></Tabs>
                         </div>
+                        <div class="w-full">
+                    @if (tabs[0].active)
+                    {
+                                    <div class="fade-in-active">
+                                        <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
+                                    </div>
                     }
-                </div>
-            </div>
+                    else if (tabs[1].active)
+                    {
+                                    <div class="fade-in-active">
+                                        <Finanace />
+                                    </div>
+                    }
+                        </div>
+                    </div>
         }
-     }
+    }
 </div>
 
 @code {
@@ -81,7 +86,7 @@
     private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
-    private ReportModel currentReport = new ReportModel(); 
+    private ReportModel currentReport = new ReportModel();
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     private int selectedSystem = 0;
     private double longitude = 0;
@@ -95,18 +100,18 @@
 
 
     /// <summary>
-///     <list type="bullet">
-///         <item>Check if user is logged in</item>
-///         <item>Check if logged in user is admin</item>
-///         <item>Check if the user has created a solar score</item>
-///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
-///         <item>Get the location data from the database</item>
-///         <item>Get all the appliances and systems from the database</item>
-///         <item>Set the selected system to the current report system</item>
-///     </list>
+    ///     <list type="bullet">
+    ///         <item>Check if user is logged in</item>
+    ///         <item>Check if logged in user is admin</item>
+    ///         <item>Check if the user has created a solar score</item>
+    ///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
+    ///         <item>Get the location data from the database</item>
+    ///         <item>Get all the appliances and systems from the database</item>
+    ///         <item>Set the selected system to the current report system</item>
+    ///     </list>
     /// </summary>
     protected override async Task OnInitializedAsync()
-    {
+    { 
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
@@ -132,7 +137,10 @@
             currentReport = rep.Value!;
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
-        } else {
+
+        }
+        else
+        {
             currentReport.latitude = latitude;
             currentReport.longitude = longitude;
         }
@@ -154,7 +162,7 @@
             if (currentReport.systemId == systems[i].systemId)
             {
                 selectedSystem = i;
-            }  
+            }
         }
         loadingService.HideLoadingScreen();
 

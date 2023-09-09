@@ -773,6 +773,7 @@ public class reportApplianceClass {
         var response = await client.SendAsync(request);
         if(response.StatusCode != System.Net.HttpStatusCode.OK)
         {
+
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
     }
