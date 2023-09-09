@@ -76,8 +76,8 @@ public class SolarDataHandler
             } catch (Exception) {
                 try {
                     total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","));
-                } catch (Exception e2) {
-                    Console.WriteLine("Error parsing data: " + e2);
+                } catch (Exception e) {
+                    Console.WriteLine("Error parsing data: " + e);
                 }
             }
  
