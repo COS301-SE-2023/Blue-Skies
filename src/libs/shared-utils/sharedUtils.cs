@@ -33,7 +33,7 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> getElevationData(double latitude, double longitude) {
+    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude) {
         string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
         Console.WriteLine("URL: " + url);
         var client = new HttpClient();
@@ -79,7 +79,7 @@ public class locationDataClass {
                                     + "\",\r\n    \"location\": \"" 
                                     + location 
                                     + "\",\r\n    \"daylightHours\" : \"" 
-                                    + daylightHours 
+                                    + daylightHours.ToString().Replace(",",".") 
                                     + "\",\r\n    \"image\": \"" 
                                     + image 
                                     + "\" ,\r\n    \"elevationData\": \"" 
