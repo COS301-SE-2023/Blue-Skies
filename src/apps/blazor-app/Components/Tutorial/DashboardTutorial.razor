@@ -12,21 +12,21 @@
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Dashboard Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("SelectCalculation"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "SelectCalculation" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Select Calculations</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("GenerateReport"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "GenerateReport" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Generate Report</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("EditDelete"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "EditDelete" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Edit and Delete</p>
                 </content>
