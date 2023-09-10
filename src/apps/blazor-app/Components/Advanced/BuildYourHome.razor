@@ -208,6 +208,7 @@
         </div>
     </div>
 </div>
+<SelectVariant type="Fridge" customAppliances="@customAppliances"/>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     <ChildContent>
         @if (edit)
@@ -411,7 +412,6 @@
         CalculateRunningHours();
          @* Get custom Appliances *@
         customAppliances = await customAplianceClass.GetAllCustomAppliances();
-        Console.WriteLine(JsonSerializer.Serialize(customAppliances));
     }
 
     /// <summary>
@@ -430,7 +430,7 @@
             {
                 appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
             }
-            else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+            else if (reportAllAppliance[i].type!.Equals("Lights"))
             {
                 appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
             }
