@@ -13,4 +13,6 @@ public class SystemModel
     public int numberOfBatteries { get; set; }
 
     public int solarInput { get; set; }
+
+    public bool? recordState { get; set; }
 }

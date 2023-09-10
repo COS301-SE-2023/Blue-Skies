@@ -8,26 +8,12 @@
     public float hours { get; set; } = 10;
     [Parameter]
     public float daylightHours { get; set; } = 12;
-
-    public DaylightChart() {}
-
-    public DaylightChart(float hours, float daylightHours)
-    {
-        this.hours = hours;
-        this.daylightHours = daylightHours;
-    }
-
-    public void SetHours(float hours) {
-        this.hours = hours;
-        UpdateDataset();
-    }
-
-    public void SetDaylightHours(float daylightHours) {
-        this.daylightHours = daylightHours;
-        UpdateDataset();
-    }
-    
     protected override void OnParametersSet()
+    {
+        UpdateDataset();
+    }
+
+    protected override void OnInitialized()
     {
         pieConfig = new PieConfig(true)
             {
@@ -52,7 +38,7 @@
                     Animation = new ArcAnimation
                     {
                         AnimateRotate = true,
-                        Duration = 2000,
+                        Duration = 5,
 
                     },
                     Tooltips = new Tooltips
@@ -68,33 +54,29 @@
                     },
                     CutoutPercentage = 80
                 }
-            };  
-        UpdateDataset();
+            };
     }
-
-    protected override void OnInitialized()
+    public void UpdateDataset()
     {
-        UpdateDataset();
-    }
-
-    public void UpdateDataset() {
         pieConfig.Data.Datasets.Clear();
+        pieConfig.Data.Labels.Clear();
 
-        foreach (string color in new[] { "Runnable Hours", "Remaining" })
+        foreach (string label in new[] { "Runnable Hours", "Remaining" })
         {
-            pieConfig.Data.Labels.Add(color);
+            pieConfig.Data.Labels.Add(label);
         }
-        float remaining = (24-daylightHours) - hours;
+        float remaining = (24 - daylightHours) - hours;
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {
                 BackgroundColor = new[] {
-                    ColorUtil.ColorHexString(56,113,193),
-                    ColorUtil.ColorHexString(156,163,175),
-                },
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
             };
         if (pieConfig != null)
         {
             pieConfig.Data.Datasets.Add(pieDataset);
-        } 
+            StateHasChanged();
+        }
     }
-} 
+}

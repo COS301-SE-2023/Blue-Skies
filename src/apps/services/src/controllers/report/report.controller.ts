@@ -254,26 +254,39 @@ export default class ReportController {
   };
 
   public downloadReport = async (req: Request, res: Response) => {
-    const { userId, reportId } = req.params;
-    // Launch the browser and open a new blank page
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    const frontend_port = process.env.FRONTEND_PORT;
-    await page.goto(`${frontend_port}/report/${userId}/${reportId}`, {
-      waitUntil: 'networkidle2',
-    });
-    // Generate a PDF from the page content
-    const pdf = await page.pdf({
-      format: 'A4',
-      displayHeaderFooter: false,
-    });
+    try {
+      const { userId, reportId } = req.params;
+      console.log(
+        'Generating report, report id: ' + reportId + ' for user: ' + userId
+      );
+      // Launch the browser and open a new blank page
+      const browser = await puppeteer.launch({
+        headless: true,
+      });
+      const page = await browser.newPage();
+      const frontend_port = process.env.FRONTEND_PORT;
+      // localhost:3000/report/1/1
 
-    await browser.close();
+      await page.goto(`${frontend_port}/report/${userId}/${reportId}`);
+      await page.waitForSelector('#report');
 
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Length': pdf.length,
-    });
-    res.send(pdf);
+      // Generate a PDF from the page content
+      const pdf = await page.pdf({
+        format: 'A4',
+        displayHeaderFooter: false,
+      });
+
+      await browser.close();
+
+      res.set({
+        'Content-Type': 'application/pdf',
+        'Content-Length': pdf.length,
+      });
+      res.send(pdf);
+    } catch (error) {
+      res.status(500).json({
+        error: error.message,
+      });
+    }
   };
 }

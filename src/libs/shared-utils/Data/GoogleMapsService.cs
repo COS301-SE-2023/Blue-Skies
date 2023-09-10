@@ -32,7 +32,6 @@ public class GoogleMapsService
         }
         apiKey = apiKey.Trim('"');
         if(apiKey != "") {
-            Console.WriteLine($"Getting map image for {latitude}, {longitude}");
             var url =
                 $"https://maps.googleapis.com/maps/api/staticmap?center={latitude},{longitude}&zoom={zoom}&size={width}x{height}&maptype=satellite&key={apiKey}";
             return await _httpClient.GetByteArrayAsync(url);
