@@ -91,14 +91,14 @@
     public bool recordState { get; set; } = false;
 
     [Parameter]
-    public APIKeyModel? key { get; set; }
+    public KeyModel? key { get; set; }
 
     [Parameter]
     public EventCallback<int> OnSelect { get; set; }
     [Parameter]
-    public EventCallback<APIKeyModel> OnSave { get; set; }
+    public EventCallback<KeyModel> OnSave { get; set; }
     [Parameter]
-    public EventCallback<APIKeyModel> OnSuspendChange { get; set; }
+    public EventCallback<KeyModel> OnSuspendChange { get; set; }
 
     protected override void OnInitialized()
     {
@@ -124,7 +124,7 @@
     {
         if (key != null)
         {
-            var returnKey = new APIKeyModel
+            var returnKey = new KeyModel
                 {
                     keyId = key.keyId,
                     owner = key.owner,
@@ -148,7 +148,7 @@
     {
         if (key != null)
         {
-            var returnKey = new APIKeyModel
+            var returnKey = new KeyModel
                 {
                     keyId = key.keyId,
                     owner = owner,

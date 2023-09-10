@@ -4,7 +4,6 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject BlazorApp.Data.LoadingService loadingService
 
 <div
@@ -67,7 +66,7 @@
 
 @code {
     [Parameter]
-    public APIKeyModel? key { get; set; }
+    public KeyModel? key { get; set; }
     [Parameter]
     public int id { get; set; }
 }

@@ -29,5 +29,4 @@ public class BusinessRequestDataController : ControllerBase
             return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
         }
     }
-
 }
