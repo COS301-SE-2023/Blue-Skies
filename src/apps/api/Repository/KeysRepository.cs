@@ -18,7 +18,7 @@ public class KeysRepository
     }
 
     //Get all keys
-    public async Task<List<Keys>> GetAllKeys()
+    public async Task<List<KeyModel>> GetAllKeys()
     {
         try
         {
@@ -29,7 +29,7 @@ public class KeysRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var systems = JsonSerializer.Deserialize<List<Keys>>(data);
+                var systems = JsonSerializer.Deserialize<List<KeyModel>>(data);
                 if (systems != null)
                 {
                     Console.WriteLine(".NET: get all keys system");
@@ -37,13 +37,13 @@ public class KeysRepository
                 }
 
                 Console.WriteLine(".NET: system is null error");
-                return new List<Keys>();
+                return new List<KeyModel>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error in function GetAllKeys");
-                return new List<Keys>();
+                return new List<KeyModel>();
             }
         }
         catch (Exception e)
@@ -54,7 +54,7 @@ public class KeysRepository
     }
 
     //Get all business keys
-    public async Task<List<Keys>> GetAllBusinessKeys()
+    public async Task<List<KeyModel>> GetAllBusinessKeys()
     {
         try
         {
@@ -65,7 +65,7 @@ public class KeysRepository
             if (response.IsSuccessStatusCode)
             {
                 var data = await response.Content.ReadAsStringAsync();
-                var systems = JsonSerializer.Deserialize<List<Keys>>(data);
+                var systems = JsonSerializer.Deserialize<List<KeyModel>>(data);
                 if (systems != null)
                 {
                     Console.WriteLine(".NET: get all keys system");
@@ -73,13 +73,13 @@ public class KeysRepository
                 }
 
                 Console.WriteLine(".NET: system is null error");
-                return new List<Keys>();
+                return new List<KeyModel>();
             }
             else
             {
                 //return empty list
                 Console.WriteLine(".NET: Database Connection Error in function GetAllBusinessKeys");
-                return new List<Keys>();
+                return new List<KeyModel>();
             }
         }
         catch (Exception e)
@@ -90,7 +90,7 @@ public class KeysRepository
     }
 
     //Create key
-    public async Task<Keys> CreateKey(string owner, int remainingCalls, int suspended)
+    public async Task<KeyModel> CreateKey(string owner, int remainingCalls, int suspended)
     {
         try
         {
@@ -113,7 +113,7 @@ public class KeysRepository
 
             if (response.IsSuccessStatusCode)
             {
-                Keys ans = new Keys();
+                KeyModel ans = new KeyModel();
                 ans.owner = owner;
                 ans.APIKey = APIKey;
                 ans.remainingCalls = remainingCalls;
@@ -126,7 +126,7 @@ public class KeysRepository
             {
                 //return empty list
                 Console.WriteLine(".NET: API key not created. Database Connection Error");
-                return new Keys();
+                return new KeyModel();
             }
         }
         catch (Exception e)
@@ -136,7 +136,7 @@ public class KeysRepository
         }
     }
 
-    public async Task<Keys> CreateBusinessKey(
+    public async Task<KeyModel> CreateBusinessKey(
         string owner,
         int remainingCalls,
         int suspended,
@@ -181,7 +181,7 @@ public class KeysRepository
 
             if (response.IsSuccessStatusCode)
             {
-                Keys ans = new Keys();
+                KeyModel ans = new KeyModel();
                 ans.owner = owner;
                 ans.APIKey = APIKey;
                 ans.remainingCalls = remainingCalls;
@@ -200,7 +200,7 @@ public class KeysRepository
             {
                 //return empty list
                 Console.WriteLine(".NET: API key not created. Database Connection Error");
-                return new Keys();
+                return new KeyModel();
             }
         }
         catch (Exception e)
@@ -246,7 +246,7 @@ public class KeysRepository
     }
 
     // Update Key
-    public async Task<Keys> UpdateKeys(
+    public async Task<KeyModel> UpdateKeys(
         int id,
         string owner,
         string APIKey,
@@ -282,7 +282,7 @@ public class KeysRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Keys key = new Keys();
+                KeyModel key = new KeyModel();
                 key.keyId = id;
                 key.owner = owner;
                 key.APIKey = APIKey;
@@ -305,7 +305,7 @@ public class KeysRepository
         }
     }
 
-    public async Task<Keys> UpdateBusinessKeys(
+    public async Task<KeyModel> UpdateBusinessKeys(
         int id,
         string owner,
         string APIKey,
@@ -365,7 +365,7 @@ public class KeysRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                Keys key = new Keys();
+                KeyModel key = new KeyModel();
                 key.owner = owner;
                 key.APIKey = APIKey;
                 key.remainingCalls = remainingCalls;

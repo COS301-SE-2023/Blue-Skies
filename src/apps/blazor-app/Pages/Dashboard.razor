@@ -15,7 +15,6 @@
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 
@@ -178,6 +177,11 @@ else if (!logIn)
 
 
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
+    private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
@@ -209,8 +213,19 @@ else if (!logIn)
         isAd = isAdmin.Value;
         userId = usId.Value;
 
-        await GetSystemsAsync();       
-        await GetUserReports();
+        systems = await systemClass.GetAllSystems();
+        if (systems.Count > 0)
+        {
+            await ProtectedSessionStore.SetAsync("systems", systems);
+        }
+
+
+        reports = await reportClass.GetUserReports(userId);
+        if (reports.Count > 0)
+        {
+            await ProtectedSessionStore.SetAsync("userReports", reports);
+        }
+
         var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
         int createdReport = cReport.Value;
 
@@ -227,9 +242,19 @@ else if (!logIn)
                 }
             }
             await ProtectedSessionStore.DeleteAsync("createdReport");
-            await GetLocationData();
+
+            currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
+            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+
             _ = GetSolarScore();
-            await GetReportAllAppliance();
+
+            allReportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
+            if (allReportAllAppliance.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
+            }
+
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
             renderCharts();
@@ -244,50 +269,28 @@ else if (!logIn)
     {
         Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
-        await GetLocationData();
+
+        currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
+        await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+        await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+
         _ = GetSolarScore();
         updateAppliances();
     }
     private async Task GetSolarScore() 
     {
         solarCalculator.reset();
-        if(API_PORT == null) {
-            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
-            return;
-        }
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
         while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
-            solarScore = await solarCalculator.GetSolarScoreFromData(currentLocationData!.latitude, currentLocationData!.longitude, API_PORT, tempSolarIrradiation.Value);
+            solarScore = await solarCalculator.GetSolarScoreFromData(currentLocationData!.latitude, currentLocationData!.longitude, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
             if(solarCalculator.locationData != null) {
-                currentLocationData = solarCalculator.locationData;
+                currentLocationData.data = solarCalculator.locationData.data;
+                currentLocationData.elevationData = solarCalculator.locationData.elevationData;
             }
             StateHasChanged();
             Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
-        }
-    }
-    private async Task GetSystemsAsync()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-            if (systems.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("systems", systems);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed to get systems");
         }
     }
 
@@ -311,78 +314,6 @@ else if (!logIn)
             updateCharts();
         }
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
-    }
-    
-    /// <summary>
-    /// <list type="bullet">
-    ///     <item>Tries to get the location data from the database.</item>
-    ///     <item>If the data exists: save it's data to the currentLocationData variable</item>
-    ///     <item>If the data does not exist print error.</item>
-    /// </list>
-    /// </summary>
-    public async Task GetLocationData(){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/"
-        + reports[selectedReport].latitude.ToString().Replace(",", ".") + "/" + reports[selectedReport].longitude.ToString().Replace(",", "."));
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            string data = response.Content.ReadAsStringAsync().Result;
-            currentLocationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-                @* Current location *@
-            Console.WriteLine("Current location: " + currentLocationData.location);
-            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
-            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-        } else {
-            Console.WriteLine("Location data not found in Results");
-        }
-        return;
-    }
-
-    private async Task GetUserReports()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-            if (reports.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReports", reports);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed to get user reports");
-        }
-    }
-
-    private async Task GetReportAllAppliance()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
-            if (allReportAllAppliance.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReportAllAppliance", allReportAllAppliance);
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed to get allReportAllAppliance");
-        }
     }
 
     private void renderCharts()
@@ -666,32 +597,13 @@ else if (!logIn)
     /// </summary>
      private async Task Delete(){
         modalPopup.Dismiss();
-        await DeleteFromDatabase();
-    }
-
-    /// <summary>
-    /// Delete the current report from the database
-    /// </summary>
-    private async Task DeleteFromDatabase()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
-        
-        var content = new StringContent("{\r\n \"reportId\": " + reports[selectedReport].reportId + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
+        if(await reportClass.DeleteReport(reports[selectedReport].reportId)) {
             toastService.ShowToast("Deleted Calculation", "Report successfuly deleted.", "success");
             Console.WriteLine("Report succesfully deleted");
             reports.RemoveAt(selectedReport);
             selectedReport = 0;
             await updateLocationData();
             StateHasChanged();
-        }
-        else
-        {
-            Console.WriteLine("Failed to delete report");
         }
     }
 }
