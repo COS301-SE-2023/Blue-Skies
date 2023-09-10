@@ -12,28 +12,28 @@
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Advanced Calculation Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("Appliances"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "Appliances" || selectedTutorialName == "Variants"  || selectedTutorialName == "SelectTemplate" || selectedTutorialName == "RunnableHours" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Appliances</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("Finances"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "Finances" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Finances</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("FancyData"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "FancyData" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Fancy Data</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("Rooftop"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "Rooftop" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Rooftop Analysis</p>
                 </content>
