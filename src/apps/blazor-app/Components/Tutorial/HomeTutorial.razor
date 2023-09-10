@@ -12,21 +12,21 @@
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Home Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("Navigation"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "Navigation" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Navigation</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("EnterLocation"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "EnterLocation" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Enter Location</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("FAQ"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "FAQ" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Frequently Asked Questions</p>
                 </content>
@@ -35,7 +35,7 @@
     </div>
 
     @if(selectedTutorial) {
-        <div class="ml-20 mt-20 w-1/2 flex justify-center items-center bg-red-400">
+        <div class="ml-20 mt-20 w-1/2 flex justify-center items-center">
             <Tutorial TutorialName="@selectedTutorialName" />
         </div>
     }
