@@ -12,21 +12,21 @@
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Solar Score Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("Results"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "Results" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Results</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("SolarScore"))'>
-            <Button style="outline-light">
+            <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Solar Score</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("NextSteps"))'>
-            <Button style="outline-light">
+            <Button  css='@(selectedTutorialName == "NextSteps" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
                     <p>Next Steps</p>
                 </content>
