@@ -1,7 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace BlazorApp.Models;
-
 public class UserModel
 {
     public int userId { get; set; }

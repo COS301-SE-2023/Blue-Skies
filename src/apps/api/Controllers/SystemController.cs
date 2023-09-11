@@ -97,15 +97,15 @@ public class SystemController : ControllerBase
 
   //get a system by id
   [HttpGet]
-  [Route("get")]
-  public async Task<IActionResult> GetSystem([FromBody] Systems system)
+  [Route("get/{systemId}")]
+  public async Task<IActionResult> GetSystem([FromRoute] int systemId)
   {
     try
     {
-      var data = await _systemsRepository.GetSystemById(system.systemId);
+      var data = await _systemsRepository.GetSystemById(systemId);
       if (data == null)
       {
-        return StatusCode(404, "System with id: " + system.systemId + " not found");
+        return StatusCode(404, "System with id: " + systemId + " not found");
       }
       return Ok(data);
     }

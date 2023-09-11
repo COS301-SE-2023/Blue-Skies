@@ -1,6 +1,5 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.SolarCalculator solarCalculator
 @inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="mt-20 text-center">
@@ -29,12 +28,12 @@
     </div>
     <div class="flex mx-auto flex-col px-2 sm:flex-row gap-5">
         <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative">
-            @if(remainingCalls == 100) {
+            @if(solarCalculator.remainingCalls == 100) {
                 <div class="w-full h-2 overflow-hidden animate-pulse rounded-full bg-primary-500 absolute bottom-0 z-20 left-0">
                     <div class="w-[105%] h-2 rounded-full bg-white loading-runner"></div>
                 </div>
-            } else if(remainingCalls > 0){ 
-                double percentage = remainingCalls;
+            } else if(solarCalculator.remainingCalls > 0){ 
+                double percentage = solarCalculator.remainingCalls;
                 percentage = Math.Round((percentage / 144)*100, 0);
                 <div class="flex justify-end h-2 overflow-hidden w-full rounded-full bg-gradient-to-l from-primary-400 to-primary-600 absolute bottom-0 z-20 left-0">
                     <div style="width: @(percentage)%;"  class="w-full h-2 bg-white"></div>
@@ -91,7 +90,8 @@
 </div>
 
 @code {
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
@@ -103,7 +103,6 @@
     public int solarScore { get; set; }
     private double latitude = 0;
     private double longitude = 0;
-    private int remainingCalls = 100;
 
     /// <summary>
     /// <list type="bullet">
@@ -137,28 +136,13 @@
     /// </summary>
     private async Task GetSolarScore() 
     {
-        if(API_PORT == null) {
-            Console.WriteLine("API_PORT is null, GetSolarScore function aborted");
-            return;
-        }
-        int timesNotUpdated = 0;
-        int previousRemainingCalls = remainingCalls;
+        solarCalculator.reset();
         var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        int previousScore = -1;
-        while(remainingCalls > 0 && timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
-            int[] result = await solarCalculator.GetDataLocationData(latitude, longitude, API_PORT, remainingCalls, tempSolarIrradiation.Value, previousScore);
-            solarScore = result[0];
-            previousScore = solarScore;
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("advanced")) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, tempSolarIrradiation.Value);
             await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            remainingCalls = result[1];
-            if(previousRemainingCalls != remainingCalls){
-                timesNotUpdated = 0;
-            } else {
-                timesNotUpdated++;
-            }
-            previousRemainingCalls = remainingCalls;
             StateHasChanged();
-            Console.WriteLine("Remaining calls: " + remainingCalls + " timesNotUpdated: " + timesNotUpdated + " solarScore: " + solarScore);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
             await Task.Delay(3000);
         }
     }

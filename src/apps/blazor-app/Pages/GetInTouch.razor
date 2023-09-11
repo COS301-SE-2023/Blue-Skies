@@ -47,9 +47,10 @@ else
 
 
 @code {
+    private SharedUtils.keyClass keysClass = new SharedUtils.keyClass();
     private bool isAd = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    public List<APIKeyModel> keys = new List<APIKeyModel>();
+    public List<KeyModel> keys = new List<KeyModel>();
 
     /// <summary>
     /// On page load, check if user is admin.
@@ -58,27 +59,9 @@ else
     protected override async Task OnInitializedAsync()
     {
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        await GetKeys();
-
-    }
-
-    private async Task GetKeys()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/allBusiness");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-        }
-        else
-        {
-            Console.WriteLine("Failed");
+        var result = await keysClass.GetAllKeys();
+        if(result != null) {
+            keys = result;
         }
     }
 }
