@@ -15,6 +15,11 @@ const locationDataController = new LocationDataController();
 locationDataRouter.get('/mapboxkey', locationDataController.getMapBoxApiKey);
 
 locationDataRouter.get(
+  '/chatbotapikey',
+  locationDataController.getChatBotApiKey
+);
+
+locationDataRouter.get(
   '/googlemapskey',
   locationDataController.getGoogleApiKey
 );
