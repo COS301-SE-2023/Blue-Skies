@@ -1,6 +1,4 @@
-namespace Api;
-
-public class Keys
+public class KeyModel
 {
     public int keyId { get; set; }
     public string? APIKey { get; set; }
@@ -13,4 +11,5 @@ public class Keys
     public string? website { get; set; }
     public string? phoneNumber { get; set; }
     public string? email { get; set; }
+    public bool recordState { get; set; }
 }

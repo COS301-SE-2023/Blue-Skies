@@ -22,7 +22,7 @@ else if (logIn)
     <div class="flex fade-in-enter-active p-4 gap-10 md:gap-20 flex-col w-full justify-center z-10 mt-10  items-center">
         <Image ImageName="shapes.svg" css="absolute -top-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
         <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
-        <div class="justify-center sm:justify-end -pr-4 xl:pr-20 flex w-full">
+        <div class="justfy-center sm:justify-end -pr-4 xl:pr-20 flex w-full">
                     <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative z-20">
                         <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
                     </a>
@@ -67,6 +67,7 @@ else if (logIn)
 }
 
 @code {
+    private SharedUtils.userClass userClass = new SharedUtils.userClass();
     private string? email;
 
     private string? password;
@@ -95,18 +96,7 @@ else if (logIn)
 
 private async Task HandleValidSubmit()
 {
-    Console.WriteLine("OnValidSubmit");
-    // Send welcome email
-    Console.WriteLine("Welcome " + email);
-    Console.WriteLine(password);
-    Console.WriteLine("Repassword: " + repassword);
-    var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/auth/register");
-    var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
-    request.Content = content;
-    var response = await client.SendAsync(request);
-    if(response.StatusCode == System.Net.HttpStatusCode.OK)
-    {
+    if(await userClass.Register(email!, password!, repassword!)) {
         showError = "hidden";
         Console.WriteLine("OK");
         await ProtectedLocalStore.SetAsync("loggedIn", true);
@@ -124,12 +114,9 @@ private async Task HandleValidSubmit()
     }
     else
     {
-        string message = await response.Content.ReadAsStringAsync();
-        errorMessage = message;
         showError = "";
         Console.WriteLine("Not OK");
     }
-
 }
 
 private void HandleInvalidSubmit()
