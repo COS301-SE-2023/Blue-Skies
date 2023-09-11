@@ -73,15 +73,19 @@
                 @if(tabs[0].active) {
                     @foreach (var appliance in appliances)
                     {
-                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                        if (appliance.type != "Washing Machine") {
+                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                            </div>
+                        }
                     }
                 } else {
                     @foreach (var appliance in appliances) {
-                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                        if (appliance.type != "Washing Machine") {
+                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                            </div>
+                        }
                     }
                 }
             </div>
