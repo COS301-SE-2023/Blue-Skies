@@ -11,17 +11,17 @@
 <div class="relative fade-active h-full w-full">
     <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Solar Score Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
-        <div @onclick='@(() => SelectTutorial("Results"))'>
-            <Button css='@(selectedTutorialName == "Results" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
+        <div @onclick='@(() => SelectTutorial("ScoreExplained"))'>
+            <Button css='@(selectedTutorialName == "ScoreExplained" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
-                    <p>Results</p>
+                    <p>Score Explained</p>
                 </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("SolarScore"))'>
             <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
-                    <p>Solar Score</p>
+                    <p>Results</p>
                 </content>
             </Button>
         </div>
@@ -79,12 +79,12 @@
     {
         switch(tutorialName)
         {
-            case "Results":
+            case "ScoreExplained":
                 showTypewriter = false;
                 StateHasChanged();
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("These are the results specific to your location. It includes a solar score, indicating the amount of usable sunlight, as well as the average production of solar energy.", 10);
+                    .TypeString("Explore the explanation of how the calculated solar score impacts the solar potential of your house.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break;
@@ -120,7 +120,7 @@
                 StateHasChanged();
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("If you are interested in installing solar panels, you can click on the 'Get a Quote' button to get a quote from a solar panel installer.", 10);
+                    .TypeString("To get your solar system, simply follow these straightforward steps: Sign up, create an advanced calculation, generate a report, and get in touch with a solar provider.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break;
