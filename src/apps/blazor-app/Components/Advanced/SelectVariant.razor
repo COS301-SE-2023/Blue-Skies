@@ -10,7 +10,7 @@
             {
                 @foreach (var item in typeAppliances)
                 {
-                    <li @onclick="@(() => SelectAppliance(item.model))">@item.model</li>
+                    <li @onclick="@(() => SelectAppliance(item.model!))">@item.model</li>
                 }
             }
         </ul>
@@ -19,9 +19,9 @@
 
 @code{
     [Parameter]
-    public string type { get; set; }
+    public string? type { get; set; }
     [Parameter]
-    public List<CustomApplianceModel> customAppliances { get; set; }
+    public List<CustomApplianceModel> customAppliances { get; set; } = new List<CustomApplianceModel>();
     
 
     private List<CustomApplianceModel> typeAppliances = new List<CustomApplianceModel>();
@@ -30,7 +30,7 @@
     @* OnParametersSet *@
     protected override void OnParametersSet()
     {
-        customAppliances = customAppliances.Where(x => x.type == type!).ToList();
+        customAppliances = customAppliances.Where(x => x.type == type).ToList();
     }
 
     private void HandleKeyPress(KeyboardEventArgs e)
