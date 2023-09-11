@@ -16,6 +16,21 @@ public class LocationDataController : ControllerBase
     }
 
     [HttpGet]
+    [Route("chatbotapikey")]
+    public async Task<IActionResult> GetChatbotApiKey()
+    {
+        try
+        {
+            var key = await _locationDataRepository.GetChatbotApiKey();
+            return Ok(key);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpGet]
     [Route("mapboxkey")]
     public async Task<IActionResult> GetMapBoxKey()
     {
