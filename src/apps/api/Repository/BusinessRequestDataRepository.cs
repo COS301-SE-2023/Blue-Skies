@@ -68,22 +68,6 @@ public class BusinessRequestDataRepository
         }
     }
 
-    private async Task<String> solarScore(HttpClient client, double latitude, double longitude){
-        var numYears = 3;
-        var numDaysPerYear = 48;
-        var dataType = new HttpRequestMessage(
-                        HttpMethod.Get, 
-                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
-                    );
-
-        client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
-        var content = new StringContent("{\r\n    \"latitude\": "+ latitude.ToString().Replace(",",".") + ",\r\n    \"longitude\": " + longitude.ToString().Replace(",",".") + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        var data = await response.Content.ReadAsStringAsync();
-        return data;
-    }
     private async Task<String> GetSolarScore(double latitude, double longitude) 
     {
         DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();

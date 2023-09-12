@@ -10,10 +10,12 @@ namespace Api.Controllers;
 public class BusinessRequestDataController : ControllerBase
 {
     private readonly BusinessRequestDataRepository _businessRequestDataRepository;
+    private readonly KeysRepository _keysRepository;
 
     public BusinessRequestDataController()
     {
         _businessRequestDataRepository = new BusinessRequestDataRepository();
+        _keysRepository = new KeysRepository();
     }
 
     [HttpPost("post")]
@@ -22,7 +24,15 @@ public class BusinessRequestDataController : ControllerBase
         try
         {
             var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
-            return Ok(data);
+            List<KeyModel> keys = await _keysRepository.GetAllKeys();
+            foreach(KeyModel key in keys)
+            {
+                if(key.APIKey==businessRequestData.key)
+                {
+                    return Ok(data);
+                }
+            }
+            return StatusCode((int)HttpStatusCode.Unauthorized, "Invalid API Key");
         }
         catch (Exception e)
         {
