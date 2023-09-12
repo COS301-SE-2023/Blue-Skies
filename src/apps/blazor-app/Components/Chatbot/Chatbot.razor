@@ -1,49 +1,74 @@
 @using BlazorApp.Models
 @using System.Text.Json
 @using Newtonsoft.Json
+@using BlazorApp.Components.Base
 
 
 @* Namespace chatbot *@
 @namespace BlazorApp.Chatbot
 
-@if(_isChatbotOpen == false){
-  <div class="bg-blue-500 p-1 rounded-md text-white w-fit mx-auto cursor-pointer" @onclick="@ToggleChatbot">
-    Ask Robert
+<div class="mx-auto">
+  <div class="w-fit mx-auto text-center mb-14">
+    <Heading>
+      <Header>
+        <h1 class="text-4xl font-bold tracking-tight text-primary-950 md:text-5xl">Still have a Question?</h1>
+      </Header>
+      <Subscript>
+        <h1 class="mt-4">Discover answers to common solar energy questions.</h1>
+      </Subscript>
+    </Heading>
   </div>
-}else{
-  <div class="w-[30%] mx-auto">
-  <div class="w-full space-y-2">
-    @foreach (Message mess in _conversationHistory)
-    {
-    <div>
-      @if (mess.role == "user")
-      {
-      <div class= "ml-auto text-black w-fit rounded-lg bg-slate-100 p-2">
-        @mess.content
+  <div class="border-[1px] border-blue-500 mx-auto p-3 rounded-lg w-full md:w-1/2 xl:w-1/3">
+    <div class="border-b-[1px] border-blue-500">
+      <div class="w-fit mx-auto flex space-x-4">
+        <div class="flex items-center">
+          <Image ImageName="Logo-small.svg" css="h-12 w-12" alt="Logo" />
+          <h1 class="text-2xl text-blue-500">Ask me Anything!</h1>
+        </div>
+        <Image ImageName="Robert_Sitting_Panel.png" css="h-20 w-20" alt="Robert sitting on panel" />
       </div>
-      }
-      else if (mess.role != "system")
-      {
-      <div class="mr-auto text-white w-fit rounded-lg bg-blue-500 p-2">
-        @mess.content
+
+      <div class="w-full space-y-2 my-3">
+        @foreach (Message mess in _conversationHistory)
+        {
+        <div>
+          @if (mess.role == "user")
+          {
+          <div class="ml-auto text-black w-fit rounded-lg bg-slate-100 p-2">
+            @mess.content
+          </div>
+          }
+          else if (mess.role != "system")
+          {
+          <div class="mr-auto text-white w-fit rounded-lg bg-blue-500 p-2">
+            @mess.content
+          </div>
+          }
+        </div>
+        }
       </div>
-      }
     </div>
-    }
+    <div class="mt-3 flex space-x-2 items-center">
+      <input type="text" id="message" rows="1"
+        class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        placeholder="Do you have any questions for us?" @bind-value="_userQuestion" @bind-value:event="oninput"
+        @onkeypress="HandleKeyPress" />
+      <div @onclick="SendMessage">
+          <Button style="pill">
+              <content>
+                  <p class="text-sm font-semibold hover:text-white">Send</p>
+              </content>
+          </Button>
+      </div>
+    </div>
   </div>
-  <div class="w-fit mx-auto mt-3">
-    <textarea id="message" rows="1" class="p-2.5 w-[400px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Do you have any questions for us?" @bind-value="_userQuestion" @bind-value:event="oninput"
-      @onkeypress="HandleKeyPress"/>
-
-  </div>
-
 </div>
-}
+
 
 
 
 @code {
-  private bool _isChatbotOpen = false;
+
   private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
   private string _userQuestion = string.Empty;
   private readonly List<Message> _conversationHistory = new();
@@ -57,17 +82,12 @@
   "How much money can I save by using solar energy? Savings vary by location, panel size, electricity rates, and incentives. Long-term, solar can substantially lower bills and may lead to surplus energy sales."+
   "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation.";
   private string chatbotApiKey = "";
+  private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
   protected override async Task OnInitializedAsync()
   {
-    @* Get Api Key *@
-    var client = new HttpClient();
-    var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/chatbotApiKey");
-    var response = await client.SendAsync(request);
-    if (response.StatusCode == System.Net.HttpStatusCode.OK){
-            chatbotApiKey = await response.Content.ReadAsStringAsync();
-    }
-    chatbotApiKey = chatbotApiKey.Trim('"');
+    chatbotApiKey = await locationDataClass.GetChatbotApiKey();
     _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
+    _conversationHistory.Add(new Message { role = "assistant", content = "Hi! I'm Robert. Ask me Anything!" });
     @* return base.OnInitializedAsync(); *@
   }
   private async Task HandleKeyPress(KeyboardEventArgs e)
@@ -79,7 +99,7 @@
   private async Task SendMessage()
   {
     if (string.IsNullOrWhiteSpace(_userQuestion)) return;
-
+    Console.WriteLine("User Question: " + _userQuestion);
     AddUserQuestionToConversation();
     StateHasChanged();
     ClearInput();
@@ -129,12 +149,5 @@
   {
     _userQuestion = string.Empty;
 
-  }
-
-  @* Toggle Chatbot *@
-  private void ToggleChatbot()
-  {
-    _isChatbotOpen = !_isChatbotOpen;
-    StateHasChanged();
   }
 }
