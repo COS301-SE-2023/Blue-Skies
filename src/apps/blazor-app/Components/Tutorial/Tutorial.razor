@@ -1,0 +1,13 @@
+@using BlazorTypewriter;
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div class="relative flex flex-col gap-4 fade-active h-full w-full">
+    <p class="text-white text-center text-3xl">@tutorialName</p>
+    <Image ImageName='@(tutorialName + ".gif")' />
+</div>
+
+@code {
+    [Parameter]
+    public string? tutorialName { get; set; }
+
+}
