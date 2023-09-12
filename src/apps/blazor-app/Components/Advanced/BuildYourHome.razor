@@ -537,7 +537,7 @@ new TabItemModel("General", false)
                 appliances[4].quantity = 0;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                @* appliances[7].quantity = 0; *@
 
                 break;
             case "3":
@@ -550,7 +550,7 @@ new TabItemModel("General", false)
                 appliances[4].quantity = 1;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                @* appliances[7].quantity = 0; *@
                 break;
             case "4":
                 homeSize = "Large";
@@ -562,7 +562,7 @@ new TabItemModel("General", false)
                 appliances[4].quantity = 2;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                appliances[7].quantity = 1;
+                @* appliances[7].quantity = 1; *@
                 break;
             default:
                 homeSize = "Small";
@@ -574,7 +574,7 @@ new TabItemModel("General", false)
                 appliances[4].quantity = 0;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                @* appliances[7].quantity = 0; *@
                 break;
         }
     }
@@ -590,7 +590,7 @@ new TabItemModel("General", false)
         appliances[4].quantity = 0;
         appliances[5].quantity = 0;
         appliances[6].quantity = 0;
-        appliances[7].quantity = 0;
+        @* appliances[7].quantity = 0; *@
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
         CalculateRunningHours();

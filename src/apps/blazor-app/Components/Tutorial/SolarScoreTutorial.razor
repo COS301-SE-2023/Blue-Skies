@@ -1,0 +1,135 @@
+@using BlazorTypewriter;
+@inject BlazorApp.Data.TutorialService tutorialService
+
+<div @onclick="GoBack" class="fixed w-14 h-14 cursor-pointer top-10 left-10 z-30 text-white font-bold text-2xl">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path opacity="0.5" d="M17.1779 48.7464C19.5021 50 22.2864 50 27.8551 50H34.4474C44.136 50 48.9803 50 51.9901 47.0711C55 44.1421 55 39.4281 55 30C55 20.5719 55 15.8579 51.9901 12.9289C48.9803 10 44.136 10 34.4474 10H27.8551C22.2864 10 19.5021 10 17.1779 11.2536C14.8536 12.5072 13.3779 14.8048 10.4265 19.4L8.72452 22.05C6.24151 25.916 5 27.849 5 30C5 32.151 6.24151 34.084 8.72453 37.95L10.4265 40.6C13.3779 45.1952 14.8536 47.4929 17.1779 48.7464Z" fill="white"/>
+        <path d="M27.5758 22.4242C26.8436 21.6919 25.6564 21.6919 24.9242 22.4242C24.1919 23.1564 24.1919 24.3436 24.9242 25.0758L29.8484 30L24.9242 34.9242C24.192 35.6564 24.192 36.8436 24.9242 37.5758C25.6565 38.3081 26.8436 38.3081 27.5759 37.5758L32.5 32.6517L37.4241 37.5758C38.1564 38.308 39.3435 38.308 40.0758 37.5758C40.808 36.8435 40.808 35.6564 40.0758 34.9241L35.1517 30L40.0758 25.0759C40.8081 24.3436 40.8081 23.1565 40.0758 22.4242C39.3436 21.692 38.1564 21.692 37.4242 22.4242L32.5 27.3484L27.5758 22.4242Z" fill="#1C75BC"/>
+    </svg>
+</div>
+
+<div class="relative fade-active h-full w-full">
+    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Solar Score Page</h1>
+    <div class="w-full mt-10 flex gap-6 justify-center">
+        <div @onclick='@(() => SelectTutorial("ScoreExplained"))'>
+            <Button css='@(selectedTutorialName == "ScoreExplained" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
+                <content>
+                    <p>Score Explained</p>
+                </content>
+            </Button>
+        </div>
+        <div @onclick='@(() => SelectTutorial("SolarScore"))'>
+            <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
+                <content>
+                    <p>Results</p>
+                </content>
+            </Button>
+        </div>
+        <div @onclick='@(() => SelectTutorial("NextSteps"))'>
+            <Button  css='@(selectedTutorialName == "NextSteps" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
+                <content>
+                    <p>Next Steps</p>
+                </content>
+            </Button>
+        </div>
+    </div>
+
+    @if(selectedTutorial) {
+        <div class="ml-20 mt-20 w-1/2 flex justify-center items-center">
+            <Tutorial TutorialName="@selectedTutorialName" />
+        </div>
+    }
+    
+    <div class="absolute bottom-[480px] right-28">
+        <div class="relative flex justify-center gap-4 items-center flex-col w-full h-full">
+            <svg width="602" height="178" viewBox="0 0 642 218" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 32C0 14.3269 14.3269 0 32 0H598.232C615.905 0 630.232 14.3269 630.232 32V173.098C630.232 178.034 632.266 182.753 635.856 186.141V186.141C651.935 201.323 631.664 226.477 613.412 213.991L610.887 212.264C607.815 210.162 604.172 209.054 600.449 209.09L32.3065 214.532C14.5144 214.703 0 200.327 0 182.534V32Z" fill="white"/>
+            </svg>
+            @if (showTypewriter) {
+                <p class="absolute top-10 -translate-y-4 ml-16 w-max max-w-md left-0"><Typewriter Builder="@typewriter" /></p>     
+            }
+            @if(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" ) {
+                <div @onclick='@(selectedTutorialName == "SolarScore" ? () => SelectTutorial("UsableSunlight")  : () => SelectTutorial("AvgProduction") )' class="max-w-md">
+                    <Button style="pill">
+                        <content>
+                            <p>Next</p>
+                        </content>
+                    </Button>
+                </div>
+            }
+        </div>
+    </div>
+    <Image ImageName="Robert_Standing4.png" css="absolute -bottom-40 -rotate-12  -right-32  h-[300px] md:h-[400px] lg:h-[600px] xl:h-[700px] " alt="Rob"/>
+</div>
+
+@code {
+    private bool selectedTutorial = false;
+    private string selectedTutorialName = "";
+    private bool showTypewriter = true;
+    TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+        .TypeString("Select a specific section of the Solar Score page that you require assistance with, and I will guide you through its functionality step by step.", 10);
+
+    private void GoBack()
+    {
+        tutorialService.ToggleTutorial("Intro");
+        StateHasChanged();
+    }
+
+    private async void SelectTutorial(string tutorialName)
+    {
+        switch(tutorialName)
+        {
+            case "ScoreExplained":
+                showTypewriter = false;
+                StateHasChanged();
+                await Task.Delay(300);
+                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+                    .TypeString("Explore the explanation of how the calculated solar score impacts the solar potential of your house.", 10);
+                showTypewriter = true;
+                StateHasChanged();
+                break;
+            case "SolarScore":
+                showTypewriter = false;
+                StateHasChanged();
+                await Task.Delay(300);
+                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+                    .TypeString("The solar score is a measure of the amount of usable sunlight that your location receives. It is calculated by taking into account the amount of sunlight that is blocked by trees, buildings, and other obstructions.", 10);
+                showTypewriter = true;
+                StateHasChanged();
+                break;
+            case "UsableSunlight":
+                showTypewriter = false;
+                StateHasChanged();
+                await Task.Delay(300);
+                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+                    .TypeString("Usable sunlight is the amount of sunlight that is not blocked by trees, buildings, and other obstructions. It is the amount of sunlight that can be used to generate solar energy.", 10);
+                showTypewriter = true;
+                StateHasChanged();
+                break;
+            case "AvgProduction":
+                showTypewriter = false;
+                StateHasChanged();
+                await Task.Delay(300);
+                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+                    .TypeString("The average production is the amount of solar energy that can be generated by a solar panel in your location. It is calculated by taking into account the amount of usable sunlight, as well as the size of the solar panel.", 10);
+                showTypewriter = true;
+                StateHasChanged();
+                break;
+            case "NextSteps":
+                showTypewriter = false;
+                StateHasChanged();
+                await Task.Delay(300);
+                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
+                    .TypeString("To get your solar system, simply follow these straightforward steps: Sign up, create an advanced calculation, generate a report, and get in touch with a solar provider.", 10);
+                showTypewriter = true;
+                StateHasChanged();
+                break;
+        }
+        selectedTutorial = false;
+        StateHasChanged();
+        await Task.Delay(300);
+        selectedTutorialName = tutorialName;
+        selectedTutorial = true;
+        StateHasChanged();
+    }
+}
