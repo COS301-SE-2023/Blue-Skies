@@ -62,15 +62,15 @@ public class BusinessRequestDataRepository
                     dataTypeResponse.Content = new StringContent(solarIrradiation);
                     break;
                 default : 
-                    throw new Exception("Error: Not a valid option chosen for data type");
+                    dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
+                    break;
             }
             
            return await dataTypeResponse.Content.ReadAsStringAsync();
            
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-
             throw new Exception("Could not create solar irradiation");
         }
     }
