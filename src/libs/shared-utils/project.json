@@ -1,0 +1,28 @@
+{
+  "name": "shared-utils",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/shared-utils",
+  "targets": {
+    "build": {
+      "executor": "@nx-dotnet/core:build",
+      "outputs": [
+        "{workspaceRoot}/dist/libs/shared-utils",
+        "{workspaceRoot}/dist/intermediates/libs/shared-utils"
+      ],
+      "options": {
+        "configuration": "Debug",
+        "noDependencies": true
+      },
+      "configurations": {
+        "production": {
+          "configuration": "Release"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx-dotnet/core:format"
+    }
+  },
+  "tags": []
+}

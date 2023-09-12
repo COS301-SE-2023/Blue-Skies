@@ -1,0 +1,36 @@
+@using BlazorApp.Components.Base
+@inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
+@using System.Text.Json
+@using BlazorApp.Models
+
+
+@namespace BlazorApp.FancyData
+
+    <Card>
+        <Heading>
+            <Header>
+                <h1 class="text-xl">Fancy Data</h1>
+            </Header>
+            <Subscript>
+                <p>More information about your area</p>
+            </Subscript>
+        </Heading>
+        <div class="flex w-full">
+            <div  class="w-1/2">
+            <SolarIrradiationPerMonth solarIrradiation="@solarIrradiation"/>
+             </div>
+        </div>
+          <div class="w-full">
+                <ElevationGraph elevationValues="@elevationData"/>
+            </div>
+        
+    </Card>
+
+@code {
+    [Parameter]
+    public string? solarIrradiation { get; set; }
+
+    [Parameter]
+    public string? elevationData { get; set; }
+} 

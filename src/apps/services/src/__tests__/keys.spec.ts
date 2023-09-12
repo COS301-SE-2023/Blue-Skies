@@ -1,5 +1,6 @@
 import KeyController from '../controllers/key/key.controller';
 import { Request, Response } from 'express';
+import { request } from 'http';
 import * as tedious from 'tedious';
 
 jest.mock('../main', () => jest.fn());
@@ -103,6 +104,63 @@ describe('Test the Key Controller', () => {
     });
   });
 
+  // getAllBusinessKeys
+  describe('getAllBusinessKeys', () => {
+    // should return all business keys
+    it('should return all business keys', () => {
+      keyController.getAllBusinessKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith([]);
+    });
+
+    // should handle error when getting all business keys
+    it('should handle error when getting all business keys', () => {
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to get business keys');
+      });
+
+      // Call the getAllBusinessKeys method with the mock request and response
+      keyController.getAllBusinessKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to get business keys',
+      });
+    });
+
+    // should return 400 when getting all business keys
+    it('should return 400 when getting all business keys', () => {
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the getAllBusinessKeys method with the mock request and response
+      keyController.getAllBusinessKeys(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
+
   //Create a test for the createKey method
   describe('createKey', () => {
     it('should create a new key', () => {
@@ -164,6 +222,103 @@ describe('Test the Key Controller', () => {
 
       // Call the createKey method with the mock request and response
       keyController.createKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
+
+  // createBusinessKey
+  describe('createBusinessKey', () => {
+    // should return 200 when creating a business key
+    it('should create a new business key', () => {
+      // owner, APIKey, remainingCalls, isBusiness, description, location, website, phoneNumber, email
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+
+      // Call the createBusinessKey method with the mock request and response
+      keyController.createBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Key created successfully.',
+      });
+    });
+
+    // should return 500 when creating a business key
+    it('should handle error when creating a business key', () => {
+      // owner, APIKey, remainingCalls, isBusiness, description, location, website, phoneNumber, email
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+      // Mock the Request constructor to throw an error
+      jest.spyOn(tedious, 'Request').mockImplementationOnce(() => {
+        throw new Error('Failed to create key');
+      });
+
+      // Call the createBusinessKey method with the mock request and response
+      keyController.createBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Failed to create key',
+      });
+    });
+
+    // should return 400 when creating a business key
+    it('should return 400 when creating a business key', () => {
+      // owner, APIKey, remainingCalls, isBusiness, description, location, website, phoneNumber, email
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+      // Mock the connection to throw an error
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the createBusinessKey method with the mock request and response
+      keyController.createBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
 
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(400);
@@ -331,6 +486,147 @@ describe('Test the Key Controller', () => {
 
       // Call the updateKey method with the mock request and response
       keyController.updateKey(mockRequest as Request, mockResponse as Response);
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+  });
+
+  // updateBusinessKey
+  describe('updateBusinessKey', () => {
+    // should return 200 when updating a business key
+    it('should update the existing business key', () => {
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+
+      // Call the updateBusinessKey method with the mock request and response
+      keyController.updateBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: 'Key updated successfully.',
+      });
+    });
+
+    // should return 404 when updating a business key
+    it('should return Not Found for a non-existing business key', () => {
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(null, 0);
+        }
+      );
+
+      // Call the updateBusinessKey method with the mock request and response
+      keyController.updateBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Not Found',
+        details: 'Key does not exist.',
+      });
+    });
+
+    // should return 500 when updating a business key
+    it('should handle error when updating a business key', () => {
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          throw new Error('Mock Error');
+        }
+      );
+
+      // Call the updateBusinessKey method with the mock request and response
+      keyController.updateBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
+
+      // Assert that the status and json methods were called with the correct values
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: 'Mock Error',
+      });
+    });
+
+    // should return 400 when updating a business key
+    it('should return 400 when updating a business key', () => {
+      mockRequest.params = {
+        keyId: '1',
+      };
+      mockRequest.body = {
+        owner: 'John Doe',
+        APIKey: 'abc123',
+        remainingCalls: 10,
+        isBusiness: true,
+        description: 'This is a description',
+        location: 'This is a location',
+        website: 'This is a website',
+        phoneNumber: 'This is a phone number',
+        email: 'This is an email',
+      };
+
+      (tedious.Request as unknown as jest.Mock).mockImplementationOnce(
+        (query, callback) => {
+          callback(new Error('Mock Error'));
+        }
+      );
+
+      // Call the updateBusinessKey method with the mock request and response
+      keyController.updateBusinessKey(
+        mockRequest as Request,
+        mockResponse as Response
+      );
 
       // Assert that the status and json methods were called with the correct values
       expect(mockResponse.status).toHaveBeenCalledWith(400);

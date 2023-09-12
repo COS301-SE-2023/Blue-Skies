@@ -93,9 +93,10 @@
 </div>
 
 @code {
+    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
 
-    private List<ProductModel> products = new List<ProductModel>();
+    private List<SystemModel> products = new List<SystemModel>();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<int> deleteArr = new List<int>();
 
@@ -128,16 +129,10 @@
     //Delete Product
     private async Task DeleteProduct(int id)
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/system/delete");
-        var content = new StringContent("{\r\n \"systemId\": " + id + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (await systemClass.DeleteSystem(id))
         {
             await GetProducts();
             Console.WriteLine("Deleted Solar Product");
-            @* deleteToast.Show("Deleted", "Successfully deleted product", "success"); *@
             toastService.ShowToast("Product Deleted", "Successfully deleted product", "success");
         }
         else
@@ -153,17 +148,10 @@
 
     private async Task GetProducts()
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/System/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        List<SystemModel> result = await systemClass.GetAllSystems();
+        if (result != null)
         {
-            var data = await response.Content.ReadAsStringAsync();
-            products = JsonSerializer.Deserialize<List<ProductModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive
-                = true
-                })!;
+            products = result;
         }
         else
         {
@@ -173,7 +161,7 @@
 
     private void AddProduct()
     {
-        products.Add(new ProductModel
+        products.Add(new SystemModel
             {
                 systemId = -1,
                 systemSize = "",
@@ -186,21 +174,12 @@
             });
     }
 
-    private async Task SaveProduct(ProductModel product)
+    private async Task SaveProduct(SystemModel product)
     {
         if (product.systemId == -1)
         {
             Console.WriteLine("Add Solar Product");
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
-            var content = new StringContent("{\r\n \"systemSize\": \"" + product.systemSize + "\",\r\n \"inverterOutput\": " +
-            product.inverterOutput + ",\r\n \"numberOfPanels\": " + product.numberOfPanels + ",\r\n \"batterySize\": " +
-            product.batterySize + ",\r\n \"numberOfBatteries\": " + product.numberOfBatteries + ",\r\n \"solarInput\": " +
-            product.solarInput + "\r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
+            if(await systemClass.CreateSystem(product)) {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
                 @* successToast.Show("Added", "Successfully added product", "success"); *@
@@ -209,22 +188,12 @@
             else
             {
                 Console.WriteLine("Failed to add");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
-
         }
         else
         {
             Console.WriteLine("Update Solar Product");
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/System/update");
-            var content = new StringContent("{\r\n \"systemId\": " + product.systemId + ",\r\n \"inverterOutput\": " +
-            product.inverterOutput + ",\r\n \"numberOfPanels\": " + product.numberOfPanels + ",\r\n \"batterySize\": " +
-            product.batterySize + ",\r\n \"numberOfBatteries\": " + product.numberOfBatteries + ",\r\n \"solarInput\": " +
-            product.solarInput + "\r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            if (await systemClass.UpdateSystem(product))
             {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
@@ -233,10 +202,8 @@
             }
             else
             {
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
                 Console.WriteLine("Failed to Update");
             }
-
         }
     }
 }

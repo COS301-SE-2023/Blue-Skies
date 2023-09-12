@@ -89,12 +89,14 @@
 </div>
 
 @code {
+    private SharedUtils.keyClass keyClass = new SharedUtils.keyClass();
+
     @inject IJSRuntime JSRuntime;
 
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-    private List<APIKeyModel> keys = new List<APIKeyModel>();
+    private List<KeyModel> keys = new List<KeyModel>();
     private List<int> deleteArr = new List<int>();
 
     private void ShowModal()
@@ -127,12 +129,7 @@
     private async Task DeleteKey(int id)
     {
         ModalPopup.Dismiss();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/key/delete");
-        var content = new StringContent("{\r\n  \"keyId\": " + id +"\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (await keyClass.DeleteKey(id))
         {
             await GetKeys();
             Console.WriteLine("Delete");
@@ -148,14 +145,27 @@
         loadingService.HideLoadingScreen();
     }
 
-    private async Task GetKeys(){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+    private async Task GetKeys() {
+        var result = await keyClass.GetAllKeys();
+        if(result != null) {
+            keys = result;
+        } else {
+            Console.WriteLine("Failed");
+        }
+    }
+
+    private void AddKey()
+    {
+        keys.Add(new KeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
+        @* successToast.Show("Added", "A new record entry was added.", "success");  *@
+        toastService.ShowToast("Record Added", "A new record entry was added.", "success");
+    }
+
+    private async Task ToggleSuspend(KeyModel key) {
+        Console.WriteLine("Toggle Suspend API Key");
+        if(await keyClass.UpdateKey(key))
         {
-            var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
+            await GetKeys();
         }
         else
         {
@@ -163,67 +173,30 @@
         }
     }
 
-    private void AddKey()
-    {
-        keys.Add(new APIKeyModel { keyId = -1, owner = "", APIKey = "", remainingCalls = 0, suspended = 0, recordState = true });
-        @* successToast.Show("Added", "A new record entry was added.", "success");  *@
-        toastService.ShowToast("Record Added", "A new record entry was added.", "success");
-    }
-
-    private async Task ToggleSuspend(APIKeyModel key) {
-        Console.WriteLine("Toggle Suspend API Key");
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
-            var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                await GetKeys();
-            }
-            else
-            {
-                Console.WriteLine("Failed");
-                 Console.WriteLine(await response.Content.ReadAsStringAsync());
-            }
-    }
-
-    private async Task SaveKey(APIKeyModel key)
+    private async Task SaveKey(KeyModel key)
     {
         @* successToast.Show("Saved", "The record entry was successfuly saved.", "success"); *@
         toastService.ShowToast("Record Saved", "The record entry was successfuly saved.", "success");
         if(key.keyId == -1){
             Console.WriteLine("Add API Key");
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
-            var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if(await keyClass.CreateKey(key))
             {
                 await GetKeys();
             }
             else
             {
                 Console.WriteLine("Failed");
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
 
-        }else{
+        } else {
             Console.WriteLine("Update API Key");
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
-            var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            if(await keyClass.UpdateKey(key))
             {
                 await GetKeys();
             }
             else
             {
                 Console.WriteLine("Failed");
-                 Console.WriteLine(await response.Content.ReadAsStringAsync());
             }
         }
     }

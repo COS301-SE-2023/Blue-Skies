@@ -38,13 +38,16 @@
                     var medium = systems[1].inverterOutput + "kw";
                     var large = systems[2].inverterOutput + "kw";
                 }
-                <div onclick="@(() => SetSystemSize(0))" class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                <div onclick="@(() => SetSystemSize(0))"
+                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                     <p class=" font-semibold">@small</p>
                 </div>
-                <div onclick="@(() => SetSystemSize(1))" class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                <div onclick="@(() => SetSystemSize(1))"
+                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                     <p class="font-semibold">@medium</p>
                 </div>
-                <div onclick="@(() => SetSystemSize(2))" class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                <div onclick="@(() => SetSystemSize(2))"
+                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                     <p class="font-semibold">@large</p>
                 </div>
             </div>
@@ -58,10 +61,11 @@
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
                 <div class="group">
-                        <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                        <div class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                            <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
-                        </div>
+                    <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                    <div
+                        class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                        <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+                    </div>
                 </div>
             </div>
             @* Tabs to add or remove *@
@@ -70,22 +74,24 @@
                 <Tabs @bind-Items="tabs"></Tabs>
             </div>
             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
-                @if(tabs[0].active) {
+                @if (tabs[0].active)
+                {
                     @foreach (var appliance in appliances)
                     {
-                        if (appliance.type != "Washing Machine") {
-                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                            </div>
-                        }
+                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
-                } else {
-                    @foreach (var appliance in appliances) {
-                        if (appliance.type != "Washing Machine") {
-                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                            </div>
-                        }
+                }
+                else
+                {
+                    @foreach (var appliance in appliances)
+                    {
+                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
                 }
             </div>
@@ -105,8 +111,8 @@
                 case 2:
                     homeType = "-Home3.svg";
                     break;
-                default:    
-                    homeType = "-Home1.svg";    
+                default:
+                    homeType = "-Home1.svg";
                     break;
             }
             @{
@@ -119,24 +125,34 @@
     <div class="w-6/12 px-1 -mt-40 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
-            <Appliance ImageName="SolarPanels.svg" name="Number of Panels" count=@systems[selectedSystem].numberOfPanels />
-            <Appliance ImageName="Batteries.svg" name="Number of Batteries" count=@systems[selectedSystem].numberOfBatteries />
+            <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                count=@systems[selectedSystem].numberOfPanels />
+            <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                count=@systems[selectedSystem].numberOfBatteries />
         </div>
-        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>   
+        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
         <div class="flex relative flex-col justify-center w-full">
             @{
                 dlh = 0;
                 if (currentReport != null)
                 {
                     daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
-                    dlh = (float)Math.Round((24-daylight)*(runningHoursPercentage/100), 2);
-                    daylightChart.SetDaylightHours(daylight);
-                    daylightChart.SetHours(dlh);
+
+                    dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+                    @* daylightChart.SetDaylightHours(daylight);
+                    daylightChart.SetHours(dlh); *@
                 }
             }
-            <DaylightChart @ref="daylightChart"/>
+            <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                <p class="text-5xl text-primary-900 font-semibold">@{
+                        if(dlh == (24 - daylight)) {
+                            <p>@dlh+</p>
+                        } else {
+                            <p>@dlh</p>
+                        }
+                    }
+                </p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -145,26 +161,29 @@
 
 @* Appliance Summary *@
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
-    <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
+    <div
+        class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <div class="flex gap-4 justify-start mb-10 relative">
             <h1 class="text-base font-semibold text-primary-900">What do you want to run in a power outage?</h1>
             <div class="group">
                 <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                <div class="absolute hidden fade-in-active w-full -top-10 left-[38%] max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                <div
+                    class="absolute hidden fade-in-active w-full -top-10 left-[38%] max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
                     <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
                 </div>
             </div>
         </div>
         <div class="flex gap-10 scale-90 justify-stretchs">
             @foreach (var appliance in appliances)
-        {
-            if (appliance.quantity > 0)
             {
-                <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                </div>
-            } 
-        }
+                if (appliance.quantity > 0)
+                {
+                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                    </div>
+                }
+            }
         </div>
     </div>
     <div class="w-4/12 justify-center flex">
@@ -174,12 +193,14 @@
                     <p @onclick="ResetHome">Reset</p>
                 </content>
             </Button>
-            <Button  css="h-16 w-60" style="pill">
+            <Button css="h-16 w-60" style="pill">
                 <content>
                     @if (edit)
                     {
-                        <p @onclick="ModalPopup.Show">Update calculation</p> 
-                    } else {
+                        <p @onclick="ModalPopup.Show">Update calculation</p>
+                    }
+                    else
+                    {
                         <p @onclick="ModalPopup.Show">Save this calculation</p>
                     }
                 </content>
@@ -188,50 +209,55 @@
     </div>
 </div>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
-        <ChildContent>
+    <ChildContent>
+        @if (edit)
+        {
+            <p>Rename this calculation?</p>
+        }
+        else
+        {
+            <p>Add a nickname for this calculation:</p>
+        }
+        <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+        <div class="flex flex-row gap-4 justify-center">
             @if (edit)
             {
-            <p>Rename this calculation?</p>
-            } else
-            {
-            <p>Add a nickname for this calculation:</p>
-            }
-            <Input @bind-InputValue="calculationName" placeholder="Nickname" />
-            <div class="flex flex-row gap-4 justify-center">
-                @if (edit)
-                {
-                    <div @onclick="UpdateCalculation">
-                    <Button >
+                <div @onclick="UpdateCalculation">
+                    <Button>
                         <content>
                             Update
                         </content>
                     </Button>
                 </div>
-                } else {
+            }
+            else
+            {
                 <div @onclick="SaveCalculation">
-                    <Button >
+                    <Button>
                         <content>
                             Save
                         </content>
                     </Button>
                 </div>
-                }
-                <div @onclick="ModalPopup.Dismiss">
-                    <Button style="outline">
-                        <content>Cancel</content>
-                    </Button>
-                </div>
+            }
+            <div @onclick="ModalPopup.Dismiss">
+                <Button style="outline">
+                    <content>Cancel</content>
+                </Button>
             </div>
-        </ChildContent>
-    </ModalPopup>
+        </div>
+    </ChildContent>
+</ModalPopup>
 
 @* Mobile Viewport *@
 <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
     <div class="w-full px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 mt-4 mb-16">
-            <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@systems[selectedSystem].numberOfPanels />
-            <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@systems[selectedSystem].numberOfBatteries />
+            <Appliance ImageName="SolarPanels.svg" Name="Number of Panels"
+                Count=@systems[selectedSystem].numberOfPanels />
+            <Appliance ImageName="Batteries.svg" Name="Number of Batteries"
+                Count=@systems[selectedSystem].numberOfBatteries />
         </div>
     </div>
     <div class="w-full flex flex-col justify-center items-center">
@@ -240,52 +266,63 @@
             <Image ImageName="House 3.svg" alt="House" css="scale-105" /> *@
             @switch (selectedSystem)
             {
-            case 0:
-            <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
-            break;
-            case 1:
-            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
-            break;
-            case 2:
-            <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
-            break;
-            default:
-            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
-            break;
+                case 0:
+                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
+                    break;
+                case 1:
+                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                    break;
+                case 2:
+                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                    break;
+                default:
+                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                    break;
             }
         </div>
-        <DaylightChart @ref="daylightChart"/>
+        <DaylightChart hours="@daylight" daylightHours="@dlh" />
     </div>
     <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
     <div class="flex justify-center items-center  my-7">
-            <Tabs @bind-Items="tabs"></Tabs>
+        <Tabs @bind-Items="tabs"></Tabs>
     </div>
     <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
-        @if(tabs[0].active) {
+        @if (tabs[0].active)
+        {
             @foreach (var appliance in appliances)
             {
                 if (appliance.quantity > 0)
                 {
                     <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
                     </div>
-                } else {
+                }
+                else
+                {
                     <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
                     </div>
                 }
             }
-        } else {
+        }
+        else
+        {
             @foreach (var appliance in appliances)
             {
                 if (appliance.quantity > 0)
                 {
                     <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
                     </div>
-                } else {
+                }
+                else
+                {
                     <div class="fade-in-active">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
                     </div>
                 }
             }
@@ -303,9 +340,12 @@
             </content>
         </Button>
     </div>
-    </div>
+</div>
 
 @code {
+    private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
+
+    private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -317,9 +357,9 @@
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
     [Parameter]
-    public List<ReportAllApplianceModel>? reportAllAppliance  { get; set; } 
+    public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
     [Parameter]
-    public ReportModel? currentReport  { get; set; }
+    public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
     [Parameter]
@@ -335,16 +375,16 @@
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
-    {
-        new TabItemModel("Add", true),
-        new TabItemModel("Remove", false)
-    };
+{
+new TabItemModel("Add", true),
+new TabItemModel("Remove", false)
+};
     private List<TabItemModel> categories = new List<TabItemModel>
-    {
-        new TabItemModel("Kitchen", true),
-        new TabItemModel("Entertainment", false),
-        new TabItemModel("General", false)
-    };
+{
+new TabItemModel("Kitchen", true),
+new TabItemModel("Entertainment", false),
+new TabItemModel("General", false)
+};
     float runningHoursPercentage = 0f;
     float dlh = 0f;
     float daylight = 0f;
@@ -359,9 +399,10 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        var usId = await ProtectedLocalStore.GetAsync<int>("userId"); 
+        var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         userId = usId.Value;
-        if (currentReport!.homeSize != null) {
+        if (currentReport!.homeSize != null)
+        {
             homeSize = currentReport.homeSize;
         }
 
@@ -371,32 +412,40 @@
     /// <summary>
     /// On parameters set, set the appliance quantities to the values from the report
     /// </summary>
-    protected override void OnParametersSet(){
+    protected override void OnParametersSet()
+    {
         for (int i = 0; i < reportAllAppliance!.Count; i++)
         {
 
             if (reportAllAppliance[i].type!.Equals("Kettle"))
             {
                 appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("Fridge"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("Fridge"))
             {
                 appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("LED Lights"))
             {
                 appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("TV"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("TV"))
             {
                 appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("Computer"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("Computer"))
             {
                 appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("Microwave"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("Microwave"))
             {
                 appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("CCTV"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("CCTV"))
             {
                 appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
-            } else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+            }
+            else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
             {
                 appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
             }
@@ -424,7 +473,8 @@
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
 
-    private void IncrementApplianceCount(ApplianceModel appliance) {
+    private void IncrementApplianceCount(ApplianceModel appliance)
+    {
         appliance.fade = "fade-in-active";
         StateHasChanged();
         appliance.quantity++;
@@ -435,20 +485,23 @@
     /// <summary>
     /// On appliance count changed, update the appliance count and calculate the running hours
     /// </summary>
-    private async void DecrementApplianceCount(ApplianceModel appliance) {
-        if (appliance.quantity == 1) {
+    private async void DecrementApplianceCount(ApplianceModel appliance)
+    {
+        if (appliance.quantity == 1)
+        {
             appliance.fade = "fade-out-active";
             StateHasChanged();
             await Task.Delay(300);
         }
         appliance.quantity--;
-        if(appliance.quantity < 0) {
+        if (appliance.quantity < 0)
+        {
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
-        StateHasChanged();
         UpdateApplianceStorage();
         CalculateRunningHours();
+        StateHasChanged();
     }
 
     private async void UpdateApplianceStorage()
@@ -470,7 +523,8 @@
     /// <summary>
     /// On template changed, update the selected system and appliance quantities
     /// </summary>
-    private void ApplyTemplate(ChangeEventArgs e) {
+    private void ApplyTemplate(ChangeEventArgs e)
+    {
         switch (e.Value)
         {
             case "2":
@@ -525,8 +579,9 @@
         }
     }
 
-    private async void ResetHome(){
-        Console.WriteLine("Resetting"); 
+    private async void ResetHome()
+    {
+        Console.WriteLine("Resetting");
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
         appliances[0].quantity = 0;
         appliances[1].quantity = 0;
@@ -541,162 +596,72 @@
         CalculateRunningHours();
     }
 
-    private async void SaveCalculation(){
+    private async void SaveCalculation()
+    {
         ModalPopup.Dismiss();
         ShowLoadingScreen();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
-        var content = new StringContent(
-            "{\r\n    \"reportName\" : \""
-                    + calculationName
-                    + "\",\r\n    \"userId\" : "
-                    + userId
-                    + ",\r\n    \"homeSize\" : \""
-                    + homeSize
-                    + "\",\r\n    \"latitude\" : \""
-                    + currentReport!.latitude.ToString().Replace(",", ".")
-                    + "\",\r\n    \"longitude\" : \""
-                    + currentReport.longitude.ToString().Replace(",", ".")
-                    + "\",\r\n    \"systemId\" : "
-                    + systems[selectedSystem].systemId
-                    + "\r\n}",
-        null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
+        if(await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
-            int reportId = await GetCreatedReportId();
-            await ProtectedSessionStore.SetAsync("createdReport", reportId);
-            foreach (var appliance in appliances)
+            reports = await reportClass.GetUserReports(userId);
+            if (reports.Count > 0)
             {
-                await CreateReportAppliance(reportId, appliance);
+                await ProtectedSessionStore.SetAsync("userReports", reports);
+                await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
+                await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
+                
+                foreach (var appliance in appliances)
+                {
+                    await reportApplianceClass.CreateReportAppliance(reports[reports.Count - 1].reportId, appliance);
+                }
             }
-        }
-        else
-        {
-            Console.WriteLine("Failed to create report");
-        }
+        } 
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
 
-    private async Task UpdateCalculation(){
+    private async Task UpdateCalculation()
+    {
         ShowLoadingScreen();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n    \"reportId\" : "
-                    + currentReport!.reportId
-                    + ",\r\n    \"reportName\" : \""
-                    + calculationName
-                    + "\",\r\n    \"userId\" : "
-                    + userId
-                    + ",\r\n    \"homeSize\" : \""
-                    + homeSize
-                    + "\",\r\n    \"latitude\" : \""
-                    + currentReport!.latitude.ToString().Replace(",", ".")
-                    + "\",\r\n    \"longitude\" : \""
-                    + currentReport.longitude.ToString().Replace(",", ".")
-                    + "\",\r\n    \"systemId\" : "
-                    + systems[selectedSystem].systemId
-                    + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
+        if(await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
+
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
             for (int i = 0; i < 8; i++)
             {
                 if (appliances[i].quantity != applianceQuantities[i].quantity)
                 {
-                    await UpdateReportAppliance(currentReport.reportId, appliances[i]);
+                    await reportApplianceClass.UpdateReportAppliance(currentReport.reportId, appliances[i]);
                 }
             }
             await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
-
-        }
-        else
-        {
-            Console.WriteLine("Failed to update report");
         }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
-    }
-
-    private async Task UpdateReportAppliance(int reportId, ApplianceModel appliance){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
-        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if(response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Failed to update ReportAppliance");
-        }
-    }
-
-    private async Task CreateReportAppliance(int reportId, ApplianceModel appliance){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
-        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if(response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
-        }
-    }
-    
-    private async Task<int> GetCreatedReportId(){
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
-            if (reports.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReports", reports);
-            }
-            await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-            await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
-
-            return reports[reports.Count - 1].reportId;
-        }
-        else
-        {
-            Console.WriteLine("Failed to get user reports");
-            return -1;
-        }
     }
     
     private void ShowLoadingScreen() {
         loadingService.ShowLoadingScreen();
     }
 
-    private void CalculateRunningHours() {
-        int numBatteries = systems[selectedSystem].numberOfBatteries; 
-        int batteryStorage = systems[selectedSystem].batterySize *1000; // kwh
+    private void CalculateRunningHours()
+    {
+        int numBatteries = systems[selectedSystem].numberOfBatteries;
+        int batteryStorage = systems[selectedSystem].batterySize * 1000; // kwh
         float sumOfAppliances = 0f;
 
         foreach (var appliance in appliances)
         {
-            if(appliance.quantity > 0) {
-                sumOfAppliances += appliance.quantity * appliance.powerUsage ;
+            if (appliance.quantity > 0)
+            {
+                sumOfAppliances += appliance.quantity * appliance.powerUsage;
             }
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - (float) (currentLocationData!.daylightHours);
+        float nonDaylightHours = 24 - (float)(currentLocationData!.daylightHours);
         runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        if(runningHoursPercentage > 100)
+        if (runningHoursPercentage > 100)
         {
             runningHoursPercentage = 100;
         }

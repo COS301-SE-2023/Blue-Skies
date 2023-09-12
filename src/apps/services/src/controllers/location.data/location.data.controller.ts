@@ -4,12 +4,20 @@ import * as tedious from 'tedious';
 import { spawn } from 'child_process';
 import ILocationData from '../../models/location.data.interface';
 export default class LocationDataController {
+  public getChatBotApiKey = async (req: Request, res: Response) => {
+    try {
+      const key: string = process.env.CHATBOT_API_KEY;
+      res.status(200).json(key);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
   public getMapBoxApiKey = async (req: Request, res: Response) => {
     try {
       const key: string = process.env.MAP_BOX_API_KEY;
       res.status(200).json(key);
     } catch (error) {
-      res.status(500).json({ error: error });
+      res.status(500).json({ error: error.message });
     }
   };
 
@@ -330,7 +338,7 @@ export default class LocationDataController {
 
       conn.execSql(request);
     } catch (error) {
-      res.status(500).json({ error: error });
+      res.status(500).json({ error: error.message });
     }
   };
   //create a function to execute python script

@@ -64,6 +64,9 @@
 </div>
 
 @code {
+    private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
+    private SharedUtils.userClass userClass = new SharedUtils.userClass();
+    private SharedUtils.keyClass keyClass = new SharedUtils.keyClass();
     private int keyCount = 0;
     private int maxRadarCount = 0;
     private int suspendedCount = 0;
@@ -203,26 +206,7 @@
 
     private async Task GetSystemUsage()
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/AdminStats/all");
-        var response = await client.SendAsync(request);
-        List<SystemUsage>? systems = null;
-        if (response.StatusCode == System.Net.HttpStatusCode.OK && response.Content != null)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            if (data != null)
-            {
-                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    })!;
-            }
-        }
-        else
-        {
-            Console.WriteLine("Failed to retrieve system usage");
-        }
-
+        List<SystemUsage>? systems = await otherDataClass.GetAllAdminStats();
         if (systems != null && systems.Count > 0 && radarConfig != null)
         {
             maxRadarCount = (int)(systems.Max(x => x.count) * 1.25);
@@ -250,16 +234,10 @@
 
     private async Task GetUsers()
     {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        var result = await userClass.getAllUsers();
+        if (result != null && result.Count > 0)
         {
-            var data = await response.Content.ReadAsStringAsync();
-            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
+            users = result;
             IDataset<int> dataset1 = new BarDataset<int>(new[] { users.Count })
                 {
                     Label = "Signed up users",
@@ -274,7 +252,7 @@
 
             @* This Data goes and gets the number of users that have logged in within the last week, month, 3 months and the
             remaining users and adds them to the pie chart *@
-        if (users != null && users.Count > 0)
+            if (users != null && users.Count > 0)
             {
                 var week = 0;
                 var month = 0;
@@ -323,28 +301,20 @@
 
     private async Task GetKeys()
     {
-        List<APIKeyModel> keys = new List<APIKeyModel>();
+        List<KeyModel> keys = new List<KeyModel>();
 
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/key/all");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<APIKeyModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive =
-                true
-                })!;
+        var result = await keyClass.GetAllKeys();
+        if(result != null) {
+            keys = result;
             keyCount = keys.Count;
             suspendedCount = 0;
-            foreach (APIKeyModel item in keys)
+            foreach (KeyModel item in keys)
             {
                 if (item.suspended == 1)
                 {
                     suspendedCount++;
                 }
-            }
+            }  
         }
         else
         {

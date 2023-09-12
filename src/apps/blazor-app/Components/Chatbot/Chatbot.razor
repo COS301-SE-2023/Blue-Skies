@@ -1,0 +1,140 @@
+@using BlazorApp.Models
+@using System.Text.Json
+@using Newtonsoft.Json
+
+
+@* Namespace chatbot *@
+@namespace BlazorApp.Chatbot
+
+@if(_isChatbotOpen == false){
+  <div class="bg-blue-500 p-1 rounded-md text-white w-fit mx-auto cursor-pointer" @onclick="@ToggleChatbot">
+    Ask Robert
+  </div>
+}else{
+  <div class="w-[30%] mx-auto">
+  <div class="w-full space-y-2">
+    @foreach (Message mess in _conversationHistory)
+    {
+    <div>
+      @if (mess.role == "user")
+      {
+      <div class= "ml-auto text-black w-fit rounded-lg bg-slate-100 p-2">
+        @mess.content
+      </div>
+      }
+      else if (mess.role != "system")
+      {
+      <div class="mr-auto text-white w-fit rounded-lg bg-blue-500 p-2">
+        @mess.content
+      </div>
+      }
+    </div>
+    }
+  </div>
+  <div class="w-fit mx-auto mt-3">
+    <textarea id="message" rows="1" class="p-2.5 w-[400px] text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300" placeholder="Do you have any questions for us?" @bind-value="_userQuestion" @bind-value:event="oninput"
+      @onkeypress="HandleKeyPress"/>
+
+  </div>
+
+</div>
+}
+
+
+
+@code {
+  private bool _isChatbotOpen = false;
+  private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+  private string _userQuestion = string.Empty;
+  private readonly List<Message> _conversationHistory = new();
+  private readonly string _chatBotKnowledgeScope = "" +
+  "Your name is Robert, You are an assistant that help users navigate and use a website called Blue Skies" +
+  "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on Blue Skies?\"" + 
+  "A solar score measures your property's solar potential based on sunlight availability, shading, and local weather patterns. It estimates of solar panels in generating electricity for your location. "+
+  "The appliances you can run on solar depend on system size. Small setups may power lights, fans, laptops, and smartphones. Larger ones can run refrigerators, air conditioners, washers, and EVs."+
+  "Solar panels offer renewable energy, reduced bills, eco-friendliness, energy independence, incentives, and low maintenance." +
+  "Will solar panels work during cloudy or rainy days? Yes, they work but with reduced efficiency. They generate power from sunlight, even on overcast days, though less than under direct sunlight."+
+  "How much money can I save by using solar energy? Savings vary by location, panel size, electricity rates, and incentives. Long-term, solar can substantially lower bills and may lead to surplus energy sales."+
+  "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation.";
+  private string chatbotApiKey = "";
+  protected override async Task OnInitializedAsync()
+  {
+    @* Get Api Key *@
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/chatbotApiKey");
+    var response = await client.SendAsync(request);
+    if (response.StatusCode == System.Net.HttpStatusCode.OK){
+            chatbotApiKey = await response.Content.ReadAsStringAsync();
+    }
+    chatbotApiKey = chatbotApiKey.Trim('"');
+    _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
+    @* return base.OnInitializedAsync(); *@
+  }
+  private async Task HandleKeyPress(KeyboardEventArgs e)
+  {
+    if (e.Key is not "Enter") return;
+    await SendMessage();
+  }
+
+  private async Task SendMessage()
+  {
+    if (string.IsNullOrWhiteSpace(_userQuestion)) return;
+
+    AddUserQuestionToConversation();
+    StateHasChanged();
+    ClearInput();
+    await CreateCompletion();
+    StateHasChanged();
+  }
+
+  private void AddUserQuestionToConversation()
+  => _conversationHistory.Add(new Message { role = "user", content = _userQuestion });
+
+
+  private async Task CreateCompletion()
+  {
+    var postData = new
+    {
+      model = "gpt-3.5-turbo",
+      messages = _conversationHistory.ToArray(),
+    };
+
+    string jsonContent = JsonConvert.SerializeObject(postData);
+
+    var client = new HttpClient();
+    var request = new HttpRequestMessage(HttpMethod.Post, "https://api.openai.com/v1/chat/completions");
+    request.Headers.Add("Authorization", "Bearer " + chatbotApiKey);
+    var content = new StringContent(jsonContent, null, "application/json");
+    request.Content = content;
+    var response = await client.SendAsync(request);
+    if (response.IsSuccessStatusCode)
+    {
+      var chatCompletionResponse = await response.Content.ReadFromJsonAsync<ChatbotResponse>();
+      Message? temp = chatCompletionResponse!.choices!.First().message;
+      _conversationHistory.Add(temp!);
+    }
+    else
+    {
+      Console.WriteLine("response.StatusCode: " + response.StatusCode);
+      Console.WriteLine("response.ReasonPhrase: " + response.ReasonPhrase);
+      Console.WriteLine("response.Content: " + response.Content);
+      _conversationHistory.Add(new Message { role = "assitant", content = "Sorry, I don't know how to answer that." });
+    }
+
+
+
+  }
+
+  private void ClearInput()
+  {
+    _userQuestion = string.Empty;
+
+  }
+
+  @* Toggle Chatbot *@
+  private void ToggleChatbot()
+  {
+    _isChatbotOpen = !_isChatbotOpen;
+    StateHasChanged();
+  }
+}
