@@ -99,7 +99,6 @@
   private async Task SendMessage()
   {
     if (string.IsNullOrWhiteSpace(_userQuestion)) return;
-    Console.WriteLine("User Question: " + _userQuestion);
     AddUserQuestionToConversation();
     StateHasChanged();
     ClearInput();
