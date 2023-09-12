@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using BlazorApp.Components.Base
+@using BlazorApp.Chatbot
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStorage
@@ -9,14 +10,18 @@
 <PageTitle>Blue Skies - Home</PageTitle>
 
 <div class="fade-in-enter-active">
-  @if (isLoaded){
-    @if(isAd){
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/admin/keys");
-    } else {
-        <div class="w-full relative">
-            <BlazorApp.Components.Home.Hero />
-
+  @if (isLoaded)
+  {
+    @if (isAd)
+    {
+      loadingService.ShowLoadingScreen();
+      NavigationManager.NavigateTo("/admin/keys");
+    }
+    else
+    {
+      <div class="w-full relative">
+        <BlazorApp.Components.Home.Hero />
+        
             @* How it works *@
             <Image ImageName="shapes.svg" css="absolute -top-64 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  mw-2/3 -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
             <div class="mt-36 relative">
@@ -36,8 +41,11 @@
             <BlazorApp.Components.Home.FAQ />
             </div>
         </div>
+      </div>
     }
   }
+
+  <Chatbot />
 </div>
 
 
@@ -45,9 +53,9 @@
   private bool isAd = false;
   private bool isLoaded = false;
 
-/// <summary>
-/// On page load, check if user is admin
-/// </summary>
+  /// <summary>
+  /// On page load, check if user is admin
+  /// </summary>
   protected override async Task OnInitializedAsync()
   {
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -57,9 +65,9 @@
     loadingService.HideLoadingScreen();
   }
 
-/// <summary>
-/// Navigate to register page
-/// </summary>
+  /// <summary>
+  /// Navigate to register page
+  /// </summary>
   void Register()
   {
     loadingService.ShowLoadingScreen();

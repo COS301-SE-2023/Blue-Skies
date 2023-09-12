@@ -1,0 +1,72 @@
+@using BlazorApp.Components.Base
+@using BlazorApp.Components.Dashboard
+@using BlazorApp.Models
+@using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
+
+<div
+    class="md:flex self-center items-center gap-4 justify-center mt-4 md:mt-20 @(((id + 1) % 2) == 0 ? "flex-row-reverse" : "flex-row ")">
+    @* Map Container *@
+    <div
+        class="md:flex-shrink-0 flex flex-col justify-center shadow-md rounded-3xl xl:w-[25%] lg:w-[30%] md:w-[45%] w-[90%] max-md:mx-auto">
+        <a href="@key!.website" target="_blank"
+            class="text-black shadow-md transition-all duration-500 cursor-pointer bg-gray-200 lg:hover:scale-110 rounded-3xl justify-center items-center w-full md:h-80 h-full">
+            <div class="my-auto w-full flex p-2">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 m-3">
+                    @{
+                        var logo = key!.owner + ".png";
+                    }
+                    <Image ImageName="@logo" alt="Sale" css="scale-150" />
+                </div>
+                <div class="m-3">
+                    <h1 class="text-xl text-primary-800 font-semibold mt-3 gap-4">@key!.owner</h1>
+                </div>
+            </div>
+            <div class="flex gap-1 mt-3 m-4">
+                <p class="text-l">@key!.description</p>
+            </div>
+        </a>
+    </div>
+    <div class="my-auto max-md:mx-auto xl:w-[25%] lg:w-[30%] md:w-[45%] w-[90%]">
+        <div class="mt-3">
+            <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@key!.location />
+        </div>
+        <div class="mt-3">
+            <a href="https://mail.google.com/" target="_blank">
+                <LocationItem Title="Email" ImageName="Mailbox.svg" Text=@key!.email />
+            </a>
+        </div>
+        <div class="mt-3">
+            <LocationItem Title="Phone Number" ImageName="Phone.svg" Text=@key!.phoneNumber />
+        </div>
+    </div>
+    <div class="my-auto xl:w-[25%] lg:w-[30%] w-[90%] max-h-96 max-lg:hidden ">
+        @{
+            switch (id % 4)
+            {
+                case 0:
+                    <Image ImageName="Robert_Pointing_Left.png" css="2xl:max-h-96 xl:max-h-80 lg:max-h-72 mx-auto" alt="Rob" />
+                    break;
+                case 1:
+                    <Image ImageName="Robert_Pointing_Right.png" css="2xl:max-h-96 xl:max-h-80 lg:max-h-72 mx-auto" alt="Rob" />
+                    break;
+                case 2:
+                    <Image ImageName="Robert_Holding_Panel_Hand_Out.png" css="2xl:max-h-96 xl:max-h-80 lg:max-h-72 mx-auto" alt="Rob" />
+                    break;
+                case 3:
+                    <Image ImageName="Robert_Leaning_Panel.png" css="2xl:max-h-96 xl:max-h-80 lg:max-h-72 mx-auto" alt="Rob" />
+                    break;
+            }
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public KeyModel? key { get; set; }
+    [Parameter]
+    public int id { get; set; }
+}
