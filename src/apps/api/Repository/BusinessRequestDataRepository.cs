@@ -37,8 +37,8 @@ public class BusinessRequestDataRepository
             var client = new HttpClient();
             var dataTypeResponse = new HttpResponseMessage();
            
-            LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
-                    if (exists.data == null)
+            LocationDataModel locationData = await locationDataClass.GetLocationData(latitude, longitude);
+                    if (locationData.data == null)
                     {
                         
                         var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
@@ -51,8 +51,15 @@ public class BusinessRequestDataRepository
             switch(data!.ToLower()){
                 case "solar score" : 
                     var content = await GetSolarScore((double)latitude, (double)longitude);
-                   
                     dataTypeResponse.Content = new StringContent(content);
+                    break;
+                case "solar array" : 
+                    var solarArray = await GetSolarRadiationList((double)latitude, (double)longitude);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
+                    break;
+                case "average solar irradiation" : 
+                    var solarIrradiation = await GetAverageSolar((double)latitude, (double)longitude);
+                    dataTypeResponse.Content = new StringContent(solarIrradiation);
                     break;
                 default : 
                     throw new Exception("Error: Not a valid option chosen for data type");
@@ -68,6 +75,21 @@ public class BusinessRequestDataRepository
         }
     }
 
+     private Task<string> GetAverageSolar(double latitude, double longitude)
+    {
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        double averageSolarIrradiation=0;
+
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            averageSolarIrradiation = solarCalculator.GetAverageSolarIrradiation(latitude, longitude);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " averageSolarIrradiation: " + averageSolarIrradiation);
+            Task.Delay(3000);
+        }
+
+        return Task.FromResult(averageSolarIrradiation.ToString());
+    }
+
     private async Task<String> GetSolarScore(double latitude, double longitude) 
     {
         DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
@@ -81,5 +103,18 @@ public class BusinessRequestDataRepository
 
         }
         return solarScore.ToString();
+    }
+
+    private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
+    {   
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            solarRadiationList = await solarCalculator.GetSolarRadiationListFromData(latitude, longitude);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarRadiationList: " + solarRadiationList);
+            await Task.Delay(3000);
+        }
+        return solarRadiationList;
     }
 }

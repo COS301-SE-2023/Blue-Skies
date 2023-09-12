@@ -27,7 +27,12 @@ public class BusinessRequestDataController : ControllerBase
             List<KeyModel> keys = await _keysRepository.GetAllKeys();
             foreach(KeyModel key in keys)
             {
-                if(key.APIKey==businessRequestData.key)
+                if(businessRequestData.key == null)
+                {
+                    return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
+                }
+
+                if(businessRequestData.key.Equals(key.APIKey))
                 {
                     return Ok(data);
                 }
