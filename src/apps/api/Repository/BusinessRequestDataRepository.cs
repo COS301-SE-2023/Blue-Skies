@@ -24,47 +24,48 @@ public class BusinessRequestDataRepository
     
     public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     {
-        LocationDataModel? currentLocationData = new LocationDataModel();
-        try
-        {
-            var key = requestData.key;
-            var data = requestData.data;
-            var latitude = requestData.latitude;
-            var longitude = requestData.longitude;
+        // LocationDataModel? currentLocationData = new LocationDataModel();
+        // try
+        // {
+        //     var key = requestData.key;
+        //     var data = requestData.data;
+        //     var latitude = requestData.latitude;
+        //     var longitude = requestData.longitude;
             
-            //create data if not created yet
+        //     //create data if not created yet
 
-            var client = new HttpClient();
-            var dataTypeResponse = new HttpResponseMessage();
+        //     var client = new HttpClient();
+        //     var dataTypeResponse = new HttpResponseMessage();
            
-            LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
-                    if (exists.data == null)
-                    {
+        //     LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
+        //             if (exists.data == null)
+        //             {
                         
-                        var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
-                        byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
-                        var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+        //                 var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
+        //                 byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
+        //                 var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
                        
-                        await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
-                    }
+        //                 await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
+        //             }
 
-            switch(data!.ToLower()){
-                case "solar score" : 
-                    String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
-                    dataTypeResponse.Content = new StringContent(content);
-                    break;
-                default : 
-                    throw new Exception("Error: Not a valid option chosen for data type");
-            }
+        //     switch(data!.ToLower()){
+        //         case "solar score" : 
+        //             String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
+        //             dataTypeResponse.Content = new StringContent(content);
+        //             break;
+        //         default : 
+        //             throw new Exception("Error: Not a valid option chosen for data type");
+        //     }
             
-           return await dataTypeResponse.Content.ReadAsStringAsync();
+        //    return await dataTypeResponse.Content.ReadAsStringAsync();
            
-        }
-        catch (System.Exception)
-        {
+        // }
+        // catch (System.Exception)
+        // {
 
-            throw new Exception("Could not create solar irradiation");
-        }
+        //     throw new Exception("Could not create solar irradiation");
+        // }
+        return "";
     }
 
     private async Task<String> solarScore(HttpClient client, HttpResponseMessage dataTypeResponse, float latitude, float longitude){
