@@ -1,5 +1,8 @@
 ﻿@page "/"
 @using BlazorApp.Components.Base
+@using System.Drawing;
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.PixelFormats
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStorage
@@ -9,6 +12,24 @@
 <PageTitle>Blue Skies - Home</PageTitle>
 
 <div class="fade-in-enter-active">
+  @if (satteliteImageData != null)
+  {
+    <Image ImageName="@satteliteImageData" css=" w-full h-full object-cover" alt="Shapes"/>
+  }
+  else
+  {
+      <p>No satellite image available.</p>
+  }
+
+  @if (heightMapData != null)
+  {
+    <Image ImageName="@heightMapData" css=" w-full h-full object-cover" alt="Shapes"/>
+  }
+  else
+  {
+      <p>No height map available.</p>
+  }
+
   @if (isLoaded){
     @if(isAd){
         loadingService.ShowLoadingScreen();
@@ -41,6 +62,9 @@
 
 
 @code {
+  private string? satteliteImageData;
+  private string? heightMapData;
+  private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
   private bool isAd = false;
   private bool isLoaded = false;
 
@@ -49,16 +73,50 @@
 /// </summary>
   protected override async Task OnInitializedAsync()
   {
+
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
     await ProtectedSessionStorage.SetAsync("parent", "index");
     isAd = isAdmin.Value;
     isLoaded = true;
     loadingService.HideLoadingScreen();
+
+    byte[] fileData;
+
+    var fileLocation = "Pages/SatelliteImage";
+
+    if (File.Exists(fileLocation))
+    {
+        using (var memoryStream = new MemoryStream())
+        using (var fileStream = new FileStream(fileLocation, FileMode.Open, FileAccess.Read))
+        {
+            await fileStream.CopyToAsync(memoryStream);
+            fileData = memoryStream.ToArray();
+        }
+        @* imageSrc = $"data:image/png;base64,{rooftopDataHandler.GetSatelliteImage(fileData)}";; *@
+        satteliteImageData = rooftopDataHandler.GetSatelliteImage(fileData);
+    }
+    else
+    {
+        Console.WriteLine("File not found");
+    }
+
+    byte [] heightData;
+
+    var heightMapLocation = "Pages/DSM";
+
+    if (File.Exists(heightMapLocation))
+    {
+        heightMapData = rooftopDataHandler.GetHeightMapBase64("Pages/DSM");
+    }
+    else
+    {
+        Console.WriteLine("File not found");
+    }
   }
 
-/// <summary>
-/// Navigate to register page
-/// </summary>
+  /// <summary>
+  /// Navigate to register page
+  /// </summary>
   void Register()
   {
     loadingService.ShowLoadingScreen();
