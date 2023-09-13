@@ -1,12 +1,23 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-    @foreach (var appliance in appliances)
-    {
-        <p>@appliance.type</p>
-        <p>@appliance.quantity</p>
-        <br>
-    }
+    <Heading css="mb-16 max-w-3xl mx-auto">
+        <Superscript><h1 class="text-center">Variants</h1></Superscript >
+        <Header><h1 class="text-center">Customise your Appliances</h1></Header>
+        <Subscript><p class="text-center">Lorem ipsum dolor sit amet consectetur adipiscing elit tortor eu egestas morbi sem vulputate etiam facilisis pellentesque ut quis."</p></Subscript>
+    </Heading>
+    <div class="flex gap-20 scale-90 justify-stretchs">
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                    <div>
+                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                    </div>
+                }
+            }
+    </div>
 </div>
 
 @code {
