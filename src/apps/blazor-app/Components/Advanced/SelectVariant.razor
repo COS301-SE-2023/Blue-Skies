@@ -1,0 +1,56 @@
+@using FuzzySharp;
+@using FuzzySharp.SimilarityRatio;
+
+<div class="flex flex-col">
+   <input class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @onkeyup="HandleKeyPress" @bind-value="search" @bind-value:event="oninput">
+   <div class="block">
+        @* List *@
+        <ul>
+            @if(showList == true)
+            {
+                @foreach (var item in typeAppliances)
+                {
+                    <li @onclick="@(() => SelectAppliance(item.model!))">@item.model</li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+@code{
+    [Parameter]
+    public string? type { get; set; }
+    [Parameter]
+    public List<CustomApplianceModel> customAppliances { get; set; } = new List<CustomApplianceModel>();
+    
+
+    private List<CustomApplianceModel> typeAppliances = new List<CustomApplianceModel>();
+    private string search = string.Empty;
+    private bool showList = false;
+    @* OnParametersSet *@
+    protected override void OnParametersSet()
+    {
+        customAppliances = customAppliances.Where(x => x.type == type).ToList();
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        typeAppliances = customAppliances.Where(x =>  Fuzz.Ratio(x.model, search) > 35).ToList();
+        StateHasChanged();
+        if(search.Length > 0)
+        {
+            showList = true;
+        }
+        else
+        {
+            showList = false;
+        }
+    }
+
+    private void SelectAppliance(string model)
+    {
+        search = model;
+        showList = false;
+        StateHasChanged();
+    }
+}

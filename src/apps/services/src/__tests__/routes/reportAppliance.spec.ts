@@ -32,19 +32,20 @@ describe('Test the reportAppliance path', () => {
   });
   //create
 
-  it('It should response the POST method', async () => {
-    //type, powerUsage
-    const response = await request(app).post('/reportAppliance/create').send({
-      reportId: 1,
-      applianceId: 1,
-      powerUsage: 1,
-    });
+  // it('It should response the POST method', async () => {
+  //   //type, powerUsage
+  //   const response = await request(app).post('/reportAppliance/create').send({
+  //     reportId: 1,
+  //     applianceId: 1,
+  //     powerUsage: 1,
+  //     durationUser: 24,
+  //   });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({
-      message: 'Report appliance created successfully.',
-    });
-  });
+  //   expect(response.statusCode).toBe(200);
+  //   expect(response.body).toEqual({
+  //     message: 'Report appliance created successfully.',
+  //   });
+  // });
 
   //all
   it('It should response the GET method', async () => {

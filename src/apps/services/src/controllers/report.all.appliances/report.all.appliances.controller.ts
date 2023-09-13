@@ -33,7 +33,12 @@ export default class ReportAllAppliancesController {
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
           type: columns[3].value,
-          powerUsage: columns[4].value,
+          applianceModel: columns[4].value,
+          powerUsage: columns[5].value,
+          durationUsed: columns[6].value,
+          defaultPowerUsage: columns[7].value,
+          defaultDurationUsed: columns[8].value,
+
         };
 
         reportAllAppliances.push(reportAllAppliance);
@@ -78,7 +83,11 @@ export default class ReportAllAppliancesController {
           applianceId: columns[1].value,
           numberOfAppliances: columns[2].value,
           type: columns[3].value,
-          powerUsage: columns[4].value,
+          applianceModel: columns[4].value,
+          powerUsage: columns[5].value,
+          durationUsed: columns[6].value,
+          defaultPowerUsage: columns[7].value,
+          defaultDurationUsed: columns[8].value,
         };
         reportAllAppliances.push(reportAllAppliance);
       });
