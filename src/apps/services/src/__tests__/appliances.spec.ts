@@ -49,7 +49,7 @@ describe('Test The Appliance Controller', () => {
 
   describe('Get All Appliances', () => {
     //Get All appliances
-    it('should return all keys', () => {
+    it('should return all appliances', () => {
       // Create an instance of the KeyController
       // Call the getAllKeys method with the mock request and response
       applianceController.getAllAppliances(

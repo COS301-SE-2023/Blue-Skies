@@ -20,7 +20,10 @@ public class ReportAppliancesRepository
     public async Task<ReportAppliances> CreateReportAppliance(
         int reportId,
         int applianceId,
-        int numberOfAppliances
+        int numberOfAppliances,
+        string applianceModel,
+        int powerUsage,
+        float durationUsed
     )
     {
         try
@@ -30,14 +33,18 @@ public class ReportAppliancesRepository
                 HttpMethod.Post,
                 express + "/api/reportAppliance/create"
             );
+            var postData = new
+            {
+                reportId = reportId,
+                applianceId = applianceId,
+                numberOfAppliances = numberOfAppliances,
+                applianceModel = applianceModel,
+                powerUsage = powerUsage,
+                durationUsed = durationUsed.ToString()
+            };
+            string jsonData = JsonSerializer.Serialize(postData);
             var content = new StringContent(
-                "{\r\n    \"reportId\" : "
-                    + reportId
-                    + ",\r\n    \"applianceId\" : "
-                    + applianceId
-                    + ",\r\n    \"numberOfAppliances\" : "
-                    + numberOfAppliances
-                    + "\r\n}",
+                jsonData,
                 null,
                 "application/json"
             );
@@ -49,6 +56,9 @@ public class ReportAppliancesRepository
                 rep.reportId = reportId;
                 rep.applianceId = applianceId;
                 rep.numberOfAppliances = numberOfAppliances;
+                rep.applianceModel = applianceModel;
+                rep.powerUsage = powerUsage;
+                rep.durationUsed = durationUsed;
 
                 Console.WriteLine(".NET: report appliance created successfully");
                 return rep;

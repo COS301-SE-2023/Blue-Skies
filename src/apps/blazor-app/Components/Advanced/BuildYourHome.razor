@@ -79,20 +79,24 @@
                 {
                     @foreach (var appliance in appliances)
                     {
-                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                        if (appliance.type != "Washing Machine") {
+                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                            </div>
+                        }
                     }
                 }
                 else
                 {
                     @foreach (var appliance in appliances)
                     {
-                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                        if (appliance.type != "Washing Machine") {
+                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                            </div>
+                        }
                     }
                 }
             </div>
@@ -186,7 +190,9 @@
         </div>
     </div> 
 </div>
-    *@
+*@
+
+<SelectVariant type="Fridge" customAppliances="@customAppliances"/>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     <ChildContent>
         @if (edit)
@@ -325,6 +331,7 @@
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
 
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
+    private SharedUtils.customAplianceClass customAplianceClass = new SharedUtils.customAplianceClass();
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -353,17 +360,19 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
+    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>(); 
     private List<TabItemModel> tabs = new List<TabItemModel>
-{
-new TabItemModel("Add", true),
-new TabItemModel("Remove", false)
-};
+    {
+        new TabItemModel("Add", true),
+        new TabItemModel("Remove", false)
+    };
     private List<TabItemModel> categories = new List<TabItemModel>
-{
-new TabItemModel("Kitchen", true),
-new TabItemModel("Other", false),
-new TabItemModel("General", false)
-};
+    {
+        new TabItemModel("Kitchen", true),
+        new TabItemModel("Entertainment", false),
+        new TabItemModel("General", false)
+    };
+      
     float runningHoursPercentage = 0f;
     float dlh = 0f;
     float daylight = 0f;
@@ -386,6 +395,8 @@ new TabItemModel("General", false)
         }
 
         CalculateRunningHours();
+         @* Get custom Appliances *@
+        customAppliances = await customAplianceClass.GetAllCustomAppliances();
     }
 
     /// <summary>
@@ -404,7 +415,7 @@ new TabItemModel("General", false)
             {
                 appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
             }
-            else if (reportAllAppliance[i].type!.Equals("LED Lights"))
+            else if (reportAllAppliance[i].type!.Equals("Lights"))
             {
                 appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
             }
@@ -441,6 +452,8 @@ new TabItemModel("General", false)
             appliance.quantity = appliances[i].quantity;
             applianceQuantities.Add(appliance);
         }
+
+       
     }
 
     /// <summary>

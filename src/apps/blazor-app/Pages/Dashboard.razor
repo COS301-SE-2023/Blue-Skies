@@ -446,7 +446,7 @@ else if (!logIn)
         {
             if (reportAllAppliance[i].numberOfAppliances != 0)
             {
-                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage;
+                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
                 polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type);
                 counter++;
             }
