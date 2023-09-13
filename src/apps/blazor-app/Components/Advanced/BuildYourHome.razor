@@ -163,6 +163,7 @@
 @* Appliance Summary *@
     @*
 <div class="hidden lg:flex gap-5 px-10 w-full">
+    
      <div class="w-4/12 justify-center flex">
         <div class="flex flex-col my-auto gap-6 items-center>">
             <Button css="h-16 w-60" style="outline">
@@ -360,7 +361,7 @@ new TabItemModel("Remove", false)
     private List<TabItemModel> categories = new List<TabItemModel>
 {
 new TabItemModel("Kitchen", true),
-new TabItemModel("Entertainment", false),
+new TabItemModel("Other", false),
 new TabItemModel("General", false)
 };
     float runningHoursPercentage = 0f;
@@ -557,6 +558,7 @@ new TabItemModel("General", false)
                 @* appliances[7].quantity = 0; *@
                 break;
         }
+        applianceService.UpdateAppliance(appliances);
     }
 
     private async void ResetHome()
