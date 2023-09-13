@@ -137,7 +137,13 @@ public class locationDataClass {
        
         Console.WriteLine("client: "+client.ToString());
         Console.WriteLine("url: "+apiUrl);
-        data.Add(await FetchWeatherDataAsync(client, apiUrl));
+        var apiData = await FetchWeatherDataAsync(client, apiUrl);
+        if(apiData != null) {
+            data.Add(apiData);
+        }
+        else {
+            Console.WriteLine("apiData is null");
+        }
         
         //  11 other calls to get the last 10 month's data
         var currentMonth = DateTime.Now.Month;
@@ -164,7 +170,7 @@ public class locationDataClass {
             apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
 
             // Asynchronously fetch the data and add the task to the list
-            tasks.Add(FetchWeatherDataAsync(client, apiUrl));
+            tasks.Add(FetchWeatherDataAsync(client, apiUrl)!);
         }
 
         // Wait for all tasks to complete
