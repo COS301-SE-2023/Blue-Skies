@@ -13,51 +13,13 @@ public class SolarDataHandler
     private double worstSolarIrradiation = 120;
 
     public LocationDataModel? locationData { get; set; }
-    public int previousScore { get; set; } = -1;
-    public int timesNotUpdated { get; set; } = 0;
-    public int remainingCalls { get; set; } = 100;
-    public int previousRemainingCalls { get; set; } = 100;
 
-    public async Task<int> GetSolarScoreFromData(
-        double latitude,
-        double longitude,
-        double tempSolarIrradiation
-    )
+    public int getSolarScore(byte[] annualFluxData, byte[] maskData)
     {
-        int result = getSolarScoreFromInitialData(tempSolarIrradiation);
-        var locationData = await locationDataClass.GetLocationDataNoImage(latitude, longitude);
-
-        if (locationData != null && locationData.data != null) {
-            remainingCalls = locationData.remainingCalls;
-            if (previousRemainingCalls != remainingCalls)
-            {
-                timesNotUpdated = 0;
-            }
-            else
-            {
-                timesNotUpdated++;
-            }
-            previousRemainingCalls = remainingCalls;
-            if (locationData.remainingCalls >= 100)
-            {
-                return result;
-            }
-            result = calculateSolarScore(locationData.data);
-        }
-        else
-        {
-            if (previousScore != -1)
-            {
-                result = previousScore;
-            }
-            Console.WriteLine("Failed to get data from LocationData");
-            Console.WriteLine("Previous score: " + previousScore);
-        }
-        previousScore = result;
-        return result;
+        return 50;
     }
 
-    public int calculateSolarScore(string data)
+    private int calculateSolarScore(string data)
     {
         string input = data;
         decimal total = 0;
@@ -107,24 +69,6 @@ public class SolarDataHandler
             percentage = 100;
         }
         return (int)percentage;
-    }
-
-    public void reset()
-    {
-        previousScore = -1;
-        timesNotUpdated = 0;
-        remainingCalls = 100;
-        previousRemainingCalls = 100;
-    }
-
-    public int getSolarScoreFromInitialData(double tempSolarIrradiation)
-    {
-        var result = getPercentage(tempSolarIrradiation);
-        if (result > 100)
-        {
-            result = 100;
-        }
-        return result;
     }
 
     public double getPowerSaved(double annualKWGenerated) {

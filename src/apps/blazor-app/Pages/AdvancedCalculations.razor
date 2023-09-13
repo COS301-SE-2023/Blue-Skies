@@ -125,7 +125,12 @@
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
 
-        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
+        LocationDataModel? result = await locationDataClass.GetLocationData(latitude, longitude);
+        if (result != null)
+        {
+            currentLocationData = result;
+        }
+
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
