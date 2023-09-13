@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GDAL" Version="3.7.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
+  </ItemGroup>
+
 </Project>
