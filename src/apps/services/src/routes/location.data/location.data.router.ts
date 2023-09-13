@@ -19,59 +19,18 @@ locationDataRouter.get(
   locationDataController.getGoogleApiKey
 );
 
-locationDataRouter.get(
-  '/getsuntimes',
-  bodyParser.json(),
-  locationDataController.getSunTimes
-);
-
 locationDataRouter.post(
   '/create',
   bodyParser.json({ limit: '10mb' }),
-  locationDataController.createSolarIrradiation
-);
-
-locationDataRouter.patch(
-  '/update/data/:latitude/:longitude',
-  bodyParser.json(),
-  locationDataController.updateDataLocationData
-);
-
-locationDataRouter.patch(
-  '/update/image/:latitude/:longitude',
-  bodyParser.json({ limit: '10mb' }),
-  locationDataController.updateImgLocationData
-);
-
-locationDataRouter.patch(
-  '/update/daylightHours/:latitude/:longitude',
-  bodyParser.json(),
-  locationDataController.updateDaylightHoursLocationData
+  locationDataController.createLocationData
 );
 
 locationDataRouter.get(
   '/:latitude/:longitude',
-  locationDataController.getSolarIrradiation
-);
-
-locationDataRouter.get(
-  '/withoutImage/:latitude/:longitude/',
-  locationDataController.getSolarIrradiationWithoutImage
+  locationDataController.getLocationData
 );
 
 locationDataRouter.delete(
   '/delete/:latitude/:longitude',
-  locationDataController.deleteSolarIrradiation
-);
-
-locationDataRouter.get(
-  '/solarIrradiationData',
-  bodyParser.json(),
-  locationDataController.getSolarIrradiationData
-);
-
-locationDataRouter.patch(
-  '/update/elevationData/:latitude/:longitude',
-  bodyParser.json(),
-  locationDataController.updateElevationData
+  locationDataController.deleteLocationData
 );
