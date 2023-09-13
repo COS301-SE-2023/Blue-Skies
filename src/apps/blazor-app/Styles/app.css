@@ -102,11 +102,22 @@ body {
     animation-fill-mode: forwards;
 }
 
+.wipe-up {
+    animation: wipeUp .5s;
+    animation-fill-mode: forwards;
+}
+
 
 /* Wipe Down Transition */
 @keyframes wipeDown {
     from { opacity: 1; height: 0px;}
-    to { opacity: 1; height: 100%px}
+    to { opacity: 1; height: 100px}
+}
+
+/* Wipe Up Transition */    
+@keyframes wipeUp {
+    from { opacity: 1; height: 100px;}
+    to { opacity: 1; height: 0px}
 }
 
 

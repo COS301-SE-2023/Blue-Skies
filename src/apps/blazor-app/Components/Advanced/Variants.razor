@@ -24,7 +24,7 @@
             }
     </div>
     @if (selectedAppliance != "") {
-        <div class="flex w-full bg-primary-100 h-40 -mt-7 rounded-2xl wipe-down">
+        <div class="flex w-full bg-primary-100 h-40 -mt-7 rounded-2xl @selectedContainerFade">
 
         </div>
     }
@@ -68,16 +68,19 @@
         StateHasChanged();
     }
 
-    public Task SelectAppliance (string appliance)
+    public async Task SelectAppliance (string appliance)
     {
         if (appliance == selectedAppliance)
         {
+            selectedContainerFade = "wipe-up";
+            StateHasChanged();
+            await Task.Delay(250);
             selectedAppliance = "";
             StateHasChanged();
-            return Task.CompletedTask;
+        } else {
+            selectedContainerFade = "wipe-down";
+            selectedAppliance = appliance;
+            StateHasChanged();
         }
-        selectedAppliance = appliance;
-        StateHasChanged();
-        return Task.CompletedTask;
     }
 }
