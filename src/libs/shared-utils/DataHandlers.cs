@@ -174,30 +174,30 @@ public class RooftopDataHandler
         // Register all available GDAL drivers
         Gdal.AllRegister();
 
-        Console.WriteLine("Opening DSM dataset");
-        // Print full path with current directory and file name
-        Console.WriteLine(Path.GetFullPath(dsmPath));
+        // Console.WriteLine("Opening DSM dataset");
+        // // Print full path with current directory and file name
+        // Console.WriteLine(Path.GetFullPath(dsmPath));
 
-        // Open the DSM dataset
-        Dataset dsmDataset = Gdal.Open(dsmPath, Access.GA_ReadOnly);
-        if (dsmDataset == null)
-        {
-            throw new ArgumentException("Failed to open DSM dataset");
-        }
+        // // Open the DSM dataset
+        // Dataset dsmDataset = Gdal.Open(dsmPath, Access.GA_ReadOnly);
+        // if (dsmDataset == null)
+        // {
+        //     throw new ArgumentException("Failed to open DSM dataset");
+        // }
 
-        // Get the first band (Band 1)
-        Band dsmBand = dsmDataset.GetRasterBand(1);
+        // // Get the first band (Band 1)
+        // Band dsmBand = dsmDataset.GetRasterBand(1);
 
-        // Read the data from the band into a 2D array
-        int width = dsmBand.XSize;
-        int height = dsmBand.YSize;
-        double[] dsmData = new double[width * height];
-        dsmBand.ReadRaster(0, 0, width, height, dsmData, width, height, 0, 0);
+        // // Read the data from the band into a 2D array
+        // int width = dsmBand.XSize;
+        // int height = dsmBand.YSize;
+        // double[] dsmData = new double[width * height];
+        // dsmBand.ReadRaster(0, 0, width, height, dsmData, width, height, 0, 0);
 
-        for (int i = 0; i < dsmData.Length; i++)
-        {
-            Console.WriteLine($"Dataset {i}: {dsmData[i]}");
-        }
+        // for (int i = 0; i < dsmData.Length; i++)
+        // {
+        //     Console.WriteLine($"Dataset {i}: {dsmData[i]}");
+        // }
 
         return null;
     }
