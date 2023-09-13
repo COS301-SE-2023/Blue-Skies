@@ -257,7 +257,7 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the current location.
     /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
     /// </summary>
-    public async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
+    private async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
     {
         var data = new List<WeatherData>();
         // Initial api key to get the last 15 day's of information:

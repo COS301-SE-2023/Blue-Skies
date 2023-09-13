@@ -98,7 +98,7 @@
             location = locationSuggestion.Place_Name;
         }
 
-        currentLocationData!.location = location;
+        currentLocationData!.locationName = location;
         currentLocationData.latitude = latitude;
         currentLocationData.longitude = longitude;
 
@@ -108,14 +108,9 @@
 
         byte[] imageBytes = new byte[0];
         currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
-        if (currentLocationData.data == null)
+        if (currentLocationData == null)
         {
-            var data = await locationDataClass.GetInitialData(latitude, longitude);
-            currentLocationData.daylightHours = data.averageSunlightHours;
-            await ProtectedSessionStore.SetAsync("tempSolarIrradiation", data.averageSolarIrradiation);
-
-            imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
-            await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
+            currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
         }
 
         await ProtectedSessionStore.SetAsync("parent", "");
