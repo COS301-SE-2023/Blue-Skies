@@ -6,7 +6,6 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Models
 @using System.Text.Json
-@using ChartJs.Blazor.PieChart
 @using ChartJs.Blazor.PolarAreaChart
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ReportManager reportManager
@@ -78,12 +77,7 @@ else if (!logIn)
                                 <div class="w-full flex flex-col gap-4 justify-start items-center">
                                     <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
                                     <div class="flex relative flex-col justify-center w-full">
-                                        <Chart Config="pieConfig"></Chart>
-                                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                                            <p class="text-5xl text-primary-900 font-semibold">
-                                                @currentLocationData.daylightHours</p>
-                                            <p class="text-5xl text-gray-400 font-bold">h</p>
-                                        </div>
+                                        <DaylightChart hours="10" daylightHours="20" />
                                     </div>
                                 </div>
                                 <div class="hidden md:block w-full">
@@ -194,7 +188,6 @@ else if (!logIn)
     [Parameter]
     public int selectedReport { get; set;}
     private DateTime selectedDate;
-    private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
     public LocationDataModel currentLocationData  = new LocationDataModel();
@@ -318,48 +311,6 @@ else if (!logIn)
 
     private void renderCharts()
     {
-        @* **************************************** Pie Chart Config ************************************************ *@
-        pieConfig = new PieConfig(true)
-            {
-                Options = new PieOptions
-                {
-                    Responsive = true,
-                    AspectRatio = 3,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = false,
-                        Text = "Running Hours",
-                        FontSize = 20,
-                        Position = Position.Bottom,
-                        LineHeight = 4,
-                    },
-                    Circumference = 3,
-                    Rotation = -9.341,
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = true,
-                        Duration = 2000,
-
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false,
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    CutoutPercentage = 80
-                }
-            };
-
         @* **************************************** Polar Area Chart Config ************************************************ *@
         polarAreaConfig = new PolarAreaConfig()
             {
@@ -402,31 +353,6 @@ else if (!logIn)
     }
     private void updateCharts()
     {
-        @* **************************************** Pie Chart Update Data ************************************************ *@
-        pieConfig.Data.Datasets.Clear();
-
-        foreach (string color in new[] { "Runnable Hours", "Remaining" })
-        {
-            pieConfig.Data.Labels.Add(color);
-        }
-        if (reports.Count > 0)
-        {
-            float hours = (float) currentLocationData!.daylightHours;
-            float remaining = (float)Math.Round(13 - hours, 2);
-            PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-                {
-                    BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(156,163,175),
-                    },
-                };
-            if (pieConfig != null)
-            {
-                pieConfig.Data.Datasets.Add(pieDataset);
-            }
-        }
-
-
         @* **************************************** Polar Area Chart Update Data ************************************************ *@
 
         polarAreaConfig.Data.Datasets.Clear();
