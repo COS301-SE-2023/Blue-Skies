@@ -100,17 +100,15 @@
         Console.WriteLine("File not found");
     }
 
-    byte [] heightData;
-
     var heightMapLocation = "Pages/DSM";
 
     if (File.Exists(heightMapLocation))
     {
-        heightMapData = rooftopDataHandler.GetHeightMapBase64("Pages/DSM");
+        heightMapData = rooftopDataHandler.GetHeightMapBase64(heightMapLocation);
     }
     else
     {
-        Console.WriteLine("File not found");
+        Console.WriteLine("DSM File not found");
     }
   }
 
