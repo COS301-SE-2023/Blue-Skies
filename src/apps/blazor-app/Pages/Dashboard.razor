@@ -129,7 +129,7 @@ else if (!logIn)
                         </Card>
                     </div>
                     <div class="mt-10 w-full">
-                        <FancyData solarIrradiation="@currentLocationData.data" elevationData="@currentLocationData.elevationData" />
+                        <FancyData monthlyFluxData="@currentLocationData!.monthlyFluxData" maskData="@currentLocationData.maskData" elevationData="@currentLocationData.horisonElevationData" />
                     </div>
                     
                 </div>
@@ -244,10 +244,11 @@ else if (!logIn)
             await ProtectedSessionStore.DeleteAsync("createdReport");
 
             currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
-            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
-            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-
-            _ = GetSolarScore();
+            if(currentLocationData != null) {
+                await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+                await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+                solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
+            }
 
             allReportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
             if (allReportAllAppliance.Count > 0)
@@ -271,27 +272,12 @@ else if (!logIn)
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
 
         currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
-        await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
-        await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-
-        _ = GetSolarScore();
-        updateAppliances();
-    }
-    private async Task GetSolarScore() 
-    {
-        solarCalculator.reset();
-        var tempSolarIrradiation = await ProtectedSessionStore.GetAsync<double>("tempSolarIrradiation");
-        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10 && NavigationManager.Uri.Contains("dashboard")) {
-            solarScore = await solarCalculator.GetSolarScoreFromData(currentLocationData!.latitude, currentLocationData!.longitude, tempSolarIrradiation.Value);
-            await ProtectedSessionStore.SetAsync("solarScore", solarScore);
-            if(solarCalculator.locationData != null) {
-                currentLocationData.data = solarCalculator.locationData.data;
-                currentLocationData.elevationData = solarCalculator.locationData.elevationData;
-            }
-            StateHasChanged();
-            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
-            await Task.Delay(3000);
+        if(currentLocationData != null) {
+            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+            solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
         }
+        updateAppliances();
     }
 
     private void Dispose() {
