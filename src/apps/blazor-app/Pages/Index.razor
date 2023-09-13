@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using BlazorApp.Components.Base
+@using BlazorApp.Chatbot
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStorage
@@ -9,18 +10,22 @@
 <PageTitle>Blue Skies - Home</PageTitle>
 
 <div class="fade-in-enter-active">
-  @if (isLoaded){
-    @if(isAd){
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/admin/keys");
-    } else {
-        <div class="w-full relative">
-            <BlazorApp.Components.Home.Hero />
-
+  @if (isLoaded)
+  {
+    @if (isAd)
+    {
+      loadingService.ShowLoadingScreen();
+      NavigationManager.NavigateTo("/admin/keys");
+    }
+    else
+    {
+      <div class="w-full relative">
+        <BlazorApp.Components.Home.Hero />
+        
             @* How it works *@
-            <Image ImageName="shapes.svg" css="absolute -top-64  -z-10 -left-1/2 w-2/3 h-2/3" alt="Shapes"/>
+            <Image ImageName="shapes.svg" css="absolute -top-64 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  mw-2/3 -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
             <div class="mt-36 relative">
-              <Image ImageName="Robert_Pointing.png" css="absolute top-0  -z-10  left-32 robert-slide-up h-72" alt="Rob"/>
+              <Image ImageName="Robert_Pointing.png" css="absolute -top-24 md:top-0 -z-10 left-16 md:left-32 robert-slide-up h-52 md:h-72" alt="Rob"/>
               <BlazorApp.Components.Home.HowItWorks />
             </div>
             
@@ -30,13 +35,16 @@
             @* Frequently Asked Questions *@
             <div class="mt-72 lg:mt-44 mb-40 relative">
               <Image ImageName="shapes.svg" css="absolute -top-2/3 -z-20 -right-1/2 w-full h-full" alt="Shapes"/>
-              <Image ImageName="Robert_Confused.png" css="absolute -top-32 z-20 right-16  h-80" alt="Rob"/>
-              <Image ImageName="Panels.svg" css="absolute -top-20 -z-20 left-8" alt="Shapes"/>
+              <Image ImageName="shapes.svg" css="absolute sm:hidden -bottom-2/3 -z-20 -right-1/2 w-full h-full" alt="Shapes"/>
+              <Image ImageName="Robert_Confused.png" css="absolute -bottom-40 sm:-top-60 lg:-top-32 right-10 xl:right-16 h-60 lg:h-80" alt="Rob"/>
+              <Image ImageName="Panels.svg" css="absolute -bottom-40 sm:-top-52 lg:-top-20 -z-20 left-2 xl:left-8 h-40 xl:h-52" alt="Shapes"/>
             <BlazorApp.Components.Home.FAQ />
             </div>
         </div>
     }
   }
+
+  <Chatbot />
 </div>
 
 
@@ -44,9 +52,9 @@
   private bool isAd = false;
   private bool isLoaded = false;
 
-/// <summary>
-/// On page load, check if user is admin
-/// </summary>
+  /// <summary>
+  /// On page load, check if user is admin
+  /// </summary>
   protected override async Task OnInitializedAsync()
   {
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -56,9 +64,9 @@
     loadingService.HideLoadingScreen();
   }
 
-/// <summary>
-/// Navigate to register page
-/// </summary>
+  /// <summary>
+  /// Navigate to register page
+  /// </summary>
   void Register()
   {
     loadingService.ShowLoadingScreen();

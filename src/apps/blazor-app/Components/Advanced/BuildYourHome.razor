@@ -9,6 +9,7 @@
 @using ChartJs.Blazor.PieChart
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.ApplianceService applianceService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
@@ -164,33 +165,10 @@
 </div>
 
 @* Appliance Summary *@
-<div class="hidden lg:flex gap-5 px-10 w-full mt-10">
-    <div
-        class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-        <div class="flex gap-4 justify-start mb-10 relative">
-            <h1 class="text-base font-semibold text-primary-900">What do you want to run in a power outage?</h1>
-            <div class="group">
-                <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                <div
-                    class="absolute hidden fade-in-active w-full -top-10 left-[38%] max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                    <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
-                </div>
-            </div>
-        </div>
-        <div class="flex gap-10 scale-90 justify-stretchs">
-            @foreach (var appliance in appliances)
-            {
-                if (appliance.quantity > 0)
-                {
-                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                    </div>
-                }
-            }
-        </div>
-    </div>
-    <div class="w-4/12 justify-center flex">
+    @*
+<div class="hidden lg:flex gap-5 px-10 w-full">
+    
+     <div class="w-4/12 justify-center flex">
         <div class="flex flex-col my-auto gap-6 items-center>">
             <Button css="h-16 w-60" style="outline">
                 <content>
@@ -210,9 +188,12 @@
                 </content>
             </Button>
         </div>
-    </div>
+    </div> 
 </div>
-<SelectVariant type="Fridge" customAppliances="@customAppliances"/>
+*@
+
+@* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
+
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     <ChildContent>
         @if (edit)
@@ -392,6 +373,7 @@
         new TabItemModel("Entertainment", false),
         new TabItemModel("General", false)
     };
+      
     float runningHoursPercentage = 0f;
     float dlh = 0f;
     float daylight = 0f;
@@ -491,6 +473,7 @@
         appliance.quantity++;
         UpdateApplianceStorage();
         CalculateRunningHours();
+        applianceService.UpdateAppliance(appliances);
     }
 
     /// <summary>
@@ -510,9 +493,10 @@
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
+        StateHasChanged();
         UpdateApplianceStorage();
         CalculateRunningHours();
-        StateHasChanged();
+        applianceService.UpdateAppliance(appliances);
     }
 
     private async void UpdateApplianceStorage()
@@ -588,6 +572,7 @@
                 @* appliances[7].quantity = 0; *@
                 break;
         }
+        applianceService.UpdateAppliance(appliances);
     }
 
     private async void ResetHome()
