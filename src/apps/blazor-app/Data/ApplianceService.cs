@@ -6,10 +6,6 @@ namespace BlazorApp.Data
 
         public void UpdateAppliance(List<ApplianceModel> appliances)
         {
-            foreach (var appliance in appliances)
-            {
-                Console.WriteLine($"Appliance: {appliance.type} - {appliance.quantity}");
-            }
             UpdateAppliancesRequested?.Invoke(appliances);
         }
 

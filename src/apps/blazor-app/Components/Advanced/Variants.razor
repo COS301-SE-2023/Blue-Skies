@@ -12,7 +12,7 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100" : "") p-2 rounded-xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
+                    <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100 h-40" : "") p-3 rounded-2xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
                         <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
                             imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                     </div>
@@ -23,10 +23,16 @@
                 <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
             }
     </div>
+    @if (selectedAppliance != "") {
+        <div class="flex w-full bg-primary-100 h-40 -mt-7 rounded-2xl wipe-down">
+
+        </div>
+    }
 </div>
 
 @code {
     @* private List<List<ApplianceModel>> applianceVariants = new List<List<ApplianceModel>>(); *@
+    private string selectedContainerFade = "wipe-down";
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]

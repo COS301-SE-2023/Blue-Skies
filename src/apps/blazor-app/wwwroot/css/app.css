@@ -934,6 +934,10 @@ video {
   margin-top: -1.25rem;
 }
 
+.-mt-7 {
+  margin-top: -1.75rem;
+}
+
 .-mt-8 {
   margin-top: -2rem;
 }
@@ -2813,6 +2817,27 @@ body {
 .slide-down-in {
   animation: slideDownIn .5s;
   animation-fill-mode: forwards;
+}
+
+/* Wipe transitions */
+
+.wipe-down {
+  animation: wipeDown .5s;
+  animation-fill-mode: forwards;
+}
+
+/* Wipe Down Transition */
+
+@keyframes wipeDown {
+  from {
+    opacity: 1;
+    height: 0px;
+  }
+
+  to {
+    opacity: 1;
+    height: 100%px
+  }
 }
 
 /* Slide Up Out Transition */
