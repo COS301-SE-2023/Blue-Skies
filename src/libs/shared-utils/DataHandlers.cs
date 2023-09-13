@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
-using OSGeo.GDAL;
+using MaxRev.Gdal.Core;
 
 public class SolarDataHandler
 {
@@ -172,11 +172,11 @@ public class RooftopDataHandler
     public string? GetHeightMapBase64(string dsmPath)
     {
         // Register all available GDAL drivers
-        Gdal.AllRegister();
+        GdalBase.ConfigureAll();
 
-        // Console.WriteLine("Opening DSM dataset");
-        // // Print full path with current directory and file name
-        // Console.WriteLine(Path.GetFullPath(dsmPath));
+        Console.WriteLine("Opening DSM dataset");
+        // Print full path with current directory and file name
+        Console.WriteLine(Path.GetFullPath(dsmPath));
 
         // // Open the DSM dataset
         // Dataset dsmDataset = Gdal.Open(dsmPath, Access.GA_ReadOnly);
