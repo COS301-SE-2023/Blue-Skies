@@ -7,6 +7,7 @@ public class LocationDataModel
     public byte[]? satteliteImageData { get; set; }
     public byte[]? satteliteImageElevationData { get; set; }
     public byte[]? annualFluxData { get; set; }
+    public byte[]? monthlyFluxData { get; set; }
     public byte[]? maskData { get; set; }
     public DateTime? dateCreated { get; set; }
     public double daylightHours { get; set; }
