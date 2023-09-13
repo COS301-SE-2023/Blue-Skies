@@ -18,7 +18,7 @@
         </Heading>
         <div class="flex w-full">
             <div  class="w-1/2">
-            <SolarIrradiationPerMonth solarIrradiation="@solarIrradiation"/>
+            <SolarIrradiationPerMonth monthlyFluxData="@monthlyFluxData" maskData="@maskData"/>
              </div>
         </div>
         <div class="w-full">
@@ -28,7 +28,10 @@
 
 @code {
     [Parameter]
-    public string? solarIrradiation { get; set; }
+    public byte[]? monthlyFluxData { get; set; }
+
+    [Parameter]
+    public byte[]? maskData { get; set; }
 
     [Parameter]
     public string? elevationData { get; set; }
