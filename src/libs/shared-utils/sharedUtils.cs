@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace SharedUtils;
 
@@ -13,7 +14,7 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel> GetLocationData(double latitude, double longitude){
+    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude){
         LocationDataModel locationData = new LocationDataModel();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
@@ -21,11 +22,9 @@ public class locationDataClass {
         if (response.IsSuccessStatusCode)
         {
             string data = response.Content.ReadAsStringAsync().Result;
-            locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
-        } else {
-            Console.WriteLine("Location data not found - fetching data instead");
+            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
         }
-        return locationData;
+        return null;
     }
     
     /// <summary>
@@ -64,12 +63,41 @@ public class locationDataClass {
     /// <paramref name="image"/> The image of the current location.
     /// <paramref name="location"/> The name of the current location.
     /// </summary>
-
-    public async Task CreateLocationData(double latitude, double longitude, float daylightHours, string image, string location) 
+    public async Task<LocationDataModel?> CreateLocationData(double latitude, double longitude, string locationName) 
     {
-        string elevationData = await GetElevationData(latitude, longitude);
-        var numYears = 3;
-        var numDaysPerYear = 48;
+        LocationDataModel result = new LocationDataModel();
+        result.latitude = latitude;
+        result.longitude = longitude;
+        result.locationName = locationName;
+
+        InitialDataModel initialData = await GetInitialData(latitude, longitude);
+        if(initialData == null) {
+            Console.WriteLine("Initial data not found");
+            return null;
+        }
+        result.daylightHours = initialData.averageSunlightHours;
+        
+        string? elevationData = await GetHorisonElevationData(latitude, longitude);
+        if(elevationData == null) {
+            Console.WriteLine("Elevation data not found");
+            return null;
+        }
+        result.horisonElevationData = elevationData;
+
+        LocationDataModel? locationData = await GetRoofData(latitude, longitude);
+        if(locationData == null) {
+            Console.WriteLine("Location data not found");
+            return null;
+        }
+        result.solarPanelsData = locationData.solarPanelsData;
+        result.satteliteImageData = locationData.satteliteImageData;
+        result.satteliteImageElevationData = locationData.satteliteImageElevationData;
+        result.annualFluxData = locationData.annualFluxData;
+        result.monthlyFluxData = locationData.monthlyFluxData;
+        result.maskData = locationData.maskData;
+        result.dateCreated = DateTime.Now;
+
+
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
         var content = new StringContent("{\r\n    \"latitude\": \"" 
@@ -77,11 +105,11 @@ public class locationDataClass {
                                     + "\",\r\n    \"longitude\": \"" 
                                     + longitude.ToString().Replace(",",".") 
                                     + "\",\r\n    \"location\": \"" 
-                                    + location 
+                                    + result.locationName 
                                     + "\",\r\n    \"daylightHours\" : \"" 
-                                    + daylightHours.ToString().Replace(",",".") 
+                                    + result.daylightHours.ToString().Replace(",",".") 
                                     + "\",\r\n    \"image\": \"" 
-                                    + image 
+                                    + result.solarPanelsData
                                     + "\" ,\r\n    \"elevationData\": \"" 
                                     + elevationData +"\"\r\n}", null, "application/json");
         
@@ -90,21 +118,121 @@ public class locationDataClass {
         
         if (response.IsSuccessStatusCode)
         {
-            client = new HttpClient();
-            request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getSolarIrradiationData");
-            content = new StringContent("{\r\n    \"latitude\": "+ latitude.ToString().Replace(",",".") + ",\r\n    \"longitude\": " + longitude.ToString().Replace(",",".") + ",\r\n    \"numYears\": "+ numYears + ",\r\n    \"numDaysPerYear\": "+ numDaysPerYear +"\r\n}", null, "application/json");
-            request.Content = content;
-            response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("Successfully called python file");
-
-            } else {
-                Console.WriteLine("Failed to call python file");
-            }
-        } else {
-            Console.WriteLine("Failed to create row table in database for solarIrradiation data");
+            return result;
         }
+        return null;
+    }
+
+    private async Task<LocationDataModel?> GetRoofData(double latitude, double longitude) {
+        LocationDataModel result = new LocationDataModel();
+        result.latitude = latitude;
+        result.longitude = longitude;
+        string? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
+        if(solarPanelsDataResult == null) {
+            Console.WriteLine("Solar panels data not found");
+            return null;
+        }
+        result.solarPanelsData = solarPanelsDataResult;
+
+        LocationDataLayer? locationDataLayer = await GetLocationDataLayer(latitude, longitude);
+        if(locationDataLayer == null) {
+            Console.WriteLine("Location data layer not found");
+            return null;
+        }
+
+        byte[]? byteData = await GetLocationDataFromDataLayerUrl(locationDataLayer.dsmUrl!);
+        if(byteData == null) {
+            Console.WriteLine("DSM data not found");
+            return null;
+        }
+        result.satteliteImageElevationData = byteData;
+
+        byteData = await GetLocationDataFromDataLayerUrl(locationDataLayer.rgbUrl!);
+        if(byteData == null) {
+            Console.WriteLine("sattelite image data not found");
+            return null;
+        }
+        result.satteliteImageData = byteData;
+
+        byteData = await GetLocationDataFromDataLayerUrl(locationDataLayer.maskUrl!);
+        if(byteData == null) {
+            Console.WriteLine("Mask data not found");
+            return null;
+        }
+        result.maskData = byteData;
+
+        byteData = await GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
+        if(byteData == null) {
+            Console.WriteLine("Annual flux data not found");
+            return null;
+        }
+        result.annualFluxData = byteData;
+
+        byteData = await GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
+        if(byteData == null) {
+            Console.WriteLine("Monthly flux data not found");
+            return null;
+        }
+        result.monthlyFluxData = byteData;
+
+        result.dateCreated = DateTime.Now;
+        return result;
+    }
+
+    private async Task<byte[]?> GetLocationDataFromDataLayerUrl(string url) {
+        string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
+        if(api_key == null) {
+            Console.WriteLine("API key not found");
+            return null;
+        }
+        var client = new HttpClient();
+        var response = await client.GetAsync(url + "&key=" + api_key);
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            return Encoding.ASCII.GetBytes(data);
+        }
+        return null;
+    }
+
+    private async Task<LocationDataLayer?> GetLocationDataLayer(double latitude, double longitude) {
+        LocationDataLayer result = new LocationDataLayer();
+        int radiusMeters = 50;
+        string view = "IMAGERY_AND_ALL_FLUX_LAYERS";
+        string requiredQuality = "HIGH";
+        double pixelSizeMeters = 0.1;
+        string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
+        if(api_key == null) {
+            Console.WriteLine("API key not found");
+            return null;
+        }
+
+        string url = "https://solar.googleapis.com/v1/dataLayers:get?location.latitude=" + latitude + "&location.longitude=" + longitude + "&radiusMeters=" + radiusMeters + "&view=" + view + "&requiredQuality=" + requiredQuality + "&pixelSizeMeters=" + pixelSizeMeters + "&key=" + api_key;
+        var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<LocationDataLayer>(data);
+        }
+        return null;
+    }
+
+    private async Task<string?> GetSolarPannelsData(double latitude, double longitude) {
+        string requiredQuality = "HIGH";
+        string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
+
+        if(api_key == null) {
+            Console.WriteLine("API key not found");
+            return null;
+        }
+
+        string url = "https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=" + latitude + "&location.longitude=" + longitude + "&requiredQuality=" + requiredQuality + "&key=" + api_key;
+        var client = new HttpClient();
+        var response = await client.GetAsync(url);
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            return data;
+        }
+        return null;
     }
 
     /// <summary>
@@ -112,14 +240,16 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the location.
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
-    public async Task<string> GetElevationData(double latitude, double longitude) {
+    private async Task<string?> GetHorisonElevationData(double latitude, double longitude) {
         string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
         var client = new HttpClient();
         var response = await client.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadAsStringAsync();
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            return data;
+        }
+        return null;
     }
-
     
     /// <summary>
     /// <para>Calls the weather visualcrossing api to get quick initial data.</para>
@@ -263,21 +393,6 @@ public class locationDataClass {
 
         // If any error occurred, return null or an appropriate default value
         return null;
-    }
-
-    
-    /// <summary>
-    /// Downloads the image from the Google Maps Static API returns it as a byte array.
-    /// </summary>
-    public async Task<byte[]> DownloadImageFromGoogleMapsService(double latitude, double longitude)
-    {
-        int zoom = 19;
-        int width = 600;
-        int height = 500;
-        byte[] imageBytes = new byte[0];
-        var googleMapsService = new GoogleMapsService(new HttpClient());
-        imageBytes = await googleMapsService.DownloadStaticMapImageAsync(latitude, longitude, zoom, width, height);
-        return imageBytes;
     }
 }
 
