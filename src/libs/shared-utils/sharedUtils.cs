@@ -231,8 +231,7 @@ public class locationDataClass {
     /// <paramref name="client"/> The http client.
     /// <paramref name="apiUrl"/> The url to the api.
     /// </summary>
-    #pragma warning disable CS8603
-    private async Task<WeatherData> FetchWeatherDataAsync(HttpClient client, string apiUrl)
+    private async Task<WeatherData?> FetchWeatherDataAsync(HttpClient client, string apiUrl)
     {
       
         try

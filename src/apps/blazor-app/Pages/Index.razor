@@ -8,6 +8,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @layout MainLayout
 @inject BlazorApp.Data.LoadingService loadingService
+@using MaxRev.Gdal.Core;
 
 <PageTitle>Blue Skies - Home</PageTitle>
 
@@ -28,6 +29,27 @@
   else
   {
       <p>No height map available.</p>
+  }
+
+  @if (annualFluxImageData != null)
+  {
+    <Image ImageName="@annualFluxImageData" css=" w-full h-full object-cover" alt="Shapes"/>
+  }
+  else
+  {
+      <p>No annual flux map available.</p>
+  }
+
+  @if (monthlyFluxImagesData != null)
+  {
+    foreach (var image in monthlyFluxImagesData)
+    {
+      if(image != null) {
+        <Image ImageName="@image" css=" w-full h-full object-cover" alt="Shapes"/>
+      }
+    }
+  } else {
+      <p>No monthly flux maps available.</p>
   }
 
   @if (isLoaded){
@@ -64,6 +86,10 @@
 @code {
   private string? satteliteImageData;
   private string? heightMapData;
+
+  private string? annualFluxImageData;
+
+  private string?[]? monthlyFluxImagesData;
   private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
   private bool isAd = false;
   private bool isLoaded = false;
@@ -73,7 +99,7 @@
 /// </summary>
   protected override async Task OnInitializedAsync()
   {
-
+    GdalBase.ConfigureAll();
     var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
     await ProtectedSessionStorage.SetAsync("parent", "index");
     isAd = isAdmin.Value;
@@ -82,17 +108,17 @@
 
     byte[] fileData;
 
-    var fileLocation = "Pages/SatelliteImage";
+    var satteliteImageLocation = "Pages/SatelliteImage";
 
-    if (File.Exists(fileLocation))
+    if (File.Exists(satteliteImageLocation))
     {
         using (var memoryStream = new MemoryStream())
-        using (var fileStream = new FileStream(fileLocation, FileMode.Open, FileAccess.Read))
+        using (var fileStream = new FileStream(satteliteImageLocation, FileMode.Open, FileAccess.Read))
         {
             await fileStream.CopyToAsync(memoryStream);
             fileData = memoryStream.ToArray();
         }
-        @* imageSrc = $"data:image/png;base64,{rooftopDataHandler.GetSatelliteImage(fileData)}";; *@
+
         satteliteImageData = rooftopDataHandler.GetSatelliteImage(fileData);
     }
     else
@@ -104,12 +130,87 @@
 
     if (File.Exists(heightMapLocation))
     {
-        heightMapData = rooftopDataHandler.GetHeightMapBase64(heightMapLocation);
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(heightMapLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          fileData = memoryStream.ToArray();
+      }
+      heightMapData = rooftopDataHandler.GetHeightMap(fileData);
     }
     else
     {
         Console.WriteLine("DSM File not found");
     }
+
+    byte[] maskData;
+    byte[] satteliteImageDataBytes;
+    byte[] fluxData;
+
+    var maskLocation = "Pages/Mask";
+    var annualFluxLocation = "Pages/annualFlux";
+    if (File.Exists(maskLocation) && File.Exists(annualFluxLocation) && File.Exists(satteliteImageLocation)) {
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(maskLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          maskData = memoryStream.ToArray();
+      }
+
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(satteliteImageLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          satteliteImageDataBytes = memoryStream.ToArray();
+      }
+
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(annualFluxLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          fluxData = memoryStream.ToArray();
+      }
+
+      annualFluxImageData = rooftopDataHandler.GetAnnualFluxMap(fluxData, satteliteImageDataBytes, maskData);
+    }
+    else
+    {
+        Console.WriteLine("Annual Flux File not found");
+    }
+
+
+    byte[] monthlyFluxData;
+
+    var montlyFluxLocation = "Pages/monthlyFlux";
+    if (File.Exists(maskLocation) && File.Exists(montlyFluxLocation) && File.Exists(satteliteImageLocation)) {
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(montlyFluxLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          monthlyFluxData = memoryStream.ToArray();
+      }
+
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(satteliteImageLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          satteliteImageDataBytes = memoryStream.ToArray();
+      }
+
+      using (var memoryStream = new MemoryStream())
+      using (var fileStream = new FileStream(maskLocation, FileMode.Open, FileAccess.Read))
+      {
+          await fileStream.CopyToAsync(memoryStream);
+          maskData = memoryStream.ToArray();
+      }
+
+      monthlyFluxImagesData = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageDataBytes, maskData);
+    }
+    else
+    {
+        Console.WriteLine("Annual Flux File not found");
+    }
+
   }
 
   /// <summary>
