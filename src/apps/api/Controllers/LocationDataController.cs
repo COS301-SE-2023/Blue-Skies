@@ -45,40 +45,7 @@ public class LocationDataController : ControllerBase
         }
     }
 
-    [HttpGet]
-    [Route("getsuntimes")]
-    public async Task<IActionResult> GetSunTimes([FromBody] Coordinates cord)
-    {
-        try
-        {
-            string sumTimes = await _locationDataRepository.GetSunTimes(cord);
-            return Ok(sumTimes);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
 
-    [HttpGet]
-    [Route("getSolarIrradiationData")]
-    public async Task<IActionResult> GetSolarIrradiationData([FromBody] SolarData sd)
-    {
-        try
-        {
-            string data = await _locationDataRepository.GetSolarIrradiationData(
-                sd.latitude,
-                sd.longitude,
-                sd.numYears,
-                sd.numDaysPerYear
-            );
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
 
     [HttpGet]
     [Route("GetLocationData/{latitude}/{longitude}")]
@@ -89,32 +56,7 @@ public class LocationDataController : ControllerBase
     {
         try
         {
-            LocationData data = await _locationDataRepository.GetLocationData(latitude, longitude);
-            if (data == null)
-            {
-                return StatusCode(404, "Solar Irradiation not found");
-            }
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
-
-    [HttpGet]
-    [Route("GetLocationDataWithoutImage/{latitude}/{longitude}")]
-    public async Task<IActionResult> GetLocationDataWithoutImage(
-        [FromRoute] double latitude,
-        [FromRoute] double longitude
-    )
-    {
-        try
-        {
-            LocationData data = await _locationDataRepository.GetSolarIrradiationWithoutImage(
-                latitude,
-                longitude
-            );
+            LocationDataModel data = await _locationDataRepository.GetLocationData(latitude, longitude);
             if (data == null)
             {
                 return StatusCode(404, "Solar Irradiation not found");
@@ -129,17 +71,22 @@ public class LocationDataController : ControllerBase
 
     [HttpPost]
     [Route("create")]
-    public async Task<IActionResult> CreateLocationData([FromBody] LocationData locationData)
+    public async Task<IActionResult> CreateLocationData([FromBody] LocationDataModel locationData)
     {
         try
         {
             string data = await _locationDataRepository.CreateLocationData(
                 locationData.latitude,
                 locationData.longitude,
-                locationData.location!,
+                locationData.locationName!,
+                locationData.solarPanelsData!,
+                locationData.satteliteImageData!,
+                locationData.satteliteImageElevationData!,
+                locationData.annualFluxData!,
+                locationData.monthlyFluxData!,
+                locationData.maskData!,
                 locationData.daylightHours,
-                locationData.image!,
-                locationData.elevationData!
+                locationData.horisonElevationData!
             );
             if (data.Equals("Solar Irradiation already exists"))
             {
@@ -153,87 +100,7 @@ public class LocationDataController : ControllerBase
         }
     }
 
-    [HttpPatch]
-    [Route("update/data/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateDataLocationData(
-        [FromRoute] double latitude,
-        [FromRoute] double longitude,
-        [FromBody] LocationData locationData
-    )
-    {
-        try
-        {
-            string data = await _locationDataRepository.UpdateDataLocationData(
-                latitude,
-                longitude,
-                locationData.data!,
-                locationData.remainingCalls
-            );
-            if (data.Equals("LocationData not found"))
-            {
-                return StatusCode(404, "Solar Irradiation not found");
-            }
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
 
-    [HttpPatch]
-    [Route("update/image/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateImage(
-        [FromRoute] double latitude,
-        [FromRoute] double longitude,
-        [FromBody] LocationData locationData
-    )
-    {
-        try
-        {
-            string data = await _locationDataRepository.UpdateImageLocationData(
-                latitude,
-                longitude,
-                locationData.image!
-            );
-            if (data.Equals("LocationData not found"))
-            {
-                return StatusCode(404, "Solar Irradiation not found");
-            }
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
-
-    [HttpPatch]
-    [Route("update/daylightHours/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateDaylightHours(
-        [FromRoute] double latitude,
-        double longitude,
-        [FromBody] LocationData locationData
-    )
-    {
-        try
-        {
-            string data = await _locationDataRepository.UpdateDaylightHoursLocationData(
-                latitude,
-                longitude,
-                locationData.daylightHours!
-            );
-            if (data.Equals("LocationData not found"))
-            {
-                return StatusCode(404, "Solar Irradiation not found");
-            }
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
 
     [HttpDelete]
     [Route("delete/{latitude}/{longitude}")]
@@ -245,33 +112,6 @@ public class LocationDataController : ControllerBase
         try
         {
             string data = await _locationDataRepository.DeleteLocationData(latitude, longitude);
-            if (data.Equals("LocationData not found"))
-            {
-                return StatusCode(404, "Solar Irradiation not found");
-            }
-            return Ok(data);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(500, e.Message);
-        }
-    }
-
-    [HttpPatch]
-    [Route("update/elevationData/{latitude}/{longitude}")]
-    public async Task<IActionResult> UpdateElevationData(
-        [FromRoute] double latitude,
-        [FromRoute] double longitude,
-        [FromBody] LocationData locationData
-    )
-    {
-        try
-        {
-            string data = await _locationDataRepository.UpdateElevationData(
-                latitude,
-                longitude,
-                locationData.elevationData!
-            );
             if (data.Equals("LocationData not found"))
             {
                 return StatusCode(404, "Solar Irradiation not found");
