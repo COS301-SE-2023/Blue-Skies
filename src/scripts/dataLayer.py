@@ -2,10 +2,10 @@ import requests
 import json
 import os
 
-latitude = -25.78096792828001
-longitude = 28.267346291916652
+latitude = -25.771950
+longitude = 28.356573
 
-folder_name = 'location-1'
+folder_name = 'demmo'
 if not os.path.exists(folder_name):
     os.mkdir(folder_name)
 else:
@@ -22,14 +22,19 @@ radiusMeters = 50
 view = "IMAGERY_AND_ALL_FLUX_LAYERS"
 requiredQuality = "HIGH"
 pixelSizeMeters = 0.1
-api_key = os.getenv('GOOGLE_MAPS_API_KEY')
-url = "https://solar.googleapis.com/v1/dataLayers:get?location.latitude=" + str(latitude) + "&location.longitude=" + str(longitude) + "&radiusMeters=" + str(radiusMeters) + "&view=" + view + "&requiredQuality=" + requiredQuality + "&pixelSizeMeters=" + str(pixelSizeMeters) + "&key=" + api_key
+api_key = "AIzaSyAOQKZ0T7z-jFuW6PDjPb2bepliU9qDV9M"
+
+if(api_key == None):
+    print("Please set the GOOGLE_MAPS_API_KEY environment variable")
+    exit()
+
+url = "https://solar.googleapis.com/v1/dataLayers:get?location.latitude=" + str(latitude) + "&location.longitude=" + str(longitude) + "&radiusMeters=" + str(radiusMeters) + "&view=" + view + "&requiredQuality=" + requiredQuality + "&pixelSizeMeters=" + str(pixelSizeMeters) + "&key=" + str(api_key)
 
 response = requests.get(url)
 
 def getData(url):
     print("Getting data from " + url)
-    url += "&key=" + api_key
+    url += "&key=" + str(api_key)
     
     response = requests.get(url)
     # Check if the request was successful (status code 200)
@@ -68,3 +73,7 @@ if(response.status_code == 200):
             file.write(getData(data["monthlyFluxUrl"]))
     except Exception as e:
         print(f"An error occurred during download: {str(e)}")
+
+else:
+    print("Request failed. Status code: " + str(response.status_code))
+    print(response.content)

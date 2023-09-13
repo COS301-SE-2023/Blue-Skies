@@ -197,23 +197,23 @@ public class locationDataClass {
             var averageSolarIrradiationMonth = 0.0;
             var monthSunlightHours = 0f;
 
-            #pragma warning disable CS8602
-            for(var j = 0; j < data[i].days.Count; j++) {
-                var sunrise = data[i].days[j].sunrise;
-                var sunset = data[i].days[j].sunset;
-                var sunriseSplit = sunrise.Split(":");
-                var sunsetSplit = sunset.Split(":");
+          
+            for(var j = 0; j < data[i].days!.Count; j++) {
+                var sunrise = data[i].days![j].sunrise;
+                var sunset = data[i].days![j].sunset;
+                var sunriseSplit = sunrise!.Split(":");
+                var sunsetSplit = sunset!.Split(":");
                 var sunriseTotalHours =  float.Parse(sunriseSplit[0]) + (float.Parse(sunriseSplit[1]) / 60);
                 var sunsetTotalHours = float.Parse(sunsetSplit[0]) + (float.Parse(sunsetSplit[1]) / 60);
                 var daylightHours = sunsetTotalHours - sunriseTotalHours;
                 monthSunlightHours += daylightHours;
 
-                averageSolarIrradiationMonth += data[i].days[j].solarradiation;
+                averageSolarIrradiationMonth += data[i].days![j].solarradiation;
             }
-            monthSunlightHours = monthSunlightHours / data[i].days.Count;
+            monthSunlightHours = monthSunlightHours / data[i].days!.Count;
             averageSunlightHours += monthSunlightHours;
 
-            averageSolarIrradiationMonth = averageSolarIrradiationMonth / data[i].days.Count;
+            averageSolarIrradiationMonth = averageSolarIrradiationMonth / data[i].days!.Count;
             averageSolarIrradiation += averageSolarIrradiationMonth;
         }
         averageSunlightHours = averageSunlightHours / data.Count;
