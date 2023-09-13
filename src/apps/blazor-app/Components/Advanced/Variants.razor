@@ -1,26 +1,34 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-    <Heading css="mb-16 max-w-3xl mx-auto">
+    <Heading css="mb-12 max-w-3xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
         <Subscript><p class="text-center">Lorem ipsum dolor sit amet consectetur adipiscing elit tortor eu egestas morbi sem vulputate etiam facilisis pellentesque ut quis."</p></Subscript>
     </Heading>
-    <div class="flex gap-20 scale-90 justify-stretchs">
+    <div class="flex gap-20 scale-90 justify-center">
+            @{applianceCount = appliances.Count(x => x.quantity > 0);}
             @foreach (var appliance in appliances)
             {
                 if (appliance.quantity > 0)
                 {
-                    <div>
+                    <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100" : "") p-2 rounded-xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
                         <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
                             imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                     </div>
                 }
             }
+            @if (applianceCount == 0)
+            {
+                <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
+            }
     </div>
 </div>
 
 @code {
+    @* private List<List<ApplianceModel>> applianceVariants = new List<List<ApplianceModel>>(); *@
+    private string selectedAppliance = "";
+    private int applianceCount = 0;
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -52,5 +60,18 @@
     {
         this.appliances = appliances;
         StateHasChanged();
+    }
+
+    public Task SelectAppliance (string appliance)
+    {
+        if (appliance == selectedAppliance)
+        {
+            selectedAppliance = "";
+            StateHasChanged();
+            return Task.CompletedTask;
+        }
+        selectedAppliance = appliance;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }
