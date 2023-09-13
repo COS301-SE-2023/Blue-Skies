@@ -2,7 +2,7 @@ public class LocationDataModel
 {
     public double latitude { get; set; }
     public double longitude { get; set; }
-    public string? location { get; set; }
+    public string? locationName { get; set; }
     public byte[]? satteliteImageData { get; set; }
     public byte[]? satteliteElevationImageData { get; set; }
     public byte[]? annualFluxData { get; set; }
