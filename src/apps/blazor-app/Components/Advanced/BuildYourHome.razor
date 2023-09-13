@@ -9,6 +9,7 @@
 @using ChartJs.Blazor.PieChart
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.ApplianceService applianceService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
@@ -457,6 +458,7 @@ new TabItemModel("General", false)
         appliance.quantity++;
         UpdateApplianceStorage();
         CalculateRunningHours();
+        applianceService.UpdateAppliance(appliances);
     }
 
     /// <summary>
@@ -476,9 +478,10 @@ new TabItemModel("General", false)
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
+        StateHasChanged();
         UpdateApplianceStorage();
         CalculateRunningHours();
-        StateHasChanged();
+        applianceService.UpdateAppliance(appliances);
     }
 
     private async void UpdateApplianceStorage()

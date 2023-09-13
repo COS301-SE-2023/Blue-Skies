@@ -2,17 +2,16 @@ namespace BlazorApp.Data
 {
     public class ApplianceService
     {
-        public event Action<ApplianceModel>? IncrementApplianceCountRequested;
-        public event Action<ApplianceModel>? DecrementApplianceCountRequested;
+        public event Action<List<ApplianceModel>>? UpdateAppliancesRequested;
 
-        public void IncrementApplianceCount(ApplianceModel appliance)
+        public void UpdateAppliance(List<ApplianceModel> appliances)
         {
-            IncrementApplianceCountRequested?.Invoke(appliance);
+            foreach (var appliance in appliances)
+            {
+                Console.WriteLine($"Appliance: {appliance.type} - {appliance.quantity}");
+            }
+            UpdateAppliancesRequested?.Invoke(appliances);
         }
 
-        public void DecrementApplianceCount(ApplianceModel appliance)
-        {
-            DecrementApplianceCountRequested?.Invoke(appliance);
-        }
     }
 }
