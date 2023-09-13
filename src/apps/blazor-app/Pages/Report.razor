@@ -23,10 +23,10 @@
                         </Heading>
                         <div class="flex-col">
                             <div class="h-[8cm] w-[8cm] mx-auto">
-                                <Map imageName="@locationData.image" />
+                                <Map imageName="@SatteliteImage" />
                             </div>
                             <div class="flex flex-col w-fit mx-auto space-y-2">
-                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.location />
+                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.locationName />
                                 <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
                                 <div class="translate-x-1">
                                     <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <div class="w-full">
-                        <ElevationGraph elevationValues="@locationData.elevationData" animated="false" />
+                        <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
                     </div>
                 </div>
             </div>
@@ -129,10 +129,13 @@
 </div>
 @code {
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
+
+    private string? SatteliteImage;
     [Parameter] public string? UserId { get; set; }
     [Parameter]
     public string? ReportId { get; set; }
@@ -165,14 +168,19 @@
                 system = result;
             }
 
-            locationData = await locationDataClass.GetLocationData(latitude, longitude);
-            Console.WriteLine("Current location: " + locationData.location);
+            LocationDataModel? resultLocationData = await locationDataClass.GetLocationData(latitude, longitude);
+            if(resultLocationData != null) {
+                locationData = resultLocationData;
+                SatteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
+            }
+
+            Console.WriteLine("Current location: " + locationData.locationName);
             reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
             Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
 
             var systemSize = system.systemSize!;
 
-            GetSolarScore();
+            solarScore = solarCalculator.getSolarScore(locationData.satteliteImageData!, locationData.maskData!).ToString();
             GetAvgEnergyProduction();
             renderCharts();
             isLoaded = true;
@@ -193,13 +201,6 @@
         } else {
             Console.WriteLine("Report not found");
         }
-    }
-
-    private void GetSolarScore()
-    {
-        int temp = solarCalculator.calculateSolarScore(locationData.data!);
-        Console.WriteLine("Solar Score: " + temp);
-        solarScore = temp.ToString();
     }
 
     @* Calculate Average Energy Production *@
