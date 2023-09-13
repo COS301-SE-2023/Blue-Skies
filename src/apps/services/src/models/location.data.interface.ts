@@ -1,11 +1,14 @@
 export default class ILocationData {
   latitude: number;
   longitude: number;
-  location: string;
-  data: string;
+  locationName: string;
+  solarPanelsData: string;
+  satteliteImageData: number[];
+  satteliteImageElevationData: number[];
+  annualFluxData: number[];
+  monthlyFluxData: number[];
+  maskData: number[];
   dateCreated: Date;
   daylightHours: number;
-  image: string;
-  remainingCalls: number;
-  elevationData: string;
+  horisonElevationData: string;
 }
