@@ -226,33 +226,6 @@
       locationDataModel.daylightHours = 123;
       locationDataModel.horisonElevationData = "Horison elevation data";
 
-      var client = new HttpClient();
-      var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-      var postData = new
-      {
-          latitude = locationDataModel.latitude,
-          longitude = locationDataModel.longitude,
-          locationName = locationDataModel.locationName,
-          solarPanelsData = locationDataModel.solarPanelsData,
-          satteliteImageData = locationDataModel.satteliteImageData,
-          satteliteImageElevationData = locationDataModel.satteliteImageElevationData,
-          annualFluxData = locationDataModel.annualFluxData,
-          monthlyFluxData = locationDataModel.monthlyFluxData,
-          maskData = locationDataModel.maskData,
-          daylightHours =  locationDataModel.daylightHours,
-          horisonElevationData = locationDataModel.horisonElevationData
-      };
-
-      var json = JsonSerializer.Serialize(postData);
-      request.Content = new StringContent(json, null, "application/json");
-      var response = await client.SendAsync(request);
-      
-      if (response.IsSuccessStatusCode)
-      {
-        Console.WriteLine("Success leeeetss goooooo");
-      } else {
-        Console.WriteLine("Error noooooooooo");
-      }
     }
 
     if(showImages) {
