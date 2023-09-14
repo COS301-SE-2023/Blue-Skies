@@ -39,3 +39,8 @@ locationDataRouter.delete(
   '/delete/:latitude/:longitude',
   locationDataController.deleteLocationData
 );
+
+locationDataRouter.get(
+  '/checkIfLocationDataExists/:latitude/:longitude',
+  locationDataController.checkIfLocationDataExists
+);

@@ -21,7 +21,7 @@ export default class LocationDataController {
     }
   };
 
-  //createSolarIrradiation
+
   public createLocationData = async (req: Request, res: Response) => {
     req.setTimeout(30000, () => {
       res.status(504).send('Request timed out');
@@ -69,7 +69,7 @@ export default class LocationDataController {
     }
   };
 
-  //get solarIrradiation
+
   public getLocationData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
@@ -192,6 +192,39 @@ export default class LocationDataController {
             console.log(rowCount);
             res.status(200).json({
               message: 'Solar Irradiation deleted successfully.',
+            });
+          }
+        }
+      );
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // check if location data exists
+  public checkIfLocationDataExists = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json({
+              message: 'Solar Irradiation found.',
             });
           }
         }
