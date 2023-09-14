@@ -100,11 +100,13 @@
         currentLocationData.longitude = longitude;
 
         byte[] imageBytes = new byte[0];
-        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
-        if (currentLocationData == null)
+        bool checkifLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
+        if (checkifLocationDataExists == false)
         {
             Console.WriteLine("Location data does not exist, creating it instead");
             currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
+        }else{
+            Console.WriteLine("Location data exists, getting it instead");
         }
 
         if(currentLocationData == null)

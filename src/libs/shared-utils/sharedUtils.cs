@@ -9,6 +9,17 @@ namespace SharedUtils;
 public class locationDataClass {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
+    public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude);
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            return true;
+        }
+        return false;
+    }
     /// <summary>
     /// Get's the location data from the database.
     /// <paramref name="latitude"/> The latitude of the current location.
