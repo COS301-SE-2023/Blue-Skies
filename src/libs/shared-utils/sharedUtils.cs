@@ -15,13 +15,11 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
     public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude){
-        LocationDataModel locationData = new LocationDataModel();
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            string data = response.Content.ReadAsStringAsync().Result;
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<LocationDataModel>(data)!;
         }
         return null;
