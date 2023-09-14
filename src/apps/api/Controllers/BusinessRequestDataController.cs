@@ -18,30 +18,30 @@ public class BusinessRequestDataController : ControllerBase
         _keysRepository = new KeysRepository();
     }
 
-    [HttpPost("post")]
-    public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
-    {
-        try
-        {
-            var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
-            List<KeyModel> keys = await _keysRepository.GetAllKeys();
-            foreach(KeyModel key in keys)
-            {
-                if(businessRequestData.key == null)
-                {
-                    return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
-                }
+    // [HttpPost("post")]
+    // public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
+    // {
+    //     // try
+    //     // {
+    //     //     var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
+    //     //     List<KeyModel> keys = await _keysRepository.GetAllKeys();
+    //     //     foreach(KeyModel key in keys)
+    //     //     {
+    //     //         if(businessRequestData.key == null)
+    //     //         {
+    //     //             return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
+    //     //         }
 
-                if(businessRequestData.key.Equals(key.APIKey))
-                {
-                    return Ok(data);
-                }
-            }
-            return StatusCode((int)HttpStatusCode.Unauthorized, "Invalid API Key");
-        }
-        catch (Exception e)
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
-        }
-    }
+    //     //         if(businessRequestData.key.Equals(key.APIKey))
+    //     //         {
+    //     //             return Ok(data);
+    //     //         }
+    //     //     }
+    //     //     return StatusCode((int)HttpStatusCode.Unauthorized, "Invalid API Key");
+    //     // }
+    //     // catch (Exception e)
+    //     // {
+    //     //     return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+    //     // }
+    // }
 }

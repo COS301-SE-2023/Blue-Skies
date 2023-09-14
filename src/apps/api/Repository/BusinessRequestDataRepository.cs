@@ -9,18 +9,18 @@ namespace Api.Repository;
 
 public class BusinessRequestDataRepository
 {
-    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
-    private string express = "http://localhost:3333";
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    public BusinessRequestDataRepository()
-    {
-        var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
-        if (backendexpress != null)
-        {
-            express = backendexpress;
-        }
-    }
+    // private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    // private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
+    // private string express = "http://localhost:3333";
+    // private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    // public BusinessRequestDataRepository()
+    // {
+    //     var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
+    //     if (backendexpress != null)
+    //     {
+    //         express = backendexpress;
+    //     }
+    // }
     
     // public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     // {
