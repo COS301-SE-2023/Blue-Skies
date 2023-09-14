@@ -40,19 +40,8 @@ export default class LocationDataController {
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
     const dlh = parseFloat(daylightHours.replace(',', '.'));
-    const satteliteImageDataByteArray: Uint8Array = new Uint8Array(
-      satteliteImageData
-    );
-    const satteliteImageElevationDataByteArray: Uint8Array = new Uint8Array(
-      satteliteImageElevationData
-    );
-    const annualFluxDataByteArray: Uint8Array = new Uint8Array(annualFluxData);
-    const monthlyFluxDataByteArray: Uint8Array = new Uint8Array(
-      monthlyFluxData
-    );
-    const maskDataByteArray: Uint8Array = new Uint8Array(maskData);
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', @satteliteImageData, @satteliteImageElevationData, @annualFluxData, @monthlyFluxData, @maskData, '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
-    // const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', ${satteliteImageData}, ${satteliteImageElevationData}, ${annualFluxData}, ${maskData}, '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
+    console.log(dateCreated);
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
 
     try {
       const request = new tedious.Request(
@@ -70,31 +59,6 @@ export default class LocationDataController {
             });
           }
         }
-      );
-      request.addParameter(
-        'satteliteImageData',
-        tedious.TYPES.VarBinary,
-        Buffer.from(satteliteImageDataByteArray)
-      );
-      request.addParameter(
-        'satteliteImageElevationData',
-        tedious.TYPES.VarBinary,
-        Buffer.from(satteliteImageElevationDataByteArray)
-      );
-      request.addParameter(
-        'annualFluxData',
-        tedious.TYPES.VarBinary,
-        Buffer.from(annualFluxDataByteArray)
-      );
-      request.addParameter(
-        'monthlyFluxData',
-        tedious.TYPES.VarBinary,
-        Buffer.from(monthlyFluxDataByteArray)
-      );
-      request.addParameter(
-        'maskData',
-        tedious.TYPES.VarBinary,
-        Buffer.from(maskDataByteArray)
       );
 
       conn.execSql(request);
@@ -129,24 +93,18 @@ export default class LocationDataController {
       );
 
       request.on('row', (columns) => {
-        const satteliteImageDataByteArray = columns[4].value as Buffer;
-        const satteliteImageElevationDataByteArray = columns[5].value as Buffer;
-        const annualFluxDataByteArray = columns[6].value as Buffer;
-        const monthlyFluxDataByteArray = columns[7].value as Buffer;
-        const maskDataByteArray = columns[8].value as Buffer;
+
 
         solarIrradiation = {
           latitude: columns[0].value,
           longitude: columns[1].value,
           locationName: columns[2].value,
           solarPanelsData: columns[3].value,
-          satteliteImageData: Array.from(satteliteImageDataByteArray),
-          satteliteImageElevationData: Array.from(
-            satteliteImageElevationDataByteArray
-          ),
-          annualFluxData: Array.from(annualFluxDataByteArray),
-          monthlyFluxData: Array.from(monthlyFluxDataByteArray),
-          maskData: Array.from(maskDataByteArray),
+          satteliteImageData: columns[4].value,
+          satteliteImageElevationData: columns[5].value,
+          annualFluxData: columns[6].value,
+          monthlyFluxData: columns[7].value,
+          maskData: columns[8].value,
           dateCreated: columns[9].value,
           daylightHours: columns[10].value,
           horisonElevationData: columns[11].value,

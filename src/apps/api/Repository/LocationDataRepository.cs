@@ -79,19 +79,27 @@ public class LocationDataRepository
                 HttpMethod.Post,
                 express + "/api/locationData/create"
             );
-           var postData = new{
+            string satteliteImageDataBase64 = Convert.ToBase64String(satteliteImageData);
+            string satteliteImageElevationDataBase64 = Convert.ToBase64String(satteliteImageElevationData);
+            string annualFluxDataBase64 = Convert.ToBase64String(annualFluxData);
+            string monthlyFluxDataBase64 = Convert.ToBase64String(monthlyFluxData);
+            string maskDataBase64 = Convert.ToBase64String(maskData);
+
+            var postData = new
+            {
                 latitude = latitude.ToString(),
                 longitude = longitude.ToString(),
                 locationName = locationName,
                 solarPanelsData = solarPanelsData,
-                satteliteImageData = satteliteImageData,
-                satteliteImageElevationData = satteliteImageElevationData,
-                annualFluxData = annualFluxData,
-                monthlyFluxData = monthlyFluxData,
-                maskData = maskData,
+                satteliteImageData = satteliteImageDataBase64,
+                satteliteImageElevationData = satteliteImageElevationDataBase64,
+                annualFluxData = annualFluxDataBase64,
+                monthlyFluxData = monthlyFluxDataBase64,
+                maskData = maskDataBase64,
                 daylightHours = daylightHours.ToString(),
                 horisonElevationData = horisonElevationData
             };
+
             var json = JsonSerializer.Serialize(postData);
             request.Content = new StringContent(json, null, "application/json");
             // Console.WriteLine(await request.Content.ReadAsStringAsync());
@@ -109,7 +117,7 @@ public class LocationDataRepository
             {
                 throw new Exception("Error creating LocationData");
             }
-           
+
         }
         catch (System.Exception)
         {
@@ -133,17 +141,32 @@ public class LocationDataRepository
             {
                 // Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
-                LocationDataModel locationData = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = locationDataTemp.locationName,
+                    solarPanelsData = locationDataTemp.solarPanelsData,
+                    satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
+                    satteliteImageElevationData = Convert.FromBase64String(locationDataTemp.satteliteImageElevationData!),
+                    annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
+                    monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
+                    maskData = Convert.FromBase64String(locationDataTemp.maskData!),
+                    dateCreated = locationDataTemp.dateCreated,
+                    daylightHours = locationDataTemp.daylightHours,
+                    horisonElevationData = locationDataTemp.horisonElevationData
+                };
                 return locationData!;
-            }
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            }else if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null!;
             }
             else
             {
-                throw new Exception("Error getting solar irradiation");
+                throw new Exception("Error getting LocationData");
             }
+
         }
         catch (System.Exception)
         {
@@ -181,4 +204,20 @@ public class LocationDataRepository
             throw new Exception("Could not delete LocationData");
         }
     }
+}
+
+public class LocationDataModelTemp
+{
+    public double latitude { get; set; }
+    public double longitude { get; set; }
+    public string? locationName { get; set; }
+    public string? solarPanelsData { get; set; }
+    public string? satteliteImageData { get; set; }
+    public string? satteliteImageElevationData { get; set; }
+    public string? annualFluxData { get; set; }
+    public string? monthlyFluxData { get; set; }
+    public string? maskData { get; set; }
+    public DateTime? dateCreated { get; set; }
+    public double daylightHours { get; set; }
+    public string? horisonElevationData { get; set; }
 }
