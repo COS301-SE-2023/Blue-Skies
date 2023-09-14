@@ -84,38 +84,23 @@ public class locationDataClass {
         }
         result.horisonElevationData = elevationData;
 
-        // LocationDataModel? locationData = await GetRoofData(latitude, longitude);
-        // if(locationData == null) {
-        //     Console.WriteLine("Rooftop data not found");
-        //     return null;
-        // }
+        LocationDataModel? locationData = await GetRoofData(latitude, longitude);
+        if(locationData == null) {
+            Console.WriteLine("Rooftop data not found");
+            return null;
+        }
 
-        result.solarPanelsData = null;
-        result.satteliteImageData = null;
-        result.satteliteImageElevationData = null;
-        result.annualFluxData = null;
-        result.monthlyFluxData = null;
-        result.maskData = null;
+        result.solarPanelsData = locationData.solarPanelsData;
+        result.satteliteImageData = locationData.satteliteImageData;
+        result.satteliteImageElevationData = locationData.satteliteImageElevationData;
+        result.annualFluxData = locationData.annualFluxData;
+        result.monthlyFluxData = locationData.monthlyFluxData;
+        result.maskData = locationData.maskData;
         result.dateCreated = DateTime.Now;
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-        var postData = new
-        {
-            latitude = result.latitude,
-            longitude = result.longitude,
-            locationName = result.locationName,
-            solarPanelsData = result.solarPanelsData,
-            satteliteImageData = result.satteliteImageData,
-            satteliteImageElevationData = result.satteliteImageElevationData,
-            annualFluxData = result.annualFluxData,
-            monthlyFluxData = result.monthlyFluxData,
-            maskData = result.maskData,
-            daylightHours =  result.daylightHours,
-            horisonElevationData = result.horisonElevationData
-        };
-
-        var json = JsonSerializer.Serialize(postData);
+        var json = JsonSerializer.Serialize(result);
         request.Content = new StringContent(json, null, "application/json");
         var response = await client.SendAsync(request);
         
