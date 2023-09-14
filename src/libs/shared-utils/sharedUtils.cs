@@ -178,8 +178,8 @@ public class locationDataClass {
         LocationDataLayer result = new LocationDataLayer();
         int radiusMeters = 50;
         string view = "IMAGERY_AND_ALL_FLUX_LAYERS";
-        string requiredQuality = "HIGH";
-        double pixelSizeMeters = 0.1;
+        string requiredQuality = "MEDIUM";
+        double pixelSizeMeters = 0.25;
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
         if(api_key == null) {
             Console.WriteLine("API key not found");
