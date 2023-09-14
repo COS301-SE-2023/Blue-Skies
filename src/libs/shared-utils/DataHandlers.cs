@@ -371,7 +371,6 @@ public class RooftopDataHandler
             }
         }
 
-
         string?[] monthlyFluxImages = new string[12];
 
         float minData = float.NaN;
