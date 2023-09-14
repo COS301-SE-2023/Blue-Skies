@@ -185,7 +185,7 @@ public class LocationDataRepository
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                express + "/api/locationData/essentiallocationdata/" + latitude + "/" + longitude
+                express + "/api/locationData/essentialData/" + latitude + "/" + longitude
             );
             var response = await client.SendAsync(request);
 
