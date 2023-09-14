@@ -14,8 +14,30 @@ public class SolarDataHandler
 
     public LocationDataModel? locationData { get; set; }
 
-    public int getSolarScore(byte[] annualFluxData, byte[] maskData)
+    public int getSolarScore(byte[] monthlyFluxData, byte[] maskData)
     {
+        Gdal.AllRegister();
+        
+        string montlyFluxPath = Path.Combine(Path.GetTempPath(), "monthlyFlux.tif");
+        File.WriteAllBytes(montlyFluxPath, monthlyFluxData);
+        Dataset monthlyFluxDataSet = Gdal.Open(montlyFluxPath, Access.GA_ReadOnly);
+
+        string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
+        File.WriteAllBytes(maskPath, maskData);
+        Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
+        
+        if (monthlyFluxDataSet == null || monthlyFluxDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open monthly flux dataset.");
+        }
+
+        if (maskDataSet == null || maskDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open mask dataset.");
+        }
+
+
+
         return 50;
     }
 
@@ -170,6 +192,7 @@ public class RooftopDataHandler
             }
         }
 
+        dsmDataset.Dispose();
         File.Delete(dsmPath);
 
         // Convert the heightMap image to base64
@@ -257,6 +280,9 @@ public class RooftopDataHandler
                     maxData = value;
             }
         }
+        
+        fluxDataSet.Dispose();
+        maskDataSet.Dispose();
 
         File.Delete(fluxPath);
         File.Delete(maskPath);
@@ -400,6 +426,9 @@ public class RooftopDataHandler
 
             monthlyFluxImages[i - 1] = ConvertDataToYellowAndRedImage(maskedData, minData, maxData, resizedSatelliteImage, resizedMaskValueArray, 2);
         }
+
+        monthlyFluxDataSet.Dispose();
+        maskDataSet.Dispose();
 
         File.Delete(montlyFluxPath);
         File.Delete(maskPath);
