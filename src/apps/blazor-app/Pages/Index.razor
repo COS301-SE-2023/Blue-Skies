@@ -12,6 +12,7 @@
 @using System.IO;
 @using System.Net.Http.Json;
 @using System.Text.Json;
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Blue Skies - Home</PageTitle>
 
@@ -70,6 +71,9 @@
     isAd = isAdmin.Value;
     isLoaded = true;
     loadingService.HideLoadingScreen();
+
+    await ProtectedSessionStore.SetAsync("latitude", 0);
+    await ProtectedSessionStore.SetAsync("longitude", 0);
   }
 
   /// <summary>
