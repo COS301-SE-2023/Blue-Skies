@@ -5,6 +5,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 
 <div class="mt-24 text-center">
@@ -156,7 +157,7 @@
         loadingService.ShowLoadingScreen();
         if(locationData == null) 
         {
-            @* ToDO: Show modal that locationData is empty and go back to home *@
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");
             return;
         }

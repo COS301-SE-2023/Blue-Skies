@@ -94,7 +94,8 @@
     ///     <item> Call the GetSolarScore function </item>
     /// </list>
     /// </summary>    
-    protected override async Task OnInitializedAsync()
+
+    protected override void OnInitialized()
     {
         satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
