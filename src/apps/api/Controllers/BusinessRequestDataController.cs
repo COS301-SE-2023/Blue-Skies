@@ -23,7 +23,6 @@ public class BusinessRequestDataController : ControllerBase
     {
         try
         {
-            var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
             List<KeyModel> keys = await _keysRepository.GetAllKeys();
             foreach(KeyModel key in keys)
             {
@@ -34,6 +33,7 @@ public class BusinessRequestDataController : ControllerBase
 
                 if(businessRequestData.key.Equals(key.APIKey))
                 {
+                    var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
                     return Ok(data);
                 }
             }

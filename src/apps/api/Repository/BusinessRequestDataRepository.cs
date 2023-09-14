@@ -38,15 +38,15 @@ public class BusinessRequestDataRepository
             var dataTypeResponse = new HttpResponseMessage();
            
             LocationDataModel locationData = await locationDataClass.GetLocationData(latitude, longitude);
-                    if (locationData.data == null)
-                    {
-                        
-                        var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
-                        byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
-                        var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
-                       
-                        await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
-                    }
+            if (locationData.data == null)
+            {
+                
+                var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
+                byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
+                var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+                
+                await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
+            }
 
             switch(data!.ToLower()){
                 case "solar score" : 
