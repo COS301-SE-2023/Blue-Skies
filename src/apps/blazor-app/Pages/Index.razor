@@ -113,8 +113,8 @@
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     bool showImages = true;
-    bool loadImagesFromFiles = true;
-    bool loadImagesFromAPI = false;
+    bool loadImagesFromFiles = false;
+    bool loadImagesFromAPI = true;
     bool saveDataToAPI = false;
 
     byte[]? satteliteImageDataBytes = null;
@@ -180,7 +180,7 @@
       double latitude = -25.83426694181244;
       double longitude = 28.29361451288546;
       Console.WriteLine("Loading from API");
-      LocationDataModel? data = await locationDataClass.CreateLocationData(latitude,longitude, "Ruan's house");
+      LocationDataModel? data = await locationDataClass.GetLocationData(latitude,longitude);
       Console.WriteLine("Loaded from API");
       if(data != null) {
         satteliteImageDataBytes = data.satteliteImageData;
@@ -196,36 +196,18 @@
     if(saveDataToAPI) {
       double latitude = -25.83426694181244;
       double longitude = 28.29361451288546;
-      
-      LocationDataModel? result = await locationDataClass.CreateLocationData(latitude, longitude, "Ruan's house");
-      if(result != null) {
-        Console.WriteLine("Saved to API");
-        satteliteImageDataBytes = result.satteliteImageData;
-        heightData = result.satteliteImageElevationData;
-        maskData = result.maskData;
-        fluxData = result.annualFluxData;
-        monthlyFluxData = result.monthlyFluxData;
-
-        Console.WriteLine("Letttsss goooo fetched successfully");
+      Console.WriteLine("Loading from API");
+      LocationDataModel? data = await locationDataClass.CreateLocationData(latitude,longitude, "Ruans house");
+      Console.WriteLine("Loaded from API");
+      if(data != null) {
+        satteliteImageDataBytes = data.satteliteImageData;
+        heightData = data.satteliteImageElevationData;
+        maskData = data.maskData;
+        fluxData = data.annualFluxData;
+        monthlyFluxData = data.monthlyFluxData;
       } else {
-        Console.WriteLine("Error fetching data");
+        Console.WriteLine("Error noooooooooo");
       }
-    }
-
-    if(saveDataToAPI) {
-      LocationDataModel locationDataModel = new LocationDataModel();
-      locationDataModel.latitude = 123;
-      locationDataModel.longitude = 123;
-      locationDataModel.locationName = "Test";
-      locationDataModel.solarPanelsData = "Sollar panels data";
-      locationDataModel.satteliteImageData = satteliteImageDataBytes;
-      locationDataModel.satteliteImageElevationData = heightData;
-      locationDataModel.maskData = maskData;
-      locationDataModel.annualFluxData = fluxData;
-      locationDataModel.monthlyFluxData = monthlyFluxData;
-      locationDataModel.daylightHours = 123;
-      locationDataModel.horisonElevationData = "Horison elevation data";
-
     }
 
     if(showImages) {
