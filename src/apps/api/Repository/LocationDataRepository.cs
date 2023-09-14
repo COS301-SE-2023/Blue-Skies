@@ -259,6 +259,39 @@ public class LocationDataRepository
             throw new Exception("Could not delete LocationData");
         }
     }
+
+    //CheckIfLocationDataExists
+    public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(".NET LocationData exists");
+                return true;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                Console.WriteLine(".NET LocationData does not exist");
+                return false;
+            }
+            else
+            {
+                Console.WriteLine(".NET Error checking if LocationData exists");
+                throw new Exception("Error checking if LocationData exists");
+            }
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not check if LocationData exists");
+        }
+    }
 }
 
 public class LocationDataModelTemp
