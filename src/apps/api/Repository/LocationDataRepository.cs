@@ -106,17 +106,19 @@ public class LocationDataRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                Console.WriteLine(".NET LocationData created successfully");
                 return "LocationData created successfully";
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                Console.WriteLine("Bad Request");
+                Console.WriteLine(".NET Bad Request When Creating LocationData");
                 // Get error
                 string data = response.Content.ReadAsStringAsync().Result;
                 return data;
             }
             else
             {
+                Console.WriteLine(".NET Error creating LocationData");
                 throw new Exception("Error creating LocationData");
             }
 
@@ -162,10 +164,12 @@ public class LocationDataRepository
                 return locationData!;
             }else if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Console.WriteLine(".NET LocationData not found");
                 return null!;
             }
             else
             {
+                Console.WriteLine(".NET Error getting LocationData");
                 throw new Exception("Error getting LocationData");
             }
 
