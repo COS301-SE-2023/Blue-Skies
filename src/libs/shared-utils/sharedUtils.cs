@@ -18,9 +18,11 @@ public class locationDataClass {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         var response = await client.SendAsync(request);
+        Console.WriteLine("Response: " + response);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            return result;
         }
         return null;
     }
@@ -84,7 +86,7 @@ public class locationDataClass {
 
         LocationDataModel? locationData = await GetRoofData(latitude, longitude);
         if(locationData == null) {
-            Console.WriteLine("Location data not found");
+            Console.WriteLine("Rooftop data not found");
             return null;
         }
         result.solarPanelsData = locationData.solarPanelsData;
@@ -95,23 +97,10 @@ public class locationDataClass {
         result.maskData = locationData.maskData;
         result.dateCreated = DateTime.Now;
 
-
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-        var content = new StringContent("{\r\n    \"latitude\": \"" 
-                                    + latitude.ToString().Replace(",",".") 
-                                    + "\",\r\n    \"longitude\": \"" 
-                                    + longitude.ToString().Replace(",",".") 
-                                    + "\",\r\n    \"location\": \"" 
-                                    + result.locationName 
-                                    + "\",\r\n    \"daylightHours\" : \"" 
-                                    + result.daylightHours.ToString().Replace(",",".") 
-                                    + "\",\r\n    \"image\": \"" 
-                                    + result.solarPanelsData
-                                    + "\" ,\r\n    \"elevationData\": \"" 
-                                    + elevationData +"\"\r\n}", null, "application/json");
-        
-        request.Content = content;
+        var json = JsonSerializer.Serialize(result);
+        request.Content = new StringContent(json, null, "application/json");
         var response = await client.SendAsync(request);
         
         if (response.IsSuccessStatusCode)
