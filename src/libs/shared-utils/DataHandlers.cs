@@ -25,21 +25,7 @@ public class SolarDataHandler
         string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
         File.WriteAllBytes(maskPath, maskData);
         Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
-        
-        if (monthlyFluxDataSet == null || monthlyFluxDataSet.RasterCount == 0)
-        {
-            throw new ArgumentException("Failed to open monthly flux dataset.");
-        }
-        else
-        {
-            if (previousScore != -1)
-            {
-                result = previousScore;
-            }
-            Console.WriteLine("Failed to get data from LocationData");
-            Console.WriteLine("Previous score: " + previousScore);
-        }
-
+    
         return 50;
     }
 
