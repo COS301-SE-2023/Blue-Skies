@@ -110,7 +110,7 @@
     isLoaded = true;
     loadingService.HideLoadingScreen();
 
-    @* string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     bool showImages = true;
     bool loadImagesFromFiles = false;
@@ -177,8 +177,10 @@
         }
       }
     } else if(loadImagesFromAPI) { 
+      double latitude = -25.83426694181244;
+      double longitude = 28.29361451288546;
       Console.WriteLine("Loading from API");
-      LocationDataModel? data = await locationDataClass.GetLocationData(123,123);
+      LocationDataModel? data = await locationDataClass.CreateLocationData(latitude,longitude, "Ruan's house");
       Console.WriteLine("Loaded from API");
       if(data != null) {
         satteliteImageDataBytes = data.satteliteImageData;
@@ -223,8 +225,6 @@
       locationDataModel.monthlyFluxData = monthlyFluxData;
       locationDataModel.daylightHours = 123;
       locationDataModel.horisonElevationData = "Horison elevation data";
-
-      @* ToDO: add API Call *@
 
       var client = new HttpClient();
       var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
@@ -271,7 +271,7 @@
       if(monthlyFluxData != null && satteliteImageDataBytes != null && maskData != null) {
         monthlyFluxImagesData = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageDataBytes, maskData);
       }
-    } *@
+    }
   }
 
   /// <summary>

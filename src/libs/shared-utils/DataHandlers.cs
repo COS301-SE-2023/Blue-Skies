@@ -36,8 +36,6 @@ public class SolarDataHandler
             throw new ArgumentException("Failed to open mask dataset.");
         }
 
-
-
         return 50;
     }
 
@@ -116,11 +114,12 @@ public class SolarDataHandler
 
 public class RooftopDataHandler
 {
-    public string GetSatelliteImage(byte[] satteliteImageData)
+    public string? GetSatelliteImage(byte[] satteliteImageData)
     {
         if (satteliteImageData == null || satteliteImageData.Length == 0)
         {
-            throw new ArgumentException("The provided image data is empty or null.");
+            Console.WriteLine("The provided image data is empty or null.");
+            return null;
         }
 
         try
@@ -136,7 +135,7 @@ public class RooftopDataHandler
         }
     }
 
-    public string GetHeightMap(byte[] dsmData)
+    public string? GetHeightMap(byte[] dsmData)
     {
         Gdal.AllRegister();
 

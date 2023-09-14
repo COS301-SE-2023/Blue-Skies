@@ -114,12 +114,12 @@ public class locationDataClass {
         LocationDataModel result = new LocationDataModel();
         result.latitude = latitude;
         result.longitude = longitude;
-        string? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
+        RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
         if(solarPanelsDataResult == null) {
             Console.WriteLine("Solar panels data not found");
             return null;
         }
-        result.solarPanelsData = solarPanelsDataResult;
+        result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
 
         LocationDataLayer? locationDataLayer = await GetLocationDataLayer(latitude, longitude);
         if(locationDataLayer == null) {
@@ -173,10 +173,11 @@ public class locationDataClass {
             return null;
         }
         var client = new HttpClient();
+        Console.WriteLine("Getting data from url: " + url + "&key=" + api_key);
         var response = await client.GetAsync(url + "&key=" + api_key);
         if (response.IsSuccessStatusCode) {
-            var data = await response.Content.ReadAsStringAsync();
-            return Encoding.ASCII.GetBytes(data);
+            Console.WriteLine("Data found");
+            return await response.Content.ReadAsByteArrayAsync();
         }
         return null;
     }
@@ -203,7 +204,7 @@ public class locationDataClass {
         return null;
     }
 
-    private async Task<string?> GetSolarPannelsData(double latitude, double longitude) {
+    private async Task<RooftopInformationModel?> GetSolarPannelsData(double latitude, double longitude) {
         string requiredQuality = "HIGH";
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
 
@@ -217,7 +218,7 @@ public class locationDataClass {
         var response = await client.GetAsync(url);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
-            return data;
+            return JsonSerializer.Deserialize<RooftopInformationModel>(data);
         }
         return null;
     }
