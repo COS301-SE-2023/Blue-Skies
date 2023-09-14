@@ -113,7 +113,10 @@
         double? lat = tempLatitude.Value;
         double? lng = tempLongitude.Value;
 
-        if(lat == null && lng == null && lat == 0 || lng == 0)
+        Console.WriteLine(lat);
+        Console.WriteLine(lng);
+
+        if(lat == null || lng == null || lat == 0 || lng == 0)
         {
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");

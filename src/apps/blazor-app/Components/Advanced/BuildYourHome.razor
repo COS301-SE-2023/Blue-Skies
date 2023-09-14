@@ -350,8 +350,7 @@
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
     public List<SystemModel> systems { get; set; } = new List<SystemModel>();
-    [Parameter]
-    public int solarScore { get; set; }
+
     [Parameter]
     public int selectedSystem { get; set; }
     [Parameter]
@@ -362,26 +361,25 @@
     public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
-    
+
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private int userId = -1;
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
-{
-new TabItemModel("Add", true),
-new TabItemModel("Remove", false)
-};
+    {
+        new TabItemModel("Add", true),
+        new TabItemModel("Remove", false)
+    };
     private List<TabItemModel> categories = new List<TabItemModel>
-{
-new TabItemModel("Kitchen", true),
-new TabItemModel("Entertainment", false),
-new TabItemModel("General", false)
-};
+    {
+        new TabItemModel("Kitchen", true),
+        new TabItemModel("Entertainment", false),
+        new TabItemModel("General", false)
+    };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
     float daylight = 0f;
