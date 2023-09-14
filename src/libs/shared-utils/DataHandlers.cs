@@ -30,10 +30,14 @@ public class SolarDataHandler
         {
             throw new ArgumentException("Failed to open monthly flux dataset.");
         }
-
-        if (maskDataSet == null || maskDataSet.RasterCount == 0)
+        else
         {
-            throw new ArgumentException("Failed to open mask dataset.");
+            if (previousScore != -1)
+            {
+                result = previousScore;
+            }
+            Console.WriteLine("Failed to get data from LocationData");
+            Console.WriteLine("Previous score: " + previousScore);
         }
 
         return 50;
@@ -42,10 +46,10 @@ public class SolarDataHandler
     private int calculateSolarScore(string data)
     {
         string input = data;
-        decimal total = 0;
+        double total = 0;
         int i = 0;
         while (input.Length > 0)
-        {
+        {   
             int newDataPointIndex = input.IndexOf(",");
             if (newDataPointIndex == -1)
             {
@@ -55,14 +59,23 @@ public class SolarDataHandler
             input = input.Substring(newDataPointIndex + 1);
             newDataPoint = newDataPoint.Trim();
             int solarScoreIndex = newDataPoint.IndexOf(";");
-            total += decimal.Parse(newDataPoint.Substring(solarScoreIndex + 1));
+            try {
+                total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1));
+            } catch (Exception) {
+                try {
+                    total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","));
+                } catch (Exception e) {
+                    Console.WriteLine("Error parsing data: " + e);
+                }
+            }
+ 
             i++;
         }
         if (i == 0)
         {
             return 0;
         }
-        decimal averageSolarIrradiation = total / i;
+        double averageSolarIrradiation = total / i;
         double solarScore = getPercentage((double)averageSolarIrradiation);
         if (solarScore > 100)
         {
@@ -72,7 +85,6 @@ public class SolarDataHandler
         {
             solarScore = 4;
         }
-
         return (int)solarScore;
     }
 

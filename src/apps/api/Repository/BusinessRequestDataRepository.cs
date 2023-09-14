@@ -37,9 +37,9 @@ public class BusinessRequestDataRepository
         //     var client = new HttpClient();
         //     var dataTypeResponse = new HttpResponseMessage();
            
-        //     LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
-        //             if (exists.data == null)
-        //             {
+            LocationDataModel locationData = await locationDataClass.GetLocationData(latitude, longitude);
+                    if (locationData.data == null)
+                    {
                         
         //                 var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
         //                 byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
@@ -48,36 +48,73 @@ public class BusinessRequestDataRepository
         //                 await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
         //             }
 
-        //     switch(data!.ToLower()){
-        //         case "solar score" : 
-        //             String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
-        //             dataTypeResponse.Content = new StringContent(content);
-        //             break;
-        //         default : 
-        //             throw new Exception("Error: Not a valid option chosen for data type");
-        //     }
+            switch(data!.ToLower()){
+                case "solar score" : 
+                    var content = await GetSolarScore((double)latitude, (double)longitude);
+                    dataTypeResponse.Content = new StringContent(content);
+                    break;
+                case "solar array" : 
+                    var solarArray = await GetSolarRadiationList((double)latitude, (double)longitude);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
+                    break;
+                case "average solar irradiation" : 
+                    var solarIrradiation = await GetAverageSolar((double)latitude, (double)longitude);
+                    dataTypeResponse.Content = new StringContent(solarIrradiation);
+                    break;
+                default : 
+                    dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
+                    break;
+            }
             
         //    return await dataTypeResponse.Content.ReadAsStringAsync();
            
-        // }
-        // catch (System.Exception)
-        // {
-
-        //     throw new Exception("Could not create solar irradiation");
-        // }
-        return "";
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not create solar irradiation");
+        }
     }
 
-    private async Task<String> solarScore(HttpClient client, HttpResponseMessage dataTypeResponse, float latitude, float longitude){
-         var dataType = new HttpRequestMessage(
-                        HttpMethod.Get, 
-                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
-                    );
-                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
-                    client = new HttpClient();
-                    dataTypeResponse = await client.SendAsync(dataType);
-                    Console.WriteLine("Response: " + dataTypeResponse);
-                    return await dataTypeResponse.Content.ReadAsStringAsync();
+     private Task<string> GetAverageSolar(double latitude, double longitude)
+    {
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        double averageSolarIrradiation=0;
+
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            averageSolarIrradiation = solarCalculator.GetAverageSolarIrradiation(latitude, longitude);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " averageSolarIrradiation: " + averageSolarIrradiation);
+            Task.Delay(3000);
+        }
+
+        return Task.FromResult(averageSolarIrradiation.ToString());
     }
-    
+
+    private async Task<String> GetSolarScore(double latitude, double longitude) 
+    {
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        int solarScore=0;
+        
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, 0);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
+            await Task.Delay(3000);
+
+        }
+        return solarScore.ToString();
+    }
+
+    private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
+    {   
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        solarCalculator.reset();
+        List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
+        while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
+            solarRadiationList = await solarCalculator.GetSolarRadiationListFromData(latitude, longitude);
+            Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarRadiationList: " + solarRadiationList);
+            await Task.Delay(3000);
+        }
+        return solarRadiationList;
+    }
 }
