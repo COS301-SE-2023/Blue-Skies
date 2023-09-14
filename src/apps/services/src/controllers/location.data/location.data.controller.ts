@@ -81,6 +81,7 @@ export default class LocationDataController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
+            console.log("express error: " + err.message);
             res.status(400).json({
               error: err.message,
             });
