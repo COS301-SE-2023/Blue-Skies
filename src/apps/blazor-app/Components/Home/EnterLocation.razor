@@ -103,10 +103,10 @@
         bool checkifLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
         if (checkifLocationDataExists == false)
         {
-            Console.WriteLine("Location data does not exist, creating it instead");
+            Console.WriteLine("Location data does not exist, creating the necessary data");
             currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
         }else{
-            Console.WriteLine("Location data exists, getting it instead");
+            Console.WriteLine("Location data exists, fetching it");
         }
 
         if(currentLocationData == null)

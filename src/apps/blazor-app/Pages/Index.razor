@@ -72,8 +72,14 @@
     isLoaded = true;
     loadingService.HideLoadingScreen();
 
-    await ProtectedSessionStore.SetAsync("latitude", 0);
-    await ProtectedSessionStore.SetAsync("longitude", 0);
+    @* If latitude and longitude is not set in ProtectedLocalStorage*@
+    var exists = await ProtectedSessionStore.GetAsync<double>("latitude");
+    if (!exists.Success)
+    {
+      Console.WriteLine("Latitude and longitude not set");
+      await ProtectedSessionStore.SetAsync("latitude", 0);
+      await ProtectedSessionStore.SetAsync("longitude", 0);
+    }
   }
 
   /// <summary>
