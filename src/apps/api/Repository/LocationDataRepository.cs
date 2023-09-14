@@ -110,8 +110,10 @@ public class LocationDataRepository
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                Console.WriteLine("LocationData already exists");
-                return "LocationData already exists";
+                Console.WriteLine("Bad Request");
+                // Get error
+                string data = response.Content.ReadAsStringAsync().Result;
+                return data;
             }
             else
             {

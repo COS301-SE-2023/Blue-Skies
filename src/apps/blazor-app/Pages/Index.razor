@@ -112,9 +112,9 @@
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     bool showImages = true;
-    bool loadImagesFromFiles = false;
-    bool loadImagesFromAPI = true;
-    bool saveDataToAPI = false;
+    bool loadImagesFromFiles = true;
+    bool loadImagesFromAPI = false;
+    bool saveDataToAPI = true;
 
     byte[]? satteliteImageDataBytes = null;
     byte[]? heightData = null;
@@ -201,8 +201,8 @@
 
     if(saveDataToAPI) {
       LocationDataModel locationDataModel = new LocationDataModel();
-      locationDataModel.latitude = 123;
-      locationDataModel.longitude = 123;
+      locationDataModel.latitude = 456;
+      locationDataModel.longitude = 456;
       locationDataModel.locationName = "Test";
       locationDataModel.solarPanelsData = "Sollar panels data";
       locationDataModel.satteliteImageData = satteliteImageDataBytes;
