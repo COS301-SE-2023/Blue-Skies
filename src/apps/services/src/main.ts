@@ -28,6 +28,7 @@ export const config = {
   options: {
     encrypt: true,
     database: process.env.AZURE_SQL_DB,
+    requestTimeout: 60000,
   },
 };
 

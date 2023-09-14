@@ -21,7 +21,7 @@ locationDataRouter.get(
 
 locationDataRouter.post(
   '/create',
-  bodyParser.json({ limit: '10mb' }),
+  bodyParser.json({ limit: '50mb' }),
   locationDataController.createLocationData
 );
 
