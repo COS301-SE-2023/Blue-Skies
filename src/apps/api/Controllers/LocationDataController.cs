@@ -73,7 +73,7 @@ public class LocationDataController : ControllerBase
 
     // GetInitialLocationData
     [HttpGet]
-    [Route("EssentialLocationData/{latitude}/{longitude}")]
+    [Route("EssentialData/{latitude}/{longitude}")]
     public async Task<IActionResult> GetInitialLocationData(
         [FromRoute] double latitude,
         [FromRoute] double longitude

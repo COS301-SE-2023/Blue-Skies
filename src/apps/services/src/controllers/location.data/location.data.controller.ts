@@ -118,7 +118,7 @@ export default class LocationDataController {
   };
 
   // getInitialLocationData
-  public essentialLocationData = async (req: Request, res: Response) => {
+  public getEssentialData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
@@ -167,7 +167,7 @@ export default class LocationDataController {
       res.status(500).json({ error: error.message });
     }
   };
-
+  
   //delete solarIrradiation
   public deleteLocationData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;

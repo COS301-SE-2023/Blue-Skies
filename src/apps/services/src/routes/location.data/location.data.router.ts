@@ -31,8 +31,8 @@ locationDataRouter.get(
 );
 
 locationDataRouter.get(
-  '/essentialLocationData/:latitude/:longitude',
-  locationDataController.essentialLocationData
+  '/essentialData/:latitude/:longitude',
+  locationDataController.getEssentialData
 );
 
 locationDataRouter.delete(
