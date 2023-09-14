@@ -23,6 +23,9 @@ export default class LocationDataController {
 
   //createSolarIrradiation
   public createLocationData = async (req: Request, res: Response) => {
+    req.setTimeout(30000, () => {
+      res.status(504).send('Request timed out');
+    });
     const {
       latitude,
       longitude,
@@ -40,15 +43,14 @@ export default class LocationDataController {
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
     const dlh = parseFloat(daylightHours.replace(',', '.'));
-    console.log(dateCreated);
     const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
-
+    
     try {
       const request = new tedious.Request(
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log('An error occured');
+            console.log(err.message);
             res.status(400).json({
               error: err.message,
             });

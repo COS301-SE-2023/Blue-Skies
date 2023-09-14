@@ -180,7 +180,7 @@
 
             var systemSize = system.systemSize!;
 
-            solarScore = solarCalculator.getSolarScore(locationData.satteliteImageData!, locationData.maskData!).ToString();
+            solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!).ToString();
             GetAvgEnergyProduction();
             renderCharts();
             isLoaded = true;
