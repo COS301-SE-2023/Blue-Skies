@@ -21,7 +21,7 @@
     @* Map Container *@
     <div class="sm:flex-shrink-0  items-center flex flex-col justify-center ">
         <Map css="scale-90" ImageName="@satteliteImage" />
-        <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@currentLocationData.locationName" />
+        <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
     </div>
     <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
@@ -46,7 +46,7 @@
                 </div>
                 <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
                 <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@currentLocationData.daylightHours</p>
+                    <p class="text-5xl text-primary-900 font-semibold">@locationData.daylightHours</p>
                     <p class="text-5xl text-gray-400 font-bold">h</p>
                 </div>
             </div>
@@ -138,21 +138,13 @@
 @code {
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
-    public double latitude  { get; set; }
-    [Parameter]
-    public double longitude  { get; set; }
-    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
-    ProtectedBrowserStorageResult<double> tempSolarIrradiation;
+    public LocationDataModel? locationData  { get; set; } = null;
     private int solarScore = 0;
     public List<SystemModel> systems = new List<SystemModel>();
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public int selectedSystem = 2;
     public double avgEnergyProduction = 0.0;
-    public string solarScoreId = "";
-    public List<SolarScoreModel> solarScores = new List<SolarScoreModel>();
     public bool isLoaded = false;
     public string? satteliteImage;
 
@@ -161,23 +153,27 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {   
+        loadingService.ShowLoadingScreen();
+        if(locationData == null) 
+        {
+            @* ToDO: Show modal that locationData is empty and go back to home *@
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
         System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = selectedSys.Value;
-        
-        var locationData = await locationDataClass.GetLocationData(latitude, longitude);
-        if(locationData != null) {
-            currentLocationData = locationData;
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
-            solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!);
-        }
+
+        satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
+        solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!);
 
         systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * locationData.daylightHours * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
         else
@@ -186,11 +182,6 @@
         }
         isLoaded = true;
         loadingService.HideLoadingScreen();
-
-        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = tempLatitude.Value;
-        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = tempLongitude.Value;
     }
 
     /// <summary>
@@ -203,7 +194,7 @@
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
+            double calc = systems[selectedSystem].numberOfPanels * locationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
             avgEnergyProduction = Math.Round(calc, 2);
         }
     }
