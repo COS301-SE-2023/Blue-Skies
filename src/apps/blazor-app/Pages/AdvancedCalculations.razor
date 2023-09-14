@@ -26,13 +26,6 @@
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/admin/keys");
         }
-        else if (longitude == 0 && latitude == 0)
-        {
-            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
-            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/solarScore");
-        }
         else
         {
             <div class="w-full px-20 ">
@@ -54,7 +47,7 @@
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
+                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit"/>
                         </div>
                     }
                     else if (tabs[1].active) {
@@ -77,15 +70,13 @@
     private bool isLoaded = false;
     private bool edit = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private List<ApplianceModel> appliances = new List<ApplianceModel>();
-    private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-    private List<SystemModel> systems = new List<SystemModel>();
-    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private List<ApplianceModel>? appliances;
+    private List<ApplianceModel>? advancedCalculationAppliances;
+    private List<SystemModel>? systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
-    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private double longitude = 0;
-    private double latitude = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -117,19 +108,28 @@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
         edit = editing.Value;
 
-        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = lat.Value;
-        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = lng.Value;
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        double? lat = tempLatitude.Value;
+        double? lng = tempLongitude.Value;
 
-        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = sSystem.Value;
-
+        if(lat == null && lng == null && lat == 0 || lng == 0)
+        {
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+            NavigationManager.NavigateTo("/");
+        }
+        double latitude = lat ?? 0;
+        double longitude = lng ?? 0;
+        
         LocationDataModel? result = await locationDataClass.GetLocationData(latitude, longitude);
         if (result != null)
         {
             currentLocationData = result;
         }
+
+        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = sSystem.Value;
+
 
         if (edit)
         {
@@ -138,8 +138,8 @@
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
         } else {
-            currentReport.latitude = latitude;
-            currentReport.longitude = longitude;
+            currentReport.latitude = latitude!;
+            currentReport.longitude = longitude!;
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
