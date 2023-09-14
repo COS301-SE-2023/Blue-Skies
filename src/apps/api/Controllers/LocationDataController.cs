@@ -88,11 +88,11 @@ public class LocationDataController : ControllerBase
                 locationData.daylightHours,
                 locationData.horisonElevationData!
             );
-            if (data.Equals("Solar Irradiation already exists"))
+            if (data.Equals("LocationData created successfully"))
             {
-                return StatusCode(400, "Solar Irradiation already exists for this location");
+                return Ok(data);
             }
-            return Ok(data);
+            return StatusCode(400, data);
         }
         catch (Exception e)
         {
