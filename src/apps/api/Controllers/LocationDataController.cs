@@ -151,4 +151,27 @@ public class LocationDataController : ControllerBase
             return StatusCode(500, e.Message);
         }
     }
+
+    // checkIfLocationDataExists
+    [HttpGet]
+    [Route("checkIfLocationDataExists/{latitude}/{longitude}")]
+    public async Task<IActionResult> CheckIfLocationDataExists(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            bool data = await _locationDataRepository.CheckIfLocationDataExists(latitude, longitude);
+            if(data == false)
+            {
+                return StatusCode(404, false);
+            }
+            return Ok(true);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 }

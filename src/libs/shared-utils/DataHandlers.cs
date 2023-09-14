@@ -112,9 +112,9 @@ public class SolarDataHandler
 
 public class RooftopDataHandler
 {
-    public string? GetSatelliteImage(byte[] satteliteImageData)
+    public string? GetSatelliteImage(byte[] satelliteImageData)
     {
-        if (satteliteImageData == null || satteliteImageData.Length == 0)
+        if (satelliteImageData == null || satelliteImageData.Length == 0)
         {
             Console.WriteLine("The provided image data is empty or null.");
             return null;
@@ -122,7 +122,7 @@ public class RooftopDataHandler
 
         try
         {
-            using (var stream = new MemoryStream(satteliteImageData))
+            using (var stream = new MemoryStream(satelliteImageData))
             {
                 return ConvertToBase64(Image.Load<Rgba32>(stream));
             }
