@@ -100,7 +100,22 @@ public class locationDataClass {
 
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
-        var json = JsonSerializer.Serialize(result);
+        var postData = new
+        {
+            latitude = result.latitude,
+            longitude = result.longitude,
+            locationName = result.locationName,
+            solarPanelsData = result.solarPanelsData,
+            satteliteImageData = result.satteliteImageData,
+            satteliteImageElevationData = result.satteliteImageElevationData,
+            annualFluxData = result.annualFluxData,
+            monthlyFluxData = result.monthlyFluxData,
+            maskData = result.maskData,
+            daylightHours =  result.daylightHours,
+            horisonElevationData = result.horisonElevationData
+        };
+
+        var json = JsonSerializer.Serialize(postData);
         request.Content = new StringContent(json, null, "application/json");
         var response = await client.SendAsync(request);
         
