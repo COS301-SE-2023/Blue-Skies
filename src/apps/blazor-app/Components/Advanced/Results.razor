@@ -86,8 +86,6 @@
     [Parameter]
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     public int solarScore { get; set; }
-    private double latitude = 0;
-    private double longitude = 0;
 
     /// <summary>
     /// <list type="bullet">
@@ -98,10 +96,6 @@
     /// </summary>    
     protected override async Task OnInitializedAsync()
     {
-        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = tempLatitude.Value;
-        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = tempLongitude.Value; 
         satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
     }

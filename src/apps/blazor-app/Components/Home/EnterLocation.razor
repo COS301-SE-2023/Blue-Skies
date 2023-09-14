@@ -46,8 +46,6 @@
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private LocationDataModel? currentLocationData = new LocationDataModel();
     public string parent = "index";
-    private double latitude = 0;
-    private double longitude = 0;
     /// <summary>
     /// Gets the parent page from the session storage.
     /// </summary>
@@ -89,8 +87,8 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;
         }
-        longitude = cord[0];
-        latitude = cord[1];
+        double longitude = cord[0];
+        double latitude = cord[1];
         var location = "";
         if (locationSuggestion != null)
         {
@@ -101,16 +99,23 @@
         currentLocationData.latitude = latitude;
         currentLocationData.longitude = longitude;
 
-        await ProtectedSessionStore.SetAsync("latitude", latitude);
-        await ProtectedSessionStore.SetAsync("longitude", longitude);
-
-
         byte[] imageBytes = new byte[0];
         currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
         if (currentLocationData == null)
         {
+            Console.WriteLine("Location data does not exist, creating it instead");
             currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
         }
+
+        if(currentLocationData == null)
+        {
+            HideLoadingScreen();
+            @* ToDO: show modal that says we cannot find data for this location *@
+            NavigationManager.NavigateTo("/");
+        }
+        
+        await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
+        await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
 
         await ProtectedSessionStore.SetAsync("parent", "");
         parent = "";

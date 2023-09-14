@@ -18,7 +18,6 @@ public class locationDataClass {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         var response = await client.SendAsync(request);
-        Console.WriteLine("Response: " + response);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -75,7 +74,7 @@ public class locationDataClass {
             Console.WriteLine("Initial data not found");
             return null;
         }
-        result.daylightHours = initialData.averageSunlightHours;
+        result.daylightHours = (float)Math.Round(initialData.averageSunlightHours, 2);
         
         string? elevationData = await GetHorisonElevationData(latitude, longitude);
         if(elevationData == null) {
@@ -238,7 +237,7 @@ public class locationDataClass {
     /// <paramref name="longitude"/> The longitude of the current location.
     /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
     /// </summary>
-    private async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
+    public async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
     {
         var data = new List<WeatherData>();
         // Initial api key to get the last 15 day's of information:
