@@ -24,6 +24,7 @@ public class SolarDataHandler
         int result = getSolarScoreFromInitialData(tempSolarIrradiation);
         var locationData = await locationDataClass.GetLocationDataNoImage(latitude, longitude);
 
+        
         if (locationData != null && locationData.data != null) {
             remainingCalls = locationData.remainingCalls;
             if (previousRemainingCalls != remainingCalls)
@@ -53,12 +54,40 @@ public class SolarDataHandler
         previousScore = result;
         return result;
     }
+    public async Task<List<DateRadiationModel>> GetSolarRadiationListFromData(double latitude, double longitude){
+        var locationData = await locationDataClass.GetLocationDataNoImage(latitude, longitude);
+        
+        if(locationData != null && locationData.data != null){
+            remainingCalls = locationData.remainingCalls;
+            if (previousRemainingCalls != remainingCalls)
+            {
+                timesNotUpdated = 0;
+            }
+            else
+            {
+                timesNotUpdated++;
+            }
+            previousRemainingCalls = remainingCalls;
+            if (locationData.remainingCalls >= 100)
+            {
+                return new List<DateRadiationModel>();
+            }
+            return calculateDateRadiationModels(locationData.data);
+        }
+        else
+        {
+            Console.WriteLine("Failed to get data from LocationData");
+            Console.WriteLine("Previous score: " + previousScore);
+            return new List<DateRadiationModel>();
+        }
 
-    public int calculateSolarScore(string data)
+
+    }
+
+    private List<DateRadiationModel> calculateDateRadiationModels(string data)
     {
         string input = data;
-        decimal total = 0;
-        int i = 0;
+        List<DateRadiationModel> dateRadiationModels = new List<DateRadiationModel>();
         while (input.Length > 0)
         {
             int newDataPointIndex = input.IndexOf(",");
@@ -70,14 +99,58 @@ public class SolarDataHandler
             input = input.Substring(newDataPointIndex + 1);
             newDataPoint = newDataPoint.Trim();
             int solarScoreIndex = newDataPoint.IndexOf(";");
-            total += decimal.Parse(newDataPoint.Substring(solarScoreIndex + 1));
+            try {
+                dateRadiationModels.Add(new DateRadiationModel() {
+                    Date = DateTime.Parse(newDataPoint.Substring(0, solarScoreIndex)),
+                    Radiation = Double.Parse(newDataPoint.Substring(solarScoreIndex + 1))
+                });
+            } catch (Exception) {
+                try {
+                    dateRadiationModels.Add(new DateRadiationModel() {
+                        Date = DateTime.Parse(newDataPoint.Substring(0, solarScoreIndex)),
+                        Radiation = Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","))
+                    });
+                } catch (Exception e) {
+                    Console.WriteLine("Error parsing data: " + e);
+                }
+            }
+        }
+        return dateRadiationModels; 
+    }
+
+  public int calculateSolarScore(string data)
+    {
+        string input = data;
+        double total = 0;
+        int i = 0;
+        while (input.Length > 0)
+        {   
+            int newDataPointIndex = input.IndexOf(",");
+            if (newDataPointIndex == -1)
+            {
+                newDataPointIndex = input.Length;
+            }
+            string newDataPoint = input.Substring(0, newDataPointIndex);
+            input = input.Substring(newDataPointIndex + 1);
+            newDataPoint = newDataPoint.Trim();
+            int solarScoreIndex = newDataPoint.IndexOf(";");
+            try {
+                total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1));
+            } catch (Exception) {
+                try {
+                    total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","));
+                } catch (Exception e) {
+                    Console.WriteLine("Error parsing data: " + e);
+                }
+            }
+ 
             i++;
         }
         if (i == 0)
         {
             return 0;
         }
-        decimal averageSolarIrradiation = total / i;
+        double averageSolarIrradiation = total / i;
         double solarScore = getPercentage((double)averageSolarIrradiation);
         if (solarScore > 100)
         {
@@ -87,7 +160,6 @@ public class SolarDataHandler
         {
             solarScore = 4;
         }
-
         return (int)solarScore;
     }
 
@@ -142,6 +214,11 @@ public class SolarDataHandler
 
     public double treesPlanted(double annualKWGenerated) {
         return getPowerSaved(annualKWGenerated) * 0.01808;
+    }
+
+    public double GetAverageSolarIrradiation(double latitude, double longitude)
+    {
+        throw new NotImplementedException();
     }
 }
 
