@@ -114,8 +114,8 @@
 
     bool showImages = true;
     bool loadImagesFromFiles = false;
-    bool loadImagesFromAPI = false;
-    bool saveDataToAPI = true;
+    bool loadImagesFromAPI = true;
+    bool saveDataToAPI = false;
 
     byte[]? satteliteImageDataBytes = null;
     byte[]? heightData = null;
@@ -203,6 +203,53 @@
         maskData = result.maskData;
         fluxData = result.annualFluxData;
         monthlyFluxData = result.monthlyFluxData;
+
+        Console.WriteLine("Letttsss goooo fetched successfully");
+      } else {
+        Console.WriteLine("Error fetching data");
+      }
+    }
+
+    if(saveDataToAPI) {
+      LocationDataModel locationDataModel = new LocationDataModel();
+      locationDataModel.latitude = 123;
+      locationDataModel.longitude = 123;
+      locationDataModel.locationName = "Test";
+      locationDataModel.solarPanelsData = "Sollar panels data";
+      locationDataModel.satteliteImageData = satteliteImageDataBytes;
+      locationDataModel.satteliteImageElevationData = heightData;
+      locationDataModel.maskData = maskData;
+      locationDataModel.annualFluxData = fluxData;
+      locationDataModel.monthlyFluxData = monthlyFluxData;
+      locationDataModel.daylightHours = 123;
+      locationDataModel.horisonElevationData = "Horison elevation data";
+
+      @* ToDO: add API Call *@
+
+      var client = new HttpClient();
+      var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/locationData/create");
+      var postData = new
+      {
+          latitude = locationDataModel.latitude,
+          longitude = locationDataModel.longitude,
+          locationName = locationDataModel.locationName,
+          solarPanelsData = locationDataModel.solarPanelsData,
+          satteliteImageData = locationDataModel.satteliteImageData,
+          satteliteImageElevationData = locationDataModel.satteliteImageElevationData,
+          annualFluxData = locationDataModel.annualFluxData,
+          monthlyFluxData = locationDataModel.monthlyFluxData,
+          maskData = locationDataModel.maskData,
+          daylightHours =  locationDataModel.daylightHours,
+          horisonElevationData = locationDataModel.horisonElevationData
+      };
+
+      var json = JsonSerializer.Serialize(postData);
+      request.Content = new StringContent(json, null, "application/json");
+      var response = await client.SendAsync(request);
+      
+      if (response.IsSuccessStatusCode)
+      {
+        Console.WriteLine("Success leeeetss goooooo");
       } else {
         Console.WriteLine("Error noooooooooo");
       }
