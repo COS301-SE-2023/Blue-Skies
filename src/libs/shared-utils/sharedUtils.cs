@@ -84,17 +84,18 @@ public class locationDataClass {
         }
         result.horisonElevationData = elevationData;
 
-        LocationDataModel? locationData = await GetRoofData(latitude, longitude);
-        if(locationData == null) {
-            Console.WriteLine("Rooftop data not found");
-            return null;
-        }
-        result.solarPanelsData = locationData.solarPanelsData;
-        result.satteliteImageData = locationData.satteliteImageData;
-        result.satteliteImageElevationData = locationData.satteliteImageElevationData;
-        result.annualFluxData = locationData.annualFluxData;
-        result.monthlyFluxData = locationData.monthlyFluxData;
-        result.maskData = locationData.maskData;
+        // LocationDataModel? locationData = await GetRoofData(latitude, longitude);
+        // if(locationData == null) {
+        //     Console.WriteLine("Rooftop data not found");
+        //     return null;
+        // }
+
+        result.solarPanelsData = null;
+        result.satteliteImageData = null;
+        result.satteliteImageElevationData = null;
+        result.annualFluxData = null;
+        result.monthlyFluxData = null;
+        result.maskData = null;
         result.dateCreated = DateTime.Now;
 
         var client = new HttpClient();
