@@ -18,7 +18,7 @@
 <div class="fade-in-enter-active">
   @if (satteliteImageData != null)
   {
-    <Image ImageName="@satteliteImageData" css=" w-full h-full object-cover" alt="Shapes"/>
+    <Image ImageName="@satteliteImageData"  alt="Shapes"/>
   }
   else
   {
@@ -27,7 +27,7 @@
 
   @if (heightMapData != null)
   {
-    <Image ImageName="@heightMapData" css=" w-full h-full object-cover" alt="Shapes"/>
+    <Image ImageName="@heightMapData"  alt="Shapes"/>
   }
   else
   {
@@ -36,7 +36,7 @@
 
   @if (annualFluxImageData != null)
   {
-    <Image ImageName="@annualFluxImageData" css=" w-full h-full object-cover" alt="Shapes"/>
+    <Image ImageName="@annualFluxImageData"  alt="Shapes"/>
   }
   else
   {
@@ -48,7 +48,7 @@
     foreach (var image in monthlyFluxImagesData)
     {
       if(image != null) {
-        <Image ImageName="@image" css=" w-full h-full object-cover" alt="Shapes"/>
+        <Image ImageName="@image"  alt="Shapes"/>
       }
     }
   } else {
@@ -112,8 +112,8 @@
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     bool showImages = true;
-    bool loadImagesFromFiles = true;
-    bool loadImagesFromAPI = false;
+    bool loadImagesFromFiles = false;
+    bool loadImagesFromAPI = true;
     bool saveDataToAPI = false;
 
     byte[]? satteliteImageDataBytes = null;
