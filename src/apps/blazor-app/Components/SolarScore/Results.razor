@@ -47,7 +47,11 @@
                 </div>
                 <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
                 <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@locationData.daylightHours</p>
+                    @{
+                        @* Round off to 2 decimal places *@
+                        double dlh = Math.Round(locationData!.daylightHours, 2);
+                    }
+                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                     <p class="text-5xl text-gray-400 font-bold">h</p>
                 </div>
             </div>
