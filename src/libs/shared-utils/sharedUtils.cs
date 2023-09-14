@@ -85,8 +85,7 @@ public class locationDataClass {
             Console.WriteLine("Initial data not found");
             return null;
         }
-        result.daylightHours = (float)Math.Round(initialData.averageSunlightHours, 2);
-        
+        result.daylightHours = (double)Math.Round(initialData.averageSunlightHours, 2);
         string? elevationData = await GetHorisonElevationData(latitude, longitude);
         if(elevationData == null) {
             Console.WriteLine("Elevation data not found");
