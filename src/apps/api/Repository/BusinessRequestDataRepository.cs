@@ -69,7 +69,7 @@ public class BusinessRequestDataRepository
            return await dataTypeResponse.Content.ReadAsStringAsync();
            
         }
-        catch (System.Exception e)
+        catch (System.Exception)
         {
             throw new Exception("Could not create solar irradiation");
         }
