@@ -44,7 +44,7 @@ export default class LocationDataController {
     const long = parseFloat(longitude.replace(',', '.'));
     const dlh = parseFloat(daylightHours.replace(',', '.'));
     const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
-    
+
     try {
       const request = new tedious.Request(
         query,
@@ -95,8 +95,6 @@ export default class LocationDataController {
       );
 
       request.on('row', (columns) => {
-
-
         solarIrradiation = {
           latitude: columns[0].value,
           longitude: columns[1].value,
@@ -110,6 +108,57 @@ export default class LocationDataController {
           dateCreated: columns[9].value,
           daylightHours: columns[10].value,
           horisonElevationData: columns[11].value,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // getInitialLocationData
+  public essentialLocationData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, locationName, satteliteImageData, dateCreated, daylightHours FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: columns[2].value,
+          satteliteImageData: columns[3].value,
+          dateCreated: columns[4].value,
+          daylightHours: columns[5].value,
+          annualFluxData: null,
+          monthlyFluxData: null,
+          maskData: null,
+          solarPanelsData: null,
+          satteliteImageElevationData: null,
+          horisonElevationData: null,
         };
       });
 

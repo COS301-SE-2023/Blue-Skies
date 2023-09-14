@@ -67,7 +67,35 @@ public class LocationDataController : ControllerBase
         {
             return StatusCode(500, e.Message);
         }
+
+
     }
+
+    // GetInitialLocationData
+    [HttpGet]
+    [Route("EssentialLocationData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetInitialLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.EssentialLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get essential locatino data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+
+
+    }
+
 
     [HttpPost]
     [Route("create")]
