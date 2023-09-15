@@ -103,38 +103,49 @@
         currentLocationData.longitude = longitude;
 
         byte[] imageBytes = new byte[0];
-        bool checkifLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
-        if (checkifLocationDataExists == false)
-        {
-            Console.WriteLine("Location data does not exist, creating the necessary data");
-            currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
-        }else{
-            Console.WriteLine("Location data exists, fetching it");
-        }
-
-        if(currentLocationData == null)
-        {
-            toastService.ShowToast("Could not find data for this location", "Try another location", "error");
-            HideLoadingScreen();
-            NavigationManager.NavigateTo("/");
-        } else {
-            await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
-            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
-
-            await ProtectedSessionStore.SetAsync("parent", "");
-            parent = "";
-            await ProtectedSessionStore.SetAsync("edit", false);
-
-            if (parent.Equals("index"))
+        bool checkIfLocationDataExists = false;
+        try {
+            checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
+            if (checkIfLocationDataExists == false)
             {
-                loadingService.ShowLoadingScreen();
-                NavigationManager.NavigateTo("/solarScore");
+                Console.WriteLine("Location data does not exist, creating the necessary data");
+                currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
             }
             else
             {
-                NavigationManager.NavigateTo("/solarScore", true);
-                ShowLoadingScreen();
+                Console.WriteLine("Location data exists, fetching it");
             }
+
+            if(currentLocationData == null)
+            {
+                toastService.ShowToast("Could not find data for this location", "Try another location", "error");
+                HideLoadingScreen();
+                NavigationManager.NavigateTo("/");
+            } 
+            else 
+            {
+                await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
+                await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
+
+                await ProtectedSessionStore.SetAsync("parent", "");
+                parent = "";
+                await ProtectedSessionStore.SetAsync("edit", false);
+
+                if (parent.Equals("index"))
+                {
+                    loadingService.ShowLoadingScreen();
+                    NavigationManager.NavigateTo("/solarScore");
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/solarScore", true);
+                    ShowLoadingScreen();
+                }
+            }
+        } catch {
+            toastService.ShowToast("Could not make connection to the database", "Try again later", "error");
+            HideLoadingScreen();
+            NavigationManager.NavigateTo("/");
         }
         
     }
