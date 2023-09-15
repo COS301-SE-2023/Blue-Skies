@@ -6,7 +6,6 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
-@using ChartJs.Blazor.PieChart
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
@@ -81,8 +80,7 @@
                     {
                         if (appliance.type != "Washing Machine") {
                             <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                             </div>
                         }
                     }
@@ -168,6 +166,7 @@
 </div>
 
 @* Appliance Summary *@
+
 <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div
         class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
@@ -221,7 +220,6 @@
 @* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
 
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
-    <ChildContent>
         @if (edit)
         {
                             <p>Rename this calculation?</p>
@@ -258,7 +256,6 @@
                 </Button>
             </div>
         </div>
-    </ChildContent>
 </ModalPopup>
 
 @* Mobile Viewport *@

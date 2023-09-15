@@ -96,6 +96,29 @@ body {
     animation-fill-mode: forwards;
 }
 
+/* Wipe transitions */
+.wipe-down {
+    animation: wipeDown .5s;
+    animation-fill-mode: forwards;
+}
+
+.wipe-up {
+    animation: wipeUp .5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes wipeDown {
+    from { opacity: 1; height: 0%;}
+    to { opacity: 1; height: 100%;}
+}
+ 
+@keyframes wipeUp {
+    from { opacity: 1; height: 100%;}
+    to { opacity: 1; height: 0%; }
+}
+
+
+
 /* Slide Up Out Transition */
 @keyframes slideUpOut {
     from { opacity: 1; transform: translateY(0); }
