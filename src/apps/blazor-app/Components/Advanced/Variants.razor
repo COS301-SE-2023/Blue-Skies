@@ -23,16 +23,20 @@
                 <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
             }
     </div>
-    @if (selectedAppliance != "") {
-        <div class="flex w-full bg-primary-100 h-40 -mt-7 rounded-2xl @selectedContainerFade">
+    @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
+        <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
+            <p>Hello World!</p>
+            <p>Hello World!</p>
+            <p>Hello World!</p>
+            <p>Hello World!</p>
+            <p>Hello World!</p>
         </div>
     }
 </div>
 
 @code {
     @* private List<List<ApplianceModel>> applianceVariants = new List<List<ApplianceModel>>(); *@
-    private string selectedContainerFade = "wipe-down";
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
@@ -68,19 +72,16 @@
         StateHasChanged();
     }
 
-    public async Task SelectAppliance (string appliance)
+    public Task SelectAppliance (string appliance)
     {
         if (appliance == selectedAppliance)
         {
-            selectedContainerFade = "wipe-up";
-            StateHasChanged();
-            await Task.Delay(250);
             selectedAppliance = "";
             StateHasChanged();
         } else {
-            selectedContainerFade = "wipe-down";
             selectedAppliance = appliance;
             StateHasChanged();
         }
+        return Task.CompletedTask;
     }
 }

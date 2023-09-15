@@ -80,8 +80,7 @@
                     {
                         if (appliance.type != "Washing Machine") {
                             <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                             </div>
                         }
                     }
@@ -166,7 +165,6 @@
 @* Appliance Summary *@
     @*
 <div class="hidden lg:flex gap-5 px-10 w-full">
-    
      <div class="w-4/12 justify-center flex">
         <div class="flex flex-col my-auto gap-6 items-center>">
             <Button css="h-16 w-60" style="outline">
@@ -194,7 +192,6 @@
 @* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
 
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
-    <ChildContent>
         @if (edit)
         {
             <p>Rename this calculation?</p>
@@ -231,7 +228,6 @@
                 </Button>
             </div>
         </div>
-    </ChildContent>
 </ModalPopup>
 
 @* Mobile Viewport *@

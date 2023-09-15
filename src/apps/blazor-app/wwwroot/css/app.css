@@ -2831,31 +2831,27 @@ body {
   animation-fill-mode: forwards;
 }
 
-/* Wipe Down Transition */
-
 @keyframes wipeDown {
   from {
     opacity: 1;
-    height: 0px;
+    height: 0%;
   }
 
   to {
     opacity: 1;
-    height: 100px
+    height: 100%;
   }
 }
-
-/* Wipe Up Transition */
 
 @keyframes wipeUp {
   from {
     opacity: 1;
-    height: 100px;
+    height: 100%;
   }
 
   to {
     opacity: 1;
-    height: 0px
+    height: 0%;
   }
 }
 
