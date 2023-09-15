@@ -135,6 +135,7 @@ public class LocationDataRepository
         try
         {
             var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
                 express + "/api/locationData/" + latitude + "/" + longitude
