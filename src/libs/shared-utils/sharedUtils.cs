@@ -31,19 +31,31 @@ public class locationDataClass
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude){
+    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude)
+    {
         var client = new HttpClient();
         client.Timeout = TimeSpan.FromSeconds(10);
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT
+                + "/locationData/getLocationData/"
+                + latitude.ToString().Replace(",", ".")
+                + "/"
+                + longitude.ToString().Replace(",", ".")
+        );
         Console.WriteLine("Getting location from database for " + latitude + ", " + longitude);
-        var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
-        if (response.IsSuccessStatusCode) {
+        var response = await client
+            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
+            .ConfigureAwait(false);
+        if (response.IsSuccessStatusCode)
+        {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
             Console.WriteLine("Location data found");
             return result;
         }
-        if(response.StatusCode == System.Net.HttpStatusCode.RequestTimeout) {
+        if (response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
+        {
             Console.WriteLine("Request timed out after 10 seconds");
             // return await GetLocationData(latitude, longitude);
         }
@@ -57,10 +69,18 @@ public class locationDataClass
     /// </summary>
     public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude)
     {
-        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
+        string url =
+            $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
         Console.WriteLine("URL: " + url);
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude.ToString().Replace(",", ".") + "/" + longitude.ToString().Replace(",", "."));
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT
+                + "/locationData/GetLocationDataWithoutImage/"
+                + latitude.ToString().Replace(",", ".")
+                + "/"
+                + longitude.ToString().Replace(",", ".")
+        );
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -147,17 +167,20 @@ public class locationDataClass
     }
 
     private async Task<LocationDataModel?> GetRoofData(double latitude, double longitude)
-{
-    LocationDataModel result = new LocationDataModel();
-    result.latitude = latitude;
-    result.longitude = longitude;
-    RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
-    
-    if (solarPanelsDataResult == null)
     {
-        Console.WriteLine("Solar panels data not found");
-        return null;
-    }
+        LocationDataModel result = new LocationDataModel();
+        result.latitude = latitude;
+        result.longitude = longitude;
+        RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(
+            latitude,
+            longitude
+        );
+
+        if (solarPanelsDataResult == null)
+        {
+            Console.WriteLine("Solar panels data not found");
+            return null;
+        }
 
         result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
 
@@ -175,14 +198,25 @@ public class locationDataClass
         var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
         var byteDataTask5 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
 
-    await Task.WhenAll(byteDataTask1, byteDataTask2, byteDataTask3, byteDataTask4, byteDataTask5);
+        await Task.WhenAll(
+            byteDataTask1,
+            byteDataTask2,
+            byteDataTask3,
+            byteDataTask4,
+            byteDataTask5
+        );
 
-    if (byteDataTask1.Result == null || byteDataTask2.Result == null || byteDataTask3.Result == null ||
-        byteDataTask4.Result == null || byteDataTask5.Result == null)
-    {
-        Console.WriteLine("One or more data requests failed");
-        return null;
-    }
+        if (
+            byteDataTask1.Result == null
+            || byteDataTask2.Result == null
+            || byteDataTask3.Result == null
+            || byteDataTask4.Result == null
+            || byteDataTask5.Result == null
+        )
+        {
+            Console.WriteLine("One or more data requests failed");
+            return null;
+        }
 
         result.satteliteImageElevationData = byteDataTask1.Result;
         result.satteliteImageData = byteDataTask2.Result;
@@ -1121,7 +1155,6 @@ public class reportApplianceClass
         var response = await client.SendAsync(request);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
     }
@@ -1176,5 +1209,32 @@ public class reportAllApplianceClass
             Console.WriteLine("Failed to get allReportAllAppliance");
         }
         return allReportAllAppliance;
+    }
+}
+
+public class customApplianceClass
+{
+    string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
+    // Get all the custom appliances from the database
+    public async Task<List<CustomApplianceModel>> GetAllCustomAppliances()
+    {
+        List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/CustomAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            customAppliances = JsonSerializer.Deserialize<List<CustomApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get custom appliances");
+        }
+        return customAppliances;
     }
 }

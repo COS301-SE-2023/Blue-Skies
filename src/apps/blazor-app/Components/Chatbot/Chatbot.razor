@@ -85,7 +85,7 @@
   private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
   protected override async Task OnInitializedAsync()
   {
-    chatbotApiKey = await locationDataClass.GetChatbotApiKey();
+    chatbotApiKey = Environment.GetEnvironmentVariable("CHATBOT_API_KEY");
     _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
     _conversationHistory.Add(new Message { role = "assistant", content = "Hi! I'm Robert. Ask me Anything!" });
     @* return base.OnInitializedAsync(); *@
