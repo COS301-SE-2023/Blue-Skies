@@ -11,6 +11,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 <div class="mx-auto max-w-2xl px-10  py-32 sm:py-20 lg:py-28 relative">
     <div class="text-center">
@@ -44,11 +45,8 @@
 
 @code {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private LocationDataModel? currentLocationData = new LocationDataModel();
+    private LocationDataModel? currentLocationData;
     public string parent = "index";
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private double latitude = 0;
-    private double longitude = 0;
     /// <summary>
     /// Gets the parent page from the session storage.
     /// </summary>
@@ -79,6 +77,8 @@
     public async void generateLocationData()
     {
         ShowLoadingScreen();
+        currentLocationData = new LocationDataModel();
+
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
@@ -90,48 +90,64 @@
         {
             cord = locationSuggestion.Geometry.Coordinates!;
         }
-        longitude = cord[0];
-        latitude = cord[1];
+        double longitude = cord[0];
+        double latitude = cord[1];
         var location = "";
         if (locationSuggestion != null)
         {
             location = locationSuggestion.Place_Name;
         }
 
-        currentLocationData!.location = location;
+        currentLocationData!.locationName = location;
         currentLocationData.latitude = latitude;
         currentLocationData.longitude = longitude;
 
-        await ProtectedSessionStore.SetAsync("latitude", latitude);
-        await ProtectedSessionStore.SetAsync("longitude", longitude);
-
-
         byte[] imageBytes = new byte[0];
-        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
-        if (currentLocationData.data == null)
-        {
-            var data = await locationDataClass.GetInitialData(latitude, longitude);
-            currentLocationData.daylightHours = data.averageSunlightHours;
-            await ProtectedSessionStore.SetAsync("tempSolarIrradiation", data.averageSolarIrradiation);
+        bool checkIfLocationDataExists = false;
+        try {
+            checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
+            if (checkIfLocationDataExists == false)
+            {
+                Console.WriteLine("Location data does not exist, creating the necessary data");
+                currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
+            }
+            else
+            {
+                Console.WriteLine("Location data exists, fetching it");
+            }
 
-            imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
-            await locationDataClass.CreateLocationData(latitude, longitude, (float)currentLocationData.daylightHours, Convert.ToBase64String(imageBytes), location);
-        }
+            if(currentLocationData == null)
+            {
+                toastService.ShowToast("Could not find data for this location", "Try another location", "error");
+                HideLoadingScreen();
+                NavigationManager.NavigateTo("/");
+            } 
+            else 
+            {
+                await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
+                await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
 
-        await ProtectedSessionStore.SetAsync("parent", "");
-        parent = "";
-        await ProtectedSessionStore.SetAsync("edit", false);
+                await ProtectedSessionStore.SetAsync("parent", "");
+                parent = "";
+                await ProtectedSessionStore.SetAsync("edit", false);
 
-        if (parent.Equals("index"))
-        {
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/solarScore");
+                if (parent.Equals("index"))
+                {
+                    loadingService.ShowLoadingScreen();
+                    NavigationManager.NavigateTo("/solarScore");
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/solarScore", true);
+                    ShowLoadingScreen();
+                }
+            }
+        } catch {
+            toastService.ShowToast("Could not make connection to the database", "Try again later", "error");
+            HideLoadingScreen();
+            NavigationManager.NavigateTo("/");
         }
-        else
-        {
-            NavigationManager.NavigateTo("/solarScore", true);
-            ShowLoadingScreen();
-        }
+        
     }
 
     /// <summary>

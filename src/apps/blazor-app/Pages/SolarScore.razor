@@ -20,10 +20,10 @@ else
 {
     <div class="fade-in-enter-active">
         <div class="w-full">
-            @if (latitude != 0 && longitude != 0)
+            @if (locationData != null)
             {
                 <div class="mb-20">
-                    <Results latitude="latitude" longitude="longitude"/>
+                    <Results locationData="@locationData"/>
                 </div>
                 <div class="-mb-80">
                     <Image ImageName="shapes.svg" css="absolute -top-10 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
@@ -49,10 +49,10 @@ else
 
 
 @code {
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private bool isAd = false;
-    private double latitude = 0;
-    private double longitude = 0;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private LocationDataModel? locationData = null;
 
     /// <summary>
     /// On page load, check if user is admin.
@@ -60,18 +60,22 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        loadingService.ShowLoadingScreen();
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        @* var locationData = await ProtectedSessionStore.GetAsync<LocationDataModel>("currentLocationData"); *@
-        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = lat.Value;
-        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = lng.Value;
-        Console.WriteLine("Latitude: " + latitude);
-        Console.WriteLine("Longitude: " + longitude);
-        await ProtectedSessionStore.SetAsync("parent", "solarScore");
-        isAd = isAdmin.Value;
-        if (latitude == 0 && longitude == 0){
-            loadingService.HideLoadingScreen();
+
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        double latitude = tempLatitude.Value;
+        double longitude = tempLongitude.Value;
+
+        if(latitude != 0 && longitude != 0)
+        {
+            locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            Console.WriteLine("Gottem");
+            await ProtectedSessionStore.SetAsync("parent", "solarScore");
+            isAd = isAdmin.Value;
         }
+
+        loadingService.HideLoadingScreen();
     }
 }

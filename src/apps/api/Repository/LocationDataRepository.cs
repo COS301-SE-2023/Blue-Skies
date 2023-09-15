@@ -75,43 +75,19 @@ public class LocationDataRepository
         }
     }
 
-    public async Task<string> GetSunTimes(Coordinates coordinates)
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            express + "/api/locationData/getsuntimes/"
-        );
-        var content = new StringContent(
-            "{\r\n    \"latitude\": "
-                + coordinates.latitude.ToString().Replace(",", ".")
-                + ",\r\n    \"longitude\": "
-                + coordinates.longitude.ToString().Replace(",", ".")
-                + "\r\n}",
-            null,
-            "application/json"
-        );
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
-            string data = response.Content.ReadAsStringAsync().Result;
-            return data;
-        }
-        else
-        {
-            throw new Exception("Error getting sun times");
-        }
-    }
-
     //Create Solar Irradiation
     public async Task<string> CreateLocationData(
         double latitude,
         double longitude,
-        string location,
+        string locationName,
+        string solarPanelsData,
+        byte[] satteliteImageData,
+        byte[] satteliteImageElevationData,
+        byte[] annualFluxData,
+        byte[] monthlyFluxData,
+        byte[] maskData,
         double daylightHours,
-        string image,
-        string elevationData
+        string horisonElevationData
     )
     {
         try
@@ -121,37 +97,49 @@ public class LocationDataRepository
                 HttpMethod.Post,
                 express + "/api/locationData/create"
             );
-            var content = new StringContent(
-                "{\r\n    \"latitude\": \""
-                    + latitude
-                    + "\",\r\n    \"longitude\": \""
-                    + longitude
-                    + "\",\r\n    \"location\": \""
-                    + location
-                    + "\",\r\n    \"daylightHours\": \""
-                    + daylightHours
-                    + "\",\r\n    \"image\": \""
-                    + image
-                    + "\",\r\n    \"elevationData\": \""
-                    + elevationData + "\"\r\n}",
-                null,
-                "application/json"
-            );
-            request.Content = content;
+            string satteliteImageDataBase64 = Convert.ToBase64String(satteliteImageData);
+            string satteliteImageElevationDataBase64 = Convert.ToBase64String(satteliteImageElevationData);
+            string annualFluxDataBase64 = Convert.ToBase64String(annualFluxData);
+            string monthlyFluxDataBase64 = Convert.ToBase64String(monthlyFluxData);
+            string maskDataBase64 = Convert.ToBase64String(maskData);
+
+            var postData = new
+            {
+                latitude = latitude.ToString(),
+                longitude = longitude.ToString(),
+                locationName = locationName,
+                solarPanelsData = solarPanelsData,
+                satteliteImageData = satteliteImageDataBase64,
+                satteliteImageElevationData = satteliteImageElevationDataBase64,
+                annualFluxData = annualFluxDataBase64,
+                monthlyFluxData = monthlyFluxDataBase64,
+                maskData = maskDataBase64,
+                daylightHours = daylightHours.ToString(),
+                horisonElevationData = horisonElevationData
+            };
+
+            var json = JsonSerializer.Serialize(postData);
+            request.Content = new StringContent(json, null, "application/json");
+            // Console.WriteLine(await request.Content.ReadAsStringAsync());
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                return "Solar Irradiation created successfully";
+                Console.WriteLine(".NET LocationData created successfully");
+                return "LocationData created successfully";
             }
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
-                Console.WriteLine("Solar Irradiation already exists");
-                return "Solar Irradiation already exists";
+                Console.WriteLine(".NET Bad Request When Creating LocationData");
+                // Get error
+                string data = response.Content.ReadAsStringAsync().Result;
+                return data;
             }
             else
             {
-                throw new Exception("Error creating solar irradiation");
+                Console.WriteLine(".NET Error creating LocationData");
+                throw new Exception("Error creating LocationData");
             }
+
         }
         catch (System.Exception)
         {
@@ -160,32 +148,51 @@ public class LocationDataRepository
     }
 
     //Get solar irradiation
-    public async Task<LocationData> GetLocationData(double latitude, double longitude)
+    public async Task<LocationDataModel> GetLocationData(double latitude, double longitude)
     {
         try
         {
             var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(10);
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
                 express + "/api/locationData/" + latitude + "/" + longitude
             );
+            Console.WriteLine("Getting LocationData for " + latitude + ", " + longitude);
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
                 // Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
-                LocationData locationData = JsonSerializer.Deserialize<LocationData>(data)!;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = locationDataTemp.locationName,
+                    solarPanelsData = locationDataTemp.solarPanelsData,
+                    satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
+                    satteliteImageElevationData = Convert.FromBase64String(locationDataTemp.satteliteImageElevationData!),
+                    annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
+                    monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
+                    maskData = Convert.FromBase64String(locationDataTemp.maskData!),
+                    dateCreated = locationDataTemp.dateCreated,
+                    daylightHours = locationDataTemp.daylightHours,
+                    horisonElevationData = locationDataTemp.horisonElevationData
+                };
                 return locationData!;
-            }
-            if (response.StatusCode == HttpStatusCode.NotFound)
+            }else if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                Console.WriteLine(".NET LocationData not found");
                 return null!;
             }
             else
             {
-                throw new Exception("Error getting solar irradiation");
+                Console.WriteLine(".NET Error getting LocationData");
+                throw new Exception("Error getting LocationData");
             }
+
         }
         catch (System.Exception)
         {
@@ -193,202 +200,53 @@ public class LocationDataRepository
         }
     }
 
-    //GetSolarIrradiationWithoutImage
-    public async Task<LocationData> GetSolarIrradiationWithoutImage(
-        double latitude,
-        double longitude
-    )
+
+    // EssentialLocationData
+    public async Task<LocationDataModel> EssentialLocationData(double latitude, double longitude)
     {
         try
         {
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
-                express + "/api/locationData/withoutImage/" + latitude + "/" + longitude
+                express + "/api/locationData/essentialData/" + latitude + "/" + longitude
             );
             var response = await client.SendAsync(request);
+
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                LocationData locationData = JsonSerializer.Deserialize<LocationData>(data)!;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = locationDataTemp.locationName,
+                    solarPanelsData = locationDataTemp.solarPanelsData,
+                    satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
+                    satteliteImageElevationData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = locationDataTemp.dateCreated,
+                    daylightHours = locationDataTemp.daylightHours,
+                    horisonElevationData = null
+                };
                 return locationData!;
             }
-        }
-        catch (System.Exception)
-        {
-            throw new Exception("Could not get solar irradiation without image");
-        }
-        return null!;
-    }
-
-    //Update the data in LocationData
-    public async Task<string> UpdateDataLocationData(
-        double latitude,
-        double longitude,
-        string data,
-        int? remainingCalls
-    )
-    {
-        try
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(
-                HttpMethod.Patch,
-                express + "/api/locationData/update/data/" + latitude + "/" + longitude
-            );
-            var content = new StringContent(
-                "{\r\n    \"data\": \""
-                    + data
-                    + "\",\r\n    \"remainingCalls\": "
-                    + remainingCalls
-                    + "\r\n}",
-                null,
-                "application/json"
-            );
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                return "Data in LocationData updated successfully";
-            }
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                return "LocationData not found";
+                return null!;
             }
             else
             {
-                throw new Exception("Error updating data in LocationData");
+                throw new Exception("Error getting LocationData");
             }
-        }
-        catch (System.Exception)
-        {
-            throw new Exception("Could not update data in LocationData");
-        }
-    }
 
-    //Update the image in LocationData
-    public async Task<string> UpdateImageLocationData(
-        double latitude,
-        double longitude,
-        string image
-    )
-    {
-        try
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(
-                HttpMethod.Patch,
-                express + "/api/locationData/update/image/" + latitude + "/" + longitude
-            );
-            var content = new StringContent(
-                "{\r\n    \"image\": \"" + image + "\"\r\n}",
-                null,
-                "application/json"
-            );
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                return "Image in LocationData updated successfully";
-            }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return "LocationData not found";
-            }
-            else
-            {
-                throw new Exception("Error updating Image in LocationData");
-            }
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not update image in LocationData");
-        }
-    }
-
-    //Update the daylightHours in LocationData
-    public async Task<string> UpdateDaylightHoursLocationData(
-        double latitude,
-        double longitude,
-        double daylightHours
-    )
-    {
-        try
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(
-                HttpMethod.Patch,
-                express + "/api/locationData/update/daylightHours/" + latitude + "/" + longitude
-            );
-            var content = new StringContent(
-                "{\r\n    \"daylightHours\": \"" + daylightHours + "\"\r\n}",
-                null,
-                "application/json"
-            );
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                return "DaylightHours in LocationData updated successfully";
-            }
-            else if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                return "LocationData not found";
-            }
-            else
-            {
-                throw new Exception("Error updating DaylightHours in LocationData");
-            }
-        }
-        catch (System.Exception)
-        {
-            throw new Exception("Could not update DaylightHours in LocationData");
-        }
-    }
-
-    //Get Solar Irradiation Data
-    public async Task<string> GetSolarIrradiationData(
-        double latitude,
-        double longitude,
-        int numYears,
-        int numDaysPerYear
-    )
-    {
-        try
-        {
-            var client = new HttpClient();
-            var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                express + "/api/locationData/solarIrradiationData"
-            );
-            var content = new StringContent(
-                "{\r\n    \"latitude\": \""
-                    + latitude
-                    + "\",\r\n    \"longitude\": \""
-                    + longitude
-                    + "\",\r\n    \"numYears\": "
-                    + numYears
-                    + ",\r\n    \"numDaysPerYear\": "
-                    + numDaysPerYear
-                    + "\r\n}",
-                null,
-                "application/json"
-            );
-            request.Content = content;
-            var response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                string data = response.Content.ReadAsStringAsync().Result;
-                return data;
-            }
-            else
-            {
-                throw new Exception("Error getting solar irradiation data");
-            }
-        }
-        catch (System.Exception)
-        {
-            throw new Exception("Could not get solar irradiation data");
+            throw new Exception("Could not get solar irradiation");
         }
     }
 
@@ -422,36 +280,53 @@ public class LocationDataRepository
         }
     }
 
-    // Update elevation data
-    public async Task<string> UpdateElevationData(
-        double latitude,
-        double longitude,
-        string elevationData
-    )
+    //CheckIfLocationDataExists
+    public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
     {
         try
         {
+            Console.WriteLine("Checking if LocationData exists for " + latitude + ", " + longitude);
             var client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Patch, express + "/api/locationData/update/elevationData/" + latitude + "/" + longitude);
-            var content = new StringContent("{\r\n    \"elevationData\": \"" + elevationData + "\"\r\n}", null, "application/json");
-            request.Content = content;
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude
+            );
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                return "Elevation in LocationData updated successfully";
+                Console.WriteLine(".NET LocationData exists");
+                return true;
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                return "LocationData not found";
+                Console.WriteLine(".NET LocationData does not exist");
+                return false;
             }
             else
             {
-                throw new Exception("Error updating Elevation in LocationData");
+                Console.WriteLine(".NET Error checking if LocationData exists");
+                throw new Exception("Error checking if LocationData exists");
             }
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not update Elevation in LocationData");
+            throw new Exception("Could not check if LocationData exists");
         }
     }
+}
+
+public class LocationDataModelTemp
+{
+    public double latitude { get; set; }
+    public double longitude { get; set; }
+    public string? locationName { get; set; }
+    public string? solarPanelsData { get; set; }
+    public string? satteliteImageData { get; set; }
+    public string? satteliteImageElevationData { get; set; }
+    public string? annualFluxData { get; set; }
+    public string? monthlyFluxData { get; set; }
+    public string? maskData { get; set; }
+    public DateTime? dateCreated { get; set; }
+    public double daylightHours { get; set; }
+    public string? horisonElevationData { get; set; }
 }
