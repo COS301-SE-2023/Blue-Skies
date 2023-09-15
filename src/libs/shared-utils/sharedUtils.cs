@@ -29,14 +29,19 @@ public class locationDataClass {
     /// </summary>
     public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude) {
         var client = new HttpClient();
+        client.Timeout = TimeSpan.FromSeconds(10);
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
         Console.WriteLine("Getting location from database for " + latitude + ", " + longitude);
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
             Console.WriteLine("Location data found");
             return result;
+        }
+        if(response.StatusCode == System.Net.HttpStatusCode.RequestTimeout) {
+            Console.WriteLine("Request timed out after 10 seconds");
+            // return await GetLocationData(latitude, longitude);
         }
         return null;
     }
