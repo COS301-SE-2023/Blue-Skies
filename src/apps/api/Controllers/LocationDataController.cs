@@ -163,11 +163,7 @@ public class LocationDataController : ControllerBase
         try
         {
             bool data = await _locationDataRepository.CheckIfLocationDataExists(latitude, longitude);
-            if(data == false)
-            {
-                return StatusCode(404, false);
-            }
-            return Ok(true);
+            return Ok(data);
         }
         catch (Exception e)
         {

@@ -17,9 +17,10 @@ public class locationDataClass {
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-            return true;
+            var data = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<bool>(data)!;
         }
-        return false;
+        throw new Exception("Failed to check if location exists in database");
     }
     /// <summary>
     /// Get's the location data from the database.
@@ -34,6 +35,7 @@ public class locationDataClass {
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            Console.WriteLine("Location data found");
             return result;
         }
         return null;
@@ -93,6 +95,7 @@ public class locationDataClass {
         
         if (response.IsSuccessStatusCode)
         {
+            Console.WriteLine("Location data created");
             return result;
         }
         return null;
