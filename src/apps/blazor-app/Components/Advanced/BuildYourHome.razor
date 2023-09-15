@@ -78,23 +78,19 @@
                 {
                     @foreach (var appliance in appliances)
                     {
-                        if (appliance.type != "Washing Machine") {
-                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                            </div>
-                        }
+                                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                            </div>
                     }
                 }
                 else
                 {
                     @foreach (var appliance in appliances)
                     {
-                        if (appliance.type != "Washing Machine") {
-                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                            </div>
-                        }
+                                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                            </div>
                     }
                 }
             </div>
@@ -151,11 +147,11 @@
                 <p class="text-5xl text-primary-900 font-semibold">@{
                         if (dlh == (24 - daylight))
                         {
-                                                            <p>@dlh+</p>
+                                                    <p>@dlh+</p>
                         }
                         else
                         {
-                                                            <p>@dlh</p>
+                                                    <p>@dlh</p>
                         }
                     }
                 </p>
@@ -167,7 +163,7 @@
 
 @* Appliance Summary *@
 
-<div class="hidden lg:flex gap-5 px-10 w-full mt-10">
+@* <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
     <div
         class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
         <div class="flex gap-4 justify-start mb-10 relative">
@@ -185,10 +181,10 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                                    </div>
+                                <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                        imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                </div>
                 }
             }
         </div>
@@ -204,51 +200,51 @@
                 <content>
                     @if (edit)
                     {
-                                        <p @onclick="ModalPopup.Show">Update calculation</p>
+                                <p @onclick="ModalPopup.Show">Update calculation</p>
                     }
                     else
                     {
-                                        <p @onclick="ModalPopup.Show">Save this calculation</p>
+                                <p @onclick="ModalPopup.Show">Save this calculation</p>
                     }
                 </content>
             </Button>
         </div>
     </div> 
-</div>
+</div> *@
 
 @* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
 
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+    @if (edit)
+    {
+                    <p>Rename this calculation?</p>
+    }
+    else
+    {
+                    <p>Add a nickname for this calculation:</p>
+    }
+        <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+        <div class="flex flex-row gap-4 justify-center">
         @if (edit)
         {
-                            <p>Rename this calculation?</p>
+                        <div @onclick="UpdateCalculation">
+                            <Button>
+                                <content>
+                                    Update
+                                </content>
+                            </Button>
+                        </div>
         }
         else
         {
-                            <p>Add a nickname for this calculation:</p>
+                        <div @onclick="SaveCalculation">
+                            <Button>
+                                <content>
+                                    Save
+                                </content>
+                            </Button>
+                        </div>
         }
-        <Input @bind-InputValue="calculationName" placeholder="Nickname" />
-        <div class="flex flex-row gap-4 justify-center">
-            @if (edit)
-            {
-                                <div @onclick="UpdateCalculation">
-                                    <Button>
-                                        <content>
-                                            Update
-                                        </content>
-                                    </Button>
-                                </div>
-            }
-            else
-            {
-                                <div @onclick="SaveCalculation">
-                                    <Button>
-                                        <content>
-                                            Save
-                                        </content>
-                                    </Button>
-                                </div>
-            }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
                     <content>Cancel</content>
@@ -275,16 +271,16 @@
             @switch (selectedSystem)
             {
                 case 0:
-                                                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
+                                            <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
                     break;
                 case 1:
-                                                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
                 case 2:
-                                                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                                            <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
                     break;
                 default:
-                                                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
             }
         </div>
@@ -301,17 +297,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                                                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                                                                    </div>
+                                                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                    </div>
                 }
                 else
                 {
-                                                                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                                                                    </div>
+                                                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                    </div>
                 }
             }
         }
@@ -321,22 +317,22 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                                                                    </div>
+                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                    </div>
                 }
                 else
                 {
-                                                                    <div class="fade-in-active">
-                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                                                                    </div>
+                                                    <div class="fade-in-active">
+                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                    </div>
                 }
             }
         }
     </div>
-    <div class="flex mt-10 mx-auto gap-6 items-center>">
+    @* <div class="flex mt-10 mx-auto gap-6 items-center>">
         <Button css="h-16 w-full" style="outline">
             <content>
                 <p @onclick="ResetHome">Reset</p>
@@ -347,7 +343,7 @@
                 <p @onclick="SaveCalculation">Save this calculation</p>
             </content>
         </Button>
-    </div>
+    </div> *@
 </div>
 
 @code {
@@ -375,7 +371,7 @@
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
-    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>(); 
+    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Add", true),
@@ -409,7 +405,7 @@
         }
 
         CalculateRunningHours();
-         @* Get custom Appliances *@
+        @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
 
@@ -470,7 +466,7 @@
             applianceQuantities.Add(appliance);
         }
 
-       
+
     }
 
     /// <summary>
