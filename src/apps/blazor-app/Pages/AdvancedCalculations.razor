@@ -27,13 +27,6 @@
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/admin/keys");
         }
-        else if (longitude == 0 && latitude == 0)
-        {
-            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
-            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/solarScore");
-        }
         else
         {
             <div class="w-full px-20 ">
@@ -77,15 +70,13 @@
     private bool isLoaded = false;
     private bool edit = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private List<ApplianceModel> appliances = new List<ApplianceModel>();
-    private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-    private List<SystemModel> systems = new List<SystemModel>();
-    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
-    private ReportModel currentReport = new ReportModel();
-    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    private List<ApplianceModel>? appliances;
+    private List<ApplianceModel>? advancedCalculationAppliances;
+    private List<SystemModel>? systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel>? reportAllAppliance;
+    private ReportModel currentReport = new ReportModel(); 
+    public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private double longitude = 0;
-    private double latitude = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -117,27 +108,41 @@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
         edit = editing.Value;
 
-        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = lat.Value;
-        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = lng.Value;
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        double? lat = tempLatitude.Value;
+        double? lng = tempLongitude.Value;
+
+        Console.WriteLine(lat);
+        Console.WriteLine(lng);
+
+        if(lat == null || lng == null || lat == 0 || lng == 0)
+        {
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+            NavigationManager.NavigateTo("/");
+        }
+        double latitude = lat ?? 0;
+        double longitude = lng ?? 0;
+        
+        LocationDataModel? result = await locationDataClass.GetLocationData(latitude, longitude);
+        if (result != null)
+        {
+            currentLocationData = result;
+        }
 
         var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
         selectedSystem = sSystem.Value;
 
-        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
+
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
             var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
             reportAllAppliance = reportAllAppl.Value!;
-
-        }
-        else
-        {
-            currentReport.latitude = latitude;
-            currentReport.longitude = longitude;
+        } else {
+            currentReport.latitude = latitude!;
+            currentReport.longitude = longitude!;
         }
 
         appliances = await applianceDataClass.GetAllAppliances();

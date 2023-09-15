@@ -8,17 +8,20 @@
 
 @code {
     [Parameter]
-    public string? solarIrradiation { get; set; }
+    public byte[]? monthlyFluxData { get; set; }
+
+    [Parameter]
+    public byte[]? maskData { get; set; }
     private BarConfig? barConfig;
     private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
     
     [Parameter]
     public bool animated { get; set; } = true;
 
-    @*The data is structured as: year, month, solarIrradiation  *@
+    @*The data is structured as: year, month, monthlyFluxData  *@
     protected override void OnParametersSet()
     {
-        if (solarIrradiation != null)
+        if (monthlyFluxData != null)
         {
             AddDataToChart();
         }
@@ -132,15 +135,21 @@
     /// </summary>
     private void AddDataToChart()
     {
-        @* The solarIrradiation: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
-        if(solarIrradiation == null || barConfig == null) {
+        @* The monthlyFluxData: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
+        if(monthlyFluxData == null || barConfig == null) {
             return;
         }
         data = new Dictionary<string, Dictionary<string, float>>();
-        @* Remove the last character in solarIrradiation *@
-        solarIrradiation = solarIrradiation.Remove(solarIrradiation.Length - 1);
+        @* Remove the last character in monthlyFluxData *@
+
+        @* monthlyFluxData = monthlyFluxData.Remove(monthlyFluxData.Length - 1); *@
+        
         @* Split the data *@
-        string[] splitData = solarIrradiation.Split(',');
+        @* string[] splitData = monthlyFluxData.Split(','); *@
+
+
+        string[] splitData = new string[3]; //Just temp to get rid of error
+
         foreach (var item in splitData)
         {
             string[] splitItem = item.Split(';');

@@ -12,7 +12,7 @@
             </Heading>
             <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
                 <div class="w-80">
-                    <Map scale="scale-[2.6]" imageName="@currentLocationData!.image"/>
+                    <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
                 </div>
                 <div class="flex flex-col justify-start gap-10">
                     @{
@@ -21,7 +21,7 @@
                         var avgEnergyProduction = "";
                         if (reports != null)
                         {
-                            location = currentLocationData.location;
+                            location = currentLocationData!.locationName;
                             sScore = solarScore + "%";
                             avgEnergyProduction = Math.Round(systems![selectedSystem].numberOfPanels *
                             currentLocationData.daylightHours * systems[selectedSystem].solarInput /1000, 2) + " kw/h";
@@ -71,7 +71,9 @@
 </div>
 
 @code {
+    private string? satteliteImage;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     [Parameter]
     public string? css { get; set; }
     [Parameter]
@@ -94,5 +96,11 @@
                 selectedSystem = i;    
             }
         }
+
+        if(currentLocationData != null) {
+            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+        }
+
+
     }
 }
