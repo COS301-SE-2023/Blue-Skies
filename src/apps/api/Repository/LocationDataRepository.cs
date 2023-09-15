@@ -139,6 +139,7 @@ public class LocationDataRepository
                 HttpMethod.Get,
                 express + "/api/locationData/" + latitude + "/" + longitude
             );
+            Console.WriteLine("Getting LocationData for " + latitude + ", " + longitude);
             var response = await client.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -265,6 +266,7 @@ public class LocationDataRepository
     {
         try
         {
+            Console.WriteLine("Checking if LocationData exists for " + latitude + ", " + longitude);
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
