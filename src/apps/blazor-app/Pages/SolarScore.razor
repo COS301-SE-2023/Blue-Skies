@@ -64,6 +64,7 @@ else
         if(latitude != 0 && longitude != 0)
         {
             locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            Console.WriteLine("Gottem");
             await ProtectedSessionStore.SetAsync("parent", "solarScore");
             isAd = isAdmin.Value;
         }
