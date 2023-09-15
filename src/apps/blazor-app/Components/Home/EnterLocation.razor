@@ -11,6 +11,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
+@inject BlazorApp.Data.ToastService toastService
 
 <div class="mx-auto max-w-2xl px-10  py-32 sm:py-20 lg:py-28">
     <div class="text-center">
@@ -44,7 +45,7 @@
 
 @code {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private LocationDataModel? currentLocationData = new LocationDataModel();
+    private LocationDataModel? currentLocationData;
     public string parent = "index";
     /// <summary>
     /// Gets the parent page from the session storage.
@@ -76,6 +77,8 @@
     public async void generateLocationData()
     {
         ShowLoadingScreen();
+        currentLocationData = new LocationDataModel();
+
         System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
         customCulture.NumberFormat.NumberDecimalSeparator = ".";
         System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
@@ -111,28 +114,29 @@
 
         if(currentLocationData == null)
         {
+            toastService.ShowToast("Could not find data for this location", "Try another location", "error");
             HideLoadingScreen();
-            @* ToDO: show modal that says we cannot find data for this location *@
             NavigationManager.NavigateTo("/");
+        } else {
+            await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
+            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
+
+            await ProtectedSessionStore.SetAsync("parent", "");
+            parent = "";
+            await ProtectedSessionStore.SetAsync("edit", false);
+
+            if (parent.Equals("index"))
+            {
+                loadingService.ShowLoadingScreen();
+                NavigationManager.NavigateTo("/solarScore");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/solarScore", true);
+                ShowLoadingScreen();
+            }
         }
         
-        await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
-        await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
-
-        await ProtectedSessionStore.SetAsync("parent", "");
-        parent = "";
-        await ProtectedSessionStore.SetAsync("edit", false);
-
-        if (parent.Equals("index"))
-        {
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/solarScore");
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/solarScore", true);
-            ShowLoadingScreen();
-        }
     }
 
     /// <summary>

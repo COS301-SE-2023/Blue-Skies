@@ -13,6 +13,7 @@ public class locationDataClass {
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude);
+        Console.WriteLine("Checking if location exists in database for " + latitude + ", " + longitude);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -25,39 +26,15 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude){
+    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude) {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
+        Console.WriteLine("Getting location from database for " + latitude + ", " + longitude);
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
             return result;
-        }
-        return null;
-    }
-    
-    /// <summary>
-    /// Get's the location data from the database except for the image.
-    /// <paramref name="latitude"/> The latitude of the current location.
-    /// <paramref name="longitude"/> The longitude of the current location.
-    /// </summary>
-    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude) {
-        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
-        Console.WriteLine("URL: " + url);
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
-        var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode) {
-            var data = await response.Content.ReadAsStringAsync();
-            if (data.Equals("Solar Irradiation not found"))
-            {
-                return null;
-            }
-            data = response.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
-        } else {
-            Console.WriteLine("Location data not found - fetching data instead");
         }
         return null;
     }
@@ -75,6 +52,7 @@ public class locationDataClass {
     /// </summary>
     public async Task<LocationDataModel?> CreateLocationData(double latitude, double longitude, string locationName) 
     {
+        Console.WriteLine("Creating location data for " + latitude + ", " + longitude);
         LocationDataModel result = new LocationDataModel();
         result.latitude = latitude;
         result.longitude = longitude;
@@ -121,52 +99,52 @@ public class locationDataClass {
     }
 
     private async Task<LocationDataModel?> GetRoofData(double latitude, double longitude)
-{
-    LocationDataModel result = new LocationDataModel();
-    result.latitude = latitude;
-    result.longitude = longitude;
-    RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
-    
-    if (solarPanelsDataResult == null)
     {
-        Console.WriteLine("Solar panels data not found");
-        return null;
+        LocationDataModel result = new LocationDataModel();
+        result.latitude = latitude;
+        result.longitude = longitude;
+        RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
+        
+        if (solarPanelsDataResult == null)
+        {
+            Console.WriteLine("Solar panels data not found");
+            return null;
+        }
+
+        result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
+
+        LocationDataLayer? locationDataLayer = await GetLocationDataLayer(latitude, longitude);
+
+        if (locationDataLayer == null)
+        {
+            Console.WriteLine("Location data layer not found");
+            return null;
+        }
+
+        var byteDataTask1 = GetLocationDataFromDataLayerUrl(locationDataLayer.dsmUrl!);
+        var byteDataTask2 = GetLocationDataFromDataLayerUrl(locationDataLayer.rgbUrl!);
+        var byteDataTask3 = GetLocationDataFromDataLayerUrl(locationDataLayer.maskUrl!);
+        var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
+        var byteDataTask5 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
+
+        await Task.WhenAll(byteDataTask1, byteDataTask2, byteDataTask3, byteDataTask4, byteDataTask5);
+
+        if (byteDataTask1.Result == null || byteDataTask2.Result == null || byteDataTask3.Result == null ||
+            byteDataTask4.Result == null || byteDataTask5.Result == null)
+        {
+            Console.WriteLine("One or more data requests failed");
+            return null;
+        }
+
+        result.satteliteImageElevationData = byteDataTask1.Result;
+        result.satteliteImageData = byteDataTask2.Result;
+        result.maskData = byteDataTask3.Result;
+        result.annualFluxData = byteDataTask4.Result;
+        result.monthlyFluxData = byteDataTask5.Result;
+        result.dateCreated = DateTime.Now;
+
+        return result;
     }
-
-    result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
-
-    LocationDataLayer? locationDataLayer = await GetLocationDataLayer(latitude, longitude);
-
-    if (locationDataLayer == null)
-    {
-        Console.WriteLine("Location data layer not found");
-        return null;
-    }
-
-    var byteDataTask1 = GetLocationDataFromDataLayerUrl(locationDataLayer.dsmUrl!);
-    var byteDataTask2 = GetLocationDataFromDataLayerUrl(locationDataLayer.rgbUrl!);
-    var byteDataTask3 = GetLocationDataFromDataLayerUrl(locationDataLayer.maskUrl!);
-    var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
-    var byteDataTask5 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
-
-    await Task.WhenAll(byteDataTask1, byteDataTask2, byteDataTask3, byteDataTask4, byteDataTask5);
-
-    if (byteDataTask1.Result == null || byteDataTask2.Result == null || byteDataTask3.Result == null ||
-        byteDataTask4.Result == null || byteDataTask5.Result == null)
-    {
-        Console.WriteLine("One or more data requests failed");
-        return null;
-    }
-
-    result.satteliteImageElevationData = byteDataTask1.Result;
-    result.satteliteImageData = byteDataTask2.Result;
-    result.maskData = byteDataTask3.Result;
-    result.annualFluxData = byteDataTask4.Result;
-    result.monthlyFluxData = byteDataTask5.Result;
-    result.dateCreated = DateTime.Now;
-
-    return result;
-}
 
     private async Task<byte[]?> GetLocationDataFromDataLayerUrl(string url) {
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");

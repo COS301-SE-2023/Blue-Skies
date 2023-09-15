@@ -76,6 +76,7 @@ export default class LocationDataController {
     const long = parseFloat(longitude.replace(',', '.'));
     const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
     let solarIrradiation: ILocationData;
+    console.log('Getting location data ' + lat + ', ' + long);
     try {
       const request = new tedious.Request(
         query,
@@ -208,8 +209,8 @@ export default class LocationDataController {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
-    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
-
+    const query = `SELECT latitude, longitude, locationName FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+    console.log('Checking if location data exists ' + lat + ', ' + long);
     try {
       const request = new tedious.Request(
         query,
