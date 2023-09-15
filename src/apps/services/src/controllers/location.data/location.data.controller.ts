@@ -72,9 +72,9 @@ export default class LocationDataController {
 
 
   public getLocationData = async (req: Request, res: Response) => {
-    req.setTimeout(10000, () => {
-      res.status(504).send('Request timed out');
-    });
+    // req.setTimeout(10000, () => {
+    //   res.status(504).send('Request timed out');
+    // });
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
@@ -116,7 +116,7 @@ export default class LocationDataController {
           horisonElevationData: columns[11].value,
         };
       });
-      request.setTimeout(10000);
+      // request.setTimeout(10000);
 
       conn.execSql(request);
     } catch (error) {
