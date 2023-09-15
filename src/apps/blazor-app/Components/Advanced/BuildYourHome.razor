@@ -78,20 +78,20 @@
                 {
                     @foreach (var appliance in appliances)
                     {
-                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                                                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                                        </div>
                     }
                 }
                 else
                 {
                     @foreach (var appliance in appliances)
                     {
-                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                        </div>
+                                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                                        </div>
                     }
                 }
             </div>
@@ -146,10 +146,13 @@
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                 <p class="text-5xl text-primary-900 font-semibold">@{
-                        if(dlh == (24 - daylight)) {
-                            <p>@dlh+</p>
-                        } else {
-                            <p>@dlh</p>
+                        if (dlh == (24 - daylight))
+                        {
+                                                            <p>@dlh+</p>
+                        }
+                        else
+                        {
+                                                            <p>@dlh</p>
                         }
                     }
                 </p>
@@ -178,10 +181,10 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                    </div>
+                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                                    </div>
                 }
             }
         </div>
@@ -197,11 +200,11 @@
                 <content>
                     @if (edit)
                     {
-                        <p @onclick="ModalPopup.Show">Update calculation</p>
+                                        <p @onclick="ModalPopup.Show">Update calculation</p>
                     }
                     else
                     {
-                        <p @onclick="ModalPopup.Show">Save this calculation</p>
+                                        <p @onclick="ModalPopup.Show">Save this calculation</p>
                     }
                 </content>
             </Button>
@@ -212,33 +215,33 @@
     <ChildContent>
         @if (edit)
         {
-            <p>Rename this calculation?</p>
+                            <p>Rename this calculation?</p>
         }
         else
         {
-            <p>Add a nickname for this calculation:</p>
+                            <p>Add a nickname for this calculation:</p>
         }
         <Input @bind-InputValue="calculationName" placeholder="Nickname" />
         <div class="flex flex-row gap-4 justify-center">
             @if (edit)
             {
-                <div @onclick="UpdateCalculation">
-                    <Button>
-                        <content>
-                            Update
-                        </content>
-                    </Button>
-                </div>
+                                <div @onclick="UpdateCalculation">
+                                    <Button>
+                                        <content>
+                                            Update
+                                        </content>
+                                    </Button>
+                                </div>
             }
             else
             {
-                <div @onclick="SaveCalculation">
-                    <Button>
-                        <content>
-                            Save
-                        </content>
-                    </Button>
-                </div>
+                                <div @onclick="SaveCalculation">
+                                    <Button>
+                                        <content>
+                                            Save
+                                        </content>
+                                    </Button>
+                                </div>
             }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
@@ -267,16 +270,16 @@
             @switch (selectedSystem)
             {
                 case 0:
-                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
+                                                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
                     break;
                 case 1:
-                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
                 case 2:
-                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                                                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
                     break;
                 default:
-                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
             }
         </div>
@@ -293,17 +296,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                    </div>
+                                                                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                                    </div>
                 }
                 else
                 {
-                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                    </div>
+                                                                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                                    </div>
                 }
             }
         }
@@ -313,17 +316,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                    </div>
+                                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                                    </div>
                 }
                 else
                 {
-                    <div class="fade-in-active">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                    </div>
+                                                                    <div class="fade-in-active">
+                                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                                    </div>
                 }
             }
         }
@@ -344,13 +347,11 @@
 
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
-
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
     public List<SystemModel> systems { get; set; } = new List<SystemModel>();
-
     [Parameter]
     public int selectedSystem { get; set; }
     [Parameter]
@@ -361,7 +362,6 @@
     public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
-
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
@@ -409,42 +409,45 @@
     /// </summary>
     protected override void OnParametersSet()
     {
-        for (int i = 0; i < reportAllAppliance!.Count; i++)
+        if (reportAllAppliance != null)
         {
+            for (int i = 0; i < reportAllAppliance!.Count; i++)
+            {
 
-            if (reportAllAppliance[i].type!.Equals("Kettle"))
-            {
-                appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("Fridge"))
-            {
-                appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("LED Lights"))
-            {
-                appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("TV"))
-            {
-                appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("Computer"))
-            {
-                appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("Microwave"))
-            {
-                appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("CCTV"))
-            {
-                appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
-            else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
-            {
-                appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
-            }
+                if (reportAllAppliance[i].type!.Equals("Kettle"))
+                {
+                    appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Fridge"))
+                {
+                    appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Lights"))
+                {
+                    appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("TV"))
+                {
+                    appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Computer"))
+                {
+                    appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Microwave"))
+                {
+                    appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("CCTV"))
+                {
+                    appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+                {
+                    appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
 
+            }
         }
         calculationName = currentReport!.reportName;
 
@@ -595,7 +598,8 @@
     {
         ModalPopup.Dismiss();
         ShowLoadingScreen();
-        if(await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
+        if (await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId))
+        {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
 
             reports = await reportClass.GetUserReports(userId);
@@ -604,13 +608,17 @@
                 await ProtectedSessionStore.SetAsync("userReports", reports);
                 await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
                 await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
-                
+
                 foreach (var appliance in appliances)
                 {
                     await reportApplianceClass.CreateReportAppliance(reports[reports.Count - 1].reportId, appliance);
                 }
             }
-        } 
+        }
+        else
+        {
+            toastService.ShowToast("Error", "Report failed to save.", "error");
+        }
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
@@ -618,7 +626,8 @@
     private async Task UpdateCalculation()
     {
         ShowLoadingScreen();
-        if(await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId)) {
+        if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
+        {
 
             toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
 
@@ -634,8 +643,9 @@
         loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
-    
-    private void ShowLoadingScreen() {
+
+    private void ShowLoadingScreen()
+    {
         loadingService.ShowLoadingScreen();
     }
 

@@ -6,14 +6,17 @@ using System.Text;
 
 namespace SharedUtils;
 
-public class locationDataClass {
+public class locationDataClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
     {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude);
-        Console.WriteLine("Checking if location exists in database for " + latitude + ", " + longitude);
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/locationData/checkIfLocationDataExists/" + latitude + "/" + longitude
+        );
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
@@ -22,21 +25,47 @@ public class locationDataClass {
         }
         throw new Exception("Failed to check if location exists in database");
     }
+
     /// <summary>
     /// Get's the location data from the database.
     /// <paramref name="latitude"/> The latitude of the current location.
     /// <paramref name="longitude"/> The longitude of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude) {
+    public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude){
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/getLocationData/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
-        Console.WriteLine("Getting location from database for " + latitude + ", " + longitude);
         var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode) {
+        if (response.IsSuccessStatusCode)
+        {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
             Console.WriteLine("Location data found");
             return result;
+        }
+        return null;
+    }
+    
+    /// <summary>
+    /// Get's the location data from the database except for the image.
+    /// <paramref name="latitude"/> The latitude of the current location.
+    /// <paramref name="longitude"/> The longitude of the current location.
+    /// </summary>
+    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude) {
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
+        Console.WriteLine("URL: " + url);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/GetLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",","."));
+        var response = await client.SendAsync(request);
+        if (response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            if (data.Equals("Solar Irradiation not found"))
+            {
+                return null;
+            }
+            data = response.Content.ReadAsStringAsync().Result;
+            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Location data not found - fetching data instead");
         }
         return null;
     }
@@ -52,7 +81,11 @@ public class locationDataClass {
     /// <paramref name="image"/> The image of the current location.
     /// <paramref name="location"/> The name of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> CreateLocationData(double latitude, double longitude, string locationName) 
+    public async Task<LocationDataModel?> CreateLocationData(
+        double latitude,
+        double longitude,
+        string locationName
+    )
     {
         Console.WriteLine("Creating location data for " + latitude + ", " + longitude);
         LocationDataModel result = new LocationDataModel();
@@ -61,20 +94,23 @@ public class locationDataClass {
         result.locationName = locationName;
 
         InitialDataModel initialData = await GetInitialData(latitude, longitude);
-        if(initialData == null) {
+        if (initialData == null)
+        {
             Console.WriteLine("Initial data not found");
             return null;
         }
         result.daylightHours = (double)Math.Round(initialData.averageSunlightHours, 2);
         string? elevationData = await GetHorisonElevationData(latitude, longitude);
-        if(elevationData == null) {
+        if (elevationData == null)
+        {
             Console.WriteLine("Elevation data not found");
             return null;
         }
         result.horisonElevationData = elevationData;
 
         LocationDataModel? locationData = await GetRoofData(latitude, longitude);
-        if(locationData == null) {
+        if (locationData == null)
+        {
             Console.WriteLine("Rooftop data not found");
             return null;
         }
@@ -92,7 +128,7 @@ public class locationDataClass {
         var json = JsonSerializer.Serialize(result);
         request.Content = new StringContent(json, null, "application/json");
         var response = await client.SendAsync(request);
-        
+
         if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Location data created");
@@ -102,17 +138,17 @@ public class locationDataClass {
     }
 
     private async Task<LocationDataModel?> GetRoofData(double latitude, double longitude)
+{
+    LocationDataModel result = new LocationDataModel();
+    result.latitude = latitude;
+    result.longitude = longitude;
+    RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
+    
+    if (solarPanelsDataResult == null)
     {
-        LocationDataModel result = new LocationDataModel();
-        result.latitude = latitude;
-        result.longitude = longitude;
-        RooftopInformationModel? solarPanelsDataResult = await GetSolarPannelsData(latitude, longitude);
-        
-        if (solarPanelsDataResult == null)
-        {
-            Console.WriteLine("Solar panels data not found");
-            return null;
-        }
+        Console.WriteLine("Solar panels data not found");
+        return null;
+    }
 
         result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
 
@@ -130,14 +166,14 @@ public class locationDataClass {
         var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
         var byteDataTask5 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
 
-        await Task.WhenAll(byteDataTask1, byteDataTask2, byteDataTask3, byteDataTask4, byteDataTask5);
+    await Task.WhenAll(byteDataTask1, byteDataTask2, byteDataTask3, byteDataTask4, byteDataTask5);
 
-        if (byteDataTask1.Result == null || byteDataTask2.Result == null || byteDataTask3.Result == null ||
-            byteDataTask4.Result == null || byteDataTask5.Result == null)
-        {
-            Console.WriteLine("One or more data requests failed");
-            return null;
-        }
+    if (byteDataTask1.Result == null || byteDataTask2.Result == null || byteDataTask3.Result == null ||
+        byteDataTask4.Result == null || byteDataTask5.Result == null)
+    {
+        Console.WriteLine("One or more data requests failed");
+        return null;
+    }
 
         result.satteliteImageElevationData = byteDataTask1.Result;
         result.satteliteImageData = byteDataTask2.Result;
@@ -149,57 +185,91 @@ public class locationDataClass {
         return result;
     }
 
-    private async Task<byte[]?> GetLocationDataFromDataLayerUrl(string url) {
+    private async Task<byte[]?> GetLocationDataFromDataLayerUrl(string url)
+    {
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
-        if(api_key == null) {
+        if (api_key == null)
+        {
             Console.WriteLine("API key not found");
             return null;
         }
         var client = new HttpClient();
         Console.WriteLine("Getting data from url: " + url + "&key=" + api_key);
         var response = await client.GetAsync(url + "&key=" + api_key);
-        if (response.IsSuccessStatusCode) {
+        if (response.IsSuccessStatusCode)
+        {
             Console.WriteLine("Data found");
             return await response.Content.ReadAsByteArrayAsync();
         }
         return null;
     }
 
-    private async Task<LocationDataLayer?> GetLocationDataLayer(double latitude, double longitude) {
+    private async Task<LocationDataLayer?> GetLocationDataLayer(double latitude, double longitude)
+    {
         LocationDataLayer result = new LocationDataLayer();
         int radiusMeters = 50;
         string view = "IMAGERY_AND_ALL_FLUX_LAYERS";
         string requiredQuality = "MEDIUM";
         double pixelSizeMeters = 0.25;
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
-        if(api_key == null) {
+        if (api_key == null)
+        {
             Console.WriteLine("API key not found");
             return null;
         }
 
-        string url = "https://solar.googleapis.com/v1/dataLayers:get?location.latitude=" + latitude + "&location.longitude=" + longitude + "&radiusMeters=" + radiusMeters + "&view=" + view + "&requiredQuality=" + requiredQuality + "&pixelSizeMeters=" + pixelSizeMeters + "&key=" + api_key;
+        string url =
+            "https://solar.googleapis.com/v1/dataLayers:get?location.latitude="
+            + latitude
+            + "&location.longitude="
+            + longitude
+            + "&radiusMeters="
+            + radiusMeters
+            + "&view="
+            + view
+            + "&requiredQuality="
+            + requiredQuality
+            + "&pixelSizeMeters="
+            + pixelSizeMeters
+            + "&key="
+            + api_key;
         var client = new HttpClient();
         var response = await client.GetAsync(url);
-        if (response.IsSuccessStatusCode) {
+        if (response.IsSuccessStatusCode)
+        {
             var data = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<LocationDataLayer>(data);
         }
         return null;
     }
 
-    private async Task<RooftopInformationModel?> GetSolarPannelsData(double latitude, double longitude) {
+    private async Task<RooftopInformationModel?> GetSolarPannelsData(
+        double latitude,
+        double longitude
+    )
+    {
         string requiredQuality = "HIGH";
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
 
-        if(api_key == null) {
+        if (api_key == null)
+        {
             Console.WriteLine("API key not found");
             return null;
         }
 
-        string url = "https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=" + latitude + "&location.longitude=" + longitude + "&requiredQuality=" + requiredQuality + "&key=" + api_key;
+        string url =
+            "https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude="
+            + latitude
+            + "&location.longitude="
+            + longitude
+            + "&requiredQuality="
+            + requiredQuality
+            + "&key="
+            + api_key;
         var client = new HttpClient();
         var response = await client.GetAsync(url);
-        if (response.IsSuccessStatusCode) {
+        if (response.IsSuccessStatusCode)
+        {
             var data = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<RooftopInformationModel>(data);
         }
@@ -211,17 +281,20 @@ public class locationDataClass {
     /// <paramref name="latitude"/> The latitude of the location.
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
-    private async Task<string?> GetHorisonElevationData(double latitude, double longitude) {
-        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}";
+    private async Task<string?> GetHorisonElevationData(double latitude, double longitude)
+    {
+        string url =
+            $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
         var client = new HttpClient();
         var response = await client.GetAsync(url);
-        if (response.IsSuccessStatusCode) {
+        if (response.IsSuccessStatusCode)
+        {
             var data = await response.Content.ReadAsStringAsync();
             return data;
         }
         return null;
     }
-    
+
     /// <summary>
     /// <para>Calls the weather visualcrossing api to get quick initial data.</para>
     /// <paramref name="latitude"/> The latitude of the current location.
@@ -234,18 +307,21 @@ public class locationDataClass {
         // Initial api key to get the last 15 day's of information:
         var client = new HttpClient();
         var apiKey = Environment.GetEnvironmentVariable("VISUAL_CROSSING_WEATHER_API_KEY");
-        var apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
-       
-        Console.WriteLine("client: "+client.ToString());
-        Console.WriteLine("url: "+apiUrl);
+        var apiUrl =
+            $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
+
+        Console.WriteLine("client: " + client.ToString());
+        Console.WriteLine("url: " + apiUrl);
         var apiData = await FetchWeatherDataAsync(client, apiUrl);
-        if(apiData != null) {
+        if (apiData != null)
+        {
             data.Add(apiData);
         }
-        else {
+        else
+        {
             Console.WriteLine("apiData is null");
         }
-        
+
         //  11 other calls to get the last 10 month's data
         var currentMonth = DateTime.Now.Month;
         var tasks = new List<Task<WeatherData>>();
@@ -268,7 +344,8 @@ public class locationDataClass {
                 monthString = "0" + monthString;
             }
             client = new HttpClient();
-            apiUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",",".")},{longitude.ToString().Replace(",",".")}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
+            apiUrl =
+                $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
 
             // Asynchronously fetch the data and add the task to the list
             tasks.Add(FetchWeatherDataAsync(client, apiUrl)!);
@@ -295,8 +372,10 @@ public class locationDataClass {
         // Get averageSolarIrradiation and daylightHours from the data
         var averageSunlightHours = 0f;
         var averageSolarIrradiation = 0.0;
-        for(var i = 0; i < data.Count; i++) {
-            if(data[i] == null || data[i].days == null) {
+        for (var i = 0; i < data.Count; i++)
+        {
+            if (data[i] == null || data[i].days == null)
+            {
                 Console.WriteLine("Data is null");
                 continue;
             }
@@ -304,14 +383,16 @@ public class locationDataClass {
             var averageSolarIrradiationMonth = 0.0;
             var monthSunlightHours = 0f;
 
-          
-            for(var j = 0; j < data[i].days!.Count; j++) {
+            for (var j = 0; j < data[i].days!.Count; j++)
+            {
                 var sunrise = data[i].days![j].sunrise;
                 var sunset = data[i].days![j].sunset;
                 var sunriseSplit = sunrise!.Split(":");
                 var sunsetSplit = sunset!.Split(":");
-                var sunriseTotalHours =  float.Parse(sunriseSplit[0]) + (float.Parse(sunriseSplit[1]) / 60);
-                var sunsetTotalHours = float.Parse(sunsetSplit[0]) + (float.Parse(sunsetSplit[1]) / 60);
+                var sunriseTotalHours =
+                    float.Parse(sunriseSplit[0]) + (float.Parse(sunriseSplit[1]) / 60);
+                var sunsetTotalHours =
+                    float.Parse(sunsetSplit[0]) + (float.Parse(sunsetSplit[1]) / 60);
                 var daylightHours = sunsetTotalHours - sunriseTotalHours;
                 monthSunlightHours += daylightHours;
 
@@ -340,7 +421,6 @@ public class locationDataClass {
     /// </summary>
     private async Task<WeatherData?> FetchWeatherDataAsync(HttpClient client, string apiUrl)
     {
-      
         try
         {
             var response = await client.GetAsync(apiUrl);
@@ -367,7 +447,8 @@ public class locationDataClass {
     }
 }
 
-public class systemClass {
+public class systemClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     /// <summary>
@@ -386,10 +467,10 @@ public class systemClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            systems = JsonSerializer.Deserialize<List<SystemModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            systems = JsonSerializer.Deserialize<List<SystemModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {
@@ -407,11 +488,10 @@ public class systemClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            system = JsonSerializer.Deserialize<SystemModel>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive =
-            true
-            })!;
+            system = JsonSerializer.Deserialize<SystemModel>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {
@@ -424,54 +504,89 @@ public class systemClass {
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/system/delete");
-        var content = new StringContent("{\r\n \"systemId\": " + id + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"systemId\": " + id + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> CreateSystem(SystemModel system) {
+    public async Task<bool> CreateSystem(SystemModel system)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
-        var content = new StringContent("{\r\n \"systemSize\": \"" + system.systemSize + "\",\r\n \"inverterOutput\": " +
-        system.inverterOutput + ",\r\n \"numberOfPanels\": " + system.numberOfPanels + ",\r\n \"batterySize\": " +
-        system.batterySize + ",\r\n \"numberOfBatteries\": " + system.numberOfBatteries + ",\r\n \"solarInput\": " +
-        system.solarInput + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"systemSize\": \""
+                + system.systemSize
+                + "\",\r\n \"inverterOutput\": "
+                + system.inverterOutput
+                + ",\r\n \"numberOfPanels\": "
+                + system.numberOfPanels
+                + ",\r\n \"batterySize\": "
+                + system.batterySize
+                + ",\r\n \"numberOfBatteries\": "
+                + system.numberOfBatteries
+                + ",\r\n \"solarInput\": "
+                + system.solarInput
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateSystem(SystemModel system) {
+    public async Task<bool> UpdateSystem(SystemModel system)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/System/update");
-        var content = new StringContent("{\r\n \"systemId\": " + system.systemId + ",\r\n \"inverterOutput\": " +
-        system.inverterOutput + ",\r\n \"numberOfPanels\": " + system.numberOfPanels + ",\r\n \"batterySize\": " +
-        system.batterySize + ",\r\n \"numberOfBatteries\": " + system.numberOfBatteries + ",\r\n \"solarInput\": " +
-        system.solarInput + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"systemId\": "
+                + system.systemId
+                + ",\r\n \"inverterOutput\": "
+                + system.inverterOutput
+                + ",\r\n \"numberOfPanels\": "
+                + system.numberOfPanels
+                + ",\r\n \"batterySize\": "
+                + system.batterySize
+                + ",\r\n \"numberOfBatteries\": "
+                + system.numberOfBatteries
+                + ",\r\n \"solarInput\": "
+                + system.solarInput
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
-
 }
 
-public class reportClass {
+public class reportClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<List<ReportModel>> GetUserReports(int userId)
     {
         List<ReportModel> reports = new List<ReportModel>();
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/Report/getUserReports/" + userId);
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/Report/getUserReports/" + userId
+        );
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            reports = JsonSerializer.Deserialize<List<ReportModel>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
+            reports = JsonSerializer.Deserialize<List<ReportModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {
@@ -489,10 +604,7 @@ public class reportClass {
         if (response.IsSuccessStatusCode)
         {
             var responseStream = await response.Content.ReadAsStringAsync();
-            var options = new JsonSerializerOptions 
-            {
-                PropertyNameCaseInsensitive = true
-            };
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
             return JsonSerializer.Deserialize<ReportModel>(responseStream, options);
         }
@@ -506,27 +618,37 @@ public class reportClass {
     // <summary>
     /// Create a new report in the database
     /// </summary>
-    public async Task<bool> CreateReport(string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId) {
+    public async Task<bool> CreateReport(
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
         var content = new StringContent(
             "{\r\n    \"reportName\" : \""
-                    + calculationName
-                    + "\",\r\n    \"userId\" : "
-                    + userId
-                    + ",\r\n    \"homeSize\" : \""
-                    + homeSize
-                    + "\",\r\n    \"latitude\" : \""
-                    + latitude
-                    + "\",\r\n    \"longitude\" : \""
-                    + longitude
-                    + "\",\r\n    \"systemId\" : "
-                    + systemId
-                    + "\r\n}",
-        null, "application/json");
+                + calculationName
+                + "\",\r\n    \"userId\" : "
+                + userId
+                + ",\r\n    \"homeSize\" : \""
+                + homeSize
+                + "\",\r\n    \"latitude\" : \""
+                + (latitude + "").Replace(",", ".")
+                + "\",\r\n    \"longitude\" : \""
+                + (longitude + "").Replace(",", ".")
+                + "\",\r\n    \"systemId\" : "
+                + systemId
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             return true;
         }
@@ -536,33 +658,45 @@ public class reportClass {
         }
         return false;
     }
-    
+
     /// <summary>
     /// Updates the report in the database
-    public async Task<bool> UpdateReport(int reportId, string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId) {
+    public async Task<bool> UpdateReport(
+        int reportId,
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
-        var content = new StringContent("{\r\n    \"reportId\" : "
-                    + reportId
-                    + ",\r\n    \"reportName\" : \""
-                    + calculationName
-                    + "\",\r\n    \"userId\" : "
-                    + userId
-                    + ",\r\n    \"homeSize\" : \""
-                    + homeSize
-                    + "\",\r\n    \"latitude\" : \""
-                    + latitude.ToString().Replace(",",".")
-                    + "\",\r\n    \"longitude\" : \""
-                    + longitude.ToString().Replace(",",".")
-                    + "\",\r\n    \"systemId\" : "
-                    + systemId
-                    + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n    \"reportId\" : "
+                + reportId
+                + ",\r\n    \"reportName\" : \""
+                + calculationName
+                + "\",\r\n    \"userId\" : "
+                + userId
+                + ",\r\n    \"homeSize\" : \""
+                + homeSize
+                + "\",\r\n    \"latitude\" : \""
+                + latitude.ToString().Replace(",", ".")
+                + "\",\r\n    \"longitude\" : \""
+                + longitude.ToString().Replace(",", ".")
+                + "\",\r\n    \"systemId\" : "
+                + systemId
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             return true;
-
         }
         else
         {
@@ -578,8 +712,12 @@ public class reportClass {
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/Report/delete");
-        
-        var content = new StringContent("{\r\n \"reportId\": " + reportId + "\r\n}", null, "application/json");
+
+        var content = new StringContent(
+            "{\r\n \"reportId\": " + reportId + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -593,9 +731,13 @@ public class reportClass {
         return false;
     }
 
-    public async Task<byte[]> GenerateReport(int userId, int reportId) {
+    public async Task<byte[]> GenerateReport(int userId, int reportId)
+    {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT+ "/Report/downloadReport/" + userId + "/" + reportId);
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/Report/downloadReport/" + userId + "/" + reportId
+        );
         request.Headers.Add("Accept", "application/pdf");
         var response = await client.SendAsync(request);
         response.EnsureSuccessStatusCode();
@@ -603,8 +745,10 @@ public class reportClass {
     }
 }
 
-public class applianceClass {
+public class applianceClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
     /// <summary>
     /// <list type="bullet">
     ///     <item>Get all the appliances from the database</item>
@@ -621,10 +765,10 @@ public class applianceClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            appliances = JsonSerializer.Deserialize<List<ApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {
@@ -633,20 +777,35 @@ public class applianceClass {
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage) {
+    public async Task<bool> CreateAppliance(string type, int powerUsage)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
-        var content = new StringContent("{\r\n \"type\": \"" + type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"type\": \"" + type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage) {
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
-        var content = new StringContent("{\r\n \"applianceId\": " + applianceId + ",\r\n \"type\": \"" +
-        type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"applianceId\": "
+                + applianceId
+                + ",\r\n \"type\": \""
+                + type
+                + "\",\r\n \"powerUsage\": "
+                + powerUsage
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
@@ -656,32 +815,40 @@ public class applianceClass {
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/appliance/delete");
-        var content = new StringContent("{\r\n \"applianceId\": " + id + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"applianceId\": " + id + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
-            
     }
 }
 
-public class otherDataClass {
+public class otherDataClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private string mapboxAccessToken = "";
+
     public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
-    {     
-        if(mapboxAccessToken == "") {
+    {
+        if (mapboxAccessToken == "")
+        {
             await GetMapboxAccessToken();
         }
 
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
-        string requestUrl = $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
+        string requestUrl =
+            $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
 
         try
         {
             HttpClient httpClient = new HttpClient();
             var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
-            List<LocationSuggestion> suggestions = mapResponse?.Features ?? new List<LocationSuggestion>();
+            List<LocationSuggestion> suggestions =
+                mapResponse?.Features ?? new List<LocationSuggestion>();
             if (suggestions.Count == 0)
             {
                 suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
@@ -698,11 +865,13 @@ public class otherDataClass {
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {
-        if(mapboxAccessToken == "") {
+        if (mapboxAccessToken == "")
+        {
             await GetMapboxAccessToken();
         }
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-        string requestUrl = $"{baseUrl}{longitude.ToString().Replace(",",".")},{latitude.ToString().Replace(",",".")}.json?&access_token={mapboxAccessToken}";
+        string requestUrl =
+            $"{baseUrl}{longitude.ToString().Replace(",", ".")},{latitude.ToString().Replace(",", ".")}.json?&access_token={mapboxAccessToken}";
 
         try
         {
@@ -718,18 +887,21 @@ public class otherDataClass {
         }
     }
 
-    private async Task GetMapboxAccessToken() {
+    private async Task GetMapboxAccessToken()
+    {
         HttpClient httpClient = new HttpClient();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/mapboxkey");
         var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK){
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
             mapboxAccessToken = await response.Content.ReadAsStringAsync();
         }
         mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
-    public async Task<List<SystemUsage>?> GetAllAdminStats() {
+    public async Task<List<SystemUsage>?> GetAllAdminStats()
+    {
         List<SystemUsage>? systems = null;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/AdminStats/all");
@@ -739,10 +911,10 @@ public class otherDataClass {
             var data = await response.Content.ReadAsStringAsync();
             if (data != null)
             {
-                systems = JsonSerializer.Deserialize<List<SystemUsage>>(data, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                })!;
+                systems = JsonSerializer.Deserialize<List<SystemUsage>>(
+                    data,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                )!;
             }
         }
         else
@@ -751,14 +923,17 @@ public class otherDataClass {
         }
         return systems;
     }
+
     private class GeocodingResponse
     {
         public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
     }
 }
 
-public class keyClass {
+public class keyClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+
     public async Task<List<KeyModel>?> GetAllKeys()
     {
         List<KeyModel>? keys = null;
@@ -768,10 +943,10 @@ public class keyClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            keys = JsonSerializer.Deserialize<List<KeyModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            keys = JsonSerializer.Deserialize<List<KeyModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {
@@ -780,38 +955,73 @@ public class keyClass {
         return keys;
     }
 
-    public async Task<bool> DeleteKey(int keyId) {
+    public async Task<bool> DeleteKey(int keyId)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Delete, API_PORT + "/key/delete");
-        var content = new StringContent("{\r\n  \"keyId\": " + keyId +"\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n  \"keyId\": " + keyId + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateKey(KeyModel key) {
+    public async Task<bool> UpdateKey(KeyModel key)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/key/update");
-        var content = new StringContent("{\r\n \"keyId\": " + key.keyId+ ",\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + " \r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n \"keyId\": "
+                + key.keyId
+                + ",\r\n  \"owner\": \""
+                + key.owner
+                + "\",\r\n  \"APIKey\": \""
+                + key.APIKey
+                + "\",\r\n  \"remainingCalls\": "
+                + key.remainingCalls
+                + ",\r\n  \"suspended\": "
+                + key.suspended
+                + " \r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> CreateKey(KeyModel key) {
+    public async Task<bool> CreateKey(KeyModel key)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/key/create");
-        var content = new StringContent("{\r\n  \"owner\": \"" + key.owner+ "\",\r\n  \"APIKey\": \"" + key.APIKey + "\",\r\n  \"remainingCalls\": " + key.remainingCalls + ",\r\n  \"suspended\": " + key.suspended + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n  \"owner\": \""
+                + key.owner
+                + "\",\r\n  \"APIKey\": \""
+                + key.APIKey
+                + "\",\r\n  \"remainingCalls\": "
+                + key.remainingCalls
+                + ",\r\n  \"suspended\": "
+                + key.suspended
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
         return response.IsSuccessStatusCode;
     }
 }
 
-public class userClass {
+public class userClass
+{
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-    public async Task<List<UserModel>?> getAllUsers() {
+    public async Task<List<UserModel>?> getAllUsers()
+    {
         List<UserModel>? users = null;
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/user/all");
@@ -819,34 +1029,59 @@ public class userClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            users = JsonSerializer.Deserialize<List<UserModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            users = JsonSerializer.Deserialize<List<UserModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         return users;
     }
 
-    public async Task<UserModel?> Login(string email, string password, string repassword) {
+    public async Task<UserModel?> Login(string email, string password, string repassword)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/auth/login");
-        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n    \"email\" : \""
+                + email
+                + "\",\r\n    \"password\" : \""
+                + password
+                + "\",\r\n    \"repassword\" : \""
+                + repassword
+                + "\"\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
 
-        if(response.IsSuccessStatusCode){
-            return await response.Content.ReadFromJsonAsync<UserModel>();        
-        } else {
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<UserModel>();
+        }
+        else
+        {
             Console.WriteLine("Failed to Login");
             Console.WriteLine(response.StatusCode);
         }
         return null;
     }
 
-    public async Task<bool> Register(string email, string password, string repassword) {
+    public async Task<bool> Register(string email, string password, string repassword)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/auth/register");
-        var content = new StringContent("{\r\n    \"email\" : \"" + email + "\",\r\n    \"password\" : \"" + password+ "\",\r\n    \"repassword\" : \"" + repassword + "\"\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n    \"email\" : \""
+                + email
+                + "\",\r\n    \"password\" : \""
+                + password
+                + "\",\r\n    \"repassword\" : \""
+                + repassword
+                + "\"\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
 
@@ -854,34 +1089,62 @@ public class userClass {
     }
 }
 
-public class reportApplianceClass {
+public class reportApplianceClass
+{
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    public async Task CreateReportAppliance(int reportId, ApplianceModel appliance){
+
+    public async Task CreateReportAppliance(int reportId, ApplianceModel appliance)
+    {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
-        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        var content = new StringContent(
+            "{\r\n  \"reportId\": "
+                + reportId
+                + ",\r\n  \"applianceId\": "
+                + appliance.applianceId
+                + ",\r\n  \"numberOfAppliances\": "
+                + appliance.quantity
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode != System.Net.HttpStatusCode.OK)
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
         }
     }
 
-    public async Task UpdateReportAppliance(int reportId, ApplianceModel appliance){
+    public async Task UpdateReportAppliance(int reportId, ApplianceModel appliance)
+    {
         var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/ReportAppliance/updateNumberOfAppliances");
-        var content = new StringContent("{\r\n  \"reportId\": " + reportId + ",\r\n  \"applianceId\": " + appliance.applianceId + ",\r\n  \"numberOfAppliances\": " + appliance.quantity + "\r\n}", null, "application/json");
+        var request = new HttpRequestMessage(
+            HttpMethod.Patch,
+            API_PORT + "/ReportAppliance/updateNumberOfAppliances"
+        );
+        var content = new StringContent(
+            "{\r\n  \"reportId\": "
+                + reportId
+                + ",\r\n  \"applianceId\": "
+                + appliance.applianceId
+                + ",\r\n  \"numberOfAppliances\": "
+                + appliance.quantity
+                + "\r\n}",
+            null,
+            "application/json"
+        );
         request.Content = content;
         var response = await client.SendAsync(request);
-        if(response.StatusCode != System.Net.HttpStatusCode.OK)
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
             Console.WriteLine("Failed to update ReportAppliance");
         }
     }
 }
 
-public class reportAllApplianceClass {
+public class reportAllApplianceClass
+{
     string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<List<ReportAllApplianceModel>> GetReportAllAppliance()
@@ -893,10 +1156,10 @@ public class reportAllApplianceClass {
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var data = await response.Content.ReadAsStringAsync();
-            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(data, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
         }
         else
         {

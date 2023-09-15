@@ -45,6 +45,7 @@
                     if (currentLocationData != null)
                     {
                         usableHours = currentLocationData.daylightHours;
+                        usableHours = Math.Round(usableHours, 2);
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
