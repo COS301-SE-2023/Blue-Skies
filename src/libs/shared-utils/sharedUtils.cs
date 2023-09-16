@@ -849,12 +849,18 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
+        var postBody = new
+        {
+            type = type,
+            powerUsage = powerUsage,
+            durationUsed = durationUsed
+        };
         var content = new StringContent(
-            "{\r\n \"type\": \"" + type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}",
+            JsonSerializer.Serialize(postBody),
             null,
             "application/json"
         );
@@ -863,18 +869,20 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
+        var postBody = new
+        {
+            applianceId = applianceId,
+            type = type,
+            powerUsage = powerUsage,
+            durationUsed = durationUsed
+        };
+
         var content = new StringContent(
-            "{\r\n \"applianceId\": "
-                + applianceId
-                + ",\r\n \"type\": \""
-                + type
-                + "\",\r\n \"powerUsage\": "
-                + powerUsage
-                + "\r\n}",
+            JsonSerializer.Serialize(postBody),
             null,
             "application/json"
         );
