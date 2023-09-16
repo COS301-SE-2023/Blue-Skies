@@ -51,6 +51,44 @@
                     <p class="font-semibold">@large</p>
                 </div>
             </div>
+            <div class="flex justify-center">
+                @if (showCustomSystem)
+                {
+                    if (displayCreatedCustomSystem)
+                    {
+                        var customSize = customCreatedSystem + "kw";
+                                <div @onclick="CreateCustomSystem"
+                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                                    <p class="font-semibold">@customSize</p>
+                                </div>
+                    }
+                    else
+                    {
+                                <div>
+                                    <div class="gap-2 px-6">
+                                        <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="customCreatedSystem"/>
+                                    </div>
+                                    <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                                        <Button style="pill" >
+                                            <content>
+                                                <p  class="font-semibold">Create</p>
+                                            </content>
+                                        </Button>
+                                    </div>
+                                </div>
+                    }
+                }
+                else
+                {
+                        <div @onclick="CustomSystemSelected">
+                            <Button style="pill" >
+                                <content>
+                                    <p  class="font-semibold">Custom</p>
+                                </content>
+                            </Button>
+                        </div>
+                }
+                </div>
         </div>
     </div>
 </div>
@@ -110,6 +148,20 @@
                 case 2:
                     homeType = "-Home3.svg";
                     break;
+                case 3:
+                    if (customCreatedSystem <= 5)
+                    {
+                        homeType = "-Home1.svg";
+                    }
+                    else if (customCreatedSystem <= 8)
+                    {
+                        homeType = "-Home2.svg";
+                    }
+                    else
+                    {
+                        homeType = "-Home3.svg";
+                    }
+                    break;
                 default:
                     homeType = "-Home1.svg";
                     break;
@@ -124,10 +176,24 @@
     <div class="w-6/12 px-1 -mt-40 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
-            <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
-                count=@systems[selectedSystem].numberOfPanels />
-            <Appliance ImageName="Batteries.svg" name="Number of Batteries"
-                count=@systems[selectedSystem].numberOfBatteries />
+            @if (showCustomSystem)
+            {
+                    <div @onclick='@(() => CustomSystemModal("Panels"))'>
+                        <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                            count=@customPanelsNumber />
+                    </div>
+                    <div @onclick='@(() => CustomSystemModal("Batteries"))'>
+                        <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                            count=@customBatteriesNumber />
+                    </div>
+            }
+            else
+            {
+                    <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                        count=@systems[selectedSystem].numberOfPanels />
+                    <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                        count=@systems[selectedSystem].numberOfBatteries />
+            }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
         <div class="flex relative flex-col justify-center w-full">
@@ -179,10 +245,10 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                        imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                </div>
+                                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                            <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                                        </div>
                 }
             }
         </div>
@@ -198,11 +264,11 @@
                 <content>
                     @if (edit)
                     {
-                                <p @onclick="ModalPopup.Show">Update calculation</p>
+                                            <p @onclick="ModalPopup.Show">Update calculation</p>
                     }
                     else
                     {
-                                <p @onclick="ModalPopup.Show">Save this calculation</p>
+                                            <p @onclick="ModalPopup.Show">Save this calculation</p>
                     }
                 </content>
             </Button>
@@ -211,6 +277,45 @@
 </div> *@
 
 @* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
+
+<ModalPopup @ref="SystemModalPopup" Title=@customModalTitle>
+    <p>@customModalTitle</p>
+    @if (@customModalTitle == "Number of Solar Panels")
+    {
+                <Input  @bind-InputValue="customPanels" placeholder="@customPanels" type="number"/>
+    }
+    else
+    {
+                <Input  @bind-InputValue="customBatteries" placeholder="@customBatteries" type="number"/>    
+    }
+            <div class="flex flex-row gap-4 justify-center">
+        @if (@customModalTitle == "Number of Solar Panels")
+        {
+                <div @onclick="SetNumberOfPanels">
+                    <Button>
+                        <content>
+                            Save
+                        </content>
+                    </Button>
+                </div>
+        }
+        else
+        {
+                <div @onclick="SetNumberOfBatteries">
+                    <Button>
+                        <content>
+                            Save
+                        </content>
+                    </Button>
+                </div>
+        }
+            <div @onclick="SystemModalPopup.Dismiss">
+                <Button style="outline">
+                    <content>Cancel</content>
+                </Button>
+            </div>
+        </div>
+</ModalPopup>  
 
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     @if (edit)
@@ -225,23 +330,23 @@
         <div class="flex flex-row gap-4 justify-center">
         @if (edit)
         {
-                        <div @onclick="UpdateCalculation">
-                            <Button>
-                                <content>
-                                    Update
-                                </content>
-                            </Button>
-                        </div>
+                <div @onclick="UpdateCalculation">
+                    <Button>
+                        <content>
+                        Update
+                            </content>
+                    </Button>
+                </div>
         }
         else
         {
-                        <div @onclick="SaveCalculation">
-                            <Button>
-                                <content>
-                                    Save
-                                </content>
-                            </Button>
-                        </div>
+                <div @onclick="SaveCalculation">
+                    <Button>
+                        <content>
+                            Save
+                        </content>
+                    </Button>
+                </div>
         }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
@@ -250,6 +355,7 @@
             </div>
         </div>
 </ModalPopup>
+
 
 @* Mobile Viewport *@
 <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
@@ -269,16 +375,30 @@
             @switch (selectedSystem)
             {
                 case 0:
-                                            <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
+                            <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
                     break;
                 case 1:
-                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
                 case 2:
-                                            <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                            <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                    break;
+                case 3:
+                    if (customCreatedSystem <= 5)
+                    {
+                                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" /> 
+                    }
+                    else if (customCreatedSystem <= 8)
+                    {
+                                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                    }
+                    else
+                    {
+                                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                    }
                     break;
                 default:
-                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
             }
         </div>
@@ -295,17 +415,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                                                    </div>
+                                <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                        ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                </div>
                 }
                 else
                 {
-                                                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                                                    </div>
+                                <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                        ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                </div>
                 }
             }
         }
@@ -315,17 +435,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                                                    </div>
+                                <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                        ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                </div>
                 }
                 else
-                {
-                                                    <div class="fade-in-active">
-                                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                                                    </div>
+                {   
+                                <div class="fade-in-active">
+                                    <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                        ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                </div>
                 }
             }
         }
@@ -349,6 +469,7 @@
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
+    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
 
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
@@ -369,6 +490,7 @@
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     private ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
@@ -390,7 +512,14 @@
     private string homeSize = "Small";
     private string homeType = "";
     private string homeImage = "";
-
+    private bool showCustomSystem = false;
+    private bool displayCreatedCustomSystem = false;
+    private int customCreatedSystem = 0;
+    private int customPanelsNumber = 0;
+    private string customPanels = "";
+    private int customBatteriesNumber = 0;
+    private string customBatteries = "";
+    private string customModalTitle = "";
 
     /// <summary>
     /// On initialisation, get the user id from local storage
@@ -469,6 +598,60 @@
 
     }
 
+    public void CreateCustomSystem()
+    {
+        if (displayCreatedCustomSystem)
+        {
+            displayCreatedCustomSystem = false;
+        }
+        else
+        {
+            displayCreatedCustomSystem = true;
+            ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
+            CalculateRunningHours();
+        }
+    }
+
+    public void CustomSystemSelected()
+    {
+        selectedSystem = 3;
+        if (showCustomSystem)
+        {
+            showCustomSystem = false;
+        }
+        else
+        {
+            showCustomSystem = true;
+        }
+    }
+
+    public void CustomSystemModal(string modalType)
+    {
+        if (modalType == "Panels")
+        {
+            customModalTitle = "Number of Solar Panels";
+        }
+        else
+        {
+            customModalTitle = "Number of Batteries";
+        }
+        SystemModalPopup.Show();
+    }
+
+    public void SetNumberOfPanels()
+    {
+        customPanelsNumber = Convert.ToInt32(customPanels);
+        customPanels = "";
+        SystemModalPopup.Dismiss();
+    }
+
+    public void SetNumberOfBatteries()
+    {
+        customBatteriesNumber = Convert.ToInt32(customBatteries);
+        customBatteries = "";
+        SystemModalPopup.Dismiss();
+    }
+
     /// <summary>
     /// On selected system changed, update the selected system and calculate the running hours
     /// </summary>
@@ -521,6 +704,7 @@
     /// </summary>
     private void SetSystemSize(int selection)
     {
+        showCustomSystem = false;
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
@@ -532,6 +716,7 @@
     /// </summary>
     private void ApplyTemplate(ChangeEventArgs e)
     {
+        showCustomSystem = false;
         switch (e.Value)
         {
             case "2":
@@ -544,7 +729,7 @@
                 appliances[4].quantity = 0;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                @* appliances[7].quantity = 0; *@
+                appliances[7].quantity = 0;
 
                 break;
             case "3":
@@ -557,7 +742,7 @@
                 appliances[4].quantity = 1;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                @* appliances[7].quantity = 0; *@
+                appliances[7].quantity = 0;
                 break;
             case "4":
                 homeSize = "Large";
@@ -569,7 +754,7 @@
                 appliances[4].quantity = 2;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                @* appliances[7].quantity = 1; *@
+                appliances[7].quantity = 1;
                 break;
             default:
                 homeSize = "Small";
@@ -581,7 +766,7 @@
                 appliances[4].quantity = 0;
                 appliances[5].quantity = 1;
                 appliances[6].quantity = 0;
-                @* appliances[7].quantity = 0; *@
+                appliances[7].quantity = 0;
                 break;
         }
         applianceService.UpdateAppliance(appliances);
@@ -598,7 +783,8 @@
         appliances[4].quantity = 0;
         appliances[5].quantity = 0;
         appliances[6].quantity = 0;
-        @* appliances[7].quantity = 0; *@
+        appliances[7].quantity = 0;
+        showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
@@ -608,6 +794,21 @@
     {
         ModalPopup.Dismiss();
         ShowLoadingScreen();
+        int customSystemId = -1;
+        if (selectedSystem == 3)
+        {
+            SystemModel customSystem = new SystemModel();
+            customSystem.systemId = -1;
+            customSystem.systemSize = "custom";
+            customSystem.inverterOutput = customCreatedSystem;
+            customSystem.numberOfPanels = customPanelsNumber;
+            customSystem.batterySize = 10;
+            customSystem.numberOfBatteries = customBatteriesNumber;
+            customSystem.solarInput = 425;
+
+            customSystemId = await systemClass.CreateSystem(customSystem);
+            Console.WriteLine("Custom System ID: " + customSystemId);
+        }
         if (await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId))
         {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
