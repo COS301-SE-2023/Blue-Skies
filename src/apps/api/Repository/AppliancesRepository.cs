@@ -52,7 +52,7 @@ public class AppliancesRepository
         }
     }
 
-    public async Task<Appliances> CreateAppliances(string type, int powerUsage)
+    public async Task<Appliances> CreateAppliances(string type, int powerUsage, float durationUsed)
     {
         try
         {
@@ -61,12 +61,14 @@ public class AppliancesRepository
                 HttpMethod.Post,
                 express + "/api/appliance/create"
             );
+            var postBody = new
+            {
+                type = type,
+                powerUsage = powerUsage,
+                durationUsed = durationUsed
+            };
             var content = new StringContent(
-                "{\r\n    \"type\" : \""
-                    + type
-                    + "\",\r\n    \"powerUsage\" : "
-                    + powerUsage
-                    + "\r\n}",
+                JsonSerializer.Serialize(postBody),
                 null,
                 "application/json"
             );

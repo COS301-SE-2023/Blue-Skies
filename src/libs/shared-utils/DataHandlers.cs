@@ -74,11 +74,7 @@ public class SolarDataHandler
         return solarRadiationList;
     }
 
-    public double[] getMontlySolarRadiation(
-        byte[] monthlyFluxData,
-        byte[] maskData,
-        bool roundOf = false
-    )
+    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
     {
         double[] monthlySolarRadiation = new double[12];
 
@@ -218,9 +214,40 @@ public class SolarDataHandler
             }
         }
 
+        monthlyFluxDataSet.Dispose();
+        maskDataSet.Dispose();
+
+        File.Delete(montlyFluxPath);
+        File.Delete(maskPath);
+
         return monthlySolarRadiation;
     }
 
+    public double getAnnualKwGenerated(int numberOfPanels, RooftopInformationModel? rooftopInformationModel, bool round = false)
+    {
+        double annualKwGenerated = 0.0;
+        if (rooftopInformationModel != null && rooftopInformationModel.solarPotential != null && rooftopInformationModel.solarPotential.solarPanelConfigs != null) {
+            Solarpanelconfig? closestSolarPanelConfig = null;
+            foreach (var solarPanelConfig in rooftopInformationModel.solarPotential.solarPanelConfigs)
+            {
+                if(solarPanelConfig.panelsCount == numberOfPanels) {
+                    if(round) {
+                        return Math.Round(solarPanelConfig.yearlyEnergyDcKwh, 2);
+                    }
+                    return solarPanelConfig.yearlyEnergyDcKwh;
+                } else if (closestSolarPanelConfig == null || Math.Abs(solarPanelConfig.panelsCount - numberOfPanels) < Math.Abs(closestSolarPanelConfig.panelsCount - numberOfPanels)) {
+                    closestSolarPanelConfig = solarPanelConfig;
+                }
+            }
+            if (closestSolarPanelConfig != null) {
+                annualKwGenerated = closestSolarPanelConfig.yearlyEnergyDcKwh * numberOfPanels / closestSolarPanelConfig.panelsCount;
+            }
+        }
+        if(round) {
+            return Math.Round(annualKwGenerated, 2);
+        }
+        return annualKwGenerated;
+    }
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;

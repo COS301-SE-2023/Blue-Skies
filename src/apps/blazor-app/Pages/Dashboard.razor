@@ -69,21 +69,18 @@ else
                                                                                                         <p class="text-center">No appliances added</p>
                                     }
                                 }
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
-                                                                <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                                                    <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
-                                                                    <div class="flex relative flex-col justify-center w-full">
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
+                                <div class="w-full flex flex-col gap-4 justify-start items-center">
+                                    <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
+                                    <div class="flex relative flex-col justify-center w-full">
                                     @{
                                         dlh = 0;
                                         if (currentLocationData != null)
                                         {
                                             daylight = (float)Math.Round(currentLocationData.daylightHours, 2);
                                             dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-                                            Console.WriteLine("Daylight: " + daylight);
-                                            Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
-                                            Console.WriteLine("DLH: " + dlh);
                                         }
                                     }
                                                                     <DaylightChart hours="@dlh" daylightHours="@daylight" />

@@ -178,8 +178,7 @@
         systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * locationData.daylightHours * systems[selectedSystem].solarInput / 1000;
-            avgEnergyProduction = Math.Round(calc, 2);
+            avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData, true);
         }
         else
         {
@@ -195,12 +194,14 @@
     /// </summary>
     private void SetSystemSize(int selection)
     {
-        selectedSystem = selection;
-        ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
-        if (systems!.Count > 0)
-        {
-            double calc = systems[selectedSystem].numberOfPanels * locationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
-            avgEnergyProduction = Math.Round(calc, 2);
+        Console.WriteLine("Selected System number of panels: " + systems[selection].numberOfPanels);
+        if(systems != null && locationData != null) {
+            selectedSystem = selection;
+            ProtectedSessionStore.SetAsync("selectedSystem", selection);
+            if (systems!.Count > 0)
+            {
+                avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData, true);
+            }
         }
     }
 }

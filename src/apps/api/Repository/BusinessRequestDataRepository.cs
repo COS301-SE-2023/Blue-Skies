@@ -10,6 +10,8 @@ namespace Api.Repository;
 public class BusinessRequestDataRepository
 {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
     // private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
@@ -53,12 +55,16 @@ public class BusinessRequestDataRepository
 
             switch(data!.ToLower()){
                 case "solar score" : 
-                    var content = await GetSolarScore((double)latitude, (double)longitude);
+                    var content = await GetSolarScore(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(content);
                     break;
                 case "solar array" : 
-                    var solarArray = await GetSolarRadiationList((double)latitude, (double)longitude);
+                    var solarArray = await GetSolarRadiationList(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
+                    break;
+                case "satellite image" : 
+                    var satelliteImage = await GetSatelliteImage(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(satelliteImage);
                     break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
@@ -74,35 +80,35 @@ public class BusinessRequestDataRepository
         }
     }
 
+  private async Task<string> GetSatelliteImage(double latitude, double longitude)
+  {
+        LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
 
-    private async Task<String> GetSolarScore(double latitude, double longitude) 
+        return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
+  }
+
+  private async Task<String> GetSolarScore(double latitude, double longitude) 
     {
-        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-        SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-        
-        LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
-        if(locationData==null){
-            await locationDataClass.CreateLocationData(latitude, longitude, locationName);
-        }
-
+        LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
                    
         return solarCalculator.getSolarScore(locationData!.solarPanelsData).ToString();
     }
 
     private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
     {   
-
-        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-        SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
         
+        LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
+       
+        return solarCalculator.getSolarRadiationList(locationData!.solarPanelsData);
+    }
+
+    private async Task<LocationDataModel> GetLocationDataModel(double latitude, double longitude)
+    {
         LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
         if(locationData==null){
             await locationDataClass.CreateLocationData(latitude, longitude, locationName);
         }
-
-        List<DateRadiationModel> solarRadiationList = solarCalculator.getSolarRadiationList(locationData.solarPanelsData);
-
-       
-        return solarRadiationList;
+        return locationData!;
     }
+
 }

@@ -5,52 +5,57 @@
 @namespace BlazorApp.FancyData
 
 
-<div>
-    <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
+<Card>
+    <Heading>
         <Header>
-            <h1 class="text-center">Fancy Data</h1>
+            <h1 class="text-xl">Fancy Data</h1>
         </Header>
         <Subscript>
-            <p class="text-center">More information about your location</p>
+            <p>More information about your location</p>
         </Subscript>
     </Heading>
     <div class="w-full">
-        <div class="w-fit mx-auto">
-            <h1>Annual Flux Map</h1>
-            <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
-        </div>
-        @if(monthlyFluxMap is not null){
-        <div class="w-fit mx-auto">
-            <h1>Monthly Flux Map</h1>
-            <div class="w-fit mx-auto">
-                <div class="flex space-x-3 mt-10">
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
-                        Prev
-                    </div>
-                    <div class="flex-col">
-                        <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
-                        <p class="text-center">@monthNames[@currentImageIndex]</p> 
-                    </div>
-                    
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
-                        Next
+        <div class="flex w-fit mx-auto space-x-5 items-center">
+            <div>
+                <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
+                <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
+            </div>
+            <div>
+                @if(monthlyFluxMap is not null){
+                <div class="w-fit mx-auto">
+                    <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
+                    <div class="w-fit mx-auto">
+                        <div class="flex space-x-3 mt-10">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
+                                <Image ImageName="left-arrow.png" alt="Left Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                            <div class="flex-col">
+                                <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="h-[300px]" />
+                                <p class="text-center">@monthNames[@currentImageIndex]</p>
+                            </div>
+
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
+                                <Image ImageName="right-arrow.png" alt="Right Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer"/>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                }
+                else{
+                <p>Monthly Flux Map is not available</p>
+                }
             </div>
         </div>
-        }
-        else{
-        <p>Monthly Flux Map is not available</p>
-        }
+
         <div>
-            <ElevationGraph elevationValues="@horisonElevationData"/>
+            <ElevationGraph elevationValues="@horisonElevationData" />
         </div>
-        <div  class="w-1/2">
-            <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth"/>
+        <div class="w-1/2">
+            <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />
         </div>
     </div>
 
-</div>
+</Card>
 
 @code {
     [Parameter]
