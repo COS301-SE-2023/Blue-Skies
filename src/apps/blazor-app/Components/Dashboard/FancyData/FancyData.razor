@@ -14,8 +14,8 @@
             <p>More information about your location</p>
         </Subscript>
     </Heading>
-    <div class="w-full">
-        <div class="flex w-fit mx-auto space-x-5 items-center">
+    <div class="w-full space-y-3">
+        <div class="md:flex w-fit mx-auto md:space-x-5 items-center">
             <div>
                 <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
@@ -46,12 +46,14 @@
                 }
             </div>
         </div>
-
+         <div class="w-full">
+            <div class="md:w-1/2">
+                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />    
+            </div>
+            
+        </div>
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
-        </div>
-        <div class="w-1/2">
-            <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />
         </div>
     </div>
 

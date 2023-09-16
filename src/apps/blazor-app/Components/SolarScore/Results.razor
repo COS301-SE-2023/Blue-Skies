@@ -62,10 +62,10 @@
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
                 </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
                 <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                    <p class="text-5xl text-gray-400 font-bold">kw/h</p>
+                    <p class="text-5xl text-gray-400 font-bold">kwh</p>
                 </div>
                 <div class="flex absolute top-0 right-0 justify-evenly gap-4">
                     @{
@@ -178,7 +178,7 @@
         systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)
         {
-            avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData, true);
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData) / 365, 2);
         }
         else
         {
@@ -200,7 +200,7 @@
             ProtectedSessionStore.SetAsync("selectedSystem", selection);
             if (systems!.Count > 0)
             {
-                avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData, true);
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData) / 365, 2);
             }
         }
     }
