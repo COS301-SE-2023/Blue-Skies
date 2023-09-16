@@ -7,6 +7,7 @@
 @using System.Text.Json
 @using BlazorApp.Components.Advanced
 @using BlazorApp.Components.Base
+@using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
@@ -34,10 +35,11 @@
                     @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
-                        var reportName = currentReport.reportName;
-                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@reportName"/>    
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
+                    }else{
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
                     }
-
+                        
                 </div>
                 <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
@@ -54,6 +56,11 @@
                         <div class="fade-in-active">
                             <Finanace />
                         </div>
+                    }else if (tabs[2].active)
+                    {
+                        <div class="fade-in-active">
+                            <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+                        </div>
                     }
                 </div>
             </div>
@@ -65,11 +72,11 @@
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
     private bool edit = false;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel>? appliances;
     private List<ApplianceModel>? advancedCalculationAppliances;
     private List<SystemModel>? systems = new List<SystemModel>();
@@ -98,6 +105,7 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     { 
+        loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
@@ -138,8 +146,7 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
-            var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
-            reportAllAppliance = reportAllAppl.Value!;
+            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;

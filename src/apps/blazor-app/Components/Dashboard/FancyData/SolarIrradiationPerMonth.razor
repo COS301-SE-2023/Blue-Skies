@@ -8,20 +8,16 @@
 
 @code {
     [Parameter]
-    public byte[]? monthlyFluxData { get; set; }
-
-    [Parameter]
-    public byte[]? maskData { get; set; }
-    private BarConfig? barConfig;
-    private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
+    public double[]? monthlySolarRadiation { get; set; }
     
     [Parameter]
     public bool animated { get; set; } = true;
 
-    @*The data is structured as: year, month, monthlyFluxData  *@
+    private BarConfig? barConfig;
+    private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
     protected override void OnParametersSet()
     {
-        if (monthlyFluxData != null)
+        if (monthlySolarRadiation != null)
         {
             AddDataToChart();
         }
@@ -135,68 +131,23 @@
     /// </summary>
     private void AddDataToChart()
     {
-        @* The monthlyFluxData: 2020-01-26;279.1339814814815,2020-02-26;266.1259259259259,2020-02-18;197.14282407407407 *@
-        if(monthlyFluxData == null || barConfig == null) {
+
+        if(barConfig == null || monthlySolarRadiation == null)
+        {
             return;
         }
-        data = new Dictionary<string, Dictionary<string, float>>();
-        @* Remove the last character in monthlyFluxData *@
 
-        @* monthlyFluxData = monthlyFluxData.Remove(monthlyFluxData.Length - 1); *@
-        
-        @* Split the data *@
-        @* string[] splitData = monthlyFluxData.Split(','); *@
-
-
-        string[] splitData = new string[3]; //Just temp to get rid of error
-
-        foreach (var item in splitData)
-        {
-            string[] splitItem = item.Split(';');
-            string[] splitDate = splitItem[0].Split('-');
-            @* Check if it is in data first *@
-            if (data.ContainsKey(splitDate[0]))
-            {
-                if(data[splitDate[0]].ContainsKey(splitDate[1])) {
-                    data[splitDate[0]][splitDate[1]] = (data[splitDate[0]][splitDate[1]] + float.Parse(splitItem[1])) / 2;
-                } else {
-                    data[splitDate[0]].Add(splitDate[1], float.Parse(splitItem[1]));
-                }
-            }
-            else
-            {
-                data.Add(splitDate[0], new Dictionary<string, float>());
-                data[splitDate[0]].Add(splitDate[1], float.Parse(splitItem[1]));
-            }
-        }
-        @* Clear the data *@
-        @* /barConfig.Data.Labels.Clear(); *@
         barConfig.Data.Datasets.Clear();
-        float[][] dataValuesForAllYears = new float[data.Count][];
 
-        int i = 0;
-        foreach (var item in data)
-        {
-            float[] dataValues = new float[12];
-            foreach (var month in item.Value)
-            {
-                dataValues[int.Parse(month.Key) - 1] = month.Value;
-            }
-            dataValuesForAllYears[i++] = dataValues;
-
-        }
         string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)"};
         string[] borderColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)", "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
 
-        for (int j = 0; j < data.Count; j++)
-        {
-            barConfig.Data.Datasets.Add(new BarDataset<float>
-            (dataValuesForAllYears[j]){
-                Label = data.Keys.ElementAt(j),
-                BackgroundColor = backgroundColors[j],
-                BorderColor = borderColors[j],
-                BorderWidth = 1
-            });
-        }
+        barConfig.Data.Datasets.Add(new BarDataset<double>
+        (monthlySolarRadiation){
+            Label = "Solar Irradiance Per Month",
+            BackgroundColor = backgroundColors[0],
+            BorderColor = borderColors[0],
+            BorderWidth = 1
+        });
     }
 } 

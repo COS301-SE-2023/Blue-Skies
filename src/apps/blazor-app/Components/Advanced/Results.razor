@@ -99,7 +99,6 @@
     protected override void OnInitialized()
     {
         satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
-        solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
-        Console.WriteLine("Advanced Results component");
+        solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
     }
 }

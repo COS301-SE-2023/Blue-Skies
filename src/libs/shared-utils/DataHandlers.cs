@@ -9,15 +9,81 @@ namespace DataHandlers;
 public class SolarDataHandler
 {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private double perfectSolarIrradiation = 205;
-    private double worstSolarIrradiation = 120;
+    private double perfectSolarIrradiation = 1700;
+    private double worstSolarIrradiation = 800;
 
     public LocationDataModel? locationData { get; set; }
 
-    public int getSolarScore(byte[] monthlyFluxData, byte[] maskData)
+    public int getSolarScore(RooftopInformationModel? rooftopData)
     {
+        if (
+            rooftopData == null
+            || rooftopData.solarPotential == null
+            || rooftopData.solarPotential.wholeRoofStats == null
+            || rooftopData.solarPotential.wholeRoofStats.sunshineQuantiles == null
+        )
+        {
+            return 0;
+        }
+        double sum = 0.0;
+        // rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!
+        foreach (
+            var solarRadiationValue in rooftopData!
+                .solarPotential!
+                .wholeRoofStats!
+                .sunshineQuantiles!
+        )
+        {
+            sum += solarRadiationValue;
+        }
+        return getPercentage(
+            sum / rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!.Length
+        );
+    }
+
+    public List<DateRadiationModel> getSolarRadiationList(RooftopInformationModel? rooftopData)
+    {
+        if (
+            rooftopData == null
+            || rooftopData.solarPotential == null
+            || rooftopData.solarPotential.wholeRoofStats == null
+            || rooftopData.solarPotential.wholeRoofStats.sunshineQuantiles == null
+        )
+        {
+            return new List<DateRadiationModel>();
+        }
+        List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
+
+        foreach (
+            var solarRadiationValue in rooftopData!
+                .solarPotential!
+                .wholeRoofStats!
+                .sunshineQuantiles!
+        )
+        {
+            var year = rooftopData.imageryDate!.year;
+            var month = rooftopData.imageryDate!.month;
+            var day = rooftopData.imageryDate!.day;
+
+            DateRadiationModel dateRadiationModel = new DateRadiationModel();
+            dateRadiationModel.Date = new DateTime(year, month, day);
+            dateRadiationModel.Radiation = solarRadiationValue;
+            solarRadiationList.Add(dateRadiationModel);
+        }
+
+        return solarRadiationList;
+    }
+
+    public double[] getMontlySolarRadiation(
+        byte[] monthlyFluxData,
+        byte[] maskData,
+        bool roundOf = false
+    )
+    {
+        double[] monthlySolarRadiation = new double[12];
+
         Gdal.AllRegister();
-        
+
         string montlyFluxPath = Path.Combine(Path.GetTempPath(), "monthlyFlux.tif");
         File.WriteAllBytes(montlyFluxPath, monthlyFluxData);
         Dataset monthlyFluxDataSet = Gdal.Open(montlyFluxPath, Access.GA_ReadOnly);
@@ -25,53 +91,134 @@ public class SolarDataHandler
         string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
         File.WriteAllBytes(maskPath, maskData);
         Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
-    
-        return 50;
-    }
 
-    private int calculateSolarScore(string data)
-    {
-        string input = data;
-        double total = 0;
-        int i = 0;
-        while (input.Length > 0)
-        {   
-            int newDataPointIndex = input.IndexOf(",");
-            if (newDataPointIndex == -1)
+        if (monthlyFluxDataSet == null || monthlyFluxDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open monthly flux dataset.");
+        }
+
+        if (maskDataSet == null || maskDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open mask dataset.");
+        }
+
+        Band maskBand = maskDataSet.GetRasterBand(1);
+        byte[] maskValues = new byte[maskBand.XSize * maskBand.YSize];
+        maskBand.ReadRaster(
+            0,
+            0,
+            maskBand.XSize,
+            maskBand.YSize,
+            maskValues,
+            maskBand.XSize,
+            maskBand.YSize,
+            0,
+            0
+        );
+
+        Band monthFluxBand = monthlyFluxDataSet.GetRasterBand(1);
+        float[] monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
+        monthFluxBand.ReadRaster(
+            0,
+            0,
+            monthFluxBand.XSize,
+            monthFluxBand.YSize,
+            monthlyFluxValues,
+            monthFluxBand.XSize,
+            monthFluxBand.YSize,
+            0,
+            0
+        );
+
+        int originalWidth = maskBand.XSize;
+        int originalHeight = maskBand.YSize;
+
+        int ReinsizedX = monthFluxBand.XSize;
+        int ReinsizedY = monthFluxBand.YSize;
+
+        byte[][] maskValuesArray = new byte[originalHeight][];
+        for (int y = 0; y < originalHeight; y++)
+        {
+            maskValuesArray[y] = new byte[originalWidth];
+            for (int x = 0; x < originalWidth; x++)
             {
-                newDataPointIndex = input.Length;
+                int maskPixel = maskValues[y * maskBand.XSize + x];
+                maskValuesArray[y][x] = (maskPixel == 1) ? (byte)1 : (byte)0;
             }
-            string newDataPoint = input.Substring(0, newDataPointIndex);
-            input = input.Substring(newDataPointIndex + 1);
-            newDataPoint = newDataPoint.Trim();
-            int solarScoreIndex = newDataPoint.IndexOf(";");
-            try {
-                total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1));
-            } catch (Exception) {
-                try {
-                    total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","));
-                } catch (Exception e) {
-                    Console.WriteLine("Error parsing data: " + e);
+        }
+
+        RooftopDataHandler rooftopDataHandler = new RooftopDataHandler();
+
+        byte[][] resizedMaskValueArray = new byte[ReinsizedY][];
+        for (int y = 0; y < ReinsizedY; y++)
+        {
+            resizedMaskValueArray[y] = new byte[ReinsizedX];
+            for (int x = 0; x < ReinsizedX; x++)
+            {
+                // Calculate the corresponding position in the original array
+                float originalX = (float)x / ReinsizedX * originalWidth;
+                float originalY = (float)y / ReinsizedX * originalHeight;
+
+                // Interpolate values from the original array
+                byte value = rooftopDataHandler.Interpolate(maskValuesArray, originalX, originalY);
+
+                // Assign the interpolated value to the resized array
+                resizedMaskValueArray[y][x] = value;
+            }
+        }
+
+        for (int i = 0; i < 12; i++)
+        {
+            monthFluxBand = monthlyFluxDataSet.GetRasterBand(i + 1);
+            monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
+            monthFluxBand.ReadRaster(
+                0,
+                0,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                monthlyFluxValues,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                0,
+                0
+            );
+
+            int counter = 0;
+            for (int y = 0; y < monthFluxBand.YSize; y++)
+            {
+                for (int x = 0; x < monthFluxBand.XSize; x++)
+                {
+                    int maskPixel = resizedMaskValueArray[y][x];
+                    double value =
+                        (maskPixel == 1)
+                            ? monthlyFluxValues[y * monthFluxBand.XSize + x]
+                            : float.NaN;
+                    if (!double.IsNaN(value))
+                    {
+                        double prevValue = monthlySolarRadiation[i];
+                        if (counter == 0)
+                        {
+                            monthlySolarRadiation[i] = value;
+                        }
+                        else
+                        {
+                            double averagebeforeNewVal =
+                                prevValue
+                                * ((Convert.ToDouble(counter) / Convert.ToDouble(counter + 1)));
+                            double newVal = Convert.ToDouble(value / Convert.ToDouble(counter + 1));
+                            monthlySolarRadiation[i] = averagebeforeNewVal + newVal;
+                            if (roundOf)
+                            {
+                                monthlySolarRadiation[i] = Math.Round(monthlySolarRadiation[i], 2);
+                            }
+                        }
+                        counter++;
+                    }
                 }
             }
- 
-            i++;
         }
-        if (i == 0)
-        {
-            return 0;
-        }
-        double averageSolarIrradiation = total / i;
-        double solarScore = getPercentage((double)averageSolarIrradiation);
-        if (solarScore > 100)
-        {
-            solarScore = 100;
-        }
-        if (solarScore <= 0)
-        {
-            solarScore = 4;
-        }
-        return (int)solarScore;
+
+        return monthlySolarRadiation;
     }
 
     private int getPercentage(double solarIrradiation)
@@ -89,23 +236,28 @@ public class SolarDataHandler
         return (int)percentage;
     }
 
-    public double getPowerSaved(double annualKWGenerated) {
+    public double getPowerSaved(double annualKWGenerated)
+    {
         return annualKWGenerated * 10 / 1000;
     }
 
-    public double getCO2Saved(double annualKWGenerated) {
+    public double getCO2Saved(double annualKWGenerated)
+    {
         return getPowerSaved(annualKWGenerated) * 1.03 * 1000;
     }
 
-    public double waterSaved(double annualKWGenerated) {
+    public double waterSaved(double annualKWGenerated)
+    {
         return getPowerSaved(annualKWGenerated) * 1.45 * 1000;
     }
 
-    public double coalNotBurnt(double annualKWGenerated) {
+    public double coalNotBurnt(double annualKWGenerated)
+    {
         return getPowerSaved(annualKWGenerated) * 0.56 * 1000;
     }
 
-    public double treesPlanted(double annualKWGenerated) {
+    public double treesPlanted(double annualKWGenerated)
+    {
         return getPowerSaved(annualKWGenerated) * 0.01808;
     }
 }
@@ -183,7 +335,9 @@ public class RooftopDataHandler
                 float elevation = dsmValues[y * width + x];
                 if (!float.IsNaN(elevation))
                 {
-                    byte pixelValue = (byte)((elevation - minElevation) / (maxElevation - minElevation) * 255);
+                    byte pixelValue = (byte)(
+                        (elevation - minElevation) / (maxElevation - minElevation) * 255
+                    );
                     heightMap[x, y] = new Rgba32(pixelValue, pixelValue, pixelValue);
                 }
             }
@@ -204,7 +358,7 @@ public class RooftopDataHandler
     public string? GetAnnualFluxMap(byte[] fluxData, byte[] satteliteImageData, byte[] maskData)
     {
         Gdal.AllRegister();
-        
+
         string fluxPath = Path.Combine(Path.GetTempPath(), "flux.tif");
         File.WriteAllBytes(fluxPath, fluxData);
         Dataset fluxDataSet = Gdal.Open(fluxPath, Access.GA_ReadOnly);
@@ -223,30 +377,49 @@ public class RooftopDataHandler
             throw new ArgumentException("Failed to open mask dataset.");
         }
 
-        if(satteliteImageData == null || satteliteImageData.Length == 0)
+        if (satteliteImageData == null || satteliteImageData.Length == 0)
         {
             throw new ArgumentException("The provided image data is empty or null.");
         }
 
         Image<Rgba32> satelliteImage;
 
-        try 
+        try
         {
             satelliteImage = Image.Load<Rgba32>(satteliteImageData);
-        } 
-        catch (Exception ex) 
+        }
+        catch (Exception ex)
         {
             throw new Exception("Error loading image data.", ex);
         }
 
         Band fluxBand = fluxDataSet.GetRasterBand(1);
         float[] fluxValues = new float[fluxBand.XSize * fluxBand.YSize];
-        fluxBand.ReadRaster(0, 0, fluxBand.XSize, fluxBand.YSize, fluxValues, fluxBand.XSize, fluxBand.YSize, 0, 0);
+        fluxBand.ReadRaster(
+            0,
+            0,
+            fluxBand.XSize,
+            fluxBand.YSize,
+            fluxValues,
+            fluxBand.XSize,
+            fluxBand.YSize,
+            0,
+            0
+        );
 
         Band maskBand = maskDataSet.GetRasterBand(1);
         byte[] maskValues = new byte[maskBand.XSize * maskBand.YSize];
-        maskBand.ReadRaster(0, 0, maskBand.XSize, maskBand.YSize, maskValues, maskBand.XSize, maskBand.YSize, 0, 0);
-
+        maskBand.ReadRaster(
+            0,
+            0,
+            maskBand.XSize,
+            maskBand.YSize,
+            maskValues,
+            maskBand.XSize,
+            maskBand.YSize,
+            0,
+            0
+        );
 
         // Extract the roof region based on the maskImage
         float[][] maskedData = new float[fluxBand.YSize][];
@@ -258,7 +431,8 @@ public class RooftopDataHandler
             for (int x = 0; x < fluxBand.XSize; x++)
             {
                 int maskPixel = maskValues[y * maskBand.XSize + x];
-                maskedData[y][x] = (maskPixel == 1) ? fluxValues[y * fluxBand.XSize + x] : float.NaN;
+                maskedData[y][x] =
+                    (maskPixel == 1) ? fluxValues[y * fluxBand.XSize + x] : float.NaN;
                 maskedMask[y][x] = (maskPixel == 1) ? (byte)1 : (byte)0;
             }
         }
@@ -277,7 +451,7 @@ public class RooftopDataHandler
                     maxData = value;
             }
         }
-        
+
         fluxDataSet.Dispose();
         maskDataSet.Dispose();
 
@@ -285,12 +459,24 @@ public class RooftopDataHandler
         File.Delete(maskPath);
 
         // Call the previously defined ConvertDataToYellowAndRedImage function
-        return ConvertDataToYellowAndRedImage(maskedData, minData, maxData, satelliteImage, maskedMask, 3);
+        return ConvertDataToYellowAndRedImage(
+            maskedData,
+            minData,
+            maxData,
+            satelliteImage,
+            maskedMask,
+            3
+        );
     }
 
-    public string?[]? GetMonthlyFluxMap(byte[] monthlyFluxData, byte[] satteliteImageData, byte[] maskData) {
+    public string?[]? GetMonthlyFluxMap(
+        byte[] monthlyFluxData,
+        byte[] satteliteImageData,
+        byte[] maskData
+    )
+    {
         Gdal.AllRegister();
-        
+
         string montlyFluxPath = Path.Combine(Path.GetTempPath(), "monthlyFlux.tif");
         File.WriteAllBytes(montlyFluxPath, monthlyFluxData);
         Dataset monthlyFluxDataSet = Gdal.Open(montlyFluxPath, Access.GA_ReadOnly);
@@ -298,7 +484,7 @@ public class RooftopDataHandler
         string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
         File.WriteAllBytes(maskPath, maskData);
         Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
-        
+
         if (monthlyFluxDataSet == null || monthlyFluxDataSet.RasterCount == 0)
         {
             throw new ArgumentException("Failed to open monthly flux dataset.");
@@ -309,7 +495,7 @@ public class RooftopDataHandler
             throw new ArgumentException("Failed to open mask dataset.");
         }
 
-        if(satteliteImageData == null || satteliteImageData.Length == 0)
+        if (satteliteImageData == null || satteliteImageData.Length == 0)
         {
             throw new ArgumentException("The provided image data is empty or null.");
         }
@@ -318,28 +504,43 @@ public class RooftopDataHandler
         Image<Rgba32> resizedSatelliteImage;
         int ReinsizedX = 0;
         int ReinsizedY = 0;
-        try 
+        try
         {
             satelliteImage = Image.Load<Rgba32>(satteliteImageData);
             resizedSatelliteImage = satelliteImage.CloneAs<Rgba32>();
             Band oneMonthFluxBand = monthlyFluxDataSet.GetRasterBand(1);
             ReinsizedX = oneMonthFluxBand.XSize;
             ReinsizedY = oneMonthFluxBand.YSize;
-            resizedSatelliteImage.Mutate(ctx => ctx.Resize(new ResizeOptions
-            {
-                Size = new Size(oneMonthFluxBand.XSize, oneMonthFluxBand.YSize), // Set the desired size
-                Sampler = KnownResamplers.Bicubic // Choose a resampling method
-            }));
-        } 
-        catch (Exception ex) 
+            resizedSatelliteImage.Mutate(
+                ctx =>
+                    ctx.Resize(
+                        new ResizeOptions
+                        {
+                            Size = new Size(oneMonthFluxBand.XSize, oneMonthFluxBand.YSize), // Set the desired size
+                            Sampler = KnownResamplers.Bicubic // Choose a resampling method
+                        }
+                    )
+            );
+        }
+        catch (Exception ex)
         {
             throw new Exception("Error loading image data.", ex);
         }
 
         Band maskBand = maskDataSet.GetRasterBand(1);
         byte[] maskValues = new byte[maskBand.XSize * maskBand.YSize];
-        maskBand.ReadRaster(0, 0, maskBand.XSize, maskBand.YSize, maskValues, maskBand.XSize, maskBand.YSize, 0, 0);
-        
+        maskBand.ReadRaster(
+            0,
+            0,
+            maskBand.XSize,
+            maskBand.YSize,
+            maskValues,
+            maskBand.XSize,
+            maskBand.YSize,
+            0,
+            0
+        );
+
         byte[][] maskValuesArray = new byte[satelliteImage.Width][];
         for (int y = 0; y < satelliteImage.Height; y++)
         {
@@ -374,10 +575,21 @@ public class RooftopDataHandler
         float minData = float.NaN;
         float maxData = float.NaN;
 
-        for(int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 12; i++)
+        {
             Band monthFluxBand = monthlyFluxDataSet.GetRasterBand(i);
             float[] monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
-            monthFluxBand.ReadRaster(0, 0, monthFluxBand.XSize, monthFluxBand.YSize, monthlyFluxValues, monthFluxBand.XSize, monthFluxBand.YSize, 0, 0);
+            monthFluxBand.ReadRaster(
+                0,
+                0,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                monthlyFluxValues,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                0,
+                0
+            );
 
             // Extract the roof region based on the maskImage
             float[][] maskedData = new float[monthFluxBand.YSize][];
@@ -387,7 +599,10 @@ public class RooftopDataHandler
                 for (int x = 0; x < monthFluxBand.XSize; x++)
                 {
                     int maskPixel = resizedMaskValueArray[y][x];
-                    maskedData[y][x] = (maskPixel == 1) ? monthlyFluxValues[y * monthFluxBand.XSize + x] : float.NaN;
+                    maskedData[y][x] =
+                        (maskPixel == 1)
+                            ? monthlyFluxValues[y * monthFluxBand.XSize + x]
+                            : float.NaN;
                 }
             }
 
@@ -403,10 +618,21 @@ public class RooftopDataHandler
             }
         }
 
-        for(int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 12; i++)
+        {
             Band monthFluxBand = monthlyFluxDataSet.GetRasterBand(i);
             float[] monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
-            monthFluxBand.ReadRaster(0, 0, monthFluxBand.XSize, monthFluxBand.YSize, monthlyFluxValues, monthFluxBand.XSize, monthFluxBand.YSize, 0, 0);
+            monthFluxBand.ReadRaster(
+                0,
+                0,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                monthlyFluxValues,
+                monthFluxBand.XSize,
+                monthFluxBand.YSize,
+                0,
+                0
+            );
 
             // Extract the roof region based on the maskImage
             float[][] maskedData = new float[monthFluxBand.YSize][];
@@ -416,11 +642,21 @@ public class RooftopDataHandler
                 for (int x = 0; x < monthFluxBand.XSize; x++)
                 {
                     int maskPixel = resizedMaskValueArray[y][x];
-                    maskedData[y][x] = (maskPixel == 1) ? monthlyFluxValues[y * monthFluxBand.XSize + x] : float.NaN;
+                    maskedData[y][x] =
+                        (maskPixel == 1)
+                            ? monthlyFluxValues[y * monthFluxBand.XSize + x]
+                            : float.NaN;
                 }
             }
 
-            monthlyFluxImages[i - 1] = ConvertDataToYellowAndRedImage(maskedData, minData, maxData, resizedSatelliteImage, resizedMaskValueArray, 2);
+            monthlyFluxImages[i - 1] = ConvertDataToYellowAndRedImage(
+                maskedData,
+                minData,
+                maxData,
+                resizedSatelliteImage,
+                resizedMaskValueArray,
+                2
+            );
         }
 
         monthlyFluxDataSet.Dispose();
@@ -431,6 +667,7 @@ public class RooftopDataHandler
 
         return monthlyFluxImages;
     }
+
     private string ConvertToBase64(Image<Rgba32> image)
     {
         using (var stream = new MemoryStream())
@@ -440,20 +677,31 @@ public class RooftopDataHandler
         }
     }
 
-    private string? ConvertDataToYellowAndRedImage(float[][] maskedData, float minData, float maxData, Image<Rgba32> thisSatelliteImage, byte[][] maskValues, int power = 3)
+    private string? ConvertDataToYellowAndRedImage(
+        float[][] maskedData,
+        float minData,
+        float maxData,
+        Image<Rgba32> thisSatelliteImage,
+        byte[][] maskValues,
+        int power = 3
+    )
     {
         (byte R, byte G, byte B) nanColor = (0, 0, 0);
 
         // Normalize the annual flux data to the [0, 1] range using minData and maxData from the roof
-        float[][] normalizedData = maskedData.Select(row => row.Select(value => (value - minData) / (maxData - minData)).ToArray()).ToArray();
+        float[][] normalizedData = maskedData
+            .Select(row => row.Select(value => (value - minData) / (maxData - minData)).ToArray())
+            .ToArray();
 
         // Apply a non-linear mapping to the normalized data
-        normalizedData = normalizedData.Select(row => row.Select(value => (float)Math.Pow(value, power)).ToArray()).ToArray();
+        normalizedData = normalizedData
+            .Select(row => row.Select(value => (float)Math.Pow(value, power)).ToArray())
+            .ToArray();
 
         // Create a custom colormap that maps the lowest quarter to yellow, the highest quarter to red,
         // and the middle half to transition colors
         Rgba32[] colormap = CreateColormap();
-        
+
         // Apply the colormap to the normalized data
         Image<Rgba32> heatmapImage = ApplyColormap(normalizedData, colormap);
 
@@ -524,17 +772,21 @@ public class RooftopDataHandler
         return heatmapImage;
     }
 
-    private byte Interpolate(byte[][] array, float x, float y)
+    public byte Interpolate(byte[][] array, float x, float y)
     {
         int x0 = (int)Math.Floor(x);
         int x1 = (int)Math.Ceiling(x);
         int y0 = (int)Math.Floor(y);
         int y1 = (int)Math.Ceiling(y);
 
-        if (x0 < 0) x0 = 0;
-        if (x1 >= array[0].Length) x1 = array[0].Length - 1;
-        if (y0 < 0) y0 = 0;
-        if (y1 >= array.Length) y1 = array.Length - 1;
+        if (x0 < 0)
+            x0 = 0;
+        if (x1 >= array[0].Length)
+            x1 = array[0].Length - 1;
+        if (y0 < 0)
+            y0 = 0;
+        if (y1 >= array.Length)
+            y1 = array.Length - 1;
 
         float tx = x - x0;
         float ty = y - y0;
@@ -545,11 +797,74 @@ public class RooftopDataHandler
         byte value11 = array[y1][x1];
 
         // Bilinear interpolation
-        float interpolatedValue = (1 - tx) * (1 - ty) * value00 +
-                                tx * (1 - ty) * value01 +
-                                (1 - tx) * ty * value10 +
-                                tx * ty * value11;
+        float interpolatedValue =
+            (1 - tx) * (1 - ty) * value00
+            + tx * (1 - ty) * value01
+            + (1 - tx) * ty * value10
+            + tx * ty * value11;
 
         return (byte)interpolatedValue;
+    }
+}
+
+public class SystemsDataHandler
+{
+    public float CalculateRunningHours(
+        int numBatteries,
+        int batteryStorage,
+        List<ApplianceModel> appliances,
+        double daylightHours
+    )
+    {
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+            if (appliance.quantity > 0)
+            {
+                sumOfAppliances += appliance.quantity * appliance.powerUsage;
+            }
+        }
+
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 24 - (float)daylightHours;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateRunningHours(
+        int numBatteries,
+        int batteryStorage,
+        List<ReportAllApplianceModel> appliances,
+        double daylightHours
+    )
+    {
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+            if (appliance.powerUsage != null && appliance.numberOfAppliances > 0)
+            {
+                sumOfAppliances +=
+                    (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
+            }
+            else
+            {
+                sumOfAppliances +=
+                    (float)(appliance.numberOfAppliances!) * (float)appliance.defaultPowerUsage!;
+            }
+        }
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 24 - (float)daylightHours;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        return runningHoursPercentage;
     }
 }

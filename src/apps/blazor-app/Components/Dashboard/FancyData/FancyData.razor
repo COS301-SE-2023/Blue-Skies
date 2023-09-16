@@ -7,24 +7,53 @@
 
 @namespace BlazorApp.FancyData
 
-    <Card>
-        <Heading>
-            <Header>
-                <h1 class="text-xl">Fancy Data</h1>
-            </Header>
-            <Subscript>
-                <p>More information about your area</p>
-            </Subscript>
-        </Heading>
-        <div class="flex w-full">
-            <div  class="w-1/2">
-            <SolarIrradiationPerMonth monthlyFluxData="@monthlyFluxData" maskData="@maskData"/>
-             </div>
+
+<div>
+    <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
+        <Header>
+            <h1 class="text-center">Fancy Data</h1>
+        </Header>
+        <Subscript>
+            <p class="text-center">More information about your location</p>
+        </Subscript>
+    </Heading>
+    <div class="w-full">
+        <div class="w-fit mx-auto">
+            <h1>Annual Flux Map</h1>
+            <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
         </div>
-        <div class="w-full">
-            <ElevationGraph elevationValues="@elevationData"/>
+        @if(monthlyFluxMap is not null){
+        <div class="w-fit mx-auto">
+            <h1>Monthly Flux Map</h1>
+            <div class="w-fit mx-auto">
+                <div class="flex space-x-3 mt-10">
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
+                        Prev
+                    </div>
+                    <div class="flex-col">
+                        <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
+                        <p class="text-center">@monthNames[@currentImageIndex]</p> 
+                    </div>
+                    
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
+                        Next
+                    </div>
+                </div>
+            </div>
         </div>
-    </Card>
+        }
+        else{
+        <p>Monthly Flux Map is not available</p>
+        }
+        <div>
+            <ElevationGraph elevationValues="@horisonElevationData"/>
+        </div>
+        <div  class="w-1/2">
+            <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth"/>
+        </div>
+    </div>
+
+</div>
 
 @code {
     [Parameter]
@@ -34,5 +63,46 @@
     public byte[]? maskData { get; set; }
 
     [Parameter]
-    public string? elevationData { get; set; }
+    public string? horisonElevationData { get; set; }
+
+    [Parameter]
+    public byte[]? satteliteImageData { get; set; }
+
+    [Parameter]
+    public byte[]? annualFluxData { get; set; }
+
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
+    private string? satteliteImageSrc = "";
+    private string?[]? monthlyFluxMap = new string[12];
+    private string[] monthNames = new string[12]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+    private int currentImageIndex = 0;
+
+    private double[] solarRadiationPerMonth = new double[12];
+
+    @* OnInitialized *@
+    protected override void OnInitialized()
+    {   
+        if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
+            satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
+            monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
+            solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
+        }
+    }
+
+    private void IncreamentMonthImage(){
+        if(currentImageIndex < monthlyFluxMap!.Length - 1){
+            currentImageIndex++;
+            StateHasChanged();
+        }
+       
+    }
+    private void DecrementMonthImage(){
+        if(currentImageIndex > 0){
+            currentImageIndex--;
+            StateHasChanged();
+        }
+        
+    }
 } 

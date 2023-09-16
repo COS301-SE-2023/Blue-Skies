@@ -78,7 +78,21 @@
         }
         elevationValues = elevationValues.Replace("[", "");
         elevationValues = elevationValues.Replace("]", "");
-        double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        double[] dataArr = new double[0];
+        try
+        {
+            dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        }
+        catch (Exception e)
+        {
+            string[] arr = elevationValues.Split(',').ToArray();
+            string[] newArr = new string[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                newArr[i] = arr[i].Replace(".", ",");
+            }
+            dataArr = newArr.Select(double.Parse).ToArray();
+        }
         double[] xValues = new double[dataArr.Length / 2 + 1];
         double[] yValues = new double[dataArr.Length / 2 + 1];
         for (int i = 0; i < dataArr.Length; i++)
@@ -152,7 +166,6 @@
         addSunDataSet(80, 120, "December solstice", xValues, yValues, "rgba(0,15,82, 1)");
 
         @* Set the max YAxes to 1.25 the max value of the highest elevation point *@
-        Console.WriteLine("Max Y: " + yValues.Max());
         double maxY = Math.Max(yValues.Max(), 80) * 1.25;
 
         lineConfig.Options.Scales = new Scales

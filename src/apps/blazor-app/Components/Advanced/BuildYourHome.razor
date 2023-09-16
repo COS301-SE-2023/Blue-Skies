@@ -116,19 +116,19 @@
                 {
                     @foreach (var appliance in appliances)
                     {
-                                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                    </div>
+                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
                 }
                 else
                 {
                     @foreach (var appliance in appliances)
                     {
-                                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                        imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                    </div>
+                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
                 }
             </div>
@@ -202,23 +202,21 @@
                 if (currentReport != null)
                 {
                     daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
-
                     dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-                    @* daylightChart.SetDaylightHours(daylight);
-                    daylightChart.SetHours(dlh); *@
+
                 }
             }
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                 <p class="text-5xl text-primary-900 font-semibold">@{
-                        if (dlh == (24 - daylight))
-                        {
-                                    <p>@dlh+</p>
-                        }
-                        else
-                        {
-                                    <p>@dlh</p>
-                        }
+                    if (dlh == (24 - daylight))
+                    {
+                        <p>@dlh+</p>
+                    }
+                    else
+                    {
+                        <p>@dlh</p>
+                    }
                     }
                 </p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
@@ -470,7 +468,9 @@
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
+
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
     [Parameter]
@@ -533,7 +533,7 @@
             homeSize = currentReport.homeSize;
         }
 
-        CalculateRunningHours();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
@@ -667,7 +667,7 @@
         StateHasChanged();
         appliance.quantity++;
         UpdateApplianceStorage();
-        CalculateRunningHours();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -690,7 +690,7 @@
         appliance.fade = "fade-in-active";
         StateHasChanged();
         UpdateApplianceStorage();
-        CalculateRunningHours();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -708,7 +708,7 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
-        CalculateRunningHours();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
     }
 
     /// <summary>
@@ -787,7 +787,7 @@
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
-        CalculateRunningHours();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
     }
 
     private async void SaveCalculation()
@@ -858,28 +858,5 @@
     private void ShowLoadingScreen()
     {
         loadingService.ShowLoadingScreen();
-    }
-
-    private void CalculateRunningHours()
-    {
-        int numBatteries = systems[selectedSystem].numberOfBatteries;
-        int batteryStorage = systems[selectedSystem].batterySize * 1000; // kwh
-        float sumOfAppliances = 0f;
-
-        foreach (var appliance in appliances)
-        {
-            if (appliance.quantity > 0)
-            {
-                sumOfAppliances += appliance.quantity * appliance.powerUsage;
-            }
-        }
-
-        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - (float)(currentLocationData!.daylightHours);
-        runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
     }
 }
