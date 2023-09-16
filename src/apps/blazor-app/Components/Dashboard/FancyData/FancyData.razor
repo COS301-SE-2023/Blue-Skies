@@ -30,7 +30,11 @@
                     <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
                         Prev
                     </div>
-                    <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
+                    <div class="flex-col">
+                        <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
+                        <p class="text-center">@monthNames[@currentImageIndex]</p> 
+                    </div>
+                    
                     <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
                         Next
                     </div>
@@ -67,7 +71,9 @@
 
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private string? satteliteImageSrc = "";
-    private string?[]? monthlyFluxMap = null;
+    private string?[]? monthlyFluxMap = new string[12];
+    private string[] monthNames = new string[12]{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
     private int currentImageIndex = 0;
 
     @* OnInitialized *@
