@@ -9,122 +9,139 @@
 <div class="pageA4 mx-auto">
     @if (isLoaded)
     {
-        <div id="report">
-            <div class="mx-auto w-fit">
-                <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
-            </div>
-            <div class="space-y-2">
-                <div class="w-full">
-                    <div class="">
-                        <Heading>
-                            <Header>
-                                <h1 class="text-xl">Location</h1>
-                            </Header>
-                        </Heading>
-                        <div class="flex-col">
-                            <div class="h-[8cm] w-[8cm] mx-auto">
-                                <Map imageName="@SatteliteImage" />
-                            </div>
-                            <div class="flex flex-col w-fit mx-auto space-y-2">
-                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@locationData.locationName />
-                                <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
-                                <div class="translate-x-1">
-                                    <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
-                                        Text="@avgEnergyProduction" />
-                                </div>
+    <div id="report">
+        <div class="mx-auto w-fit">
+            <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
+        </div>
+        <div class="space-y-2">
+            <div class="w-full">
+                <div class="">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Location</h1>
+                        </Header>
+                    </Heading>
+                    <div class="flex-col">
+                        <div class="h-[8cm] w-[8cm] mx-auto">
+                            <Map imageName="@SatteliteImage" />
+                        </div>
+                        <div class="flex flex-col w-fit mx-auto space-y-2">
+                            <LocationItem Title="Address" ImageName="Point On Map.svg"
+                                Text=@locationData.locationName />
+                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
+                            <div class="translate-x-1">
+                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                                    Text="@avgEnergyProduction" />
                             </div>
                         </div>
                     </div>
+                </div>
 
-                </div>
-                <div class="w-full">
-                        <Heading>
-                            <Header>
-                                <h1 class=" text-xl text-start">System Size</h1>
+            </div>
+            <div class="w-full">
+                <Heading>
+                    <Header>
+                        <h1 class=" text-xl text-start">System Size</h1>
                     </Header>
-                    </Heading>
-                    <div class="w-fit mx-auto flex space-x-3">
-                        <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
-                            Count="@system.numberOfPanels" />
-                        <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
-                            Count="@system.numberOfBatteries" />
-                    </div>
-                    <div class="flex w-full justify-center items-center gap-1 mt-4">
-                        <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
-                        <p class="text-5xl text-gray-400 font-bold">kw</p>
-                    </div>
+                </Heading>
+                <div class="w-fit mx-auto flex space-x-3">
+                    <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
+                        Count="@system.numberOfPanels" />
+                    <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
+                        Count="@system.numberOfBatteries" />
                 </div>
-<div class="w-full new-page">
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl">Appliances</h1>
-                        </Header>
-                        <Subscript>
-                            <p>What do you want to run in a power outage?</p>
-                        </Subscript>
-                    </Heading>
-                    @* <div class="flex flex-wrap justify-center gap-2">
-                @{
-                    for (int i = 0; i < reportAllAppliance.Count; i++)
-                    {
-                        if (reportAllAppliance[i].numberOfAppliances != 0)
-                        {
-                            var appliance = reportAllAppliance[i].type;
-                            var count = reportAllAppliance[i].numberOfAppliances;
-                            string iconName = appliance + ".svg";
-                                    <Appliance css="scale-75" ImageName="@iconName" Name="@appliance" Count="@count" />
-                        }
+                <div class="flex w-full justify-center items-center gap-1 mt-4">
+                    <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
+                    <p class="text-5xl text-gray-400 font-bold">kw</p>
+                </div>
+            </div>
+            <div class="w-full new-page">
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Appliances</h1>
+                    </Header>
+                    <Subscript>
+                        <p>What do you want to run in a power outage?</p>
+                    </Subscript>
+                </Heading>
+                @* <div class="flex flex-wrap justify-center gap-2">
+                    @{
+                    for (int i = 0; i
+                    < reportAllAppliance.Count; i++) { if (reportAllAppliance[i].numberOfAppliances !=0) { var
+                        appliance=reportAllAppliance[i].type; var count=reportAllAppliance[i].numberOfAppliances; string
+                        iconName=appliance + ".svg" ; <Appliance css="scale-75" ImageName="@iconName" Name="@appliance"
+                        Count="@count" />
+                    }
                     }
                     if (reportAllAppliance.Count == 0)
                     {
-                                <p class="text-center">No appliances added</p>
+                    <p class="text-center">No appliances added</p>
                     }
-                }
-                    </div> *@
-                    <div>
-                        <Image ImageName="@homeSize" alt="House" css="scale-50" />
-                    </div>
+                    }
+                </div> *@
+                <div>
+                    <Image ImageName="@homeSize" alt="House" css="scale-50" />
+                </div>
 
-                    @* <div class="w-full flex">
-                        <div class="w-1/2">
-                            <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
-                                <div class="flex flex-col justify-center w-full">
-                                    <Chart Config="pieConfig"></Chart>
-                                    <p class="text-center text-base text-primary-900 font-semibold">
-                                @locationData.daylightHours h</p>
-                                </div>
+                @* <div class="w-full flex">
+                    <div class="w-1/2">
+                        <div class="w-full flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
+                            <div class="flex flex-col justify-center w-full">
+                                <Chart Config="pieConfig"></Chart>
+                                <p class="text-center text-base text-primary-900 font-semibold">
+                                    @locationData.daylightHours h</p>
                             </div>
-
                         </div>
 
-                        <div class="w-1/2">
-                            <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
-                            <Chart Config="polarAreaConfig"></Chart>
-                        </div>
-                    </div> *@
-                </div>                @*  *@
-        @* Fancy Data *@
-                @* <div class="w-full new-page">
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl">Fancy Data</h1>
-                        </Header>
-                        <Subscript>
-                            <p>More information about your area</p>
-                        </Subscript>
-                    </Heading>
-                    <div class="flex w-full">
-                        <div class="w-full">
-                            <SolarIrradiationPerMonth monthlyFluxData="@locationData.monthlyFluxData" maskData="@locationData.maskData" animated="false" />
-                        </div>
                     </div>
-                    <div class="w-full">
-                        <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
+
+                    <div class="w-1/2">
+                        <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
+                        <Chart Config="polarAreaConfig"></Chart>
                     </div>
                 </div> *@
+            </div> @* *@
+            @* Fancy Data *@
+            <div class="w-full new-page">
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Fancy Data</h1>
+                    </Header>
+                    <Subscript>
+                        <p>More information about your area</p>
+                    </Subscript>
+                </Heading>
+                <div class="w-full">
+                    <div>
+                        <h1 class="text-center">Your Solar flux</h1>
+                        <Image ImageName="@satteliteImageSrc" alt="Solar Sattelite Image" css="mx-auto" />
+                    </div>
+                    <div>
+                        <h1 class="text-center">Monthly solar flux</h1>
+                        <div class="grid grid-cols-3 gap-4">
+                            @if(monthlyFluxMap is not null)
+                            {
+                                string[] monthNames = new string[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+                                int count = 0;
+                                foreach (var item in monthlyFluxMap)
+                                {
+                                    <div class="flex-col">
+                                        <Image ImageName="@item" alt="Solar Sattelite Image per month" css="mx-auto" />
+                                        <p class="text-center">@monthNames[count]</p> 
+                                    </div>
+                                    count++;
+                                }
+                            }
+
+                        </div>
+                    </div>
+
+                    <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
+                </div>
             </div>
         </div>
+    </div>
     }
 </div>
 @code {
@@ -151,8 +168,10 @@
     private PieConfig pieConfig = new PieConfig();
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private string? satteliteImageSrc = "";
     public string solarScore = "";
     public string avgEnergyProduction = "";
+    private string?[]? monthlyFluxMap = null;
     @* OnInitialized *@
 
     protected override async Task OnInitializedAsync()
@@ -172,6 +191,8 @@
             if(resultLocationData != null) {
                 locationData = resultLocationData;
                 SatteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
+                satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(locationData.annualFluxData!, locationData.satteliteImageData!, locationData.maskData!);
+                monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(locationData.monthlyFluxData!, locationData.satteliteImageData!, locationData.maskData!);
             }
 
             Console.WriteLine("Current location: " + locationData.locationName);
@@ -180,7 +201,7 @@
 
             var systemSize = system.systemSize!;
 
-            solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!).ToString();
+            solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData).ToString();
             //GetAvgEnergyProduction();
             //renderCharts();
 
@@ -211,240 +232,6 @@
         locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";
     }
 
-    @* renderCharts *@
-    private void renderCharts()
-    {
-        pieConfig = new PieConfig(true)
-            {
-                Options = new PieOptions
-                {
-                    Responsive = true,
-                    AspectRatio = 3,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = false,
-                        Text = "Running Hours",
-                        FontSize = 20,
-                        Position = Position.Bottom,
-                        LineHeight = 4,
-                    },
-                    Circumference = 3,
-                    Rotation = -9.341,
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = false,
-                        Duration = 0,
-
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false,
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    CutoutPercentage = 80,
-
-                }
-            };
-
-        float hours = (float)locationData!.daylightHours;
-        float remaining = (float)Math.Round(13 - hours, 2);
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-            {
-                BackgroundColor = new[] {
-                    ColorUtil.ColorHexString(56,113,193),
-                    ColorUtil.ColorHexString(156,163,175),
-                },
-            };
-        pieConfig.Data.Datasets.Add(pieDataset);
-
-
-        polarAreaConfig = new PolarAreaConfig()
-            {
-                Options = new PolarAreaOptions
-                {
-                    Responsive = true,
-                    AspectRatio = 1.5,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = false,
-                        Duration = 0,
-
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    Scale = new LinearRadialAxis
-                    {
-                        Ticks = new LinearRadialTicks
-                        {
-                            Display = false,
-                        }
-                    }
-
-                }
-            };
-
-
-        polarAreaConfig.Data.Datasets.Clear();
-        polarAreaConfig.Data.Labels.Clear();
-        int countData = 0;
-        for (int i = 0; i < reportAllAppliance.Count; i++)
-        {
-            if (reportAllAppliance[i].numberOfAppliances != 0)
-            {
-                countData++;
-            }
-        }
-
-        int[] powerUsageData = new int[countData];
-        int counter = 0;
-        for (int i = 0; i < reportAllAppliance.Count; i++)
-        {
-            if (reportAllAppliance[i].numberOfAppliances != 0)
-            {
-                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
-                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type);
-                counter++;
-            }
-        }
-
-        PolarAreaDataset<int> polarDataset;
-        switch (counter)
-        {
-            case 0:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 1:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 2:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 3:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 4:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 5:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 6:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 7:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 8:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18), // orange
-                            ColorUtil.ColorHexString(255,193,8), // yellow
-                            ColorUtil.ColorHexString(56,113,193),// l blue
-                            ColorUtil.ColorHexString(0,15,82), // blue
-                        }
-                    };
-                break;
-            default:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
-                        }
-                    };
-                break;
-        }
-
-        polarAreaConfig.Data.Datasets.Add(polarDataset);
-
-    }
+    
 
 }

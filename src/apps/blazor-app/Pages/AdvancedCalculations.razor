@@ -70,11 +70,11 @@
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
     private bool edit = false;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ApplianceModel>? appliances;
     private List<ApplianceModel>? advancedCalculationAppliances;
     private List<SystemModel>? systems = new List<SystemModel>();
@@ -143,8 +143,7 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
-            var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
-            reportAllAppliance = reportAllAppl.Value!;
+            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;

@@ -77,7 +77,29 @@ else if (!logIn)
                                 <div class="w-full flex flex-col gap-4 justify-start items-center">
                                     <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
                                     <div class="flex relative flex-col justify-center w-full">
-                                        <DaylightChart hours="10" daylightHours="20" />
+                                        @{
+                                            dlh = 0;
+                                            if(currentLocationData != null) 
+                                            {
+                                                daylight = (float)Math.Round(currentLocationData.daylightHours, 2);
+                                                dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+                                            }
+                                        }
+                                        <DaylightChart hours="@dlh" daylightHours="@daylight" />
+                                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                            <p class="text-5xl text-primary-900 font-semibold">@{
+                                                if (dlh == (24 - daylight))
+                                                {
+                                                    <p>@dlh+</p>
+                                                }
+                                                else
+                                                {
+                                                    <p>@dlh</p>
+                                                }
+                                                }
+                                            </p>
+                                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="hidden md:block w-full">
@@ -123,7 +145,7 @@ else if (!logIn)
                         </Card>
                     </div>
                     <div class="mt-10 w-full">
-                        <FancyData monthlyFluxData="@currentLocationData!.monthlyFluxData" maskData="@currentLocationData.maskData" elevationData="@currentLocationData.horisonElevationData" />
+                        <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
                     </div>
                     
                 </div>
@@ -172,11 +194,12 @@ else if (!logIn)
 
 @code {
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private List<ReportModel> reports = new List<ReportModel>();
     private List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
@@ -192,6 +215,9 @@ else if (!logIn)
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
     public LocationDataModel? currentLocationData  = new LocationDataModel();
     public int solarScore = 0;
+    private float dlh;
+    private float daylight;
+    float runningHoursPercentage = 0;
 
     /// <summary>
     /// Load the user's reports and all appliances
@@ -294,6 +320,15 @@ else if (!logIn)
             updateCharts();
         }
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
+
+        SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
+        if(system != null && reportAllAppliance != null) {
+            Console.WriteLine("System and appliances is not null");
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance, currentLocationData!.daylightHours);
+        } else {
+            runningHoursPercentage = 0;
+            Console.WriteLine("System or appliances is null");
+        }
     }
 
     private void renderCharts()

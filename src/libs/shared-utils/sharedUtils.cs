@@ -668,14 +668,7 @@ public class reportClass
     // <summary>
     /// Create a new report in the database
     /// </summary>
-    public async Task<bool> CreateReport(
-        string calculationName,
-        int userId,
-        string homeSize,
-        double latitude,
-        double longitude,
-        int systemId
-    )
+    public async Task<bool> CreateReport(string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
@@ -711,15 +704,7 @@ public class reportClass
 
     /// <summary>
     /// Updates the report in the database
-    public async Task<bool> UpdateReport(
-        int reportId,
-        string calculationName,
-        int userId,
-        string homeSize,
-        double latitude,
-        double longitude,
-        int systemId
-    )
+    public async Task<bool> UpdateReport(int reportId, string calculationName, int userId, string homeSize, double latitude,  double longitude, int systemId)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");

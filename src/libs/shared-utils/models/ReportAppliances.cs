@@ -1,5 +1,3 @@
-namespace Api;
-
 public class ReportAppliances
 {
     public int reportId { get; set; }

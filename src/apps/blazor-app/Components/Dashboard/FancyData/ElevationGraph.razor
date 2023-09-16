@@ -152,7 +152,6 @@
         addSunDataSet(80, 120, "December solstice", xValues, yValues, "rgba(0,15,82, 1)");
 
         @* Set the max YAxes to 1.25 the max value of the highest elevation point *@
-        Console.WriteLine("Max Y: " + yValues.Max());
         double maxY = Math.Max(yValues.Max(), 80) * 1.25;
 
         lineConfig.Options.Scales = new Scales
