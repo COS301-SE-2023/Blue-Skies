@@ -9,69 +9,24 @@ namespace DataHandlers;
 public class SolarDataHandler
 {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-    private double perfectSolarIrradiation = 205;
-    private double worstSolarIrradiation = 120;
+    private double perfectSolarIrradiation = 1700;
+    private double worstSolarIrradiation = 800;
 
     public LocationDataModel? locationData { get; set; }
 
-    public int getSolarScore(byte[] monthlyFluxData, byte[] maskData)
+    public int getSolarScore(RooftopInformationModel? rooftopData)
     {
-        Gdal.AllRegister();
-        
-        string montlyFluxPath = Path.Combine(Path.GetTempPath(), "monthlyFlux.tif");
-        File.WriteAllBytes(montlyFluxPath, monthlyFluxData);
-        Dataset monthlyFluxDataSet = Gdal.Open(montlyFluxPath, Access.GA_ReadOnly);
-
-        string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
-        File.WriteAllBytes(maskPath, maskData);
-        Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
-    
-        return 50;
-    }
-
-    private int calculateSolarScore(string data)
-    {
-        string input = data;
-        double total = 0;
-        int i = 0;
-        while (input.Length > 0)
-        {   
-            int newDataPointIndex = input.IndexOf(",");
-            if (newDataPointIndex == -1)
-            {
-                newDataPointIndex = input.Length;
-            }
-            string newDataPoint = input.Substring(0, newDataPointIndex);
-            input = input.Substring(newDataPointIndex + 1);
-            newDataPoint = newDataPoint.Trim();
-            int solarScoreIndex = newDataPoint.IndexOf(";");
-            try {
-                total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1));
-            } catch (Exception) {
-                try {
-                    total += Double.Parse(newDataPoint.Substring(solarScoreIndex + 1).Replace(".", ","));
-                } catch (Exception e) {
-                    Console.WriteLine("Error parsing data: " + e);
-                }
-            }
- 
-            i++;
-        }
-        if (i == 0)
+        if (rooftopData == null || rooftopData.solarPotential == null || rooftopData.solarPotential.wholeRoofStats == null || rooftopData.solarPotential.wholeRoofStats.sunshineQuantiles == null)
         {
             return 0;
         }
-        double averageSolarIrradiation = total / i;
-        double solarScore = getPercentage((double)averageSolarIrradiation);
-        if (solarScore > 100)
+        double sum = 0.0;
+        // rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!
+        foreach (var solarRadiationValue in rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!)
         {
-            solarScore = 100;
+            sum += solarRadiationValue;
         }
-        if (solarScore <= 0)
-        {
-            solarScore = 4;
-        }
-        return (int)solarScore;
+        return getPercentage(sum / rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!.Length);
     }
 
     private int getPercentage(double solarIrradiation)

@@ -240,7 +240,7 @@ else if (!logIn)
             if(currentLocationData != null) {
                 await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
                 await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-                solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
+                solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
             }
 
             allReportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
@@ -268,7 +268,7 @@ else if (!logIn)
         if(currentLocationData != null) {
             await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
             await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-            solarScore = solarCalculator.getSolarScore(currentLocationData.monthlyFluxData!, currentLocationData.maskData!);
+            solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         updateAppliances();
     }

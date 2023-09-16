@@ -36,7 +36,6 @@ public class locationDataClass
     {
         if(!mock) {
             var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(10);
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
                 API_PORT
@@ -56,17 +55,16 @@ public class locationDataClass
                 Console.WriteLine("Location data found");
                 return result;
             }
-            if (response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
-            {
-                Console.WriteLine("Request timed out after 10 seconds");
-                // return await GetLocationData(latitude, longitude);
-            }
             return null;
         } else {
             LocationDataModel result = new LocationDataModel();
             FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() +  "../../../../src/libs/shared-utils/response.json");
-            var data = await JsonSerializer.DeserializeAsync<LocationDataModel>(fs);
-            result = data!;
+            try {
+                var data = await JsonSerializer.DeserializeAsync<LocationDataModel>(fs);
+                result = data!;
+            } catch {
+                Console.WriteLine("Failed to deserialize json");
+            }
             return result;
         }
     }
@@ -191,7 +189,7 @@ public class locationDataClass
             return null;
         }
 
-        result.solarPanelsData = JsonSerializer.Serialize(solarPanelsDataResult);
+        result.solarPanelsData = solarPanelsDataResult;
 
         LocationDataLayer? locationDataLayer = await GetLocationDataLayer(latitude, longitude);
 
