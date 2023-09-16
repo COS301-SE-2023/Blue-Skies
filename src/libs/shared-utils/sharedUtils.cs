@@ -8,6 +8,7 @@ namespace SharedUtils;
 
 public class locationDataClass
 {
+    private bool mock = true;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
@@ -54,12 +55,6 @@ public class locationDataClass
             Console.WriteLine("Location data found");
             return result;
         }
-        if (response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
-        {
-            Console.WriteLine("Request timed out after 10 seconds");
-            // return await GetLocationData(latitude, longitude);
-        }
-        return null;
     }
 
     /// <summary>
