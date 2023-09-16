@@ -83,7 +83,7 @@
         {
             dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
         }
-        catch (Exception e)
+        catch
         {
             string[] arr = elevationValues.Split(',').ToArray();
             string[] newArr = new string[arr.Length];
