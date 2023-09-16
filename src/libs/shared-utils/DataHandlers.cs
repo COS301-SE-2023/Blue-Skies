@@ -640,3 +640,49 @@ public class RooftopDataHandler
         return (byte)interpolatedValue;
     }
 }
+
+public class SystemsDataHandler {
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ApplianceModel> appliances, double daylightHours)
+    {
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+            if (appliance.quantity > 0)
+            {
+                sumOfAppliances += appliance.quantity * appliance.powerUsage;
+            }
+        }
+
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 24 - (float)daylightHours;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ReportAllApplianceModel> appliances, double daylightHours)
+    {
+        float sumOfAppliances = 0f;
+
+        foreach (var appliance in appliances)
+        {
+            if (appliance.powerUsage != null && appliance.numberOfAppliances > 0)
+            {
+                sumOfAppliances += (float)(appliance.numberOfAppliances!) *  (float)appliance.powerUsage!;
+            }
+        }
+
+        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 24 - (float)daylightHours;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        return runningHoursPercentage;
+    }
+}
