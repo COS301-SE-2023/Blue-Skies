@@ -224,6 +224,7 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        loadingService.ShowLoadingScreen();
         selectedReport = 0;
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -280,14 +281,16 @@ else
             updateAppliances();
             renderCharts();
         }
-        loadingService.HideLoadingScreen();
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         isLoaded = true;
+        loadingService.HideLoadingScreen();
+
     }
 
     public async Task updateLocationData()
     {
+        loadingService.ShowLoadingScreen();
         Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
 
@@ -299,6 +302,7 @@ else
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         updateAppliances();
+        loadingService.HideLoadingScreen();
     }
 
     private void Dispose()

@@ -105,6 +105,7 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     { 
+        loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
