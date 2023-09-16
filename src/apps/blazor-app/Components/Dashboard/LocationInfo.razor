@@ -23,13 +23,13 @@
                         {
                             location = currentLocationData!.locationName;
                             sScore = solarScore + "%";
-                            avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData, true).ToString() + "kw/h";
+                            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
                     <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
                     <div class="translate-x-1">
-                        <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                        <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
                             Text=@avgEnergyProduction />
                     </div>
                 </div>

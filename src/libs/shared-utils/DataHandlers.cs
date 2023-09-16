@@ -568,7 +568,7 @@ public class RooftopDataHandler
             0
         );
 
-        byte[][] maskValuesArray = new byte[satelliteImage.Width][];
+        byte[][] maskValuesArray = new byte[satelliteImage.Height][];
         for (int y = 0; y < satelliteImage.Height; y++)
         {
             maskValuesArray[y] = new byte[satelliteImage.Width];
@@ -806,14 +806,11 @@ public class RooftopDataHandler
         int y0 = (int)Math.Floor(y);
         int y1 = (int)Math.Ceiling(y);
 
-        if (x0 < 0)
-            x0 = 0;
-        if (x1 >= array[0].Length)
-            x1 = array[0].Length - 1;
-        if (y0 < 0)
-            y0 = 0;
-        if (y1 >= array.Length)
-            y1 = array.Length - 1;
+        // Ensure x0, x1, y0, and y1 are within valid index range
+        x0 = Math.Clamp(x0, 0, array[0].Length - 1);
+        x1 = Math.Clamp(x1, 0, array[0].Length - 1);
+        y0 = Math.Clamp(y0, 0, array.Length - 1);
+        y1 = Math.Clamp(y1, 0, array.Length - 1);
 
         float tx = x - x0;
         float ty = y - y0;
@@ -832,6 +829,7 @@ public class RooftopDataHandler
 
         return (byte)interpolatedValue;
     }
+
 }
 
 public class SystemsDataHandler
