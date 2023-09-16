@@ -566,10 +566,11 @@ public class systemClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> CreateSystem(SystemModel system)
+    public async Task<int> CreateSystem(SystemModel system)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
+        int customSystemId = -1;
         var content = new StringContent(
             "{\r\n \"systemSize\": \""
                 + system.systemSize
@@ -589,7 +590,20 @@ public class systemClass
         );
         request.Content = content;
         var response = await client.SendAsync(request);
-        return response.IsSuccessStatusCode;
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            var systemInfo = JsonSerializer.Deserialize<SystemModel>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+            customSystemId = systemInfo.systemId;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+        return customSystemId;
     }
 
     public async Task<bool> UpdateSystem(SystemModel system)

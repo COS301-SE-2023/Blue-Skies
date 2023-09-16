@@ -84,8 +84,10 @@ public class SystemsRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                var data = await response.Content.ReadAsStringAsync();
+                var system = JsonSerializer.Deserialize<Systems>(data);
                 Systems sys = new Systems();
-                sys.systemId = -1;
+                sys.systemId = system!.systemId;
                 sys.inverterOutput = inverterOutput;
                 sys.numberOfPanels = numberOfPanels;
                 sys.batterySize = batterySize;

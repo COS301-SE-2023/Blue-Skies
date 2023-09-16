@@ -44,6 +44,7 @@ public class SystemController : ControllerBase
           system.numberOfBatteries,
           system.solarInput
       );
+
       return Ok(data);
     }
     catch (Exception e)
