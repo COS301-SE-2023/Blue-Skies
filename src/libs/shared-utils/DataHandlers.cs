@@ -29,6 +29,29 @@ public class SolarDataHandler
         return getPercentage(sum / rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!.Length);
     }
 
+    public List<DateRadiationModel> getSolarRadiationList(RooftopInformationModel? rooftopData)
+    {
+        if (rooftopData == null || rooftopData.solarPotential == null || rooftopData.solarPotential.wholeRoofStats == null || rooftopData.solarPotential.wholeRoofStats.sunshineQuantiles == null)
+        {
+            return new List<DateRadiationModel>();
+        }
+        List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
+
+        foreach (var solarRadiationValue in rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!)
+        {
+            var year = rooftopData.imageryDate!.year;
+            var month = rooftopData.imageryDate!.month;
+            var day = rooftopData.imageryDate!.day;
+
+            DateRadiationModel dateRadiationModel = new DateRadiationModel();
+            dateRadiationModel.Date = new DateTime(year, month, day);
+            dateRadiationModel.Radiation = solarRadiationValue;
+            solarRadiationList.Add(dateRadiationModel);
+        }
+
+    return solarRadiationList;
+    }
+
     public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false) {
         double[] monthlySolarRadiation = new double[12];
 
@@ -171,6 +194,7 @@ public class SolarDataHandler
         return getPowerSaved(annualKWGenerated) * 0.01808;
     }
 }
+    
 
 public class RooftopDataHandler
 {

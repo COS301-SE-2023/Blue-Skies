@@ -12,8 +12,8 @@ public class BusinessRequestDataRepository
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
-    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-
+    // private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private string locationName = "";
 
     private string express = "http://localhost:3333";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
@@ -46,7 +46,7 @@ public class BusinessRequestDataRepository
             if (locationData == null)
             {                
                 var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
-                string locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+                locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
                 
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);
             }
@@ -59,10 +59,6 @@ public class BusinessRequestDataRepository
                 case "solar array" : 
                     var solarArray = await GetSolarRadiationList((double)latitude, (double)longitude);
                     dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
-                    break;
-                case "average solar irradiation" : 
-                    var solarIrradiation = await GetAverageSolar((double)latitude, (double)longitude);
-                    dataTypeResponse.Content = new StringContent(solarIrradiation);
                     break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
@@ -78,46 +74,35 @@ public class BusinessRequestDataRepository
         }
     }
 
-     private Task<string> GetAverageSolar(double latitude, double longitude)
-    {
-        throw new NotImplementedException();
-        // DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-        // double averageSolarIrradiation=0;
-
-        // while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
-        //     averageSolarIrradiation = solarCalculator.GetAverageSolarIrradiation(latitude, longitude);
-        //     Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " averageSolarIrradiation: " + averageSolarIrradiation);
-        //     Task.Delay(3000);
-        // }
-
-        // return Task.FromResult(averageSolarIrradiation.ToString());
-    }
 
     private async Task<String> GetSolarScore(double latitude, double longitude) 
     {
-        throw new NotImplementedException();
-    //     DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-    //     int solarScore=0;
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
         
-    //     while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
-    //         solarScore = await solarCalculator.GetSolarScoreFromData(latitude, longitude, 0);
-    //         Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarScore: " + solarScore);
-    //         await Task.Delay(3000);
+        LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
+        if(locationData==null){
+            await locationDataClass.CreateLocationData(latitude, longitude, locationName);
+        }
 
-    //     }
-    //     return solarScore.ToString();
+                   
+        return solarCalculator.getSolarScore(locationData!.solarPanelsData).ToString();
     }
 
     private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
     {   
-        throw new NotImplementedException();
-        // DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-        // List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
-        // while(solarCalculator.remainingCalls > 0 && solarCalculator.timesNotUpdated < 10) {
-        //     solarRadiationList = await solarCalculator.GetSolarRadiationListFromData(latitude, longitude);
-        //     Console.WriteLine("Remaining calls: " + solarCalculator.remainingCalls + " timesNotUpdated: " + solarCalculator.timesNotUpdated + " solarRadiationList: " + solarRadiationList);
-        //     await Task.Delay(3000);
-        // }
-        // return solarRadiationList;
+
+        DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+        SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+        
+        LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
+        if(locationData==null){
+            await locationDataClass.CreateLocationData(latitude, longitude, locationName);
+        }
+
+        List<DateRadiationModel> solarRadiationList = solarCalculator.getSolarRadiationList(locationData.solarPanelsData);
+
+       
+        return solarRadiationList;
     }
 }
