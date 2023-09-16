@@ -31,30 +31,30 @@ else if (isAd)
 }
 else
 {
-                <div class="fade-in-active px-1 md:px-5">
+    <div class="fade-in-active px-1 md:px-5">
         @if (reports.Count > 0)
         {
-                                <div class="flex flex-col justify-center items-center px-10">
+            <div class="flex flex-col justify-center items-center px-10">
                 @{
                     if (reports.Count > selectedReport)
                     {
                         selectedDate = reports[selectedReport].dateCreated;
                     }
                 }
-                                    <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" updateLocation="updateLocationData"/>
-                                    <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" solarScore="solarScore" />
-                                    <div class="mt-10 w-full">
-                                        <Card>
-                                            <Heading>
-                                                <Header>
-                                                    <h1 class="text-xl">Appliances</h1>
-                                                </Header>
-                                                <Subscript>
-                                                    <p>What do you want to run in a power outage?</p>
-                                                </Subscript>
-                                            </Heading>
-                                            <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
-                                                <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
+                <SelectCalculation @bind-selectedReport="selectedReport" userReports="reports" dateCreated="selectedDate" updateLocation="updateLocationData"/>
+                <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" solarScore="solarScore" />
+                <div class="mt-10 w-full">
+                    <Card>
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Appliances</h1>
+                            </Header>
+                            <Subscript>
+                                <p>What do you want to run in a power outage?</p>
+                            </Subscript>
+                        </Heading>
+                            <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                                <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
                                 @{
                                     for (int i = 0; i < reportAllAppliance.Count; i++)
                                     {
@@ -63,46 +63,49 @@ else
                                             var appliance = reportAllAppliance[i].type;
                                             var count = reportAllAppliance[i].numberOfAppliances;
                                             string iconName = appliance + ".svg";
-                                                                                        <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                            <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
                                         }
                                     }
                                     if (reportAllAppliance.Count == 0)
                                     {
-                                                                            <p class="text-center">No appliances added</p>
+                                        <p class="text-center">No appliances added</p>
                                     }
                                 }
-                                                </div>
-                                            </div>
-                                            <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
-                                                <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                                    <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
-                                                    <div class="flex relative flex-col justify-center w-full">
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
+                                <div class="w-full flex flex-col gap-4 justify-start items-center">
+                                    <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours</h3>
+                                    <div class="flex relative flex-col justify-center w-full">
                                     @{
                                         dlh = 0;
                                         if (currentLocationData != null)
                                         {
                                             daylight = (float)Math.Round(currentLocationData.daylightHours, 2);
                                             dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+                                            Console.WriteLine("Daylight: " + daylight);
+                                            Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
+                                            Console.WriteLine("DLH: " + dlh);
                                         }
                                     }
-                                                        <DaylightChart hours="@dlh" daylightHours="@daylight" />
-                                                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                                                            <p class="text-5xl text-primary-900 font-semibold">@{
+                                    <DaylightChart hours="@dlh" daylightHours="@daylight" />
+                                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                        <p class="text-5xl text-primary-900 font-semibold">@{
                                                 if (dlh == (24 - daylight))
                                                 {
-                                                                                    <p>@dlh+</p>
+                                                    <p>@dlh+</p>
                                                 }
                                                 else
                                                 {
-                                                                                    <p>@dlh</p>
+                                                    <p>@dlh</p>
                                                 }
                                             }
-                                                            </p>
-                                                            <p class="text-5xl text-gray-400 font-bold">h</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="hidden md:block w-full">
+                                        </p>
+                                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden md:block w-full">
                                 @{
                                     var imageName = "";
                                     if (reports.Count > selectedReport)
@@ -133,62 +136,59 @@ else
                                         }
                                     }
                                 }
-                                                    <Image ImageName=@imageName alt="House" css="scale-90" />
-                                                </div>
-                                                <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                                    <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                                    <div class="flex relative flex-col justify-center w-full">
-                                                        <Chart Config="polarAreaConfig"></Chart>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    </div>
-                                    <div class="mt-10 w-full">
-                                        <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
-                                    </div>
-
-                                </div>
-
+                            <Image ImageName=@imageName alt="House" css="scale-90" />
+                        </div>
+                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                            <div class="flex relative flex-col justify-center w-full">
+                                <Chart Config="polarAreaConfig"></Chart>
+                            </div>
+                        </div>
+                    </div>
+                </Card>
+            </div>
+            <div class="mt-10 w-full">
+                <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+            </div>
+        </div>
         }
         else
         {
-                                <div class="flex flex-col justify-center items-center px-10 mt-10">
-                                    <div class="flex flex-col justify-center items-center">
-                                        <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br />
-                                        <p class="text-center">You have no reports. Create a report to get started.</p>
-                                    </div>
-                                    <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-                                        <Button style="pill" css="h-14">
-                                            <content>
-                                                <p @onclick='() => CreateReport()' class="text-sm font-semibold hover:text-white">Create a Report </p>
-                                            </content>
-                                        </Button>
-                                    </div>
-                                </div>
+        <div class="flex flex-col justify-center items-center px-10 mt-10">
+            <div class="flex flex-col justify-center items-center">
+                <h1 class="text-4xl font-medium text-primary-900">No Reports</h1> <br />
+                <p class="text-center">You have no reports. Create a report to get started.</p>
+            </div>
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
+                <Button style="pill" css="h-14">
+                    <content>
+                        <p @onclick='() => CreateReport()' class="text-sm font-semibold hover:text-white">Create a Report </p>
+                    </content>
+                </Button>
+            </div>
+        </div>
         }
+    </div>
+
+    <ModalPopup @ref="modalPopup" Title="Delete Record?">
+        <ChildContent>
+            <p>Are you sure that you want to delete this record?</p>
+            <div class="flex flex-row gap-4 justify-center">
+                <div @onclick="Delete">
+                    <Button style="danger">
+                        <content>
+                            delete
+                        </content>
+                    </Button>
                 </div>
-
-                <ModalPopup @ref="modalPopup" Title="Delete Record?">
-                    <ChildContent>
-                        <p>Are you sure that you want to delete this record?</p>
-                        <div class="flex flex-row gap-4 justify-center">
-                            <div @onclick="Delete">
-                                <Button style="danger">
-                                    <content>
-                                        delete
-                                    </content>
-                                </Button>
-                            </div>
-                            <div @onclick="modalPopup.Dismiss">
-                                <Button style="outline-danger">
-                                    <content>Cancel</content>
-                                </Button>
-                            </div>
-                        </div>
-                    </ChildContent>
-                </ModalPopup>
-
+                <div @onclick="modalPopup.Dismiss">
+                    <Button style="outline-danger">
+                        <content>Cancel</content>
+                    </Button>
+                </div>
+            </div>
+        </ChildContent>
+    </ModalPopup>
 }
 
 
@@ -335,6 +335,7 @@ else
             Console.WriteLine("System or appliances is null");
         }
         Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
+        StateHasChanged();
     }
 
     private void renderCharts()
