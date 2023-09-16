@@ -38,7 +38,6 @@
                         var reportName = currentReport.reportName;
                         <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@reportName"/>    
                     }
-
                 </div>
                 <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
@@ -58,7 +57,7 @@
                     }else if (tabs[2].active)
                     {
                         <div class="fade-in-active">
-                            <FancyData monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+                            <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
                         </div>
                     }
                 </div>

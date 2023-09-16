@@ -26,7 +26,7 @@
         <div class="w-fit mx-auto">
             <h1>Monthly Flux Map</h1>
             <div class="w-fit mx-auto">
-                <div class="flex space-x-3 scale-150 mt-10">
+                <div class="flex space-x-3 mt-10">
                     <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
                         Prev
                     </div>
@@ -41,6 +41,10 @@
         else{
         <p>Monthly Flux Map is not available</p>
         }
+
+        <div>
+            <ElevationGraph elevationValues="@horisonElevationData"/>
+        </div>
     </div>
 
 </div>
@@ -53,7 +57,7 @@
     public byte[]? maskData { get; set; }
 
     [Parameter]
-    public string? elevationData { get; set; }
+    public string? horisonElevationData { get; set; }
 
     [Parameter]
     public byte[]? satteliteImageData { get; set; }
