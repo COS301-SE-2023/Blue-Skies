@@ -7,6 +7,7 @@
 @using System.Text.Json
 @using BlazorApp.Components.Advanced
 @using BlazorApp.Components.Base
+@using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
@@ -37,7 +38,6 @@
                         var reportName = currentReport.reportName;
                         <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@reportName"/>    
                     }
-
                 </div>
                 <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
@@ -53,6 +53,11 @@
                     {
                         <div class="fade-in-active">
                             <Finanace />
+                        </div>
+                    }else if (tabs[2].active)
+                    {
+                        <div class="fade-in-active">
+                            <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
                         </div>
                     }
                 </div>

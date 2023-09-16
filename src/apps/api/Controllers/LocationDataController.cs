@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Api.Repository;
+using System.Text.Json;
 
 namespace Api.Controllers;
 
@@ -122,7 +123,7 @@ public class LocationDataController : ControllerBase
                 locationData.latitude,
                 locationData.longitude,
                 locationData.locationName!,
-                locationData.solarPanelsData!,
+                JsonSerializer.Serialize(locationData.solarPanelsData!),
                 locationData.satteliteImageData!,
                 locationData.satteliteImageElevationData!,
                 locationData.annualFluxData!,

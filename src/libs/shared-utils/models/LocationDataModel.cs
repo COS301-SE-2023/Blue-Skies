@@ -3,7 +3,7 @@ public class LocationDataModel
     public double latitude { get; set; }
     public double longitude { get; set; }
     public string? locationName { get; set; }
-    public string? solarPanelsData { get; set; }
+    public RooftopInformationModel? solarPanelsData { get; set; }
     public byte[]? satteliteImageData { get; set; }
     public byte[]? satteliteImageElevationData { get; set; }
     public byte[]? annualFluxData { get; set; }

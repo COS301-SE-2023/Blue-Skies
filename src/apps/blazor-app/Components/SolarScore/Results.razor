@@ -173,7 +173,7 @@
         selectedSystem = selectedSys.Value;
 
         satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
-        solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!);
+        solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
 
         systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)

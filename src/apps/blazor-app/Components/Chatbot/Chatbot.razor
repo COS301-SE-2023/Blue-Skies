@@ -81,11 +81,14 @@
   "Will solar panels work during cloudy or rainy days? Yes, they work but with reduced efficiency. They generate power from sunlight, even on overcast days, though less than under direct sunlight."+
   "How much money can I save by using solar energy? Savings vary by location, panel size, electricity rates, and incentives. Long-term, solar can substantially lower bills and may lead to surplus energy sales."+
   "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation.";
-  private string chatbotApiKey = "";
+  private string? chatbotApiKey = "";
   private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
-  protected override async Task OnInitializedAsync()
+  protected override void OnInitialized()
   {
     chatbotApiKey = Environment.GetEnvironmentVariable("CHATBOT_API_KEY");
+    if(chatbotApiKey == null) {
+      return;
+    }
     _conversationHistory.Add(new Message { role = "system", content = _chatBotKnowledgeScope });
     _conversationHistory.Add(new Message { role = "assistant", content = "Hi! I'm Robert. Ask me Anything!" });
     @* return base.OnInitializedAsync(); *@

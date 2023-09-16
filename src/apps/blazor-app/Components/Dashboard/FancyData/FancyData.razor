@@ -7,24 +7,47 @@
 
 @namespace BlazorApp.FancyData
 
-    <Card>
-        <Heading>
-            <Header>
-                <h1 class="text-xl">Fancy Data</h1>
-            </Header>
-            <Subscript>
-                <p>More information about your area</p>
-            </Subscript>
-        </Heading>
-        <div class="flex w-full">
-            <div  class="w-1/2">
-            <SolarIrradiationPerMonth monthlyFluxData="@monthlyFluxData" maskData="@maskData"/>
-             </div>
+
+<div>
+    <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
+        <Header>
+            <h1 class="text-center">Fancy Data</h1>
+        </Header>
+        <Subscript>
+            <p class="text-center">More information about your location</p>
+        </Subscript>
+    </Heading>
+    <div class="w-full">
+        <div class="w-fit mx-auto">
+            <h1>Annual Flux Map</h1>
+            <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
         </div>
-        <div class="w-full">
-            <ElevationGraph elevationValues="@elevationData"/>
+        @if(monthlyFluxMap is not null){
+        <div class="w-fit mx-auto">
+            <h1>Monthly Flux Map</h1>
+            <div class="w-fit mx-auto">
+                <div class="flex space-x-3 mt-10">
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
+                        Prev
+                    </div>
+                    <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
+                        Next
+                    </div>
+                </div>
+            </div>
         </div>
-    </Card>
+        }
+        else{
+        <p>Monthly Flux Map is not available</p>
+        }
+
+        <div>
+            <ElevationGraph elevationValues="@horisonElevationData"/>
+        </div>
+    </div>
+
+</div>
 
 @code {
     [Parameter]
@@ -34,5 +57,39 @@
     public byte[]? maskData { get; set; }
 
     [Parameter]
-    public string? elevationData { get; set; }
+    public string? horisonElevationData { get; set; }
+
+    [Parameter]
+    public byte[]? satteliteImageData { get; set; }
+
+    [Parameter]
+    public byte[]? annualFluxData { get; set; }
+
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private string? satteliteImageSrc = "";
+    private string?[]? monthlyFluxMap = null;
+    private int currentImageIndex = 0;
+
+    @* OnInitialized *@
+    protected override void OnInitialized()
+    {   
+       satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData!, satteliteImageData!, maskData!);
+       monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData!, satteliteImageData!, maskData!);
+       
+    }
+
+    private void IncreamentMonthImage(){
+        if(currentImageIndex < monthlyFluxMap!.Length - 1){
+            currentImageIndex++;
+            StateHasChanged();
+        }
+       
+    }
+    private void DecrementMonthImage(){
+        if(currentImageIndex > 0){
+            currentImageIndex--;
+            StateHasChanged();
+        }
+        
+    }
 } 
