@@ -26,17 +26,15 @@
     @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
-            <p>Hello World!</p>
-            <p>Hello World!</p>
-            <p>Hello World!</p>
-            <p>Hello World!</p>
-            <p>Hello World!</p>
+            @for (int i = 0; i < appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity; i++)
+            {
+
+            }
         </div>
     }
 </div>
 
 @code {
-    @* private List<List<ApplianceModel>> applianceVariants = new List<List<ApplianceModel>>(); *@
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
@@ -61,16 +59,73 @@
     public double longitude { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
+    private List<List<ApplianceModel>> customAppliances = new List<List<ApplianceModel>>();
 
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
-    public void UpdateAppliances (List<ApplianceModel> appliances)
+    public void UpdateAppliances(List<ApplianceModel> appliances)
     {
         this.appliances = appliances;
+        if (customAppliances.Count == 0 || customAppliances == null)
+        {
+            Console.WriteLine("Custom appliances is null");
+            customAppliances = new List<List<ApplianceModel>>();
+
+            foreach (var appliance in appliances)
+            {
+                for (int i = 0; i < appliance.quantity; i++)
+                {
+                    customAppliances.Add(new List<ApplianceModel>() { appliance });
+                }
+            }
+        }
+        else
+        {
+            foreach(List<ApplianceModel> applianceList in customAppliances)
+            {
+
+                Console.WriteLine("Appliance list count: " + applianceList.Count);
+                Console.WriteLine("Appliance list type: " + applianceList[0].type);
+
+                var newAppliance = appliances.Where(x => x.type == applianceList[0].type).FirstOrDefault();
+                Console.WriteLine(newAppliance);
+
+                @* 
+                
+                if (newAppliance?.quantity != applianceList.Count)
+                {
+                    if(newAppliance?.quantity > applianceList.Count)
+                    {
+                        for (int i = 0; i < newAppliance?.quantity - applianceList.Count; i++)
+                        {
+                            //Check if appliance with the same name exists, if it exists increment the quantity, if not add it to the list
+                            var appliance = applianceList.Where(x => x.type == newAppliance?.type).FirstOrDefault();
+                            if (appliance != null)
+                            {
+                                appliance.quantity++;
+                            }
+                            else
+                            {
+                                applianceList.Add(newAppliance!);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < applianceList.Count - newAppliance?.quantity; i++)
+                        {
+                            applianceList.RemoveAt(0);
+                        }
+                    }
+                } *@
+            }
+        }
         StateHasChanged();
     }
+
 
     public Task SelectAppliance (string appliance)
     {

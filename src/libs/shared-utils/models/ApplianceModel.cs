@@ -7,4 +7,5 @@ public class ApplianceModel
     public int quantity { get; set; } = 0;
     public float durationUsed { get; set; }
     public string? fade { get; set; } = "fade-in-enter-active";
+    public string? name { get; set; } = "Default";
 }
