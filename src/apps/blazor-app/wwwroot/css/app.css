@@ -687,10 +687,6 @@ video {
   bottom: 3.5rem;
 }
 
-.bottom-3 {
-  bottom: 0.75rem;
-}
-
 .bottom-\[480px\] {
   bottom: 480px;
 }
@@ -721,6 +717,10 @@ video {
 
 .left-9 {
   left: 2.25rem;
+}
+
+.left-\[38\%\] {
+  left: 38%;
 }
 
 .right-0 {
@@ -992,10 +992,6 @@ video {
 
 .ml-20 {
   margin-left: 5rem;
-}
-
-.ml-4 {
-  margin-left: 1rem;
 }
 
 .ml-40 {
@@ -1359,10 +1355,6 @@ video {
   width: 100vw;
 }
 
-.w-\[105\%\] {
-  width: 105%;
-}
-
 .w-\[40\%\] {
   width: 40%;
 }
@@ -1683,6 +1675,10 @@ video {
 
 .grid-cols-2 {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .flex-row {
