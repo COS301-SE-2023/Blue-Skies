@@ -23,8 +23,7 @@
                         {
                             location = currentLocationData!.locationName;
                             sScore = solarScore + "%";
-                            avgEnergyProduction = Math.Round(systems![selectedSystem].numberOfPanels *
-                            currentLocationData.daylightHours * systems[selectedSystem].solarInput /1000, 2) + " kw/h";
+                            avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData, true).ToString() + "kw/h";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
@@ -71,8 +70,8 @@
 </div>
 
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private string? satteliteImage;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     [Parameter]
     public string? css { get; set; }
