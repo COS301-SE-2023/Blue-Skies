@@ -54,7 +54,7 @@
                         <p class="text-5xl text-gray-400 font-bold">kw</p>
                     </div>
                 </div>
-                <div class="w-full new-page">
+<div class="w-full new-page">
                     <Heading>
                         <Header>
                             <h1 class="text-xl">Appliances</h1>
@@ -63,7 +63,7 @@
                             <p>What do you want to run in a power outage?</p>
                         </Subscript>
                     </Heading>
-                    <div class="flex flex-wrap justify-center gap-2">
+                    @* <div class="flex flex-wrap justify-center gap-2">
                 @{
                     for (int i = 0; i < reportAllAppliance.Count; i++)
                     {
@@ -80,12 +80,12 @@
                                 <p class="text-center">No appliances added</p>
                     }
                 }
-                    </div>
+                    </div> *@
                     <div>
                         <Image ImageName="@homeSize" alt="House" css="scale-50" />
                     </div>
 
-                    <div class="w-full flex">
+                    @* <div class="w-full flex">
                         <div class="w-1/2">
                             <div class="w-full flex flex-col gap-4 justify-start items-center">
                                 <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
@@ -102,10 +102,10 @@
                             <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
                             <Chart Config="polarAreaConfig"></Chart>
                         </div>
-                    </div>
-                </div>
+                    </div> *@
+                </div>                @*  *@
         @* Fancy Data *@
-                <div class="w-full new-page">
+                @* <div class="w-full new-page">
                     <Heading>
                         <Header>
                             <h1 class="text-xl">Fancy Data</h1>
@@ -122,7 +122,7 @@
                     <div class="w-full">
                         <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
     }
@@ -181,10 +181,10 @@
             var systemSize = system.systemSize!;
 
             solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!).ToString();
-            GetAvgEnergyProduction();
-            renderCharts();
+            //GetAvgEnergyProduction();
+            //renderCharts();
             isLoaded = true;
-            StateHasChanged();
+            //StateHasChanged();
 
             if (systemSize.Equals("Small"))
             {
