@@ -62,8 +62,7 @@
                     var avgEnergyProduction = 0.0;
                     if (currentLocationData != null && systems != null)
                     {
-                        double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
-                        avgEnergyProduction = Math.Round(calc, 2);
+                        avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData.solarPanelsData, true);
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
