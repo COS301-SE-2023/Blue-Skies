@@ -8,7 +8,7 @@ namespace SharedUtils;
 
 public class locationDataClass
 {
-    private bool mock = true;
+    private bool mock = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
@@ -34,7 +34,8 @@ public class locationDataClass
     /// </summary>
     public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude)
     {
-        if(!mock) {
+        if (!mock)
+        {
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -56,13 +57,20 @@ public class locationDataClass
                 return result;
             }
             return null;
-        } else {
+        }
+        else
+        {
             LocationDataModel result = new LocationDataModel();
-            FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() +  "../../../../src/libs/shared-utils/response.json");
-            try {
+            FileStream fs = File.OpenRead(
+                Directory.GetCurrentDirectory() + "../../../../src/libs/shared-utils/response.json"
+            );
+            try
+            {
                 var data = await JsonSerializer.DeserializeAsync<LocationDataModel>(fs);
                 result = data!;
-            } catch {
+            }
+            catch
+            {
                 Console.WriteLine("Failed to deserialize json");
             }
             return result;
@@ -668,7 +676,14 @@ public class reportClass
     // <summary>
     /// Create a new report in the database
     /// </summary>
-    public async Task<bool> CreateReport(string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId)
+    public async Task<bool> CreateReport(
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
@@ -704,7 +719,15 @@ public class reportClass
 
     /// <summary>
     /// Updates the report in the database
-    public async Task<bool> UpdateReport(int reportId, string calculationName, int userId, string homeSize, double latitude,  double longitude, int systemId)
+    public async Task<bool> UpdateReport(
+        int reportId,
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");

@@ -78,7 +78,21 @@
         }
         elevationValues = elevationValues.Replace("[", "");
         elevationValues = elevationValues.Replace("]", "");
-        double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        double[] dataArr = new double[0];
+        try
+        {
+            dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        }
+        catch (Exception e)
+        {
+            string[] arr = elevationValues.Split(',').ToArray();
+            string[] newArr = new string[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                newArr[i] = arr[i].Replace(".", ",");
+            }
+            dataArr = newArr.Select(double.Parse).ToArray();
+        }
         double[] xValues = new double[dataArr.Length / 2 + 1];
         double[] yValues = new double[dataArr.Length / 2 + 1];
         for (int i = 0; i < dataArr.Length; i++)
