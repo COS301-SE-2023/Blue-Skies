@@ -7,6 +7,7 @@
 
 @namespace BlazorApp.FancyData
 
+
 <div>
     <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
         <Header>
@@ -22,17 +23,23 @@
             <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
         </div>
         @if(monthlyFluxMap is not null){
+        <div class="w-fit mx-auto">
+            <h1>Monthly Flux Map</h1>
             <div class="w-fit mx-auto">
-                <h1>Monthly Flux Map</h1>
-                <div class="grid grid-cols-3 gap-4">
-                    @foreach(var item in monthlyFluxMap){
-                        <Image ImageName="@item" alt="sattelite Image" css="h-26 w-26" />
-                    }
+                <div class="flex space-x-3 scale-150 mt-10">
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
+                        Prev
+                    </div>
+                    <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" />
+                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
+                        Next
+                    </div>
                 </div>
             </div>
+        </div>
         }
         else{
-            <p>Monthly Flux Map is not available</p>
+        <p>Monthly Flux Map is not available</p>
         }
     </div>
 
@@ -56,7 +63,8 @@
 
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private string? satteliteImageSrc = "";
-    private string?[]? monthlyFluxMap = new string[12];
+    private string?[]? monthlyFluxMap = null;
+    private int currentImageIndex = 0;
 
     @* OnInitialized *@
     protected override void OnInitialized()
@@ -64,5 +72,20 @@
        satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData!, satteliteImageData!, maskData!);
        monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData!, satteliteImageData!, maskData!);
        
+    }
+
+    private void IncreamentMonthImage(){
+        if(currentImageIndex < monthlyFluxMap!.Length - 1){
+            currentImageIndex++;
+            StateHasChanged();
+        }
+       
+    }
+    private void DecrementMonthImage(){
+        if(currentImageIndex > 0){
+            currentImageIndex--;
+            StateHasChanged();
+        }
+        
     }
 } 
