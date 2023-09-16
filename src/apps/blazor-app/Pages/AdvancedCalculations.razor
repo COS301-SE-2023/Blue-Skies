@@ -35,9 +35,11 @@
                     @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
-                        var reportName = currentReport.reportName;
-                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@reportName"/>    
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
+                    }else{
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
                     }
+                        
                 </div>
                 <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
