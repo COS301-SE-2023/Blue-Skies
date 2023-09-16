@@ -50,12 +50,14 @@
                         var numPanels = 0;
                         var numBatteries = 0;
                         var systemSize = 0;
-                        var system = systems?.Find(x => x.systemId == reports?[selectedReport].systemId);
-                        if (reports != null)
+                        for (int i = 0; i < systems!.Count; i++)
                         {
-                            systemSize = system!.inverterOutput;
-                            numPanels = system.numberOfPanels;
-                            numBatteries = system.numberOfBatteries;
+                            if (systems[i].systemId == reports![selectedReport].systemId)
+                            {
+                                systemSize = systems[i].inverterOutput;
+                                numPanels = systems[i].numberOfPanels;
+                                numBatteries = systems[i].numberOfBatteries;
+                            }
                         }
                     }
                     <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
