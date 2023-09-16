@@ -279,19 +279,24 @@
 @* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
 
 <ModalPopup @ref="SystemModalPopup" Title=@customModalTitle>
-    <p>@customModalTitle</p>
     @if (@customModalTitle == "Number of Solar Panels")
     {
+                        <p>Number of solar panels:</p>
                         <Input  @bind-InputValue="customPanels" placeholder="@customPanels" type="number"/>
+                        <p>Solar panel power output (W/h): </p>
+                        <Input  @bind-InputValue="customPanelsInput" placeholder="@customPanelsInput" type="number" value="customPanelsInputNumber"/>
     }
     else
     {
+                        <p>Number of batteries: </p>
                         <Input  @bind-InputValue="customBatteries" placeholder="@customBatteries" type="number"/>    
+                        <p>Battery Size (kW): </p>
+                        <Input  @bind-InputValue="customBatteriesSize" placeholder="@customBatteriesSize" type="number"/>
     }
             <div class="flex flex-row gap-4 justify-center">
         @if (@customModalTitle == "Number of Solar Panels")
         {
-                        <div @onclick="SetNumberOfPanels">
+                        <div @onclick="SetPanels">
                             <Button>
                                 <content>
                                     Save
@@ -519,6 +524,10 @@
     private string customPanels = "";
     private int customBatteriesNumber = 0;
     private string customBatteries = "";
+    private int customPanelsInputNumber = 0;
+    private string customPanelsInput = "";
+    private int customBatteriesSizeNumber = 0;
+    private string customBatteriesSize = "";
     private string customModalTitle = "";
 
     /// <summary>
@@ -647,10 +656,12 @@
         SystemModalPopup.Show();
     }
 
-    public void SetNumberOfPanels()
+    public void SetPanels()
     {
         customPanelsNumber = Convert.ToInt32(customPanels);
         customPanels = "";
+        customPanelsInputNumber = Convert.ToInt32(customPanelsInput);
+        customPanelsInput = "";
         SystemModalPopup.Dismiss();
     }
 
@@ -658,6 +669,9 @@
     {
         customBatteriesNumber = Convert.ToInt32(customBatteries);
         customBatteries = "";
+        customBatteriesSizeNumber = Convert.ToInt32(customBatteriesSize);
+        customBatteriesSize = "";
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(customBatteriesNumber, customBatteriesSizeNumber * 1000, appliances, currentLocationData!.daylightHours);
         SystemModalPopup.Dismiss();
     }
 
@@ -811,9 +825,9 @@
             customSystem.systemSize = "custom";
             customSystem.inverterOutput = customCreatedSystem;
             customSystem.numberOfPanels = customPanelsNumber;
-            customSystem.batterySize = 10;
+            customSystem.batterySize = customBatteriesSizeNumber;
             customSystem.numberOfBatteries = customBatteriesNumber;
-            customSystem.solarInput = 425;
+            customSystem.solarInput = customPanelsInputNumber;
 
             customSystemId = await systemClass.CreateSystem(customSystem);
             Console.WriteLine("Custom System ID: " + customSystemId);
