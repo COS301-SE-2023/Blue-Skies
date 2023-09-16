@@ -74,11 +74,7 @@ public class SolarDataHandler
         return solarRadiationList;
     }
 
-    public double[] getMontlySolarRadiation(
-        byte[] monthlyFluxData,
-        byte[] maskData,
-        bool roundOf = false
-    )
+    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
     {
         double[] monthlySolarRadiation = new double[12];
 
@@ -218,9 +214,23 @@ public class SolarDataHandler
             }
         }
 
+        monthlyFluxDataSet.Dispose();
+        maskDataSet.Dispose();
+
+        File.Delete(montlyFluxPath);
+        File.Delete(maskPath);
+
         return monthlySolarRadiation;
     }
 
+    private double getAnnualKwGenerated(int numberOfPanels, LocationDataModel? locationData)
+    {
+        double annualKwGenerated = 0.0;
+        if (locationData != null) {
+
+        }
+        return annualKwGenerated;
+    }
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;
