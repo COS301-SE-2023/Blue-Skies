@@ -200,8 +200,8 @@
             Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
 
             var systemSize = system.systemSize!;
-            
-            @* solarScore = solarCalculator.getSolarScore(locationData.monthlyFluxData!, locationData.maskData!).ToString(); *@
+
+            solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData).ToString();
             //GetAvgEnergyProduction();
             //renderCharts();
 

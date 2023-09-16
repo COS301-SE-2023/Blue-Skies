@@ -221,7 +221,7 @@ public class LocationDataRepository
                     latitude = locationDataTemp.latitude,
                     longitude = locationDataTemp.longitude,
                     locationName = locationDataTemp.locationName,
-                    solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData),
+                    solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
                     satteliteImageElevationData = null,
                     annualFluxData = null,

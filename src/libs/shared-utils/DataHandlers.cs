@@ -29,6 +29,113 @@ public class SolarDataHandler
         return getPercentage(sum / rooftopData!.solarPotential!.wholeRoofStats!.sunshineQuantiles!.Length);
     }
 
+    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false) {
+        double[] monthlySolarRadiation = new double[12];
+
+        Gdal.AllRegister();
+        
+        string montlyFluxPath = Path.Combine(Path.GetTempPath(), "monthlyFlux.tif");
+        File.WriteAllBytes(montlyFluxPath, monthlyFluxData);
+        Dataset monthlyFluxDataSet = Gdal.Open(montlyFluxPath, Access.GA_ReadOnly);
+
+        string maskPath = Path.Combine(Path.GetTempPath(), "mask.tif");
+        File.WriteAllBytes(maskPath, maskData);
+        Dataset maskDataSet = Gdal.Open(maskPath, Access.GA_ReadOnly);
+        
+        if (monthlyFluxDataSet == null || monthlyFluxDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open monthly flux dataset.");
+        }
+
+        if (maskDataSet == null || maskDataSet.RasterCount == 0)
+        {
+            throw new ArgumentException("Failed to open mask dataset.");
+        }
+
+        Band maskBand = maskDataSet.GetRasterBand(1);
+        byte[] maskValues = new byte[maskBand.XSize * maskBand.YSize];
+        maskBand.ReadRaster(0, 0, maskBand.XSize, maskBand.YSize, maskValues, maskBand.XSize, maskBand.YSize, 0, 0);
+
+
+        Band monthFluxBand = monthlyFluxDataSet.GetRasterBand(1);
+        float[] monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
+        monthFluxBand.ReadRaster(0, 0, monthFluxBand.XSize, monthFluxBand.YSize, monthlyFluxValues, monthFluxBand.XSize, monthFluxBand.YSize, 0, 0);
+
+
+        int originalWidth = maskBand.XSize;
+        int originalHeight = maskBand.YSize;
+
+        int ReinsizedX = monthFluxBand.XSize;
+        int ReinsizedY = monthFluxBand.YSize;
+
+        byte[][] maskValuesArray = new byte[originalHeight][];
+        for (int y = 0; y < originalHeight; y++)
+        {
+            maskValuesArray[y] = new byte[originalWidth];
+            for (int x = 0; x < originalWidth; x++)
+            {
+                int maskPixel = maskValues[y * maskBand.XSize + x];
+                maskValuesArray[y][x] = (maskPixel == 1) ? (byte)1 : (byte)0;
+            }
+        }
+
+        RooftopDataHandler rooftopDataHandler = new RooftopDataHandler();
+
+        byte[][] resizedMaskValueArray = new byte[ReinsizedY][];
+        for (int y = 0; y < ReinsizedY; y++)
+        {
+            resizedMaskValueArray[y] = new byte[ReinsizedX];
+            for (int x = 0; x < ReinsizedX; x++)
+            {
+                // Calculate the corresponding position in the original array
+                float originalX = (float)x / ReinsizedX * originalWidth;
+                float originalY = (float)y / ReinsizedX * originalHeight;
+
+                // Interpolate values from the original array
+                byte value = rooftopDataHandler.Interpolate(maskValuesArray, originalX, originalY);
+
+                // Assign the interpolated value to the resized array
+                resizedMaskValueArray[y][x] = value;
+            }
+        }
+
+
+        for(int i = 0; i < 12; i++) {
+            monthFluxBand = monthlyFluxDataSet.GetRasterBand(i + 1);
+            monthlyFluxValues = new float[monthFluxBand.XSize * monthFluxBand.YSize];
+            monthFluxBand.ReadRaster(0, 0, monthFluxBand.XSize, monthFluxBand.YSize, monthlyFluxValues, monthFluxBand.XSize, monthFluxBand.YSize, 0, 0);
+
+
+
+            int counter = 0;
+            for (int y = 0; y < monthFluxBand.YSize; y++)
+            {
+                for (int x = 0; x < monthFluxBand.XSize; x++)
+                {
+                    int maskPixel = resizedMaskValueArray[y][x];
+                    double value = (maskPixel == 1) ? monthlyFluxValues[y * monthFluxBand.XSize + x] : float.NaN;
+                    if(!double.IsNaN(value)) {
+                        double prevValue = monthlySolarRadiation[i];
+                        if(counter == 0 ) {
+                            monthlySolarRadiation[i] = value;
+                        } else {
+
+                            double averagebeforeNewVal = prevValue * ((Convert.ToDouble(counter) / Convert.ToDouble(counter + 1)));
+                            double newVal = Convert.ToDouble(value / Convert.ToDouble(counter + 1));
+                            monthlySolarRadiation[i] = averagebeforeNewVal + newVal;
+                            if(roundOf) {
+                                monthlySolarRadiation[i] = Math.Round(monthlySolarRadiation[i], 2);
+                            }
+                        }
+                        counter++;
+                    }
+                }
+            }
+                
+        }
+
+        return monthlySolarRadiation;
+    }
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;
@@ -386,6 +493,7 @@ public class RooftopDataHandler
 
         return monthlyFluxImages;
     }
+
     private string ConvertToBase64(Image<Rgba32> image)
     {
         using (var stream = new MemoryStream())
@@ -479,7 +587,7 @@ public class RooftopDataHandler
         return heatmapImage;
     }
 
-    private byte Interpolate(byte[][] array, float x, float y)
+    public byte Interpolate(byte[][] array, float x, float y)
     {
         int x0 = (int)Math.Floor(x);
         int x1 = (int)Math.Ceiling(x);
