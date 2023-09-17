@@ -74,7 +74,11 @@ public class SolarDataHandler
         return solarRadiationList;
     }
 
-    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
+    public double[] getMontlySolarRadiation(
+        byte[] monthlyFluxData,
+        byte[] maskData,
+        bool roundOf = false
+    )
     {
         double[] monthlySolarRadiation = new double[12];
 
@@ -223,32 +227,57 @@ public class SolarDataHandler
         return monthlySolarRadiation;
     }
 
-    public double getAnnualKwGenerated(int numberOfPanels, RooftopInformationModel? rooftopInformationModel, bool round = false)
+    public double getAnnualKwGenerated(
+        int numberOfPanels,
+        RooftopInformationModel? rooftopInformationModel,
+        bool round = false
+    )
     {
         double annualKwGenerated = 0.0;
-        if (rooftopInformationModel != null && rooftopInformationModel.solarPotential != null && rooftopInformationModel.solarPotential.solarPanelConfigs != null) {
+        if (
+            rooftopInformationModel != null
+            && rooftopInformationModel.solarPotential != null
+            && rooftopInformationModel.solarPotential.solarPanelConfigs != null
+        )
+        {
             Solarpanelconfig? closestSolarPanelConfig = null;
-            foreach (var solarPanelConfig in rooftopInformationModel.solarPotential.solarPanelConfigs)
+            foreach (
+                var solarPanelConfig in rooftopInformationModel.solarPotential.solarPanelConfigs
+            )
             {
-                if(solarPanelConfig.panelsCount == numberOfPanels) {
+                if (solarPanelConfig.panelsCount == numberOfPanels)
+                {
                     Console.WriteLine("Found exact match");
-                    if(round) {
+                    if (round)
+                    {
                         return Math.Round(solarPanelConfig.yearlyEnergyDcKwh, 2);
                     }
                     return solarPanelConfig.yearlyEnergyDcKwh;
-                } else if (closestSolarPanelConfig == null || Math.Abs(solarPanelConfig.panelsCount - numberOfPanels) < Math.Abs(closestSolarPanelConfig.panelsCount - numberOfPanels)) {
+                }
+                else if (
+                    closestSolarPanelConfig == null
+                    || Math.Abs(solarPanelConfig.panelsCount - numberOfPanels)
+                        < Math.Abs(closestSolarPanelConfig.panelsCount - numberOfPanels)
+                )
+                {
                     closestSolarPanelConfig = solarPanelConfig;
                 }
             }
-            if (closestSolarPanelConfig != null) {
-                annualKwGenerated = closestSolarPanelConfig.yearlyEnergyDcKwh * numberOfPanels / closestSolarPanelConfig.panelsCount;
+            if (closestSolarPanelConfig != null)
+            {
+                annualKwGenerated =
+                    closestSolarPanelConfig.yearlyEnergyDcKwh
+                    * numberOfPanels
+                    / closestSolarPanelConfig.panelsCount;
             }
         }
-        if(round) {
+        if (round)
+        {
             return Math.Round(annualKwGenerated, 2);
         }
         return annualKwGenerated;
     }
+
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;
@@ -289,10 +318,19 @@ public class SolarDataHandler
         return Math.Round(getPowerSaved(annualKWGenerated) * 0.638, 2);
     }
 
-    public double getSunlightHours(RooftopInformationModel? rooftopInformationModel, bool round = false) {
-        if (rooftopInformationModel != null && rooftopInformationModel.solarPotential != null) {
-            if(round) {
-                return Math.Round(rooftopInformationModel.solarPotential.maxSunshineHoursPerYear / 365, 2);
+    public double getSunlightHours(
+        RooftopInformationModel? rooftopInformationModel,
+        bool round = false
+    )
+    {
+        if (rooftopInformationModel != null && rooftopInformationModel.solarPotential != null)
+        {
+            if (round)
+            {
+                return Math.Round(
+                    rooftopInformationModel.solarPotential.maxSunshineHoursPerYear / 365,
+                    2
+                );
             }
             return rooftopInformationModel.solarPotential.maxSunshineHoursPerYear / 365;
         }
@@ -840,7 +878,6 @@ public class RooftopDataHandler
 
         return (byte)interpolatedValue;
     }
-
 }
 
 public class SystemsDataHandler
@@ -851,15 +888,7 @@ public class SystemsDataHandler
         List<ApplianceModel> appliances
     )
     {
-        float sumOfAppliances = 0f;
-
-        foreach (var appliance in appliances)
-        {
-            if (appliance.quantity > 0)
-            {
-                sumOfAppliances += appliance.quantity * appliance.powerUsage;
-            }
-        }
+        float sumOfAppliances = CalculateAppliancePowerUsage(appliances, null);
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 12;
@@ -869,6 +898,27 @@ public class SystemsDataHandler
             runningHoursPercentage = 100;
         }
         return runningHoursPercentage;
+    }
+
+    public float CalculateAppliancePowerUsage(
+        List<ApplianceModel> appliances,
+        ApplianceModel? appliance
+    )
+    {
+        float sumOfAppliances = 0f;
+        foreach (var app in appliances)
+        {
+            if (app.quantity > 0)
+            {
+                sumOfAppliances += app.quantity * app.powerUsage;
+            }
+        }
+        if (appliance != null)
+        {
+            sumOfAppliances += appliance.powerUsage;
+        }
+
+        return sumOfAppliances;
     }
 
     public float CalculateRunningHours(
