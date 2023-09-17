@@ -97,11 +97,11 @@
             {
                 if (appliance.name != "Default")
                 {
-                    if (!applianceVariants.ContainsKey(appliance.type!))
+                    if (!applianceVariants.ContainsKey(appliance.type))
                     {
-                        applianceVariants[appliance.type!] = new List<ApplianceModel>();
+                        applianceVariants[appliance.type] = new List<ApplianceModel>();
                     }
-                    applianceVariants[appliance.type!].Add(appliance);
+                    applianceVariants[appliance.type].Add(appliance);
                 }
             }
         }
@@ -135,32 +135,27 @@
         // Remove "Default" appliances first, and if none are left, remove non-Default appliances
         foreach (var applianceType in applianceVariants.Keys.ToList())
         {
-            var defaultAppliances = customAppliances
-                .Where(appliance => appliance.type == applianceType && appliance.name == "Default")
-                .ToList();
-
             var nonDefaultAppliances = customAppliances
                 .Where(appliance => appliance.type == applianceType && appliance.name != "Default")
                 .ToList();
 
-            if (defaultAppliances.Count > 0)
-            {
-                foreach (var appliance in nonDefaultAppliances) {
-                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == "Default")!);
-                }
-            }
-            else if (nonDefaultAppliances.Count > 0)
+            if (nonDefaultAppliances.Count > 0)
             {
                 foreach (var appliance in nonDefaultAppliances)
                 {
-                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == appliance.name)!);
+                    customAppliances.RemoveAll(x => x.type == applianceType && x.name == appliance.name);
                 }
+            }
+            else
+            {
+                customAppliances.RemoveAll(x => x.type == applianceType && x.name == "Default");
             }
         }
 
         UpdateCustomAppliancesWithCounts();
         StateHasChanged();
     }
+
 
 
 
