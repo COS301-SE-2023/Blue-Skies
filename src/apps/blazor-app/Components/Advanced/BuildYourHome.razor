@@ -764,8 +764,6 @@
             appliance.quantity = 0;
         }
         appliance.fade = "fade-in-active";
-        applianceService.UpdateAppliance(appliances);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
         StateHasChanged();
         UpdateApplianceStorage();
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
