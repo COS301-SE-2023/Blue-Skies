@@ -41,40 +41,39 @@ public class SolarDataHandler
         );
     }
 
-    public List<DateRadiationModel> getSolarRadiationList(RooftopInformationModel? rooftopData)
+    public List<DateRadiationModel> getSolarRadiationList(LocationDataModel? locationDataModel)
     {
-        if (
-            rooftopData == null
-            || rooftopData.solarPotential == null
-            || rooftopData.solarPotential.wholeRoofStats == null
-            || rooftopData.solarPotential.wholeRoofStats.sunshineQuantiles == null
-        )
-        {
-            return new List<DateRadiationModel>();
-        }
         List<DateRadiationModel> solarRadiationList = new List<DateRadiationModel>();
 
-        foreach (
-            var solarRadiationValue in rooftopData!
-                .solarPotential!
-                .wholeRoofStats!
-                .sunshineQuantiles!
-        )
+        if (locationDataModel == null || locationDataModel.monthlyFluxData == null || locationDataModel.maskData == null)
         {
-            var year = rooftopData.imageryDate!.year;
-            var month = rooftopData.imageryDate!.month;
-            var day = rooftopData.imageryDate!.day;
+            return solarRadiationList;
+        }
 
+        double[] monthlySolarRadiation = getMontlySolarRadiation(
+            locationDataModel.monthlyFluxData!,
+            locationDataModel.maskData!
+        );
+        for(int i = 0; i < monthlySolarRadiation.Length; i++)
+        {
             DateRadiationModel dateRadiationModel = new DateRadiationModel();
-            dateRadiationModel.Date = new DateTime(year, month, day);
-            dateRadiationModel.Radiation = solarRadiationValue;
+
+            var year = locationDataModel.solarPanelsData!.imageryDate!.year;
+            var month = i+1;
+            var day = locationDataModel.solarPanelsData!.imageryDate!.day;
+            DateTime date = new DateTime(year, month, day);
+
+            dateRadiationModel.Date = date;
+            dateRadiationModel.Radiation = monthlySolarRadiation[i];
+
             solarRadiationList.Add(dateRadiationModel);
         }
+        
 
         return solarRadiationList;
     }
 
-    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
+  public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
     {
         double[] monthlySolarRadiation = new double[12];
 

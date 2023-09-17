@@ -95,7 +95,6 @@ public class BusinessRequestDataRepository
 
   private async Task<string> GetSatelliteImage(double latitude, double longitude)
   {
-
         LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
 
         return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
@@ -111,9 +110,9 @@ public class BusinessRequestDataRepository
     private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
     {   
         
-        LocationDataModel locationData = await GetLocationDataModel(latitude, longitude);
+        LocationDataModel locationDataModel = await GetLocationDataModel(latitude, longitude);
        
-        return solarCalculator.getSolarRadiationList(locationData!.solarPanelsData);
+        return solarCalculator.getSolarRadiationList(locationDataModel);
     }
 
     private string getAddress(){
