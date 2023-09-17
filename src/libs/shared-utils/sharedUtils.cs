@@ -8,7 +8,7 @@ namespace SharedUtils;
 
 public class locationDataClass
 {
-    private bool mock = true;
+    private bool mock = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
     public async Task<bool> CheckIfLocationDataExists(double latitude, double longitude)
@@ -34,7 +34,8 @@ public class locationDataClass
     /// </summary>
     public async Task<LocationDataModel?> GetLocationData(double latitude, double longitude)
     {
-        if(!mock) {
+        if (!mock)
+        {
             var client = new HttpClient();
             var request = new HttpRequestMessage(
                 HttpMethod.Get,
@@ -56,13 +57,20 @@ public class locationDataClass
                 return result;
             }
             return null;
-        } else {
+        }
+        else
+        {
             LocationDataModel result = new LocationDataModel();
-            FileStream fs = File.OpenRead(Directory.GetCurrentDirectory() +  "../../../../src/libs/shared-utils/response.json");
-            try {
+            FileStream fs = File.OpenRead(
+                Directory.GetCurrentDirectory() + "../../../../src/libs/shared-utils/response.json"
+            );
+            try
+            {
                 var data = await JsonSerializer.DeserializeAsync<LocationDataModel>(fs);
                 result = data!;
-            } catch {
+            }
+            catch
+            {
                 Console.WriteLine("Failed to deserialize json");
             }
             return result;
@@ -129,13 +137,6 @@ public class locationDataClass
         result.longitude = longitude;
         result.locationName = locationName;
 
-        InitialDataModel initialData = await GetInitialData(latitude, longitude);
-        if (initialData == null)
-        {
-            Console.WriteLine("Initial data not found");
-            return null;
-        }
-        result.daylightHours = (double)Math.Round(initialData.averageSunlightHours, 2);
         string? elevationData = await GetHorisonElevationData(latitude, longitude);
         if (elevationData == null)
         {
@@ -331,7 +332,7 @@ public class locationDataClass
     /// <paramref name="latitude"/> The latitude of the location.
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
-    private async Task<string?> GetHorisonElevationData(double latitude, double longitude)
+    public async Task<string?> GetHorisonElevationData(double latitude, double longitude)
     {
         string url =
             $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
@@ -343,125 +344,6 @@ public class locationDataClass
             return data;
         }
         return null;
-    }
-
-    /// <summary>
-    /// <para>Calls the weather visualcrossing api to get quick initial data.</para>
-    /// <paramref name="latitude"/> The latitude of the current location.
-    /// <paramref name="longitude"/> The longitude of the current location.
-    /// <returns> averageSunlightHours and averageSolarIrradiation</returns>
-    /// </summary>
-    public async Task<InitialDataModel> GetInitialData(double latitude, double longitude)
-    {
-        var data = new List<WeatherData>();
-        // Initial api key to get the last 15 day's of information:
-        var client = new HttpClient();
-        var apiKey = Environment.GetEnvironmentVariable("VISUAL_CROSSING_WEATHER_API_KEY");
-        var apiUrl =
-            $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
-
-        Console.WriteLine("client: " + client.ToString());
-        Console.WriteLine("url: " + apiUrl);
-        var apiData = await FetchWeatherDataAsync(client, apiUrl);
-        if (apiData != null)
-        {
-            data.Add(apiData);
-        }
-        else
-        {
-            Console.WriteLine("apiData is null");
-        }
-
-        //  11 other calls to get the last 10 month's data
-        var currentMonth = DateTime.Now.Month;
-        var tasks = new List<Task<WeatherData>>();
-
-        for (var i = 1; i < 12; i++)
-        {
-            var month = currentMonth - i;
-            if (month < 1)
-            {
-                month = 12 + month;
-            }
-            var year = DateTime.Now.Year;
-            if (month > currentMonth)
-            {
-                year = year - 1;
-            }
-            var monthString = month.ToString();
-            if (month < 10)
-            {
-                monthString = "0" + monthString;
-            }
-            client = new HttpClient();
-            apiUrl =
-                $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}/{year}-{monthString}-15/{year}-{monthString}-15?unitGroup=metric&include=days&key={apiKey}&elements=sunrise,sunset,temp,solarenergy,solarradiation,datetime";
-
-            // Asynchronously fetch the data and add the task to the list
-            tasks.Add(FetchWeatherDataAsync(client, apiUrl)!);
-        }
-
-        // Wait for all tasks to complete
-        await Task.WhenAll(tasks);
-
-        // Extract the results from completed tasks
-        var completedResults = tasks
-            .Where(task => task.Status == TaskStatus.RanToCompletion)
-            .Select(task => task.Result)
-            .ToList();
-
-        // Now, completedResults contains the fetched data for all 10 months
-        foreach (var result in completedResults)
-        {
-            if (result != null)
-            {
-                data.Add(result);
-            }
-        }
-
-        // Get averageSolarIrradiation and daylightHours from the data
-        var averageSunlightHours = 0f;
-        var averageSolarIrradiation = 0.0;
-        for (var i = 0; i < data.Count; i++)
-        {
-            if (data[i] == null || data[i].days == null)
-            {
-                Console.WriteLine("Data is null");
-                continue;
-            }
-
-            var averageSolarIrradiationMonth = 0.0;
-            var monthSunlightHours = 0f;
-
-            for (var j = 0; j < data[i].days!.Count; j++)
-            {
-                var sunrise = data[i].days![j].sunrise;
-                var sunset = data[i].days![j].sunset;
-                var sunriseSplit = sunrise!.Split(":");
-                var sunsetSplit = sunset!.Split(":");
-                var sunriseTotalHours =
-                    float.Parse(sunriseSplit[0]) + (float.Parse(sunriseSplit[1]) / 60);
-                var sunsetTotalHours =
-                    float.Parse(sunsetSplit[0]) + (float.Parse(sunsetSplit[1]) / 60);
-                var daylightHours = sunsetTotalHours - sunriseTotalHours;
-                monthSunlightHours += daylightHours;
-
-                averageSolarIrradiationMonth += data[i].days![j].solarradiation;
-            }
-            monthSunlightHours = monthSunlightHours / data[i].days!.Count;
-            averageSunlightHours += monthSunlightHours;
-
-            averageSolarIrradiationMonth = averageSolarIrradiationMonth / data[i].days!.Count;
-            averageSolarIrradiation += averageSolarIrradiationMonth;
-        }
-        averageSunlightHours = averageSunlightHours / data.Count;
-        averageSunlightHours = (float)Math.Round(averageSunlightHours, 2);
-        averageSolarIrradiation = averageSolarIrradiation / data.Count;
-
-        InitialDataModel initialData = new InitialDataModel();
-        initialData.averageSunlightHours = averageSunlightHours;
-        initialData.averageSolarIrradiation = averageSolarIrradiation;
-        return initialData;
     }
 
     /// <summary>
@@ -564,10 +446,11 @@ public class systemClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> CreateSystem(SystemModel system)
+    public async Task<int> CreateSystem(SystemModel system)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/System/create");
+        int customSystemId = -1;
         var content = new StringContent(
             "{\r\n \"systemSize\": \""
                 + system.systemSize
@@ -587,7 +470,20 @@ public class systemClass
         );
         request.Content = content;
         var response = await client.SendAsync(request);
-        return response.IsSuccessStatusCode;
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            var systemInfo = JsonSerializer.Deserialize<SystemModel>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+            customSystemId = systemInfo.systemId;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get systems");
+        }
+        return customSystemId;
     }
 
     public async Task<bool> UpdateSystem(SystemModel system)
@@ -668,7 +564,14 @@ public class reportClass
     // <summary>
     /// Create a new report in the database
     /// </summary>
-    public async Task<bool> CreateReport(string calculationName, int userId, string homeSize, double latitude, double longitude, int systemId)
+    public async Task<bool> CreateReport(
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Report/create");
@@ -704,7 +607,15 @@ public class reportClass
 
     /// <summary>
     /// Updates the report in the database
-    public async Task<bool> UpdateReport(int reportId, string calculationName, int userId, string homeSize, double latitude,  double longitude, int systemId)
+    public async Task<bool> UpdateReport(
+        int reportId,
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId
+    )
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Report/update");
@@ -812,12 +723,18 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
+        var postBody = new
+        {
+            type = type,
+            powerUsage = powerUsage,
+            durationUsed = durationUsed
+        };
         var content = new StringContent(
-            "{\r\n \"type\": \"" + type + "\",\r\n \"powerUsage\": " + powerUsage + "\r\n}",
+            JsonSerializer.Serialize(postBody),
             null,
             "application/json"
         );
@@ -826,18 +743,20 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
+        var postBody = new
+        {
+            applianceId = applianceId,
+            type = type,
+            powerUsage = powerUsage,
+            durationUsed = durationUsed
+        };
+
         var content = new StringContent(
-            "{\r\n \"applianceId\": "
-                + applianceId
-                + ",\r\n \"type\": \""
-                + type
-                + "\",\r\n \"powerUsage\": "
-                + powerUsage
-                + "\r\n}",
+            JsonSerializer.Serialize(postBody),
             null,
             "application/json"
         );

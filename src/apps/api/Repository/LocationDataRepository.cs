@@ -86,7 +86,6 @@ public class LocationDataRepository
         byte[] annualFluxData,
         byte[] monthlyFluxData,
         byte[] maskData,
-        double daylightHours,
         string horisonElevationData
     )
     {
@@ -114,7 +113,6 @@ public class LocationDataRepository
                 annualFluxData = annualFluxDataBase64,
                 monthlyFluxData = monthlyFluxDataBase64,
                 maskData = maskDataBase64,
-                daylightHours = daylightHours.ToString(),
                 horisonElevationData = horisonElevationData
             };
 
@@ -177,7 +175,6 @@ public class LocationDataRepository
                     monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
                     maskData = Convert.FromBase64String(locationDataTemp.maskData!),
                     dateCreated = locationDataTemp.dateCreated,
-                    daylightHours = locationDataTemp.daylightHours,
                     horisonElevationData = locationDataTemp.horisonElevationData
                 };
                 return locationData!;
@@ -228,7 +225,6 @@ public class LocationDataRepository
                     monthlyFluxData = null,
                     maskData = null,
                     dateCreated = locationDataTemp.dateCreated,
-                    daylightHours = locationDataTemp.daylightHours,
                     horisonElevationData = null
                 };
                 return locationData!;
@@ -326,6 +322,5 @@ public class LocationDataModelTemp
     public string? monthlyFluxData { get; set; }
     public string? maskData { get; set; }
     public DateTime? dateCreated { get; set; }
-    public double daylightHours { get; set; }
     public string? horisonElevationData { get; set; }
 }

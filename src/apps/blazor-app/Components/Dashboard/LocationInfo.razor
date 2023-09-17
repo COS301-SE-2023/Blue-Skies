@@ -2,8 +2,9 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-<div class="flex w-full justify-center md:flex-row flex-col gap-3 @css">
-    <div class="w-full md:w-2/3">
+<div class="relative flex w-full justify-center md:flex-row flex-col gap-3 @css">
+    <Image ImageName="Robert_Waving.png" css="absolute left-20 -top-10 z-0 h-20" alt="Rob" /> 
+    <div class="w-full md:w-2/3 z-10">
         <Card>
             <Heading>
                 <Header>
@@ -11,6 +12,7 @@
                 </Header>
             </Heading>
             <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+
                 <div class="w-80">
                     <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
                 </div>
@@ -23,14 +25,13 @@
                         {
                             location = currentLocationData!.locationName;
                             sScore = solarScore + "%";
-                            avgEnergyProduction = Math.Round(systems![selectedSystem].numberOfPanels *
-                            currentLocationData.daylightHours * systems[selectedSystem].solarInput /1000, 2) + " kw/h";
+                            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
                         }
                     }
                     <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
                     <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
                     <div class="translate-x-1">
-                        <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
+                        <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
                             Text=@avgEnergyProduction />
                     </div>
                 </div>
@@ -50,12 +51,14 @@
                         var numPanels = 0;
                         var numBatteries = 0;
                         var systemSize = 0;
-                        var system = systems?.Find(x => x.systemId == reports?[selectedReport].systemId);
-                        if (reports != null)
+                        for (int i = 0; i < systems!.Count; i++)
                         {
-                            systemSize = system!.inverterOutput;
-                            numPanels = system.numberOfPanels;
-                            numBatteries = system.numberOfBatteries;
+                            if (systems[i].systemId == reports![selectedReport].systemId)
+                            {
+                                systemSize = systems[i].inverterOutput;
+                                numPanels = systems[i].numberOfPanels;
+                                numBatteries = systems[i].numberOfBatteries;
+                            }
                         }
                     }
                     <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
@@ -71,8 +74,8 @@
 </div>
 
 @code {
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private string? satteliteImage;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     [Parameter]
     public string? css { get; set; }

@@ -42,14 +42,12 @@ export default class LocationDataController {
       annualFluxData,
       monthlyFluxData,
       maskData,
-      daylightHours,
       horisonElevationData,
     } = req.body;
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
-    const dlh = parseFloat(daylightHours.replace(',', '.'));
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, daylightHours, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', ${dlh}, '${horisonElevationData}')`;
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', '${horisonElevationData}')`;
 
     try {
       const request = new tedious.Request(
@@ -114,8 +112,7 @@ export default class LocationDataController {
           monthlyFluxData: columns[7].value,
           maskData: columns[8].value,
           dateCreated: columns[9].value,
-          daylightHours: columns[10].value,
-          horisonElevationData: columns[11].value,
+          horisonElevationData: columns[10].value,
         };
       });
 
@@ -131,7 +128,7 @@ export default class LocationDataController {
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
 
-    const query = `SELECT latitude, longitude, locationName, satteliteImageData, dateCreated, daylightHours FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+    const query = `SELECT latitude, longitude, locationName, satteliteImageData, dateCreated FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
 
     let solarIrradiation: ILocationData;
 
@@ -160,7 +157,6 @@ export default class LocationDataController {
           locationName: columns[2].value,
           satteliteImageData: columns[3].value,
           dateCreated: columns[4].value,
-          daylightHours: columns[5].value,
           annualFluxData: null,
           monthlyFluxData: null,
           maskData: null,

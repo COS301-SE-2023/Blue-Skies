@@ -129,7 +129,6 @@ public class LocationDataController : ControllerBase
                 locationData.annualFluxData!,
                 locationData.monthlyFluxData!,
                 locationData.maskData!,
-                locationData.daylightHours,
                 locationData.horisonElevationData!
             );
             if (data.Equals("LocationData created successfully"))

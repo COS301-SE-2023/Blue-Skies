@@ -179,7 +179,7 @@
         if (product.systemId == -1)
         {
             Console.WriteLine("Add Solar Product");
-            if(await systemClass.CreateSystem(product)) {
+            if(await systemClass.CreateSystem(product) > -1) {
                 await GetProducts();
                 Console.WriteLine("Updated Solar Product");
                 @* successToast.Show("Added", "Successfully added product", "success"); *@

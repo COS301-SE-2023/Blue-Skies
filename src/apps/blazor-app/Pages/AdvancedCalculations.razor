@@ -30,22 +30,45 @@
         }
         else
         {
+            <Image ImageName="shapes.svg"
+            css="absolute -top-[33%] sm:transform scale-[0.6] -left-[38%] -z-20 w-2/3 h-full -rotate-45" alt="Shapes" />
             <div class="w-full px-20 ">
                 <div class="mb-20">
                     @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
-                        var reportName = currentReport.reportName;
-                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@reportName"/>    
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
+                    }else{
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
                     }
+                        
                 </div>
-                <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
+                <div class="flex justify-center">
+                     <Button css="h-16 w-60 m-4" style="outline">
+                        <content>
+                            <p @onclick="ResetCalculation">Reset</p>
+                        </content>
+                    </Button>
+                    <Button css="h-16 w-60 m-4" style="pill">
+                        <content>
+                            @if (edit)
+                            {
+                                <p @onclick="SaveCalculation">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p @onclick="SaveCalculation">Save this calculation</p>
+                            }
+                        </content>
+                    </Button>
+                </div>
+                <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
                 </div>
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
                             <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
                         </div>
                     }
@@ -57,7 +80,7 @@
                     }else if (tabs[2].active)
                     {
                         <div class="fade-in-active">
-                            <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+                            <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
                         </div>
                     }
                 </div>
@@ -71,17 +94,18 @@
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
     private bool edit = false;
     private List<ApplianceModel>? appliances;
-    private List<ApplianceModel>? advancedCalculationAppliances;
     private List<SystemModel>? systems = new List<SystemModel>();
     private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
+    private int numSolarPanels = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -103,6 +127,7 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     { 
+        loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
@@ -135,10 +160,6 @@
             currentLocationData = result;
         }
 
-        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = sSystem.Value;
-
-
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
@@ -168,7 +189,17 @@
                 selectedSystem = i;
             }
         }
+        numSolarPanels = systems[selectedSystem].numberOfPanels;
         loadingService.HideLoadingScreen();
+    }
 
+    public void SaveCalculation()
+    {
+        buildYourHomeComponent!.ModalPopup.Show();
+    }
+    
+    public void ResetCalculation()
+    {
+        buildYourHomeComponent!.ResetHome();
     }
 }

@@ -33,7 +33,8 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Elevation Data"
+                    Text = "Elevation Data",
+                    FontSize = 20,
                 },
                 Scales = new Scales
                 {
@@ -78,7 +79,21 @@
         }
         elevationValues = elevationValues.Replace("[", "");
         elevationValues = elevationValues.Replace("]", "");
-        double[] dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        double[] dataArr = new double[0];
+        try
+        {
+            dataArr = elevationValues.Split(',').Select(double.Parse).ToArray();
+        }
+        catch
+        {
+            string[] arr = elevationValues.Split(',').ToArray();
+            string[] newArr = new string[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                newArr[i] = arr[i].Replace(".", ",");
+            }
+            dataArr = newArr.Select(double.Parse).ToArray();
+        }
         double[] xValues = new double[dataArr.Length / 2 + 1];
         double[] yValues = new double[dataArr.Length / 2 + 1];
         for (int i = 0; i < dataArr.Length; i++)
@@ -121,6 +136,38 @@
             }
         }
         xValues[xValues.Length - 1] = 180;
+
+        @* Make the middle dot red *@
+        double[] yRedDotValues = new double[dataArr.Length / 2 + 1];
+        for(int i = 0; i < yRedDotValues.Length; i++)
+        {
+            if(i == yRedDotValues.Length / 2)
+            {
+                yRedDotValues[i] = yValues[i];
+            } else
+            {
+                yRedDotValues[i] = double.NaN;
+            }
+        }
+        
+        IDataset<double> redDotDataset = new LineDataset<double>(yRedDotValues)
+        {
+            Label = "Your location",
+            BackgroundColor = "rgba(255, 0, 0, 1)",
+            BorderColor = "rgba(255, 0, 0, 1)",
+            BorderWidth = 1,
+            Fill = FillingMode.Disabled,
+            PointRadius = 5,
+            PointHoverRadius = 5,
+            PointBackgroundColor = "rgba(255, 0, 0, 1)",
+            PointBorderColor = "rgba(255, 0, 0, 1)",
+            PointBorderWidth = 1,
+            PointHoverBackgroundColor = "rgba(255, 0, 0, 1)",
+            PointHoverBorderColor = "rgba(255, 0, 0, 1)",
+            PointHoverBorderWidth = 1,
+        };
+        lineConfig.Data.Datasets.Add(redDotDataset);
+
 
         for (int i = 0; i < xValues.Length; i++)
         {
