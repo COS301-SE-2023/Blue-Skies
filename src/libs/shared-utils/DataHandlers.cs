@@ -231,7 +231,6 @@ public class SolarDataHandler
             foreach (var solarPanelConfig in rooftopInformationModel.solarPotential.solarPanelConfigs)
             {
                 if(solarPanelConfig.panelsCount == numberOfPanels) {
-                    Console.WriteLine("Found exact match");
                     if(round) {
                         return Math.Round(solarPanelConfig.yearlyEnergyDcKwh, 2);
                     }
@@ -249,6 +248,7 @@ public class SolarDataHandler
         }
         return annualKwGenerated;
     }
+
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;
@@ -286,7 +286,7 @@ public class SolarDataHandler
 
     public double treesPlanted(double annualKWGenerated)
     {
-        return Math.Round(getPowerSaved(annualKWGenerated) * 0.638, 2);
+        return Math.Round(getPowerSaved(annualKWGenerated) * 0.58, 2);
     }
 
     public double getSunlightHours(RooftopInformationModel? rooftopInformationModel, bool round = false) {
@@ -845,11 +845,7 @@ public class RooftopDataHandler
 
 public class SystemsDataHandler
 {
-    public float CalculateRunningHours(
-        int numBatteries,
-        int batteryStorage,
-        List<ApplianceModel> appliances
-    )
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ApplianceModel> appliances)
     {
         float sumOfAppliances = 0f;
 
@@ -871,11 +867,7 @@ public class SystemsDataHandler
         return runningHoursPercentage;
     }
 
-    public float CalculateRunningHours(
-        int numBatteries,
-        int batteryStorage,
-        List<ReportAllApplianceModel> appliances
-    )
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ReportAllApplianceModel> appliances)
     {
         float sumOfAppliances = 0f;
 

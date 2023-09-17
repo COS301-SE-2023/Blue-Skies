@@ -120,6 +120,8 @@
 
     [Parameter]
     public byte[]? annualFluxData { get; set; }
+    [Parameter]
+    public int numSolarPanels { get; set; }
 
     [Parameter]
     public RooftopInformationModel? solarPanelsData { get; set; }
@@ -146,7 +148,7 @@
         }
         if(solarPanelsData is not null){
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
-            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(12, solarPanelsData);
+            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(numSolarPanels, solarPanelsData);
             Console.WriteLine("Annual solar panel data:" + annualKWGenerated);
         }
 

@@ -62,7 +62,7 @@
                     }else if (tabs[2].active)
                     {
                         <div class="fade-in-active">
-                            <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+                            <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
                         </div>
                     }
                 </div>
@@ -86,6 +86,7 @@
     private ReportModel currentReport = new ReportModel(); 
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
+    private int numSolarPanels = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -140,10 +141,6 @@
             currentLocationData = result;
         }
 
-        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = sSystem.Value;
-
-
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
@@ -173,6 +170,7 @@
                 selectedSystem = i;
             }
         }
+        numSolarPanels = systems[selectedSystem].numberOfPanels;
         loadingService.HideLoadingScreen();
     }
 }
