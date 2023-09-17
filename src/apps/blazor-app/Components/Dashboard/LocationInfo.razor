@@ -2,8 +2,9 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 
-<div class="flex w-full justify-center md:flex-row flex-col gap-3 @css">
-    <div class="w-full md:w-2/3">
+<div class="relative flex w-full justify-center md:flex-row flex-col gap-3 @css">
+    <Image ImageName="Robert_Waving.png" css="absolute left-20 -top-10 z-0 h-20" alt="Rob" /> 
+    <div class="w-full md:w-2/3 z-10">
         <Card>
             <Heading>
                 <Header>
@@ -11,6 +12,7 @@
                 </Header>
             </Heading>
             <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+
                 <div class="w-80">
                     <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
                 </div>
