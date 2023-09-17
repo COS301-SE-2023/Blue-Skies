@@ -1,6 +1,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using BlazorApp.EnviromentImpact
+@using BlazorApp.BestSolarPanels
 @namespace BlazorApp.FancyData
 
 
@@ -107,6 +108,9 @@
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
         </div>
+        <div>
+            <BestSolarPanels solarPanels="@solarPanels" />
+        </div>
     </div>
 
 </Card>
@@ -144,6 +148,7 @@
     private double annualKWGenerated = 0;
 
     private Wholeroofstats? wholeroofstats = null;
+    private List<Solarpanel?> solarPanels = new List<Solarpanel?>();
 
     protected override void OnInitialized()
     {   
@@ -151,6 +156,7 @@
             satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
             monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
             solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
+            solarPanels = solarDataHandler.getBestSolarPanels(numSolarPanels, solarPanelsData);
         }
         if(solarPanelsData is not null){
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
