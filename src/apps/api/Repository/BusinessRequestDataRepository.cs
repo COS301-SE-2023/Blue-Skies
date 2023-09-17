@@ -6,14 +6,17 @@ using System.Threading.Tasks.Dataflow;
 using System.Collections.Concurrent;
 
 namespace Api.Repository;
-struct DataType {
+
+public class BusinessRequestDataRepository
+{
+    private struct DataType {
     public const string SOLAR_SCORE = "solar score";
     public const string SOLAR_ARRAY = "solar array";
     public const string SATELLITE_IMAGE = "satellite image";
     public const string ELEVATION = "elevation";
+    public const string ADDRESS = "address";
 }
-public class BusinessRequestDataRepository
-{
+
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
@@ -49,10 +52,9 @@ public class BusinessRequestDataRepository
             var dataTypeResponse = new HttpResponseMessage();
            
             LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
             if (locationData == null)
             {                
-                locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
-                
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);
             }
             typeOfData = data!;
@@ -71,7 +73,11 @@ public class BusinessRequestDataRepository
                     break;
                 case DataType.ELEVATION :
                     var elevation = await locationDataClass.GetHorisonElevationData(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(elevation);
+                    dataTypeResponse.Content = new StringContent(elevation!);
+                    break;
+                case DataType.ADDRESS :
+                    var address = getAddress();
+                    dataTypeResponse.Content = new StringContent(address);
                     break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
@@ -110,6 +116,10 @@ public class BusinessRequestDataRepository
         return solarCalculator.getSolarRadiationList(locationData!.solarPanelsData);
     }
 
+    private string getAddress(){
+        return locationName;
+    }
+
     private async Task<LocationDataModel> GetLocationDataModel(double latitude, double longitude)
     {
         LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
@@ -118,5 +128,7 @@ public class BusinessRequestDataRepository
         }
         return locationData!;
     }
+
+    
 
 }
