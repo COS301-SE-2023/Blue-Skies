@@ -25,7 +25,6 @@
                         {
                             location = currentLocationData!.locationName;
                             sScore = solarScore + "%";
-                            Console.WriteLine("selectedSystem: " + selectedSystem);
                             avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
                         }
                     }
