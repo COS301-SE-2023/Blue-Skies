@@ -231,6 +231,7 @@ public class SolarDataHandler
             foreach (var solarPanelConfig in rooftopInformationModel.solarPotential.solarPanelConfigs)
             {
                 if(solarPanelConfig.panelsCount == numberOfPanels) {
+                    Console.WriteLine("Found exact match");
                     if(round) {
                         return Math.Round(solarPanelConfig.yearlyEnergyDcKwh, 2);
                     }
@@ -265,27 +266,27 @@ public class SolarDataHandler
 
     public double getPowerSaved(double annualKWGenerated)
     {
-        return annualKWGenerated * 10 / 1000;
+        return Math.Round(annualKWGenerated * 10 / 1000, 2);
     }
 
     public double getCO2Saved(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 1.03 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 1.03 * 1000, 2);
     }
 
     public double waterSaved(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 1.45 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 1.45 * 1000, 2);
     }
 
     public double coalNotBurnt(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 0.56 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 0.56 * 1000, 2);
     }
 
     public double treesPlanted(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 0.01808;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 0.638, 2);
     }
 
     public double getSunlightHours(RooftopInformationModel? rooftopInformationModel, bool round = false) {
