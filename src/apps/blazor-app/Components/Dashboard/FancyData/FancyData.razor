@@ -55,7 +55,7 @@
         </div>
         <div class="w-full flex">
             <div class="md:w-1/2">
-                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />
+                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false"/>
             </div>
              @* solarPanelsData *@
             @if(solarPanelsData is not null){
@@ -134,7 +134,6 @@
 
     private Wholeroofstats? wholeroofstats = null;
 
-    @* OnInitialized *@
     protected override void OnInitialized()
     {   
         if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
@@ -151,15 +150,11 @@
     private void IncreamentMonthImage(){
         if(currentImageIndex < monthlyFluxMap!.Length - 1){
             currentImageIndex++;
-            StateHasChanged();
         }
-       
     }
     private void DecrementMonthImage(){
         if(currentImageIndex > 0){
             currentImageIndex--;
-            StateHasChanged();
-        }
-        
+        }   
     }
 } 
