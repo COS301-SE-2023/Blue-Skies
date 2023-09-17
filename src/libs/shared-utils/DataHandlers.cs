@@ -909,8 +909,6 @@ public class SystemsDataHandler
         return sumOfAppliances;
     }
 
-
-
     public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ReportAllApplianceModel> appliances)
     {
         float sumOfAppliances = 0f;

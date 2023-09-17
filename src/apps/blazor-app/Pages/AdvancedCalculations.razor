@@ -43,14 +43,32 @@
                     }
                         
                 </div>
+                <div class="flex justify-center">
+                     <Button css="h-16 w-60 m-4" style="outline">
+                        <content>
+                            <p @onclick="ResetCalculation">Reset</p>
+                        </content>
+                    </Button>
+                    <Button css="h-16 w-60 m-4" style="pill">
+                        <content>
+                            @if (edit)
+                            {
+                                <p @onclick="SaveCalculation">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p @onclick="SaveCalculation">Save this calculation</p>
+                            }
+                        </content>
+                    </Button>
+                </div>
                 <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
-                    <Image ImageName="Robert_Thinking.png" css="absolute right-32 transform -scale-x-100 -top-24 z-0 h-20" alt="Rob" />
                     <Tabs @bind-Items="tabs"></Tabs>
                 </div>
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
                             <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
                         </div>
                     }
@@ -76,6 +94,7 @@
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
@@ -172,5 +191,15 @@
         }
         numSolarPanels = systems[selectedSystem].numberOfPanels;
         loadingService.HideLoadingScreen();
+    }
+
+    public void SaveCalculation()
+    {
+        buildYourHomeComponent!.ModalPopup.Show();
+    }
+    
+    public void ResetCalculation()
+    {
+        buildYourHomeComponent!.ResetHome();
     }
 }
