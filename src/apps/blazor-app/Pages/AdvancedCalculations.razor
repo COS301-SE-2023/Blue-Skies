@@ -80,7 +80,13 @@
                     }else if (tabs[2].active)
                     {
                         <div class="fade-in-active">
-                            <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
+                            @{
+                                int numSolarPanels = 0;
+                                if(systems != null) {
+                                    numSolarPanels = systems[selectedSystem].numberOfPanels;
+                                }
+                                <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
+                            }
                         </div>
                     }
                 </div>
@@ -105,7 +111,6 @@
     private ReportModel currentReport = new ReportModel(); 
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private int numSolarPanels = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -189,7 +194,6 @@
                 selectedSystem = i;
             }
         }
-        numSolarPanels = systems[selectedSystem].numberOfPanels;
         loadingService.HideLoadingScreen();
     }
 

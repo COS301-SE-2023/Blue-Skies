@@ -750,7 +750,7 @@
     /// <summary>
     /// On appliance count changed, update the appliance count and calculate the running hours
     /// </summary>
-    private async void DecrementApplianceCount(ApplianceModel appliance)
+    private void DecrementApplianceCount(ApplianceModel appliance)
     {
         appliance.quantity--;
         if (appliance.quantity < 0)
