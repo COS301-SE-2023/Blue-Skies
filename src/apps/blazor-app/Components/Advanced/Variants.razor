@@ -13,8 +13,7 @@
                 if (appliance.quantity > 0)
                 {
                     <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100 h-40" : "") p-3 rounded-2xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
-                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                     </div>
                 }
             }
@@ -26,7 +25,30 @@
     @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
+            @* Add variant button *@
+                <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
 
+            @foreach (var item in customAppliances)
+            {
+                var count = customAppliances.Count(x => x.type == selectedAppliance && x.name == item.name);
+                @if(item.type == selectedAppliance) {
+                    <div class="flex gap-4">
+                        <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
+                        <p>@item.name</p>
+                    </div>
+                }
+            }
+            <p> ------------------------------------------ </p>
+            @foreach (var item in customAppliancesWithCounts!)
+            {
+                if (item.type == selectedAppliance)
+                {
+                    <div class="flex gap-4">
+                        <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
+                        <p>@item.name</p>
+                    </div>
+                }
+            }
         </div>
     }
 </div>
@@ -56,62 +78,116 @@
     public double longitude { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
-    private List<List<ApplianceModel>> customAppliances = new List<List<ApplianceModel>>();
+    private List<ApplianceModel> customAppliances = new List<ApplianceModel>();
 
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
 
-    public void UpdateAppliances(List<ApplianceModel> updatedAppliances)
+
+    public void UpdateAppliances(List<ApplianceModel> appliances)
     {
-        foreach (var updatedAppliance in updatedAppliances)
+        List<ApplianceModel> temp = new List<ApplianceModel>();
+
+        if (customAppliances != null)
         {
-            var existingAppliance = customAppliances
-                .SelectMany(applianceList => applianceList)
-                .FirstOrDefault(appliance => appliance.name == updatedAppliance.name);
-
-            if (existingAppliance != null)
+            foreach (var appliance in customAppliances)
             {
-                if (existingAppliance.quantity != updatedAppliance.quantity)
+                if (appliance.name != "Default")
                 {
-                    int diff = updatedAppliance.quantity - existingAppliance.quantity;
-
-                    if (diff > 0)
-                    {
-                        for (int i = 0; i < diff; i++)
-                        {
-                            existingAppliance.quantity++;
-                        }
-                    }
-
-                    else if (diff < 0)
-                    {
-                        int removeCount = -diff;
-                        existingAppliance.quantity -= removeCount;
-                    }
+                    temp.Add(appliance);
                 }
+            }
+        }
+
+        // Clear the customAppliances list
+        customAppliances.Clear();
+
+        foreach (var appliance in appliances)
+        {
+            for (int i = 0; i < appliance.quantity; i++)
+            {
+                customAppliances.Add(new ApplianceModel
+                {
+                    name = appliance.name,
+                    type = appliance.type,
+                    quantity = 1
+                });
+            }
+        }
+
+        // Count the number of non-"Default" appliances
+        int nonDefaultCount = temp.Count;
+
+        // Add the non-"Default" appliances back to customAppliances
+        customAppliances.AddRange(temp);
+
+        // Remove "Default" appliances to balance the count
+        for (int i = 0; i < nonDefaultCount; i++)
+        {
+            var defaultAppliance = customAppliances.FirstOrDefault(a => a.name == "Default");
+            if (defaultAppliance != null)
+            {
+                customAppliances.Remove(defaultAppliance);
             }
             else
             {
-                customAppliances.Add(new List<ApplianceModel> { new ApplianceModel
-                {
-                    name = updatedAppliance.name,
-                    quantity = updatedAppliance.quantity,
-                }});
+                // No more "Default" appliances to remove
+                break;
             }
         }
 
-        foreach (var applianceList in customAppliances)
-        {
-            applianceList.RemoveAll(appliance => updatedAppliances.All(updatedAppliance => updatedAppliance.name != appliance.name));
-        }
-
-        customAppliances.RemoveAll(applianceList => applianceList.Count == 0);
-
+        UpdateCustomAppliancesWithCounts();
         StateHasChanged();
     }
 
+
+
+    List<ApplianceModel>? customAppliancesWithCounts;
+
+    // Function to update the customAppliancesWithCounts list
+    private void UpdateCustomAppliancesWithCounts()
+    {
+        customAppliancesWithCounts = new List<ApplianceModel>();
+
+        foreach (var appliance in customAppliances)
+        {
+            // Check if an appliance with the same name and type exists in customAppliancesWithCounts
+            var existingAppliance = customAppliancesWithCounts.FirstOrDefault(a =>
+                a.name == appliance.name && a.type == appliance.type);
+
+            if (existingAppliance != null)
+            {
+                // Increment the quantity if it exists
+                existingAppliance.quantity++;
+            }
+            else
+            {
+                // Add a new appliance with quantity 1
+                customAppliancesWithCounts.Add(new ApplianceModel
+                {
+                    name = appliance.name,
+                    type = appliance.type,
+                    quantity = 1
+                });
+            }
+        }
+    }
+
+    public void ChangeDefaultApplianceName(string newName, string type)
+    {
+
+        var defaultAppliance = customAppliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
+
+        if (defaultAppliance != null)
+        {
+            // Change the name of the found "Default" appliance
+            defaultAppliance.name = newName;
+            UpdateCustomAppliancesWithCounts();
+            StateHasChanged();
+        }
+    }
 
 
 
