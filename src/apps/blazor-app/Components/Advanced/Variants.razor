@@ -28,7 +28,7 @@
             @* Add variant button *@
                 <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
 
-            @foreach (var item in customAppliances)
+            @* @foreach (var item in customAppliances)
             {
                 var count = customAppliances.Count(x => x.type == selectedAppliance && x.name == item.name);
                 @if(item.type == selectedAppliance) {
@@ -37,8 +37,7 @@
                         <p>@item.name</p>
                     </div>
                 }
-            }
-            <p> ------------------------------------------ </p>
+            } *@
             @foreach (var item in customAppliancesWithCounts!)
             {
                 if (item.type == selectedAppliance)
@@ -86,9 +85,11 @@
     }
 
 
+
     public void UpdateAppliances(List<ApplianceModel> appliances)
     {
-        List<ApplianceModel> temp = new List<ApplianceModel>();
+        // Create a dictionary to store appliance variants by type
+        Dictionary<string, List<ApplianceModel>> applianceVariants = new Dictionary<string, List<ApplianceModel>>();
 
         if (customAppliances != null)
         {
@@ -96,9 +97,17 @@
             {
                 if (appliance.name != "Default")
                 {
-                    temp.Add(appliance);
+                    if (!applianceVariants.ContainsKey(appliance.type!))
+                    {
+                        applianceVariants[appliance.type!] = new List<ApplianceModel>();
+                    }
+                    applianceVariants[appliance.type!].Add(appliance);
                 }
             }
+        }
+        else
+        {
+            customAppliances = new List<ApplianceModel>();
         }
 
         // Clear the customAppliances list
@@ -117,30 +126,43 @@
             }
         }
 
-        // Count the number of non-"Default" appliances
-        int nonDefaultCount = temp.Count;
-
         // Add the non-"Default" appliances back to customAppliances
-        customAppliances.AddRange(temp);
-
-        // Remove "Default" appliances to balance the count
-        for (int i = 0; i < nonDefaultCount; i++)
+        foreach (var variantList in applianceVariants.Values)
         {
-            var defaultAppliance = customAppliances.FirstOrDefault(a => a.name == "Default");
-            if (defaultAppliance != null)
+            customAppliances.AddRange(variantList);
+        }
+
+        // Remove "Default" appliances first, and if none are left, remove non-Default appliances
+        foreach (var applianceType in applianceVariants.Keys.ToList())
+        {
+            var defaultAppliances = customAppliances
+                .Where(appliance => appliance.type == applianceType && appliance.name == "Default")
+                .ToList();
+
+            var nonDefaultAppliances = customAppliances
+                .Where(appliance => appliance.type == applianceType && appliance.name != "Default")
+                .ToList();
+
+            if (defaultAppliances.Count > 0)
             {
-                customAppliances.Remove(defaultAppliance);
+                foreach (var appliance in nonDefaultAppliances) {
+                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == "Default")!);
+                }
             }
-            else
+            else if (nonDefaultAppliances.Count > 0)
             {
-                // No more "Default" appliances to remove
-                break;
+                foreach (var appliance in nonDefaultAppliances)
+                {
+                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == appliance.name)!);
+                }
             }
         }
 
         UpdateCustomAppliancesWithCounts();
         StateHasChanged();
     }
+
+
 
 
 
