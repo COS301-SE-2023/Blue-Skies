@@ -1,13 +1,13 @@
 @namespace BlazorApp.EnviromentImpact
 
 <div>
-    <p>Enviroment Impact</p>
+    <p>Enviroment Impact in ten years</p>
     @if(annualKWGenerated != null) 
     {
-        <p>Total power saved: @solarDataHandler.getPowerSaved((double)annualKWGenerated) kW</p>
+        <p>Total power saved: @(solarDataHandler.getPowerSaved((double)annualKWGenerated)*1000) kWh</p>
         <p>Total CO2 saved: @solarDataHandler.getCO2Saved((double)annualKWGenerated) kg</p>
         <p>Total water saved: @solarDataHandler.waterSaved((double)annualKWGenerated) L</p>
-        <p>Total coal not burnt (equivalent): @solarDataHandler.coalNotBurnt((double)annualKWGenerated) kg</p>
+        <p>Total coal not burnt: @solarDataHandler.coalNotBurnt((double)annualKWGenerated) kg</p>
         <p>Total trees planted: @solarDataHandler.treesPlanted((double)annualKWGenerated)</p>
     }
 </div>

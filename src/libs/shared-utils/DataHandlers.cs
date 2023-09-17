@@ -247,6 +247,7 @@ public class SolarDataHandler
         }
         return annualKwGenerated;
     }
+
     private int getPercentage(double solarIrradiation)
     {
         double difference = perfectSolarIrradiation - worstSolarIrradiation;
@@ -264,27 +265,27 @@ public class SolarDataHandler
 
     public double getPowerSaved(double annualKWGenerated)
     {
-        return annualKWGenerated * 10 / 1000;
+        return Math.Round(annualKWGenerated * 10 / 1000, 2);
     }
 
     public double getCO2Saved(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 1.03 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 1.03 * 1000, 2);
     }
 
     public double waterSaved(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 1.45 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 1.45 * 1000, 2);
     }
 
     public double coalNotBurnt(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 0.56 * 1000;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 0.56 * 1000, 2);
     }
 
     public double treesPlanted(double annualKWGenerated)
     {
-        return getPowerSaved(annualKWGenerated) * 0.01808;
+        return Math.Round(getPowerSaved(annualKWGenerated) * 0.58, 2);
     }
 
     public double getSunlightHours(RooftopInformationModel? rooftopInformationModel, bool round = false) {
@@ -843,11 +844,7 @@ public class RooftopDataHandler
 
 public class SystemsDataHandler
 {
-    public float CalculateRunningHours(
-        int numBatteries,
-        int batteryStorage,
-        List<ApplianceModel> appliances
-    )
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ApplianceModel> appliances)
     {
         float sumOfAppliances = 0f;
 
@@ -869,11 +866,7 @@ public class SystemsDataHandler
         return runningHoursPercentage;
     }
 
-    public float CalculateRunningHours(
-        int numBatteries,
-        int batteryStorage,
-        List<ReportAllApplianceModel> appliances
-    )
+    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ReportAllApplianceModel> appliances)
     {
         float sumOfAppliances = 0f;
 
