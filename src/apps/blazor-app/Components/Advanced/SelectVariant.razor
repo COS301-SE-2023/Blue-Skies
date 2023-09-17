@@ -22,7 +22,11 @@
     public string? type { get; set; }
     [Parameter]
     public List<CustomApplianceModel> customAppliances { get; set; } = new List<CustomApplianceModel>();
-    
+    [Parameter]
+    public string? value { get; set; }
+    [Parameter]
+    public EventCallback<string> valueChanged { get; set; }
+
 
     private List<CustomApplianceModel> typeAppliances = new List<CustomApplianceModel>();
     private string search = string.Empty;
@@ -35,6 +39,7 @@
 
     private void HandleKeyPress(KeyboardEventArgs e)
     {
+        valueChanged.InvokeAsync(search);
         typeAppliances = customAppliances.Where(x =>  Fuzz.Ratio(x.model, search) > 35).ToList();
         StateHasChanged();
         if(search.Length > 0)

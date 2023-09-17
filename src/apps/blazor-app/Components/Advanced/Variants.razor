@@ -28,14 +28,15 @@
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
-                <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
                 <div class="flex gap-2">
-                    <SelectVariant />
-                    <Button style="pill">
-                        <content>
-                            <p>Add Variant</p>
-                        </content>
-                    </Button>
+                    <SelectVariant @bind-value="value" />
+                    <div @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance))'>
+                        <Button style="pill">
+                            <content>
+                                <p>Add Variant</p>
+                            </content>
+                        </Button>
+                    </div>
                 </div>
 
             @foreach (var item in customAppliancesWithCounts!)
@@ -55,6 +56,7 @@
 </div>
 
 @code {
+    private string? value = "";
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
