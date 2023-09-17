@@ -31,6 +31,11 @@
                 <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
                 <div class="flex gap-2">
                     <SelectVariant />
+                    <Button style="pill">
+                        <content>
+                            <p>Add Variant</p>
+                        </content>
+                    </Button>
                 </div>
 
             @foreach (var item in customAppliancesWithCounts!)
@@ -129,37 +134,42 @@ public void UpdateAppliances(List<ApplianceModel> appliances)
         customAppliances.AddRange(variantList);
     }
 
-    // Remove "Default" appliances first
+    // Remove "Default" appliances first, and if none are left, remove non-Default appliances
     foreach (var applianceType in applianceVariants.Keys.ToList())
     {
         var defaultAppliances = customAppliances
             .Where(appliance => appliance.type == applianceType && appliance.name == "Default")
             .ToList();
 
+        var nonDefaultAppliances = customAppliances
+            .Where(appliance => appliance.type == applianceType && appliance.name != "Default")
+            .ToList();
+
         if (defaultAppliances.Count > 0)
         {
-            foreach (var appliance in defaultAppliances)
-            {
-                customAppliances.Remove(appliance);
+            foreach (var appliance in nonDefaultAppliances) {
+                customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == "Default")!);
             }
         }
-        else
+        else if (nonDefaultAppliances.Count > 0)
         {
-            // If no "Default" appliances are left, remove non-Default appliances
-            var nonDefaultAppliances = customAppliances
-                .Where(appliance => appliance.type == applianceType && appliance.name != "Default")
+            var itemsToRemove = customAppliances
+                .Where(x => x.type == applianceType && nonDefaultAppliances.Any(appliance => x.name == appliance.name))
                 .ToList();
 
-            foreach (var appliance in nonDefaultAppliances)
+            foreach (var itemToRemove in itemsToRemove)
             {
-                customAppliances.Remove(appliance);
+                customAppliances.Remove(itemToRemove);
             }
         }
+
     }
 
     UpdateCustomAppliancesWithCounts();
     StateHasChanged();
 }
+
+
 
 
 
