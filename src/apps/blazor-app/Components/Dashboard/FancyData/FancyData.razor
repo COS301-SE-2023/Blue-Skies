@@ -57,6 +57,9 @@
             <div class="md:w-1/2">
                 <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false"/>
             </div>
+            <div class="w-full flex">
+
+            
              @* solarPanelsData *@
             @if(solarPanelsData is not null){
 
@@ -94,12 +97,13 @@
             else{
             <p>Solar Panels Data is not available</p>
             }
+            <div class="w-1/2">
+            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+            </div>
+            </div>
         </div>
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
-        </div>
-        <div>
-            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
         </div>
     </div>
 
