@@ -21,21 +21,25 @@
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
             </div>
             <div>
+                
+                <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                 @if(monthlyFluxMap is not null){
                 <div class="w-fit mx-auto">
-                    <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                     <div class="w-fit mx-auto">
                         <div class="flex space-x-3 mt-10">
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
-                                <Image ImageName="left-arrow.png" alt="Left Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="h-12 w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                             <div class="flex-col">
-                                <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="h-[300px]" />
+                                <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image"
+                                    css="h-[300px]" />
                                 <p class="text-center">@monthNames[@currentImageIndex]</p>
                             </div>
 
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
-                                <Image ImageName="right-arrow.png" alt="Right Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer"/>
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="h-12 w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                         </div>
                     </div>
@@ -46,12 +50,40 @@
                 }
             </div>
         </div>
-         <div class="w-full">
-            <div class="md:w-1/2">
-                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />    
+        <div>
+            @* solarPanelsData *@
+            @if(solarPanelsData is not null){
+            <div class="w-full">
+                <div class="w-1/2 border">
+                    <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
+                    <div class="mx-auto">
+                        <div class="flex gap-3 w-full relative justify-center items-center">
+                            <div class="group">
+                                <Image ImageName="Home.svg" alt="Info"
+                                    css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                                <div
+                                    class="absolute hidden fade-in-active w-fit -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                                    <p class="text-gray-900">The size of your roof
+                                    </p>
+                                </div>
+                            </div>
+                            @{double squaredArea = Math.Round(@wholeroofstats!.areaMeters2);}
+                            <p>@squaredArea m&sup2;</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+            }
+            else{
+            <p>Solar Panels Data is not available</p>
+            }
         </div>
+        <div class="w-full">
+            <div class="md:w-1/2">
+                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />
+            </div>
+        </div>
+
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
         </div>
@@ -75,6 +107,9 @@
     [Parameter]
     public byte[]? annualFluxData { get; set; }
 
+    [Parameter]
+    public RooftopInformationModel? solarPanelsData { get; set; }
+
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
     private string? satteliteImageSrc = "";
@@ -85,6 +120,8 @@
 
     private double[] solarRadiationPerMonth = new double[12];
 
+    private Wholeroofstats? wholeroofstats = null;
+
     @* OnInitialized *@
     protected override void OnInitialized()
     {   
@@ -93,6 +130,10 @@
             monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
             solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
         }
+        if(solarPanelsData is not null){
+            wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
+        }
+
     }
 
     private void IncreamentMonthImage(){
