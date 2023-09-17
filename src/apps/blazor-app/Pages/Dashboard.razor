@@ -79,7 +79,7 @@ else
                                         dlh = 0;
                                         if (currentLocationData != null)
                                         {
-                                            daylight = (float)Math.Round(currentLocationData.daylightHours, 2);
+                                            daylight = (float)solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
                                             dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
                                         }
                                     }
@@ -143,7 +143,7 @@ else
                                                 </Card>
                                             </div>
                                             <div class="mt-10 w-full">
-                                                <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData"/>
+                                                <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" solarPanelsData="@currentLocationData.solarPanelsData" />
                                             </div>
                                         </div>
         }
@@ -341,7 +341,7 @@ else
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
         if (system != null && reportAllAppliance != null)
         {
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance, currentLocationData!.daylightHours);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
         }
         else
         {

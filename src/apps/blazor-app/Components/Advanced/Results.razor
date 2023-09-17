@@ -45,7 +45,7 @@
                     var usableHours = 0.0;
                     if (currentLocationData != null)
                     {
-                        usableHours = currentLocationData.daylightHours;
+                        usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
                         usableHours = Math.Round(usableHours, 2);
                     }
                 }

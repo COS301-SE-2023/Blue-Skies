@@ -1,7 +1,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
-
-
+@using BlazorApp.EnviromentImpact
 @namespace BlazorApp.FancyData
 
 
@@ -95,9 +94,11 @@
             <p>Solar Panels Data is not available</p>
             }
         </div>
-
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
+        </div>
+        <div>
+            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
         </div>
     </div>
 
@@ -131,6 +132,7 @@
     private int currentImageIndex = 0;
 
     private double[] solarRadiationPerMonth = new double[12];
+    private double annualKWGenerated = 0;
 
     private Wholeroofstats? wholeroofstats = null;
 
@@ -143,6 +145,8 @@
         }
         if(solarPanelsData is not null){
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
+            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(12, solarPanelsData);
+            Console.WriteLine("Annual solar panel data:" + annualKWGenerated);
         }
 
     }

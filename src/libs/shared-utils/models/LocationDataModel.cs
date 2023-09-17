@@ -10,6 +10,5 @@ public class LocationDataModel
     public byte[]? monthlyFluxData { get; set; }
     public byte[]? maskData { get; set; }
     public DateTime? dateCreated { get; set; }
-    public double daylightHours { get; set; }
     public string? horisonElevationData { get; set; }
 }
