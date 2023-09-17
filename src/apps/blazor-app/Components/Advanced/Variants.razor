@@ -30,23 +30,15 @@
             @* Add variant button *@
                 <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
 
-            @* @foreach (var item in customAppliances)
-            {
-                var count = customAppliances.Count(x => x.type == selectedAppliance && x.name == item.name);
-                @if(item.type == selectedAppliance) {
-                    <div class="flex gap-4">
-                        <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
-                        <p>@item.name</p>
-                    </div>
-                }
-            } *@
             @foreach (var item in customAppliancesWithCounts!)
             {
                 if (item.type == selectedAppliance)
                 {
                     <div class="flex gap-4">
                         <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
-                        <p>@item.name</p>
+                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.name</p>
+                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.durationUsed<span class="text-gray-400 text-end w-full"> hrs</span></p>
+                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.powerUsage<span class="text-gray-400 text-end w-full"> kwh</span></p>
                     </div>
                 }
             }
@@ -99,11 +91,11 @@
             {
                 if (appliance.name != "Default")
                 {
-                    if (!applianceVariants.ContainsKey(appliance.type!))
+                    if (!applianceVariants.ContainsKey(appliance.type))
                     {
-                        applianceVariants[appliance.type!] = new List<ApplianceModel>();
+                        applianceVariants[appliance.type] = new List<ApplianceModel>();
                     }
-                    applianceVariants[appliance.type!].Add(appliance);
+                    applianceVariants[appliance.type].Add(appliance);
                 }
             }
         }
@@ -137,32 +129,27 @@
         // Remove "Default" appliances first, and if none are left, remove non-Default appliances
         foreach (var applianceType in applianceVariants.Keys.ToList())
         {
-            var defaultAppliances = customAppliances
-                .Where(appliance => appliance.type == applianceType && appliance.name == "Default")
-                .ToList();
-
             var nonDefaultAppliances = customAppliances
                 .Where(appliance => appliance.type == applianceType && appliance.name != "Default")
                 .ToList();
 
-            if (defaultAppliances.Count > 0)
-            {
-                foreach (var appliance in nonDefaultAppliances) {
-                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == "Default")!);
-                }
-            }
-            else if (nonDefaultAppliances.Count > 0)
+            if (nonDefaultAppliances.Count > 0)
             {
                 foreach (var appliance in nonDefaultAppliances)
                 {
-                    customAppliances.Remove(customAppliances.FirstOrDefault(x => x.type == applianceType && x.name == appliance.name)!);
+                    customAppliances.RemoveAll(x => x.type == applianceType && x.name == appliance.name);
                 }
+            }
+            else
+            {
+                customAppliances.RemoveAll(x => x.type == applianceType && x.name == "Default");
             }
         }
 
         UpdateCustomAppliancesWithCounts();
         StateHasChanged();
     }
+
 
 
 

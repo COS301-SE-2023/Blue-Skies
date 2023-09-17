@@ -1090,6 +1090,10 @@ video {
   margin-top: 20rem;
 }
 
+.-mt-10 {
+  margin-top: -2.5rem;
+}
+
 .block {
   display: block;
 }
@@ -2298,6 +2302,10 @@ video {
 
 .text-start {
   text-align: start;
+}
+
+.text-end {
+  text-align: end;
 }
 
 .text-2xl {
