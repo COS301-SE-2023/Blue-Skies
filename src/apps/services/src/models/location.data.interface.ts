@@ -9,6 +9,5 @@ export default class ILocationData {
   monthlyFluxData: string | null | undefined;
   maskData: string | null | undefined;
   dateCreated: Date | null | undefined;
-  daylightHours: number | null | undefined;
   horisonElevationData: string | null | undefined;
 }

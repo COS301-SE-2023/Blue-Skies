@@ -28,87 +28,50 @@
     /// </summary>
     protected override void OnInitialized()
     {
-        if(animated == true){
         barConfig = new BarConfig
+        {
+            Options = new BarOptions
             {
-                Options = new BarOptions
+                Responsive = true,
+                Legend = new Legend
                 {
-                    Responsive = true,
-                    Legend = new Legend
+                    Position = Position.Top
+                },
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Solar Irradiance Per Month",
+                    FontSize = 20,
+                },
+                Scales = new BarScales
+                {
+                    YAxes = new List<CartesianAxis>
                     {
-                        Position = Position.Top
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = true,
-                        Text = "Solar Irradiance Per Month",
-                        FontSize = 20,
-                    },
-                    Scales = new BarScales
-                    {
-                        YAxes = new List<CartesianAxis>
+                        new LinearCartesianAxis
                         {
-                            new LinearCartesianAxis
+                            Ticks = new LinearCartesianTicks
                             {
-                                Ticks = new LinearCartesianTicks
-                                {
-                                    BeginAtZero = true
-                                },
-                                ScaleLabel = new ScaleLabel
-                                {
-                                    LabelString = "Solar Irradiance (W/m2)",
-                                    Display = true
-                                },
-                            }
+                                BeginAtZero = true
+                            },
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Solar Irradiance (W/m2)",
+                                Display = true
+                            },
                         }
                     }
-                    
-
                 }
-            };
-        } else {
-            barConfig = new BarConfig
+            }
+        };
+
+        if (!animated)
+        {
+            barConfig.Options.Animation = new Animation
             {
-                Options = new BarOptions
-                {
-                    Responsive = true,
-                    Legend = new Legend
-                    {
-                        Position = Position.Top
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = true,
-                        Text = "Solar Irradiance Per Month",
-                        FontSize = 20,
-                    },
-                    Scales = new BarScales
-                    {
-                        YAxes = new List<CartesianAxis>
-                        {
-                            new LinearCartesianAxis
-                            {
-                                Ticks = new LinearCartesianTicks
-                                {
-                                    BeginAtZero = true
-                                },
-                                ScaleLabel = new ScaleLabel
-                                {
-                                    LabelString = "Solar Irradiance (W/m2)",
-                                    Display = true
-                                },
-                            }
-                        }
-                    },
-                    Animation = new Animation
-                    {
-                        Duration = 0
-                    }
-                    
-
-                }
+                Duration = 0
             };
         }
+        
         @* Add all the months in the year *@
         barConfig.Data.Labels.Add("Jan");
         barConfig.Data.Labels.Add("Feb");

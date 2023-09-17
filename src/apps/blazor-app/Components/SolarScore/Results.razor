@@ -20,11 +20,12 @@
 </div>
 <div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="sm:flex-shrink-0  items-center flex flex-col justify-center ">
-        <Map css="scale-90" ImageName="@satteliteImage" />
+    <div class="relative sm:flex-shrink-0  items-center flex flex-col justify-center">
+        <Image ImageName="Robert_Pointing_Down.png" css="absolute left-72 top-8 z-0 h-32" alt="Rob" />
+        <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
     </div>
-    <div class="grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+    <div class="relative grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
         <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
@@ -49,7 +50,7 @@
                 <div class="flex gap-1 mt-3">
                     @{
                         @* Round off to 2 decimal places *@
-                        double dlh = Math.Round(locationData!.daylightHours, 2);
+                        double dlh = solarCalculator.getSunlightHours(locationData!.solarPanelsData, true);
                     }
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                     <p class="text-5xl text-gray-400 font-bold">h</p>
@@ -57,15 +58,17 @@
             </div>
         </Card>
         @* Average Energy Production Card *@
-        <Card css="border-2 scale-90 sm:col-span-2 flex xl:scale-100 border-primary-300 p-4 w-full h-full  my-auto">
+        <Image ImageName="Robert_T_Pose.png" css="absolute right-14 top-[340px] z-0 h-32" alt="Rob" />
+        <Image ImageName="Robert_Hanging_Happy.png" css="absolute -left-14 top-[400px] z-0 h-32" alt="Rob" />
+        <Card css=" border-2 scale-90 sm:col-span-2 flex xl:scale-100 border-primary-300 p-4 w-full h-full my-auto">
             <div class="my-auto w-full relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
                 </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
                 <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                    <p class="text-5xl text-gray-400 font-bold">kw/h</p>
+                    <p class="text-5xl text-gray-400 font-bold">kwh</p>
                 </div>
                 <div class="flex absolute top-0 right-0 justify-evenly gap-4">
                     @{
@@ -178,8 +181,7 @@
         systems = await systemClass.GetAllSystems();
         if (systems!.Count > 0)
         {
-            double calc = systems[selectedSystem].numberOfPanels * locationData.daylightHours * systems[selectedSystem].solarInput / 1000;
-            avgEnergyProduction = Math.Round(calc, 2);
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData) / 365, 2);
         }
         else
         {
@@ -195,12 +197,14 @@
     /// </summary>
     private void SetSystemSize(int selection)
     {
-        selectedSystem = selection;
-        ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
-        if (systems!.Count > 0)
-        {
-            double calc = systems[selectedSystem].numberOfPanels * locationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
-            avgEnergyProduction = Math.Round(calc, 2);
+        Console.WriteLine("Selected System number of panels: " + systems[selection].numberOfPanels);
+        if(systems != null && locationData != null) {
+            selectedSystem = selection;
+            ProtectedSessionStore.SetAsync("selectedSystem", selection);
+            if (systems!.Count > 0)
+            {
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData) / 365, 2);
+            }
         }
     }
 }

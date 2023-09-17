@@ -38,7 +38,8 @@ public class ApplianceController : ControllerBase
         {
             var data = await _appliancesRepository.CreateAppliances(
                 appliance.type!,
-                appliance.powerUsage
+                appliance.powerUsage,
+                appliance.durationUsed
             );
             return Ok(data);
         }

@@ -1,0 +1,21 @@
+
+@namespace BlazorApp.BestSolarPanels
+@using BlazorApp.SolarPanelCard
+
+<div>
+    <p class="text-primary-950 font-semibold text-center text-xl">Best Solar Panels</p>
+    <div class="mx-auto space-y-4 w-fit">
+        @foreach (var solarPanel in solarPanels)
+        {
+            if (solarPanel != null)
+            {
+                <SolarPanelCard SolarPanel="solarPanel" />
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public List<Solarpanel?> solarPanels { get; set; } = new List<Solarpanel?>();
+}

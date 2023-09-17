@@ -224,14 +224,4 @@
             Console.WriteLine("Report not found");
         }
     }
-
-    @* Calculate Average Energy Production *@
-    private void GetAvgEnergyProduction()
-    {
-        avgEnergyProduction = Math.Round(system.numberOfPanels *
-        locationData.daylightHours * system.solarInput / 1000, 2) + " kw/h";
-    }
-
-    
-
 }

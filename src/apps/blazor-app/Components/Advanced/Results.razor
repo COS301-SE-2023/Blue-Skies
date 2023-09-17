@@ -19,8 +19,10 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
-    <div class="w-80 mx-auto">
+<div class="relative flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
+    <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-48 top-10 h-72 z-0" alt="Rob" />
+    <Image ImageName="Robert_Behind_Panel.png" css="absolute left-20 -top-[34px] z-1 h-28" alt="Rob" /> 
+    <div class="w-80 mx-auto z-10">
         <Map scale="scale-[2.6]" imageName="@satteliteImage" />
     </div>
     <div class="flex mx-auto flex-col px-2 sm:flex-row gap-5">
@@ -44,7 +46,7 @@
                     var usableHours = 0.0;
                     if (currentLocationData != null)
                     {
-                        usableHours = currentLocationData.daylightHours;
+                        usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
                         usableHours = Math.Round(usableHours, 2);
                     }
                 }
@@ -52,22 +54,21 @@
                 <p class="text-3xl text-gray-400 font-bold">h</p>
             </div>
         </Card>
-        <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto">
+        <Card css="border-2 border-primary-300 p-4 w-60 h-60 my-auto z-10">
             <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16">
                 <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
             </div>
-            <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Energy Production</h1>
+            <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
             <div class="flex gap-1 mt-3">
                 @{
                     var avgEnergyProduction = 0.0;
                     if (currentLocationData != null && systems != null)
                     {
-                        double calc = systems[selectedSystem].numberOfPanels * currentLocationData!.daylightHours * systems[selectedSystem].solarInput / 1000;
-                        avgEnergyProduction = Math.Round(calc, 2);
+                        avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
                     }
                 }
                 <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                <p class="text-3xl text-gray-400 font-bold">kw/h</p>
+                <p class="text-3xl text-gray-400 font-bold">kwh</p>
             </div>
         </Card>
     </div>

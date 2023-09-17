@@ -1,0 +1,19 @@
+@using BlazorApp.Models;
+@namespace BlazorApp.SolarPanelCard
+
+@if(SolarPanel != null && SolarPanel.center != null)
+{
+    <div class="card">
+        <div class="card-header">
+            <h3>@SolarPanel.yearlyEnergyDcKwh kwh</h3>
+        </div>
+        <div class="card-body">
+            <p>@SolarPanel.center.latitude ; @SolarPanel.center.longitude</p>
+            <p>@SolarPanel.orientation</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Solarpanel? SolarPanel { get; set; }
+}
