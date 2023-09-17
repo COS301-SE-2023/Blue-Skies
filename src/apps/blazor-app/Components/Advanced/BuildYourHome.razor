@@ -752,21 +752,14 @@
     /// </summary>
     private async void DecrementApplianceCount(ApplianceModel appliance)
     {
-        if (appliance.quantity == 1)
-        {
-            appliance.fade = "fade-out-active";
-            StateHasChanged();
-            await Task.Delay(300);
-        }
         appliance.quantity--;
         if (appliance.quantity < 0)
         {
             appliance.quantity = 0;
         }
-        appliance.fade = "fade-in-active";
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         StateHasChanged();
         UpdateApplianceStorage();
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         applianceService.UpdateAppliance(appliances);
     }
 
