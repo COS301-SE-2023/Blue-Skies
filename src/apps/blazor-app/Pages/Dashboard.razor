@@ -81,7 +81,7 @@ else
                             dlh = 0;
                             if (currentLocationData != null)
                             {
-                                daylight = (float)Math.Round(currentLocationData.daylightHours, 2);
+                                daylight = 12;
                                 dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
                             }
                         }
