@@ -32,6 +32,7 @@ public class BusinessRequestDataRepository
     
     public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     {
+        string typeOfData = "Solar Irradiance";
         LocationDataModel? currentLocationData = new LocationDataModel();
         try
         {
@@ -52,7 +53,7 @@ public class BusinessRequestDataRepository
                 
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);
             }
-
+            typeOfData = data!;
             switch(data!.ToLower()){
                 case "solar score" : 
                     var content = await GetSolarScore(latitude, longitude);
@@ -76,14 +77,15 @@ public class BusinessRequestDataRepository
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not create solar irradiation");
+            throw new Exception("Could not create " + typeOfData!.ToLower() + ". NOTE that a valid address should be used.");
         }
     }
 
   private async Task<string> GetSatelliteImage(double latitude, double longitude)
   {
-        LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
 
+       
+        LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
         return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
   }
 
@@ -97,7 +99,7 @@ public class BusinessRequestDataRepository
     private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
     {   
         
-        LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
+        LocationDataModel locationData = await GetLocationDataModel(latitude, longitude);
        
         return solarCalculator.getSolarRadiationList(locationData!.solarPanelsData);
     }
@@ -106,7 +108,7 @@ public class BusinessRequestDataRepository
     {
         LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
         if(locationData==null){
-            await locationDataClass.CreateLocationData(latitude, longitude, locationName);
+            locationData = await locationDataClass.CreateLocationData(latitude, longitude, locationName);
         }
         return locationData!;
     }

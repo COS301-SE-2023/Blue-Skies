@@ -22,21 +22,25 @@
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
             </div>
             <div>
+
+                <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                 @if(monthlyFluxMap is not null){
                 <div class="w-fit mx-auto">
-                    <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                     <div class="w-fit mx-auto">
                         <div class="flex space-x-3 mt-10">
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
-                                <Image ImageName="left-arrow.png" alt="Left Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="h-12 w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                             <div class="flex-col">
-                                <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="h-[300px]" />
+                                <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image"
+                                    css="h-[300px]" />
                                 <p class="text-center">@monthNames[@currentImageIndex]</p>
                             </div>
 
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
-                                <Image ImageName="right-arrow.png" alt="Right Arrow" css="h-8 w-8 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer"/>
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="h-12 w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                         </div>
                     </div>
@@ -47,12 +51,52 @@
                 }
             </div>
         </div>
-         <div class="w-full">
-            <div class="md:w-1/2">
-                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />    
-            </div>
-            
+        <div>
+           
         </div>
+        <div class="w-full flex">
+            <div class="md:w-1/2">
+                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false"/>
+            </div>
+             @* solarPanelsData *@
+            @if(solarPanelsData is not null){
+
+                <div class="w-1/2 h-fit my-auto">
+                    <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
+                    <div class="mx-auto space-y-4 w-fit">
+                        @{
+                        double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
+                        double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                        double maxHoursSunlightPerDay = Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
+                        }
+                        <IconToolTip imageName="Home.svg" tooltipMessage="The size of your roof">
+                            <content>
+                                <p>@squaredArea m&sup2;</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="SolarPanels.svg" tooltipMessage="The maximum number of panels you can have">
+                            <content>
+                                <p>@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="Area.svg" tooltipMessage="The maximum area that you can put solar panels">
+                            <content>
+                                <p>@maxArraArea m&sup2;</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="Sun-outline.svg" tooltipMessage="The maximum number of hours of sunlight per day">
+                            <content>
+                                <p>@maxHoursSunlightPerDay h</p>
+                            </content>
+                        </IconToolTip>
+                    </div>
+                </div>
+            }
+            else{
+            <p>Solar Panels Data is not available</p>
+            }
+        </div>
+
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
         </div>
@@ -76,6 +120,9 @@
     [Parameter]
     public byte[]? annualFluxData { get; set; }
 
+    [Parameter]
+    public RooftopInformationModel? solarPanelsData { get; set; }
+
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
     private string? satteliteImageSrc = "";
@@ -86,7 +133,8 @@
 
     private double[] solarRadiationPerMonth = new double[12];
 
-    @* OnInitialized *@
+    private Wholeroofstats? wholeroofstats = null;
+
     protected override void OnInitialized()
     {   
         if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
@@ -94,20 +142,20 @@
             monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
             solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
         }
+        if(solarPanelsData is not null){
+            wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
+        }
+
     }
 
     private void IncreamentMonthImage(){
         if(currentImageIndex < monthlyFluxMap!.Length - 1){
             currentImageIndex++;
-            StateHasChanged();
         }
-       
     }
     private void DecrementMonthImage(){
         if(currentImageIndex > 0){
             currentImageIndex--;
-            StateHasChanged();
-        }
-        
+        }   
     }
 } 
