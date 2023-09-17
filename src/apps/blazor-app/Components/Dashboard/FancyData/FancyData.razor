@@ -1,7 +1,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
-
-
+@using BlazorApp.EnviromentImpact
 @namespace BlazorApp.FancyData
 
 
@@ -15,13 +14,14 @@
         </Subscript>
     </Heading>
     <div class="w-full space-y-3">
-        <div class="md:flex w-fit mx-auto md:space-x-5 items-center">
-            <div>
+        <div class="relative md:flex w-fit mx-auto md:space-x-5 items-center">
+            <Image ImageName="Robert_Sitting.png" css="absolute left-96 top-20 z-0 h-20 rotate-[60deg]" alt="Rob" /> 
+            <div class="z-10">
                 <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
             </div>
             <div>
-                
+
                 <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                 @if(monthlyFluxMap is not null){
                 <div class="w-fit mx-auto">
@@ -51,41 +51,55 @@
             </div>
         </div>
         <div>
-            @* solarPanelsData *@
+           
+        </div>
+        <div class="w-full flex">
+            <div class="md:w-1/2">
+                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false"/>
+            </div>
+             @* solarPanelsData *@
             @if(solarPanelsData is not null){
-            <div class="w-full">
-                <div class="w-1/2 border">
+
+                <div class="w-1/2 h-fit my-auto">
                     <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
-                    <div class="mx-auto">
-                        <div class="flex gap-3 w-full relative justify-center items-center">
-                            <div class="group">
-                                <Image ImageName="Home.svg" alt="Info"
-                                    css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                                <div
-                                    class="absolute hidden fade-in-active w-fit -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                                    <p class="text-gray-900">The size of your roof
-                                    </p>
-                                </div>
-                            </div>
-                            @{double squaredArea = Math.Round(@wholeroofstats!.areaMeters2);}
-                            <p>@squaredArea m&sup2;</p>
-                        </div>
+                    <div class="mx-auto space-y-4 w-fit">
+                        @{
+                        double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
+                        double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                        double maxHoursSunlightPerDay = Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
+                        }
+                        <IconToolTip imageName="Home.svg" tooltipMessage="The size of your roof">
+                            <content>
+                                <p>@squaredArea m&sup2;</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="SolarPanels.svg" tooltipMessage="The maximum number of panels you can have">
+                            <content>
+                                <p>@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="Area.svg" tooltipMessage="The maximum area that you can put solar panels">
+                            <content>
+                                <p>@maxArraArea m&sup2;</p>
+                            </content>
+                        </IconToolTip>
+                        <IconToolTip imageName="Sun-outline.svg" tooltipMessage="The maximum number of hours of sunlight per day">
+                            <content>
+                                <p>@maxHoursSunlightPerDay h</p>
+                            </content>
+                        </IconToolTip>
                     </div>
                 </div>
-            </div>
             }
             else{
             <p>Solar Panels Data is not available</p>
             }
         </div>
-        <div class="w-full">
-            <div class="md:w-1/2">
-                <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" />
-            </div>
-        </div>
-
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
+        </div>
+        <div>
+            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
         </div>
     </div>
 
@@ -119,10 +133,10 @@
     private int currentImageIndex = 0;
 
     private double[] solarRadiationPerMonth = new double[12];
+    private double annualKWGenerated = 0;
 
     private Wholeroofstats? wholeroofstats = null;
 
-    @* OnInitialized *@
     protected override void OnInitialized()
     {   
         if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
@@ -132,6 +146,8 @@
         }
         if(solarPanelsData is not null){
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
+            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(12, solarPanelsData);
+            Console.WriteLine("Annual solar panel data:" + annualKWGenerated);
         }
 
     }
@@ -139,15 +155,11 @@
     private void IncreamentMonthImage(){
         if(currentImageIndex < monthlyFluxMap!.Length - 1){
             currentImageIndex++;
-            StateHasChanged();
         }
-       
     }
     private void DecrementMonthImage(){
         if(currentImageIndex > 0){
             currentImageIndex--;
-            StateHasChanged();
-        }
-        
+        }   
     }
 } 

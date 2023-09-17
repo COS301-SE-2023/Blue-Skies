@@ -287,6 +287,16 @@ public class SolarDataHandler
     {
         return getPowerSaved(annualKWGenerated) * 0.01808;
     }
+
+    public double getSunlightHours(RooftopInformationModel? rooftopInformationModel, bool round = false) {
+        if (rooftopInformationModel != null && rooftopInformationModel.solarPotential != null) {
+            if(round) {
+                return Math.Round(rooftopInformationModel.solarPotential.maxSunshineHoursPerYear / 365, 2);
+            }
+            return rooftopInformationModel.solarPotential.maxSunshineHoursPerYear / 365;
+        }
+        return 0;
+    }
 }
 
 public class RooftopDataHandler
@@ -837,8 +847,7 @@ public class SystemsDataHandler
     public float CalculateRunningHours(
         int numBatteries,
         int batteryStorage,
-        List<ApplianceModel> appliances,
-        double daylightHours
+        List<ApplianceModel> appliances
     )
     {
         float sumOfAppliances = 0f;
@@ -852,7 +861,7 @@ public class SystemsDataHandler
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - (float)daylightHours;
+        float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if (runningHoursPercentage > 100)
         {
@@ -864,8 +873,7 @@ public class SystemsDataHandler
     public float CalculateRunningHours(
         int numBatteries,
         int batteryStorage,
-        List<ReportAllApplianceModel> appliances,
-        double daylightHours
+        List<ReportAllApplianceModel> appliances
     )
     {
         float sumOfAppliances = 0f;
@@ -884,7 +892,7 @@ public class SystemsDataHandler
             }
         }
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
-        float nonDaylightHours = 24 - (float)daylightHours;
+        float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if (runningHoursPercentage > 100)
         {

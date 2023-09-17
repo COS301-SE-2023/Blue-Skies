@@ -201,7 +201,7 @@
                 dlh = 0;
                 if (currentReport != null)
                 {
-                    daylight = (float)Math.Round(currentLocationData!.daylightHours, 2);
+                    daylight = 12;
                     dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
 
                 }
@@ -547,7 +547,7 @@
         customBatteries = "" + systems[3].numberOfBatteries;
         customPanelsInput = "" + systems[3].solarInput;
         customBatteriesSize = "" + systems[3].batterySize;
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
@@ -629,7 +629,7 @@
         {
             displayCreatedCustomSystem = true;
             selectedSystemChanged.InvokeAsync(selectedSystem);
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         }
     }
@@ -657,7 +657,7 @@
         else
         {
             showCustomSystem = true;
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         }
     }
 
@@ -701,7 +701,7 @@
         {
             systems[3].numberOfBatteries = Convert.ToInt32(customBatteries);
             systems[3].batterySize = Convert.ToInt32(customBatteriesSize);
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             SystemModalPopup.Dismiss();
         }
         catch (System.Exception)
@@ -725,7 +725,7 @@
         StateHasChanged();
         appliance.quantity++;
         UpdateApplianceStorage();
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -748,7 +748,7 @@
         appliance.fade = "fade-in-active";
         StateHasChanged();
         UpdateApplianceStorage();
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -766,7 +766,7 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     /// <summary>
@@ -845,7 +845,7 @@
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     private async void SaveCalculation()

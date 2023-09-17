@@ -51,7 +51,6 @@ public class BusinessRequestDataRepository
             LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
             if (locationData == null)
             {                
-                var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
                 locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
                 
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);

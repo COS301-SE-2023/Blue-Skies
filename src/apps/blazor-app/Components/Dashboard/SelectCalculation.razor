@@ -3,6 +3,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
+@inject BlazorApp.Data.LoadingService loadingService
 @inject IJSRuntime JSRuntime
 
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
@@ -55,7 +56,6 @@
     public DateTime? dateCreated { get; set; }
     [Parameter]
     public EventCallback updateLocation { get; set; }
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private bool isReportGenerated = false;
     private  string pdfUrl = "";
     private int userId = 0;
@@ -105,10 +105,12 @@
     private async void GenerateReport()
     {
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
+        loadingService.ShowLoadingScreen();
         Console.WriteLine("Generating report");
         var data = Convert.ToBase64String(await reportClass.GenerateReport(userId, userReports![selectedReport].reportId));
         pdfUrl = $"data:application/pdf;base64,{data}";
         isReportGenerated = true;
+        loadingService.HideLoadingScreen();
         StateHasChanged();
     }
 }
