@@ -543,7 +543,10 @@
         {
             homeSize = currentReport.homeSize;
         }
-
+        customPanels = "" + systems[3].numberOfPanels;
+        customBatteries = "" + systems[3].numberOfBatteries;
+        customPanelsInput = "" + systems[3].solarInput;
+        customBatteriesSize = "" + systems[3].batterySize;
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances, currentLocationData!.daylightHours);
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
