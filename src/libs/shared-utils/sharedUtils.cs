@@ -339,7 +339,7 @@ public class locationDataClass
     /// <paramref name="latitude"/> The latitude of the location.
     /// <paramref name="longitude"/> The longitude of the location.
     /// </summary>
-    private async Task<string?> GetHorisonElevationData(double latitude, double longitude)
+    public async Task<string?> GetHorisonElevationData(double latitude, double longitude)
     {
         string url =
             $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";

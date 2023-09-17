@@ -6,7 +6,12 @@ using System.Threading.Tasks.Dataflow;
 using System.Collections.Concurrent;
 
 namespace Api.Repository;
-
+struct DataType {
+    public const string SOLAR_SCORE = "solar score";
+    public const string SOLAR_ARRAY = "solar array";
+    public const string SATELLITE_IMAGE = "satellite image";
+    public const string ELEVATION = "elevation";
+}
 public class BusinessRequestDataRepository
 {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
@@ -28,8 +33,6 @@ public class BusinessRequestDataRepository
         }
     }
 
-    
-    
     public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     {
         string typeOfData = "Solar Irradiance";
@@ -55,17 +58,21 @@ public class BusinessRequestDataRepository
             }
             typeOfData = data!;
             switch(data!.ToLower()){
-                case "solar score" : 
+                case DataType.SOLAR_SCORE : 
                     var content = await GetSolarScore(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(content);
                     break;
-                case "solar array" : 
+                case DataType.SOLAR_ARRAY : 
                     var solarArray = await GetSolarRadiationList(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
                     break;
-                case "satellite image" : 
+                case DataType.SATELLITE_IMAGE : 
                     var satelliteImage = await GetSatelliteImage(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(satelliteImage);
+                    break;
+                case DataType.ELEVATION :
+                    var elevation = await locationDataClass.GetHorisonElevationData(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(elevation);
                     break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
@@ -84,8 +91,8 @@ public class BusinessRequestDataRepository
   private async Task<string> GetSatelliteImage(double latitude, double longitude)
   {
 
-       
         LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
+
         return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
   }
 
