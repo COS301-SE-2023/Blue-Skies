@@ -112,7 +112,7 @@ export default class LocationDataController {
           monthlyFluxData: columns[7].value,
           maskData: columns[8].value,
           dateCreated: columns[9].value,
-          horisonElevationData: columns[11].value,
+          horisonElevationData: columns[10].value,
         };
       });
 
