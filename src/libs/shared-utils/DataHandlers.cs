@@ -877,6 +877,10 @@ public class SystemsDataHandler
     {
         float sumOfAppliances = CalculateAppliancePowerUsage(appliances, null);
 
+        if(sumOfAppliances == 0) {
+            return 100;
+        }
+
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
