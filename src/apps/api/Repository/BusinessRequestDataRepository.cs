@@ -10,12 +10,13 @@ namespace Api.Repository;
 public class BusinessRequestDataRepository
 {
     private struct DataType {
-    public const string SOLAR_SCORE = "solar score";
-    public const string SOLAR_ARRAY = "solar array";
-    public const string SATELLITE_IMAGE = "satellite image";
-    public const string ELEVATION = "elevation";
-    public const string ADDRESS = "address";
-}
+        public const string SOLAR_SCORE = "solar score";
+        public const string SOLAR_ARRAY = "solar array";
+        public const string SATELLITE_IMAGE = "satellite image";
+        public const string ELEVATION = "elevation";
+        public const string ADDRESS = "address";
+        public const string SUNLIGHT_HOURS = "sunlight hours";
+    }
 
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
@@ -79,6 +80,10 @@ public class BusinessRequestDataRepository
                     var address = getAddress();
                     dataTypeResponse.Content = new StringContent(address);
                     break;
+                case DataType.SUNLIGHT_HOURS :
+                    var sunlightHours = GetSunlightHours(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(sunlightHours.ToString());
+                    break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
                     break;
@@ -93,6 +98,13 @@ public class BusinessRequestDataRepository
         }
     }
 
+    private double GetSunlightHours(double latitude, double longitude)
+    {
+        LocationDataModel? locationData = GetLocationDataModel(latitude, longitude).Result;
+
+        return solarDataHandler.getSunlightHours(locationData!.solarPanelsData!);
+    }
+
   private async Task<string> GetSatelliteImage(double latitude, double longitude)
   {
         LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
@@ -100,7 +112,7 @@ public class BusinessRequestDataRepository
         return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
   }
 
-  private async Task<String> GetSolarScore(double latitude, double longitude) 
+  private async Task<string> GetSolarScore(double latitude, double longitude) 
     {
         LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
                    
