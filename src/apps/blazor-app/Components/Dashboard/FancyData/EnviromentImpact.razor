@@ -1,28 +1,62 @@
+@using BlazorApp.FancyData
 @namespace BlazorApp.EnviromentImpact
 
 <div>
-    <p>Enviroment Impact in ten years</p>
-    @if(annualKWGenerated != null) 
-    {
-        <p>Total power saved: @(solarDataHandler.getPowerSaved((double)annualKWGenerated)*1000) kWh</p>
-        <p>Total CO2 saved: @solarDataHandler.getCO2Saved((double)annualKWGenerated) kg</p>
-        <p>Total water saved: @solarDataHandler.waterSaved((double)annualKWGenerated) L</p>
-        <p>Total coal not burnt (equivalent): @solarDataHandler.coalNotBurnt((double)annualKWGenerated) kg</p>
-        <p>Total trees planted: @solarDataHandler.treesPlanted((double)annualKWGenerated)</p>
-    }
+    <p class="text-primary-950 font-semibold text-center text-xl">Enviroment Impact</p>
+    <div class="mx-auto space-y-4 w-fit">
+
+    
+    <IconToolTip imageName="Bolt-Circle.svg" tooltipMessage="Total power saved">
+        <content>
+            <p>@totalPowerSaved kW</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="CO2.svg" tooltipMessage="Total CO2 saved">
+        <content>
+            <p>@totalCO2Saved kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Waterdrops.svg" tooltipMessage="Total water saved">
+        <content>
+            <p>@totalWaterSaved L</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Coal.svg" tooltipMessage="Total coal not burnt">
+        <content>
+            <p>@totalCoalNotBurnt kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Tree.svg" tooltipMessage="Total trees planted">
+        <content>
+            <p>@totalTreesPlanted</p>
+        </content>
+    </IconToolTip>
+    </div>
 </div>
 
 @code {
 
     [Parameter] public double? annualKWGenerated { get; set; }
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
+    private double totalPowerSaved = 0;
+    private double totalCO2Saved = 0;
+    private double totalWaterSaved = 0;
+    private double totalCoalNotBurnt = 0;
+    private double totalTreesPlanted = 0;
 
     protected override void OnInitialized()
     {
         if (annualKWGenerated == null)
         {
-            annualKWGenerated = 0;
+            @* annualKWGenerated = 0; *@
+            
         }
+        totalPowerSaved = Math.Round(solarDataHandler.getPowerSaved((double)annualKWGenerated) * 1000, 2);
+        totalCO2Saved = Math.Round(solarDataHandler.getCO2Saved((double)annualKWGenerated), 2);
+        totalWaterSaved = Math.Round(solarDataHandler.waterSaved((double)annualKWGenerated), 2);
+        totalCoalNotBurnt = Math.Round(solarDataHandler.coalNotBurnt((double)annualKWGenerated), 2);
+        totalTreesPlanted = Math.Round(solarDataHandler.treesPlanted((double)annualKWGenerated), 2);
+        StateHasChanged();
 
     }
 }

@@ -57,6 +57,9 @@
             <div class="md:w-1/2">
                 <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false"/>
             </div>
+            <div class="w-full flex">
+
+            
              @* solarPanelsData *@
             @if(solarPanelsData is not null){
 
@@ -94,12 +97,13 @@
             else{
             <p>Solar Panels Data is not available</p>
             }
+            <div class="w-1/2">
+            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+            </div>
+            </div>
         </div>
         <div>
             <ElevationGraph elevationValues="@horisonElevationData" />
-        </div>
-        <div>
-            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
         </div>
     </div>
 
@@ -120,6 +124,8 @@
 
     [Parameter]
     public byte[]? annualFluxData { get; set; }
+    [Parameter]
+    public int numSolarPanels { get; set; }
 
     [Parameter]
     public RooftopInformationModel? solarPanelsData { get; set; }
@@ -146,7 +152,7 @@
         }
         if(solarPanelsData is not null){
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
-            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(12, solarPanelsData);
+            annualKWGenerated = solarDataHandler.getAnnualKwGenerated(numSolarPanels, solarPanelsData);
             Console.WriteLine("Annual solar panel data:" + annualKWGenerated);
         }
 
