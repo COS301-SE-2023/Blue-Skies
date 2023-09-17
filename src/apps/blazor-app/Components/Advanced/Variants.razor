@@ -1,10 +1,12 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
-    <Heading css="mb-12 max-w-3xl mx-auto">
+    <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
-        <Subscript><p class="text-center">Lorem ipsum dolor sit amet consectetur adipiscing elit tortor eu egestas morbi sem vulputate etiam facilisis pellentesque ut quis."</p></Subscript>
+        <Subscript><p class="text-center">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. <br/>
+                                        If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance
+        </p></Subscript>
     </Heading>
     <div class="flex gap-20 scale-90 justify-center">
             @{applianceCount = appliances.Count(x => x.quantity > 0);}

@@ -654,6 +654,10 @@ public class SystemsDataHandler {
             }
         }
 
+        if(sumOfAppliances == 0) {
+            return 100;
+        }
+
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 24 - (float)daylightHours;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
@@ -674,6 +678,10 @@ public class SystemsDataHandler {
             {
                 sumOfAppliances += (float)(appliance.numberOfAppliances!) *  (float)appliance.powerUsage!;
             }
+        }
+
+        if(sumOfAppliances == 0) {
+            return 100;
         }
 
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
