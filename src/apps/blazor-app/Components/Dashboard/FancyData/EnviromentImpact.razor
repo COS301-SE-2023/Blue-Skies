@@ -2,7 +2,7 @@
 @namespace BlazorApp.EnviromentImpact
 
 <div>
-    <p class="text-primary-950 font-semibold text-center text-xl">Enviroment Impact</p>
+    <p class="text-primary-950 font-semibold text-center text-xl">Enviroment Impact Over 10 Years</p>
     <div class="mx-auto space-y-4 w-fit">
 
     
@@ -44,7 +44,7 @@
     private double totalCoalNotBurnt = 0;
     private double totalTreesPlanted = 0;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         if (annualKWGenerated == null)
         {
