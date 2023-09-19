@@ -29,7 +29,7 @@
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
                 <div class="flex gap-2">
-                    <SelectVariant @bind-value="value" />
+                    <SelectVariant @bind-value="value" type="@selectedAppliance" customAppliances="@customAppliances" />
                     <div @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance))'>
                         <Button style="pill">
                             <content>
@@ -81,6 +81,8 @@
     public double longitude { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
+    [Parameter]
+    public List<CustomApplianceModel>? customAppliances { get; set; }
     private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
     protected override void OnInitialized()

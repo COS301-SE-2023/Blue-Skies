@@ -69,7 +69,7 @@
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
                             <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                            <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                         </div>
                     }
                     else if (tabs[1].active)
@@ -100,6 +100,7 @@
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
     BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
@@ -109,6 +110,7 @@
     private List<SystemModel>? systems = new List<SystemModel>();
     private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
+    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
     private List<TabItemModel> tabs = new List<TabItemModel>
@@ -194,6 +196,9 @@
                 selectedSystem = i;
             }
         }
+
+        @* Get custom Appliances *@
+        customAppliances = await customApplianceClass.GetAllCustomAppliances();
         loadingService.HideLoadingScreen();
     }
 

@@ -478,7 +478,7 @@
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
-    private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+    
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
 
@@ -504,7 +504,6 @@
     private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
-    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Add", true),
@@ -548,8 +547,6 @@
         customPanelsInput = "" + systems[3].solarInput;
         customBatteriesSize = "" + systems[3].batterySize;
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
-        @* Get custom Appliances *@
-        customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
 
     /// <summary>
