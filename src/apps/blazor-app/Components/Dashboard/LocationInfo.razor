@@ -91,7 +91,7 @@
     public int solarScore { get; set; } 
     public int selectedSystem { get; set; }
 
-    protected override void OnInitialized(){
+    protected override void OnParametersSet(){
         for (int i = 0; i < systems!.Count; i++)
         {
             if (reports![selectedReport].systemId == systems[i].systemId)

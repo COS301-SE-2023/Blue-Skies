@@ -349,6 +349,7 @@ else
             }
             updateCharts();
         }
+        Console.WriteLine("Report All Appliance Count: " + reportAllAppliance.Count);
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
 
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
