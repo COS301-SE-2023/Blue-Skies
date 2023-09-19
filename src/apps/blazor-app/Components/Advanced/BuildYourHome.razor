@@ -480,6 +480,7 @@
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
+    private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
 
     [Parameter]
@@ -866,25 +867,12 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        if (await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId))
-        {
+        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, new List<ApplianceModel>());
+        if(reportId != -1){
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
-
-            reports = await reportClass.GetUserReports(userId);
-            if (reports.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReports", reports);
-                await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-                await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
-
-                foreach (var appliance in appliances)
-                {
-                    await reportApplianceClass.CreateReportAppliance(reports[reports.Count - 1].reportId, appliance);
-                }
-            }
-        }
-        else
-        {
+            await ProtectedSessionStore.SetAsync("createdReport", reportId);
+            await ProtectedSessionStore.SetAsync("currentReport", reportId);
+        }else{
             toastService.ShowToast("Error", "Report failed to save.", "error");
         }
         loadingService.ShowLoadingScreen();

@@ -15,7 +15,7 @@ export default class SystemController {
       `INSERT INTO [dbo].[systems] (systemSize, inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
       `OUTPUT Inserted.systemId` +
       ` VALUES ('custom','${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
-    var systemId: number;
+    let systemId: number;
     try {
       const request = new tedious.Request(
         query,
