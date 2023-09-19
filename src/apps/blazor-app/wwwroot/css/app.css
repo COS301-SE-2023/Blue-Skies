@@ -3213,8 +3213,7 @@ body {
 /* Tips on loading screen*/
 
 .tips {
-  color: rgb(124, 124, 124);
-  font-family: "Poppins",sans-serif;
+  color: #F68712;
   font-weight: 500;
   font-size: 25px;
   box-sizing: content-box;
@@ -3232,8 +3231,8 @@ body {
   display: block;
   height: 100%;
   padding-left: 6px;
-  color: #956afa;
-  animation: spin_4991 8s infinite;
+  color: #000F52;
+  animation: spin_4991 13s infinite;
 }
 
 @keyframes spin_4991 {
