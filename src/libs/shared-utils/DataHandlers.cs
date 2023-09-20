@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using OSGeo.GDAL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -54,12 +55,12 @@ public class SolarDataHandler
             locationDataModel.monthlyFluxData!,
             locationDataModel.maskData!
         );
-        for(int i = 0; i < monthlySolarRadiation.Length; i++)
+        for (int i = 0; i < monthlySolarRadiation.Length; i++)
         {
             DateRadiationModel dateRadiationModel = new DateRadiationModel();
 
             var year = locationDataModel.solarPanelsData!.imageryDate!.year;
-            var month = i+1;
+            var month = i + 1;
             var day = locationDataModel.solarPanelsData!.imageryDate!.day;
             DateTime date = new DateTime(year, month, day);
 
@@ -68,12 +69,12 @@ public class SolarDataHandler
 
             solarRadiationList.Add(dateRadiationModel);
         }
-        
+
 
         return solarRadiationList;
     }
 
-  public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
+    public double[] getMontlySolarRadiation(byte[] monthlyFluxData, byte[] maskData, bool roundOf = false)
     {
         double[] monthlySolarRadiation = new double[12];
 
@@ -233,13 +234,13 @@ public class SolarDataHandler
             )
             {
                 annualKwGenerated += solarPanel.yearlyEnergyDcKwh;
-                if(counter >= numberOfPanels)
+                if (counter >= numberOfPanels)
                 {
                     break;
                 }
                 counter++;
             }
-            if(counter < numberOfPanels)
+            if (counter < numberOfPanels)
             {
                 annualKwGenerated = annualKwGenerated * numberOfPanels / counter;
             }
@@ -877,7 +878,8 @@ public class SystemsDataHandler
     {
         float sumOfAppliances = CalculateAppliancePowerUsage(appliances, null);
 
-        if(sumOfAppliances == 0) {
+        if (sumOfAppliances == 0)
+        {
             return 100;
         }
 
@@ -938,4 +940,74 @@ public class SystemsDataHandler
         }
         return runningHoursPercentage;
     }
+}
+
+
+public class CalculationDataHandler
+{
+    SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
+    SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
+
+    public async Task<int> SaveCalculation(
+        string calculationName,
+        int userId,
+        string homeSize,
+        double latitude,
+        double longitude,
+        int systemId, List<ApplianceModel> appliances)
+    {
+        int reportId = await reportClass.CreateReport(
+            calculationName,
+            userId,
+            homeSize,
+            latitude,
+            longitude,
+            systemId
+        );
+
+        if (reportId == -1)
+        {
+            return -1;
+        }
+
+        foreach (var appliance in appliances)
+        {
+            await reportApplianceClass.CreateReportAppliance(
+                reportId,
+                appliance
+            );
+        }
+        return reportId;
+    }
+
+    // Update Report
+    public async Task<bool> UpdateCalculation(
+        int reportId,
+        List<ApplianceModel> appliances)
+    {
+        ReportModel? report = await reportClass.GetReport(reportId);
+        if (report == null)
+        {
+            return false;
+        }
+
+        if (await reportApplianceClass.DeleteByReportId(reportId) == false)
+        {
+            return false;
+        }
+
+        foreach (var appliance in appliances)
+        {
+            await reportApplianceClass.CreateReportAppliance(
+                reportId,
+                appliance
+            );
+        }
+
+
+
+        return true;
+
+    }
+
 }

@@ -478,8 +478,9 @@
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
-    private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+    
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
+    private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
 
     [Parameter]
@@ -504,7 +505,6 @@
     private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
-    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Add", true),
@@ -548,8 +548,6 @@
         customPanelsInput = "" + systems[3].solarInput;
         customBatteriesSize = "" + systems[3].batterySize;
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
-        @* Get custom Appliances *@
-        customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
 
     /// <summary>
@@ -750,23 +748,16 @@
     /// <summary>
     /// On appliance count changed, update the appliance count and calculate the running hours
     /// </summary>
-    private async void DecrementApplianceCount(ApplianceModel appliance)
+    private void DecrementApplianceCount(ApplianceModel appliance)
     {
-        if (appliance.quantity == 1)
-        {
-            appliance.fade = "fade-out-active";
-            StateHasChanged();
-            await Task.Delay(300);
-        }
         appliance.quantity--;
         if (appliance.quantity < 0)
         {
             appliance.quantity = 0;
         }
-        appliance.fade = "fade-in-active";
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         StateHasChanged();
         UpdateApplianceStorage();
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -876,25 +867,12 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        if (await reportClass.CreateReport(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId))
-        {
+        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, new List<ApplianceModel>());
+        if(reportId != -1){
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
-
-            reports = await reportClass.GetUserReports(userId);
-            if (reports.Count > 0)
-            {
-                await ProtectedSessionStore.SetAsync("userReports", reports);
-                await ProtectedSessionStore.SetAsync("createdReport", reports[reports.Count - 1].reportId);
-                await ProtectedSessionStore.SetAsync("currentReport", reports[reports.Count - 1]);
-
-                foreach (var appliance in appliances)
-                {
-                    await reportApplianceClass.CreateReportAppliance(reports[reports.Count - 1].reportId, appliance);
-                }
-            }
-        }
-        else
-        {
+            await ProtectedSessionStore.SetAsync("createdReport", reportId);
+            await ProtectedSessionStore.SetAsync("currentReport", reportId);
+        }else{
             toastService.ShowToast("Error", "Report failed to save.", "error");
         }
         loadingService.ShowLoadingScreen();
