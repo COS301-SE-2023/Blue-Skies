@@ -29,8 +29,8 @@
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
                 <div class="flex gap-2">
-                    <SelectVariant @bind-value="value" type="@selectedAppliance" customAppliances="@customAppliances" />
-                    <div @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance))'>
+                    <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
+                    <div @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
                         <Button style="pill">
                             <content>
                                 <p>Add Variant</p>
@@ -57,6 +57,7 @@
 
 @code {
     private string? value = "";
+    private int powerUsage = 0;
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
@@ -94,6 +95,10 @@
 
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
+    foreach (var appliance in applianceGroups)
+    {
+        Console.WriteLine(appliance.durationUsed);
+    }
     // Create a dictionary to store appliance variants by type
     Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
 
@@ -117,7 +122,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     }
 
     // Clear the customAppliances list
-    allAppliances.Clear();
+    @* allAppliances.Clear(); *@
 
 
     foreach (var applianceGroup in applianceGroups)
@@ -128,6 +133,8 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
             {
                 name = applianceGroup.name,
                 type = applianceGroup.type,
+                powerUsage = applianceGroup.powerUsage,
+                durationUsed = applianceGroup.durationUsed,
                 quantity = 0
             });
         }
@@ -147,6 +154,8 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
             {
                 name = "Default",
                 type = applianceGroup.type,
+                powerUsage = applianceGroup.powerUsage,
+                durationUsed = applianceGroup.durationUsed,
                 quantity = 1
             });
         }
@@ -187,13 +196,15 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
                 {
                     name = appliance.name,
                     type = appliance.type,
+                    powerUsage = appliance.powerUsage,
+                    durationUsed = appliance.durationUsed,
                     quantity = 1
                 });
             }
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type)
+    public void ChangeDefaultApplianceName(string newName, string type, int powerUsage)
     {
 
         var defaultAppliance = allAppliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
@@ -202,6 +213,22 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         {
             // Change the name of the found "Default" appliance
             defaultAppliance.name = newName;
+            defaultAppliance.powerUsage = powerUsage;
+            UpdateCustomAppliancesWithCounts();
+            StateHasChanged();
+        }
+        else
+        {
+            var existingAppliance = allAppliances.FirstOrDefault(appliance => appliance.type == type);
+            // Add a new appliance with the specified name
+            allAppliances.Add(new ApplianceModel
+            {
+                name = newName,
+                type = type,
+                quantity = 1,
+                durationUsed = existingAppliance!.durationUsed,
+                powerUsage = powerUsage
+            });
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
