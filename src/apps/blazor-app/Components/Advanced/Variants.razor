@@ -28,9 +28,10 @@
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
-                <div class="flex gap-2">
-                    <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
-                    <div @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
+                <div class="flex gap-2 mb-5">
+                        <label class="text-gray-400 my-auto">Search for your appliance:</label>
+                        <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
+                    <div class="my-auto" @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
                         <Button style="pill">
                             <content>
                                 <p>Add Variant</p>
@@ -45,9 +46,24 @@
                 {
                     <div class="flex gap-4">
                         <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.name</p>
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.durationUsed<span class="text-gray-400 text-end w-full"> hrs</span></p>
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.powerUsage<span class="text-gray-400 text-end w-full"> kwh</span></p>
+                        <div class="w-full">
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
+                            <input name="applianceName" id="applianceName" type="text" value="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                        </div>
+                        <div>
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
+                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
+                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
+                            </div>
+                        </div>
                     </div>
                 }
             }
