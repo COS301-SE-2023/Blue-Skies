@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using BlazorApp.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,6 +12,8 @@ builder.Services.AddSingleton<BlobStorageService>();
 builder.Services.AddScoped<LoadingService>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<ReportManager>();
+builder.Services.AddScoped<TutorialService>();
+builder.Services.AddScoped<ApplianceService>();
 
 var app = builder.Build();
 

@@ -1,0 +1,104 @@
+@inject BlazorApp.Data.ApplianceService applianceService
+
+<div class="flex flex-col relative w-full overflow-visible">
+   <input class="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @onkeyup="HandleKeyPress" @bind-value="search" @bind-value:event="oninput">
+
+    @if(showList == true) {
+        <div class="absolute rounded-xl shadow z-50 transition-all duration-200  @(typeAppliances.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
+            <ul id="suggestionList" class="flex flex-col mx-auto gap-2 shadow p-2 rounded-xl w-full z-40">
+                @{int i = 0;}
+                @foreach (var suggestion in typeAppliances)
+                {
+                    if (suggestion.model == "No results found")
+                    {
+                
+                        <li class="p-3 text-left rounded-xl">
+                            <p class="">
+                                @suggestion.model
+                            </p>
+                        </li>
+                        <hr class="h-px bg-gray-200 border-0 " />
+                        break;
+                    } else {
+                        if (i++ == maxSuggestions)
+                        {
+                            break;
+                        }
+                        <li @onclick="@(() => SelectAppliance(suggestion.model!, suggestion.powerUsage))" class="p-3 text-left hover:bg-primary-100 rounded-xl transition-all duration-300  @(typeAppliances.Count == 0 ? "opacity -translate-y-20" : "opacity-100")">
+                            <p class="font-bold">
+                                @suggestion.model
+                            </p>
+                        </li>
+                        <hr class="h-px bg-gray-200 border-0 " />
+                    }
+                }
+            </ul>
+        </div>
+
+    }
+</div>
+
+@code{
+    [Parameter]
+    public string? type { get; set; }
+    [Parameter]
+    public List<CustomApplianceModel> customAppliances { get; set; } = new List<CustomApplianceModel>();
+    [Parameter]
+    public string? value { get; set; }
+    [Parameter]
+    public EventCallback<string> valueChanged { get; set; }
+    [Parameter]
+    public int powerUsage { get; set; }
+    [Parameter]
+    public EventCallback<int> powerUsageChanged { get; set; }
+
+    public int maxSuggestions { get; set; } = 3;
+
+
+
+    private List<CustomApplianceModel> typeAppliances = new List<CustomApplianceModel>();
+    private string search = string.Empty;
+    private bool showList = false;
+    @* OnParametersSet *@
+    protected override void OnParametersSet()
+    {
+        customAppliances = customAppliances.Where(x => x.type == type).ToList();
+    }
+
+    protected override void OnInitialized()
+    {
+        applianceService.ClearSearchRequested += ClearSearch;
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        valueChanged.InvokeAsync(search);
+        typeAppliances = customAppliances.Where(x =>  x.model!.ToUpper().Contains(search.ToUpper()) == true).ToList();
+        StateHasChanged();
+        if(search.Length > 0)
+        {
+            showList = true;
+        }
+        else
+        {
+            showList = false;
+        }
+    }
+
+    private void SelectAppliance(string model, int powerUsage)
+    {
+        search = model;                                                                                                             
+        valueChanged.InvokeAsync(search);
+        powerUsageChanged.InvokeAsync(powerUsage);
+        showList = false;
+        StateHasChanged();
+    }
+
+    private void ClearSearch()
+    {
+        search = string.Empty;
+        valueChanged.InvokeAsync(search);
+        showList = false;
+        StateHasChanged();
+    }
+}

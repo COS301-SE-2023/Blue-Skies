@@ -6,13 +6,15 @@
 @using BlazorApp.Models;
 @using System.Text.Json
 @using BlazorApp.Components.Advanced
-@using BlazorApp.Components.Base
+@using BlazorApp.Components
+@using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-<div class="fade-in-enter-active">
-    @if (isLoaded) {
+<div class="fade-in-enter-active overflow-visible">
+    @if (isLoaded)
+    {
         @* Check if user is logged in *@
         if (!logIn)
         {
@@ -26,66 +28,132 @@
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/admin/keys");
         }
-        else if (longitude == 0 && latitude == 0)
-        {
-            @* deleteToast.Show("Solar Score not Created", "You must first create a solar score", "error"); *@
-            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/solarScore");
-        }
         else
         {
+            <Image ImageName="shapes.svg"
+            css="absolute -top-[33%] sm:transform scale-[0.6] -left-[38%] -z-20 w-2/3 h-full -rotate-45" alt="Shapes" />
             <div class="w-full px-20 ">
                 <div class="mb-20">
                     @* Load data to edit advanced calculations or display active calculation*@
                     @if (edit)
                     {
-                        var reportName = currentReport.reportName;
-                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
-                        systems="systems" reportName="@reportName"/>    
-                    } else {
-                    <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem"
-                        systems="systems" />
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
+                    }else{
+                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
                     }
+                        
                 </div>
-                <div class="flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
+                <div class="flex justify-center">
+                     <Button css="h-16 w-60 m-4" style="outline">
+                        <content>
+                            <p @onclick="ResetCalculation">Reset</p>
+                        </content>
+                    </Button>
+                    <Button css="h-16 w-60 m-4" style="pill">
+                        <content>
+                            @if (edit)
+                            {
+                                <p @onclick="SaveCalculation">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p @onclick="SaveCalculation">Save this calculation</p>
+                            }
+                        </content>
+                    </Button>
+                </div>
+                <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
                     <Tabs @bind-Items="tabs"></Tabs>
                 </div>
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" latitude="latitude" longitude="longitude"/>
+                            <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                         </div>
                     }
-                    else if (tabs[1].active) {
+                    else if (tabs[1].active)
+                    {
                         <div class="fade-in-active">
                             <Finanace />
+                        </div>
+                    }else if (tabs[2].active)
+                    {
+                        <div class="fade-in-active">
+                            @{
+                                int numSolarPanels = 0;
+                                if(systems != null) {
+                                    numSolarPanels = systems[selectedSystem].numberOfPanels;
+                                }
+                                <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
+                            }
                         </div>
                     }
                 </div>
             </div>
         }
-     }
+    }
 </div>
+<ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+    @if (edit)
+    {
+                                    <p>Rename this calculation?</p>
+    }
+    else
+    {
+                                    <p>Add a nickname for this calculation:</p>
+    }
+        <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+        <div class="flex flex-row gap-4 justify-center">
+        @if (edit)
+        {
+            @* <div @onclick="UpdateCalculation">
+                <Button>
+                    <content>
+                    Update
+                        </content>
+                </Button>
+            </div> *@
+        }
+        else
+        {
+            <div @onclick="CallSaveCalculation">
+                <Button>
+                    <content>
+                        Save
+                    </content>
+                </Button>
+            </div>
+        }
+            <div @onclick="ModalPopup.Dismiss">
+                <Button style="outline">
+                    <content>Cancel</content>
+                </Button>
+            </div>
+        </div>
+</ModalPopup>
 
 @code {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemDataClass = new SharedUtils.systemClass();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
+    private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+    private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+    BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
     private bool isLoaded = false;
     private bool edit = false;
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private List<ApplianceModel> appliances = new List<ApplianceModel>();
-    private List<ApplianceModel> advancedCalculationAppliances = new List<ApplianceModel>();
-    private List<SystemModel> systems = new List<SystemModel>();
-    private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    private List<ApplianceModel>? appliances;
+    private List<SystemModel>? systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
-    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
+    public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private double longitude = 0;
-    private double latitude = 0;
+    private int numSolarPanels = 0;
+    private string calculationName {get; set;} = "";
+    public ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -95,18 +163,19 @@
 
 
     /// <summary>
-///     <list type="bullet">
-///         <item>Check if user is logged in</item>
-///         <item>Check if logged in user is admin</item>
-///         <item>Check if the user has created a solar score</item>
-///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
-///         <item>Get the location data from the database</item>
-///         <item>Get all the appliances and systems from the database</item>
-///         <item>Set the selected system to the current report system</item>
-///     </list>
+    ///     <list type="bullet">
+    ///         <item>Check if user is logged in</item>
+    ///         <item>Check if logged in user is admin</item>
+    ///         <item>Check if the user has created a solar score</item>
+    ///         <item>Get the current report either half populated from the solarScore page or a fully populated if editing an existing report</item>
+    ///         <item>Get the location data from the database</item>
+    ///         <item>Get all the appliances and systems from the database</item>
+    ///         <item>Set the selected system to the current report system</item>
+    ///     </list>
     /// </summary>
     protected override async Task OnInitializedAsync()
-    {
+    { 
+        loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
@@ -117,24 +186,36 @@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
         edit = editing.Value;
 
-        var lat = await ProtectedSessionStore.GetAsync<double>("latitude");
-        latitude = lat.Value;
-        var lng = await ProtectedSessionStore.GetAsync<double>("longitude");
-        longitude = lng.Value;
+        var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
+        var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
+        double? lat = tempLatitude.Value;
+        double? lng = tempLongitude.Value;
 
-        var sSystem = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = sSystem.Value;
+        Console.WriteLine(lat);
+        Console.WriteLine(lng);
 
-        currentLocationData = await locationDataClass.GetLocationData(latitude, longitude);
+        if(lat == null || lng == null || lat == 0 || lng == 0)
+        {
+            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
+            NavigationManager.NavigateTo("/");
+        }
+        double latitude = lat ?? 0;
+        double longitude = lng ?? 0;
+        
+        LocationDataModel? result = await locationDataClass.GetLocationData(latitude, longitude);
+        if (result != null)
+        {
+            currentLocationData = result;
+        }
+
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
-            var reportAllAppl = await ProtectedSessionStore.GetAsync<List<ReportAllApplianceModel>>("userReportAllAppliance");
-            reportAllAppliance = reportAllAppl.Value!;
+            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
         } else {
-            currentReport.latitude = latitude;
-            currentReport.longitude = longitude;
+            currentReport.latitude = latitude!;
+            currentReport.longitude = longitude!;
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
@@ -154,9 +235,30 @@
             if (currentReport.systemId == systems[i].systemId)
             {
                 selectedSystem = i;
-            }  
+            }
         }
-        loadingService.HideLoadingScreen();
 
+        @* Get custom Appliances *@
+        customAppliances = await customApplianceClass.GetAllCustomAppliances();
+        loadingService.HideLoadingScreen();
+    }
+
+    public void SaveCalculation()
+    {
+        tabs[0].active = true;
+        tabs[1].active = false;
+        tabs[2].active = false;
+        ModalPopup.Show();
+    }
+    public async void CallSaveCalculation()
+    {
+        await ProtectedSessionStore.SetAsync("calculationName", calculationName);
+        buildYourHomeComponent!.SaveCalculation();
+        ModalPopup.Dismiss();
+    }
+    
+    public void ResetCalculation()
+    {
+        buildYourHomeComponent!.ResetHome();
     }
 }

@@ -3,6 +3,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
+@inject BlazorApp.Data.LoadingService loadingService
 @inject IJSRuntime JSRuntime
 
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
@@ -19,7 +20,7 @@
                 {
                     <option value="0">No reports to select</option>
                 }
-            </select>
+            </select> 
         </div>
     </div>
     <Heading>
@@ -44,6 +45,7 @@
 }
 
 @code {
+
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     [Parameter]
     public int selectedReport { get; set; }
@@ -55,7 +57,8 @@
     public DateTime? dateCreated { get; set; }
     [Parameter]
     public EventCallback updateLocation { get; set; }
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
+    [Parameter]
+    public EventCallback systemChanged { get; set; }
     private bool isReportGenerated = false;
     private  string pdfUrl = "";
     private int userId = 0;
@@ -105,10 +108,12 @@
     private async void GenerateReport()
     {
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
+        loadingService.ShowLoadingScreen();
         Console.WriteLine("Generating report");
         var data = Convert.ToBase64String(await reportClass.GenerateReport(userId, userReports![selectedReport].reportId));
         pdfUrl = $"data:application/pdf;base64,{data}";
         isReportGenerated = true;
+        loadingService.HideLoadingScreen();
         StateHasChanged();
     }
 }

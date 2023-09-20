@@ -7,12 +7,12 @@ export default class ReportController {
   public createReport = (req: Request, res: Response) => {
     const { reportName, userId, homeSize, latitude, longitude, systemId } =
       req.body;
-    console.log(reportName);
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const query =
       `INSERT INTO [dbo].[reports] (reportName, userId, homeSize, latitude, longitude, systemId, dateCreated)` +
+      `OUTPUT Inserted.reportId` +
       ` VALUES ('${reportName}', ${userId}, '${homeSize}', ${latitude}, ${longitude}, ${systemId}, '${dateCreated}')`;
-
+    let reportId: number;
     try {
       const request = new tedious.Request(
         query,
@@ -25,10 +25,15 @@ export default class ReportController {
             console.log(rowCount);
             return res.status(200).json({
               message: 'Report created successfully.',
+              reportId: reportId,
             });
           }
         }
       );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        reportId = columns[0].value;
+      });
 
       conn.execSql(request);
     } catch (error) {

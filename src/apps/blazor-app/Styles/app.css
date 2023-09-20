@@ -20,6 +20,7 @@ body {
     animation: fade .6s;
 }
 
+
 .fade-out-active {
     animation: fade-out .3s;
 }
@@ -61,6 +62,12 @@ body {
     animation-fill-mode: forwards;
 }
 
+.robert-slide-in-tutorial {
+    animation: robertSlideRight .3s;
+    animation-delay: .5s;
+    animation-fill-mode: forwards;
+}
+
 
 .robert-slide-in-left {
     animation: robertSlideLeft .5s;
@@ -77,6 +84,51 @@ body {
 /* Loading Classes */
 .loading-runner {
     animation: loadingRunner 1.5s infinite ease-in-out;
+}
+
+.slide-up-out {
+    animation: slideUpOut .5s;
+    animation-fill-mode: forwards;
+}
+
+.slide-down-in {
+    animation: slideDownIn .5s;
+    animation-fill-mode: forwards;
+}
+
+/* Wipe transitions */
+.wipe-down {
+    animation: wipeDown .5s;
+    animation-fill-mode: forwards;
+}
+
+.wipe-up {
+    animation: wipeUp .5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes wipeDown {
+    from { opacity: 1; height: 0%;}
+    to { opacity: 1; height: 100%;}
+}
+ 
+@keyframes wipeUp {
+    from { opacity: 1; height: 100%;}
+    to { opacity: 1; height: 0%; }
+}
+
+
+
+/* Slide Up Out Transition */
+@keyframes slideUpOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-100%); }
+}
+
+/* Slide Down In Transition */
+@keyframes slideDownIn {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Loading Runner */
@@ -147,4 +199,72 @@ body {
     from { opacity: 1; }
     to { opacity: 0; }
 }  
+
+/* Tips on loading screen*/
+  
+.tips { 
+    color: #000F52;
+    font-weight: 500;
+    font-size: 25px;
+    -webkit-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 40px;
+    padding: 10px 10px;
+    margin: auto;
+    border-radius: 8px;
+}
+  
+.words {
+    overflow: hidden;
+}
+  
+.word {
+    display: block;
+    height: 100%;
+    padding-left: 6px;
+    color: #F68712;
+    animation: spin_4991 13s infinite;
+}
+  
+@keyframes spin_4991 {
+    10% {
+        -webkit-transform: translateY(-105%);
+        transform: translateY(-105%);
+    }
+  
+    25% {
+        -webkit-transform: translateY(-100%);
+        transform: translateY(-100%);
+    }
+  
+    35% {
+        -webkit-transform: translateY(-205%);
+        transform: translateY(-205%);
+    }
+  
+    50% {
+        -webkit-transform: translateY(-200%);
+        transform: translateY(-200%);
+    }
+  
+    60% {
+        -webkit-transform: translateY(-305%);
+        transform: translateY(-305%);
+    }
+  
+    75% {
+        -webkit-transform: translateY(-300%);
+        transform: translateY(-300%);
+    }
+  
+    85% {
+        -webkit-transform: translateY(-405%);
+        transform: translateY(-405%);
+    }
+  
+    100% {
+        -webkit-transform: translateY(-400%);
+        transform: translateY(-400%);
+    }
+}
   

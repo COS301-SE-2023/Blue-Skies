@@ -66,14 +66,17 @@
                     <th scope="col" class="px-6 py-3 ">
                         <input type="checkbox" class="form-checkbox h-5 w-5  " />
                     </th>
-                    <th>Icon</th>
+                    
                     <th scope="col" class="px-6 py-3  ">
                         Appliance Type
                     </th>
                     <th scope="col" class="px-6 py-3 ">
                         Power usage
                     </th>
-                    <th scope="col" class="px-6 py-3 "></th>
+                    <th scope="col" class="px-6 py-3 ">
+                        Duration Used
+                    </th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -151,7 +154,7 @@
 
     private void AddAppliance()
     {
-        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0, recordState = true });
+        appliances.Add(new ApplianceModel { applianceId = -1, type = "", powerUsage = 0, durationUsed = 0.0f , recordState = true });
     }
 
     private async Task SaveAppliance(ApplianceModel appliance)
@@ -160,7 +163,7 @@
         if (appliance.applianceId == -1)
         {
             Console.WriteLine("Add Appliance");
-            if (await applianceClass.CreateAppliance(appliance.type!, appliance.powerUsage))
+            if (await applianceClass.CreateAppliance(appliance.type!, appliance.powerUsage, appliance.durationUsed))
             {
                 toastService.ShowToast("Appliance Added", "The appliance has been added successfully", "success");
                 appliances = await applianceClass.GetAllAppliances();
@@ -173,7 +176,7 @@
         else
         {
             Console.WriteLine("Update Appliance");
-            if (await applianceClass.UpdateAppliance(appliance.applianceId, appliance.type!, appliance.powerUsage))
+            if (await applianceClass.UpdateAppliance(appliance.applianceId, appliance.type!, appliance.powerUsage, appliance.durationUsed))
             {
                 toastService.ShowToast("Appliance Updated", "The appliance has been updated successfully", "success");
                 appliances = await applianceClass.GetAllAppliances();

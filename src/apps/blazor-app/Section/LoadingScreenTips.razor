@@ -1,0 +1,21 @@
+<div class="tips flex justify-center bg-gray-100">
+    <p class=""> We are fetching </p>
+    <div class="words">
+        @foreach (var word in words)
+        {
+            <span class="word">@word</span>
+        }
+    </div>
+</div>
+
+@code {
+    private List<string> words = new List<string> {
+        "images of the house",
+        "usable daylight hours",
+        "solar irradiance",
+        "rooftop analysis",
+        "Average Daily Energy Production",
+        "Height maps around your house",
+        "the sun's position throughout the year"        
+    };
+}

@@ -13,8 +13,9 @@ export default class SystemController {
     } = req.body;
     const query =
       `INSERT INTO [dbo].[systems] (systemSize, inverterOutput, numberOfPanels, batterySize, numberOfBatteries, solarInput)` +
+      `OUTPUT Inserted.systemId` +
       ` VALUES ('custom','${inverterOutput}', '${numberOfPanels}', '${batterySize}', '${numberOfBatteries}', '${solarInput}')`;
-
+    let systemId: number;
     try {
       const request = new tedious.Request(
         query,
@@ -28,10 +29,15 @@ export default class SystemController {
             console.log('Express: System created successfully.');
             return res.status(200).json({
               message: 'System created successfully.',
+              systemId: systemId,
             });
           }
         }
       );
+
+      request.on('row', (columns: tedious.ColumnValue[]) => {
+        systemId = columns[0].value;
+      });
 
       conn.execSql(request);
     } catch (error) {
@@ -90,8 +96,6 @@ export default class SystemController {
       });
     }
   };
-
-  
 
   public getSystem = (req: Request, res: Response) => {
     const { systemId } = req.params;

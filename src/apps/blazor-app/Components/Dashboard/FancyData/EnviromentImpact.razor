@@ -1,0 +1,61 @@
+@using BlazorApp.FancyData
+@namespace BlazorApp.EnviromentImpact
+
+<div>
+    <p class="text-primary-950 font-semibold text-center text-xl">Enviroment Impact Over 10 Years</p>
+    <div class="mx-auto space-y-4 w-fit">
+
+    
+    <IconToolTip imageName="Bolt-Circle.svg" tooltipMessage="Total power saved">
+        <content>
+            <p>@totalPowerSaved kW</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="CO2.svg" tooltipMessage="Total CO2 saved">
+        <content>
+            <p>@totalCO2Saved kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Waterdrops.svg" tooltipMessage="Total water saved">
+        <content>
+            <p>@totalWaterSaved L</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Coal.svg" tooltipMessage="Total coal not burnt">
+        <content>
+            <p>@totalCoalNotBurnt kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Tree.svg" tooltipMessage="Total trees planted">
+        <content>
+            <p>@totalTreesPlanted</p>
+        </content>
+    </IconToolTip>
+    </div>
+</div>
+
+@code {
+
+    [Parameter] public double? annualKWGenerated { get; set; }
+    private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
+    private double totalPowerSaved = 0;
+    private double totalCO2Saved = 0;
+    private double totalWaterSaved = 0;
+    private double totalCoalNotBurnt = 0;
+    private double totalTreesPlanted = 0;
+
+    protected override void OnParametersSet()
+    {
+        if (annualKWGenerated == null)
+        {
+            annualKWGenerated = 0;
+        }
+        totalPowerSaved = Math.Round(solarDataHandler.getPowerSaved((double)annualKWGenerated) * 1000, 2);
+        totalCO2Saved = Math.Round(solarDataHandler.getCO2Saved((double)annualKWGenerated), 2);
+        totalWaterSaved = Math.Round(solarDataHandler.waterSaved((double)annualKWGenerated), 2);
+        totalCoalNotBurnt = Math.Round(solarDataHandler.coalNotBurnt((double)annualKWGenerated), 2);
+        totalTreesPlanted = Math.Round(solarDataHandler.treesPlanted((double)annualKWGenerated), 2);
+        StateHasChanged();
+
+    }
+}

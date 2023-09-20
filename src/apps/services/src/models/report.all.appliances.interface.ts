@@ -3,5 +3,9 @@ export default interface IReportAllAppliance {
     applianceId: number;
     numberOfAppliances: number;
     type: string;
+    applianceModel: string;
     powerUsage: number;
+    durationUsed: number;
+    defaultPowerUsage: number;
+    defaultDurationUsed: number;
 }

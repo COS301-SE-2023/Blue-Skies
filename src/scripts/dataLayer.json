@@ -1,0 +1,10 @@
+{
+  "imageryDate": { "year": 2015, "month": 5, "day": 11 },
+  "imageryProcessedDate": { "year": 2021, "month": 3, "day": 10 },
+  "dsmUrl": "https://solar.googleapis.com/v1/geoTiff:get?id=83d5dc9461244e9f0d8f6519670a536a-e2f3665f40859d8cad1909f29ab68b7f",
+  "rgbUrl": "https://solar.googleapis.com/v1/geoTiff:get?id=6cee03356da16a40beed08ac8c999166-68ed8bd4d5582b3ba88744f064b4ba95",
+  "maskUrl": "https://solar.googleapis.com/v1/geoTiff:get?id=60a3f5331ad268ffdbbf6dec4bd69fd2-ff8d75c053322044fc89d0297f02b736",
+  "annualFluxUrl": "https://solar.googleapis.com/v1/geoTiff:get?id=16a80404db1367ac296dc63595e1a256-a78da7229df3574a5ff292c9e8c91b1d",
+  "monthlyFluxUrl": "https://solar.googleapis.com/v1/geoTiff:get?id=577e9e4c9e32bfac326cca82af85f4d7-9cb1f574fe63397db3908a8652e24cd5",
+  "imageryQuality": "HIGH"
+}

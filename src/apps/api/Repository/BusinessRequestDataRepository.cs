@@ -9,8 +9,23 @@ namespace Api.Repository;
 
 public class BusinessRequestDataRepository
 {
+    private struct DataType {
+        public const string SOLAR_SCORE = "solar score";
+        public const string SOLAR_ARRAY = "solar array";
+        public const string SATELLITE_IMAGE = "satellite image";
+        public const string ELEVATION = "elevation";
+        public const string ADDRESS = "address";
+        public const string SUNLIGHT_HOURS = "sunlight hours";
+    }
+
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
+    private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
+    // private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private string locationName = "";
+
     private string express = "http://localhost:3333";
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     public BusinessRequestDataRepository()
@@ -21,40 +36,57 @@ public class BusinessRequestDataRepository
             express = backendexpress;
         }
     }
-    
+
     public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
     {
+        string typeOfData = "Solar Irradiance";
         LocationDataModel? currentLocationData = new LocationDataModel();
         try
         {
-            var key = requestData.key;
             var data = requestData.data;
-            var latitude = requestData.latitude;
-            var longitude = requestData.longitude;
+            double latitude = requestData.latitude;
+            double longitude = requestData.longitude;
             
             //create data if not created yet
 
             var client = new HttpClient();
             var dataTypeResponse = new HttpResponseMessage();
            
-            LocationDataModel exists = await locationDataClass.GetLocationData(latitude, longitude);
-                    if (exists.data == null)
-                    {
-                        
-                        var initialDataModel = await locationDataClass.GetInitialData(latitude, longitude);
-                        byte[] imageBytes = await locationDataClass.DownloadImageFromGoogleMapsService(latitude, longitude);
-                        var location = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
-                       
-                        await locationDataClass.CreateLocationData(latitude, longitude, (float)initialDataModel.averageSunlightHours, Convert.ToBase64String(imageBytes), location);
-                    }
-
+            LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+            if (locationData == null)
+            {                
+                await locationDataClass.CreateLocationData(latitude, longitude, locationName);
+            }
+            typeOfData = data!;
             switch(data!.ToLower()){
-                case "solar score" : 
-                    String content = await solarScore(client, dataTypeResponse,(float) latitude,(float) longitude);
+                case DataType.SOLAR_SCORE : 
+                    var content = await GetSolarScore(latitude, longitude);
                     dataTypeResponse.Content = new StringContent(content);
                     break;
+                case DataType.SOLAR_ARRAY : 
+                    var solarArray = await GetSolarRadiationList(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
+                    break;
+                case DataType.SATELLITE_IMAGE : 
+                    var satelliteImage = await GetSatelliteImage(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(satelliteImage);
+                    break;
+                case DataType.ELEVATION :
+                    var elevation = await locationDataClass.GetHorisonElevationData(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(elevation!);
+                    break;
+                case DataType.ADDRESS :
+                    var address = getAddress();
+                    dataTypeResponse.Content = new StringContent(address);
+                    break;
+                case DataType.SUNLIGHT_HOURS :
+                    var sunlightHours = GetSunlightHours(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(sunlightHours.ToString());
+                    break;
                 default : 
-                    throw new Exception("Error: Not a valid option chosen for data type");
+                    dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
+                    break;
             }
             
            return await dataTypeResponse.Content.ReadAsStringAsync();
@@ -62,21 +94,52 @@ public class BusinessRequestDataRepository
         }
         catch (System.Exception)
         {
-
-            throw new Exception("Could not create solar irradiation");
+            throw new Exception("Could not create " + typeOfData!.ToLower() + ". NOTE that a valid address should be used.");
         }
     }
 
-    private async Task<String> solarScore(HttpClient client, HttpResponseMessage dataTypeResponse, float latitude, float longitude){
-         var dataType = new HttpRequestMessage(
-                        HttpMethod.Get, 
-                        API_PORT + "/locationData/getLocationDataWithoutImage/" + latitude.ToString().Replace(",",".") + "/" + longitude.ToString().Replace(",",".") 
-                    );
-                    Console.WriteLine("CALL: " + API_PORT + "/locationData/getLocationDataWithoutImage/" + longitude.ToString().Replace(",",".") + "/" + latitude.ToString().Replace(",","."));
-                    client = new HttpClient();
-                    dataTypeResponse = await client.SendAsync(dataType);
-                    Console.WriteLine("Response: " + dataTypeResponse);
-                    return await dataTypeResponse.Content.ReadAsStringAsync();
+    private double GetSunlightHours(double latitude, double longitude)
+    {
+        LocationDataModel? locationData = GetLocationDataModel(latitude, longitude).Result;
+
+        return solarDataHandler.getSunlightHours(locationData!.solarPanelsData!);
     }
+
+  private async Task<string> GetSatelliteImage(double latitude, double longitude)
+  {
+        LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
+
+        return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
+  }
+
+  private async Task<string> GetSolarScore(double latitude, double longitude) 
+    {
+        LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
+                   
+        return solarCalculator.getSolarScore(locationData!.solarPanelsData).ToString();
+    }
+
+    private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
+    {   
+        
+        LocationDataModel locationDataModel = await GetLocationDataModel(latitude, longitude);
+       
+        return solarCalculator.getSolarRadiationList(locationDataModel);
+    }
+
+    private string getAddress(){
+        return locationName;
+    }
+
+    private async Task<LocationDataModel> GetLocationDataModel(double latitude, double longitude)
+    {
+        LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
+        if(locationData==null){
+            locationData = await locationDataClass.CreateLocationData(latitude, longitude, locationName);
+        }
+        return locationData!;
+    }
+
     
+
 }
