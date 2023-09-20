@@ -29,9 +29,11 @@
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
             <div class="flex mt-2 gap-4 mb-5">
-                    <label class="text-gray-400 my-auto">Search for your appliance:</label>
-                    <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
-                <div  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
+                    <div class="w-2/3 my-auto">
+                        <label class="text-gray-400 my-auto">Search for your appliance:</label>
+                        <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
+                    </div>
+                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
                     <Button style="pill">
                         <content>
                             <p>Add Variant</p>
@@ -53,14 +55,14 @@
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
