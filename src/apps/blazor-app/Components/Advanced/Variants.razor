@@ -220,15 +220,27 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         else
         {
             var existingAppliance = allAppliances.FirstOrDefault(appliance => appliance.type == type);
-            // Add a new appliance with the specified name
-            allAppliances.Add(new ApplianceModel
+            if (existingAppliance == null)
             {
-                name = newName,
-                type = type,
-                quantity = 1,
-                durationUsed = existingAppliance!.durationUsed,
-                powerUsage = powerUsage
-            });
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = newName,
+                    type = type,
+                    quantity = 1,
+                    durationUsed = 20,
+                    powerUsage = powerUsage
+                });
+            } else {
+                // Add a new appliance with the specified name
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = newName,
+                    type = type,
+                    quantity = 1,
+                    durationUsed = existingAppliance!.durationUsed,
+                    powerUsage = powerUsage
+                });
+            }
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
