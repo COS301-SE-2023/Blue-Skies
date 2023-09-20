@@ -203,16 +203,14 @@ body {
 /* Tips on loading screen*/
   
 .tips { 
-    color: #F68712;
+    color: #000F52;
     font-weight: 500;
     font-size: 25px;
     -webkit-box-sizing: content-box;
     box-sizing: content-box;
     height: 40px;
     padding: 10px 10px;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
+    margin: auto;
     border-radius: 8px;
 }
   
@@ -224,7 +222,7 @@ body {
     display: block;
     height: 100%;
     padding-left: 6px;
-    color: #000F52;
+    color: #F68712;
     animation: spin_4991 13s infinite;
 }
   

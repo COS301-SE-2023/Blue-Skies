@@ -125,8 +125,10 @@ public class ReportsRepository
             var response = await client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
+                var data = await response.Content.ReadAsStringAsync();
+                var report = JsonSerializer.Deserialize<Reports>(data);
                 Reports rep = new Reports();
-                rep.reportId = -1;
+                rep.reportId = report!.reportId;
                 rep.reportName = reportName;
                 rep.userId = userId;
                 rep.systemId = systemId;

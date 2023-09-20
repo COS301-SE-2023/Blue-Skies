@@ -564,7 +564,7 @@ public class reportClass
     // <summary>
     /// Create a new report in the database
     /// </summary>
-    public async Task<bool> CreateReport(
+    public async Task<int> CreateReport(
         string calculationName,
         int userId,
         string homeSize,
@@ -596,13 +596,15 @@ public class reportClass
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            return true;
+            var data = await response.Content.ReadAsStringAsync();
+            var reportInfo = JsonSerializer.Deserialize<ReportModel>(data)!;
+            return reportInfo.reportId;
         }
         else
         {
             Console.WriteLine("Failed to create report");
         }
-        return false;
+        return -1;
     }
 
     /// <summary>
@@ -1051,14 +1053,17 @@ public class reportApplianceClass
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/ReportAppliance/create");
+        var postBody = new
+        {
+            reportId = reportId,
+            applianceId = appliance.applianceId,
+            numberOfAppliances = appliance.quantity,
+            applianceModel = appliance.type,
+            powerUsage = appliance.powerUsage,
+            durationUsed = appliance.durationUsed
+        };
         var content = new StringContent(
-            "{\r\n  \"reportId\": "
-                + reportId
-                + ",\r\n  \"applianceId\": "
-                + appliance.applianceId
-                + ",\r\n  \"numberOfAppliances\": "
-                + appliance.quantity
-                + "\r\n}",
+            JsonSerializer.Serialize(postBody),
             null,
             "application/json"
         );
@@ -1094,6 +1099,17 @@ public class reportApplianceClass
         {
             Console.WriteLine("Failed to update ReportAppliance");
         }
+    }
+
+    public async Task<bool> DeleteByReportId(int reportId)
+    {
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Delete,
+            API_PORT + "/ReportAppliance/deleteReportId/" + reportId
+        );
+        var response = await client.SendAsync(request);
+        return response.IsSuccessStatusCode;
     }
 }
 
