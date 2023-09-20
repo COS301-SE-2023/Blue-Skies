@@ -1,6 +1,6 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 
-<div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
+<div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full z-20">
     <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
@@ -28,15 +28,17 @@
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
-                <p @onclick="@(() => ChangeDefaultApplianceName("Hisense", selectedAppliance))">Hello</p>
-                <div class="flex gap-2">
-                    <SelectVariant />
+            <div class="flex mt-2 gap-4 mb-5">
+                    <label class="text-gray-400 my-auto">Search for your appliance:</label>
+                    <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
+                <div  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
                     <Button style="pill">
                         <content>
                             <p>Add Variant</p>
                         </content>
                     </Button>
                 </div>
+            </div>
 
             @foreach (var item in customAppliancesWithCounts!)
             {
@@ -44,9 +46,24 @@
                 {
                     <div class="flex gap-4">
                         <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.name</p>
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.durationUsed<span class="text-gray-400 text-end w-full"> hrs</span></p>
-                        <p class="bg-white h-fit p-3 rounded-md w-full my-auto -translate-y-4">@item.powerUsage<span class="text-gray-400 text-end w-full"> kwh</span></p>
+                        <div class="w-full">
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
+                            <input name="applianceName" id="applianceName" type="text" value="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                        </div>
+                        <div>
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
+                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
+                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-full h-10 my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
+                            </div>
+                        </div>
                     </div>
                 }
             }
@@ -55,6 +72,8 @@
 </div>
 
 @code {
+    private string? value = "";
+    private int powerUsage = 0;
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
@@ -79,6 +98,8 @@
     public double longitude { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
+    [Parameter]
+    public List<CustomApplianceModel>? customAppliances { get; set; }
     private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
     protected override void OnInitialized()
@@ -90,6 +111,10 @@
 
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
+    foreach (var appliance in applianceGroups)
+    {
+        Console.WriteLine(appliance.durationUsed);
+    }
     // Create a dictionary to store appliance variants by type
     Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
 
@@ -113,7 +138,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     }
 
     // Clear the customAppliances list
-    allAppliances.Clear();
+    @* allAppliances.Clear(); *@
 
 
     foreach (var applianceGroup in applianceGroups)
@@ -124,6 +149,8 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
             {
                 name = applianceGroup.name,
                 type = applianceGroup.type,
+                powerUsage = applianceGroup.powerUsage,
+                durationUsed = applianceGroup.durationUsed,
                 quantity = 0
             });
         }
@@ -143,6 +170,8 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
             {
                 name = "Default",
                 type = applianceGroup.type,
+                powerUsage = applianceGroup.powerUsage,
+                durationUsed = applianceGroup.durationUsed,
                 quantity = 1
             });
         }
@@ -183,13 +212,15 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
                 {
                     name = appliance.name,
                     type = appliance.type,
+                    powerUsage = appliance.powerUsage,
+                    durationUsed = appliance.durationUsed,
                     quantity = 1
                 });
             }
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type)
+    public void ChangeDefaultApplianceName(string newName, string type, int powerUsage)
     {
 
         var defaultAppliance = allAppliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
@@ -198,9 +229,38 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         {
             // Change the name of the found "Default" appliance
             defaultAppliance.name = newName;
+            defaultAppliance.powerUsage = powerUsage;
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
+        else
+        {
+            var existingAppliance = allAppliances.FirstOrDefault(appliance => appliance.type == type);
+            if (existingAppliance == null)
+            {
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = newName,
+                    type = type,
+                    quantity = 1,
+                    durationUsed = 20,
+                    powerUsage = powerUsage
+                });
+            } else {
+                // Add a new appliance with the specified name
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = newName,
+                    type = type,
+                    quantity = 1,
+                    durationUsed = existingAppliance!.durationUsed,
+                    powerUsage = powerUsage
+                });
+            }
+            UpdateCustomAppliancesWithCounts();
+            StateHasChanged();
+        }
+        applianceService.ClearSearch();
     }
 
 

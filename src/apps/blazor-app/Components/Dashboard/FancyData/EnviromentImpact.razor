@@ -48,8 +48,7 @@
     {
         if (annualKWGenerated == null)
         {
-            @* annualKWGenerated = 0; *@
-            
+            annualKWGenerated = 0;
         }
         totalPowerSaved = Math.Round(solarDataHandler.getPowerSaved((double)annualKWGenerated) * 1000, 2);
         totalCO2Saved = Math.Round(solarDataHandler.getCO2Saved((double)annualKWGenerated), 2);
