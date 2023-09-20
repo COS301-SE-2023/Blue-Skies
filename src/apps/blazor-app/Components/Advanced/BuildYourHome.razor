@@ -615,8 +615,6 @@
             appliance.quantity = appliances[i].quantity;
             applianceQuantities.Add(appliance);
         }
-
-
     }
 
     public void CreateCustomSystem()
@@ -867,10 +865,16 @@
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
-    private async void SaveCalculation()
+    public async void SaveCalculation()
     {
         ModalPopup.Dismiss();
         ShowLoadingScreen();
+        var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
+        if (calcName.Value != null)
+        {
+            calculationName = calcName.Value;
+            await ProtectedSessionStore.DeleteAsync("calculationName");
+        }
         if (selectedSystem == 3)
         {
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);

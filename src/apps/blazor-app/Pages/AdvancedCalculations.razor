@@ -6,7 +6,7 @@
 @using BlazorApp.Models;
 @using System.Text.Json
 @using BlazorApp.Components.Advanced
-@using BlazorApp.Components.Base
+@using BlazorApp.Components
 @using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
@@ -88,6 +88,44 @@
         }
     }
 </div>
+<ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+    @if (edit)
+    {
+                                    <p>Rename this calculation?</p>
+    }
+    else
+    {
+                                    <p>Add a nickname for this calculation:</p>
+    }
+        <Input @bind-InputValue="calculationName" placeholder="Nickname" />
+        <div class="flex flex-row gap-4 justify-center">
+        @if (edit)
+        {
+            @* <div @onclick="UpdateCalculation">
+                <Button>
+                    <content>
+                    Update
+                        </content>
+                </Button>
+            </div> *@
+        }
+        else
+        {
+            <div @onclick="CallSaveCalculation">
+                <Button>
+                    <content>
+                        Save
+                    </content>
+                </Button>
+            </div>
+        }
+            <div @onclick="ModalPopup.Dismiss">
+                <Button style="outline">
+                    <content>Cancel</content>
+                </Button>
+            </div>
+        </div>
+</ModalPopup>
 
 @code {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
@@ -106,6 +144,8 @@
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
     private int numSolarPanels = 0;
+    private string calculationName {get; set;} = "";
+    public ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),
@@ -195,7 +235,16 @@
 
     public void SaveCalculation()
     {
-        buildYourHomeComponent!.ModalPopup.Show();
+        tabs[0].active = true;
+        tabs[1].active = false;
+        tabs[2].active = false;
+        ModalPopup.Show();
+    }
+    public async void CallSaveCalculation()
+    {
+        await ProtectedSessionStore.SetAsync("calculationName", calculationName);
+        buildYourHomeComponent!.SaveCalculation();
+        ModalPopup.Dismiss();
     }
     
     public void ResetCalculation()
