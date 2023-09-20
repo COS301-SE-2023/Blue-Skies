@@ -57,36 +57,36 @@
                     if (displayCreatedCustomSystem)
                     {
                         var customSize = systems[3].inverterOutput + "kw";
-                                                <div @onclick="CreateCustomSystem"
-                                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
-                                                    <p class="font-semibold">@customSize</p>
-                                                </div>
+                        <div @onclick="CreateCustomSystem"
+                            class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                            <p class="font-semibold">@customSize</p>
+                        </div>
                     }
                     else
                     {
-                                                <div>
-                                                    <div class="gap-2 px-6">
-                                                        <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
-                                                    </div>
-                                                    <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
-                                                        <Button style="pill" >
-                                                            <content>
-                                                                <p  class="font-semibold">Create</p>
-                                                            </content>
-                                                        </Button>
-                                                    </div>
-                                                </div>
+                    <div>
+                        <div class="gap-2 px-6">
+                            <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                        </div>
+                        <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                            <Button style="pill" >
+                                <content>
+                                    <p  class="font-semibold">Create</p>
+                                </content>
+                            </Button>
+                        </div>
+                    </div>
                     }
                 }
                 else
                 {
-                                            <div @onclick="CustomSystemSelected">
-                                                <Button style="pill" >
-                                                    <content>
-                                                        <p  class="font-semibold">Custom</p>
-                                                    </content>
-                                                </Button>
-                                            </div>
+                    <div @onclick="CustomSystemSelected">
+                        <Button style="pill" >
+                            <content>
+                                <p  class="font-semibold">Custom</p>
+                            </content>
+                        </Button>
+                    </div>
                 }
                 </div>
         </div>
@@ -116,19 +116,19 @@
                 {
                     @foreach (var appliance in appliances)
                     {
-                                            <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                            </div>
+                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
                 }
                 else
                 {
                     @foreach (var appliance in appliances)
                     {
-                                            <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                                <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                    imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                            </div>
+                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                        </div>
                     }
                 }
             </div>
@@ -178,21 +178,21 @@
         <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
             @if (showCustomSystem)
             {
-                        <div @onclick='@(() => CustomSystemModal("Panels"))'>
-                            <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
-                                count=@systems[3].numberOfPanels />
-                        </div>
-                        <div @onclick='@(() => CustomSystemModal("Batteries"))'>
-                            <Appliance ImageName="Batteries.svg" name="Number of Batteries"
-                                count=@systems[3].numberOfBatteries />
-                        </div>
+                <div @onclick='@(() => CustomSystemModal("Panels"))'>
+                    <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                        count=@systems[3].numberOfPanels />
+                </div>
+                <div @onclick='@(() => CustomSystemModal("Batteries"))'>
+                    <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                        count=@systems[3].numberOfBatteries />
+                </div>
             }
             else
             {
-                        <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
-                            count=@systems[selectedSystem].numberOfPanels />
-                        <Appliance ImageName="Batteries.svg" name="Number of Batteries"
-                            count=@systems[selectedSystem].numberOfBatteries />
+                <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                    count=@systems[selectedSystem].numberOfPanels />
+                <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                    count=@systems[selectedSystem].numberOfBatteries />
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
@@ -625,7 +625,7 @@
             toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
         } else if (displayCreatedCustomSystem)
         {
-            
+
             displayCreatedCustomSystem = false;
         }
         else

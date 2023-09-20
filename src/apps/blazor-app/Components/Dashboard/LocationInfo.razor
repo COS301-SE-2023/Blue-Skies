@@ -3,7 +3,8 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 
 <div class="relative flex w-full justify-center md:flex-row flex-col gap-3 @css">
-    <Image ImageName="Robert_Waving.png" css="absolute left-20 -top-10 z-0 h-20" alt="Rob" /> 
+    <Image ImageName="Robert_Waving.png" css="absolute left-32 -top-10 z-0 h-28" alt="Rob" />
+    <Image ImageName="Robert_Confused_Half.png" css="absolute right-20 bottom-0 z-0 h-12" alt="Rob" />
     <div class="w-full md:w-2/3 z-10">
         <Card>
             <Heading>
@@ -91,7 +92,7 @@
     public int solarScore { get; set; } 
     public int selectedSystem { get; set; }
 
-    protected override void OnInitialized(){
+    protected override void OnParametersSet(){
         for (int i = 0; i < systems!.Count; i++)
         {
             if (reports![selectedReport].systemId == systems[i].systemId)

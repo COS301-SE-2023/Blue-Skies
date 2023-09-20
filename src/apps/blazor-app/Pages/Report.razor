@@ -117,26 +117,6 @@
                         <h1 class="text-center">Your Solar flux</h1>
                         <Image ImageName="@satteliteImageSrc" alt="Solar Sattelite Image" css="mx-auto" />
                     </div>
-                    <div>
-                        <h1 class="text-center">Monthly solar flux</h1>
-                        <div class="grid grid-cols-3 gap-4">
-                            @if(monthlyFluxMap is not null)
-                            {
-                                string[] monthNames = new string[] {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-                                int count = 0;
-                                foreach (var item in monthlyFluxMap)
-                                {
-                                    <div class="flex-col">
-                                        <Image ImageName="@item" alt="Solar Sattelite Image per month" css="mx-auto" />
-                                        <p class="text-center">@monthNames[count]</p> 
-                                    </div>
-                                    count++;
-                                }
-                            }
-
-                        </div>
-                    </div>
-
                     <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
                 </div>
             </div>
@@ -171,9 +151,6 @@
     private string? satteliteImageSrc = "";
     public string solarScore = "";
     public string avgEnergyProduction = "";
-    private string?[]? monthlyFluxMap = null;
-    @* OnInitialized *@
-
     protected override async Task OnInitializedAsync()
     {
         report = await reportClass.GetReport(int.Parse(ReportId!));   
@@ -192,7 +169,6 @@
                 locationData = resultLocationData;
                 SatteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
                 satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(locationData.annualFluxData!, locationData.satteliteImageData!, locationData.maskData!);
-                monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(locationData.monthlyFluxData!, locationData.satteliteImageData!, locationData.maskData!);
             }
 
             Console.WriteLine("Current location: " + locationData.locationName);

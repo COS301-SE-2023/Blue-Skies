@@ -62,12 +62,12 @@ else
                                 var appliance = reportAllAppliance[i].type;
                                 var count = reportAllAppliance[i].numberOfAppliances;
                                 string iconName = appliance + ".svg";
-                                                <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
+                                <Appliance ImageName="@iconName" Name="@appliance" Count="@count" />
                             }
                         }
                         if (reportAllAppliance.Count == 0)
                         {
-                                                                                                        <p class="text-center">No appliances added</p>
+                            <p class="text-center">No appliances added</p>
                         }
                     }
                         </div>
@@ -85,25 +85,25 @@ else
                                 dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
                             }
                         }
-                                                            <DaylightChart hours="@dlh" daylightHours="@daylight" />
-                                                            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                                                                <p class="text-5xl text-primary-900 font-semibold">
-                                                                    @{
+                        <DaylightChart hours="@dlh" daylightHours="@daylight" />
+                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                            <p class="text-5xl text-primary-900 font-semibold">
+                                @{
                                     if (dlh == (24 - daylight))
                                     {
-                                                                                                                    <p>@dlh+</p>
+                                        <p>@dlh+</p>
                                     }
                                     else
                                     {
-                                                                                                                    <p>@dlh</p>
+                                        <p>@dlh</p>
                                                 }
                                             }
-                                                                        </p>
-                                                                        <p class="text-5xl text-gray-400 font-bold">h</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="hidden md:block w-full">
+                                            </p>
+                                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:block w-full">
                                 @{
                                     var imageName = "";
                                     if (reports.Count > selectedReport)
@@ -223,6 +223,7 @@ else
     private int userId = -1;
     [Parameter]
     public int selectedReport { get; set; }
+    public int selectedSystem { get; set; }
     private DateTime selectedDate;
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
@@ -268,7 +269,8 @@ else
                 }
             }
             await ProtectedSessionStore.DeleteAsync("createdReport");
-
+            allSystems = await systemClass.GetAllSystems();
+            await SetSelectedSystem();
             currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
             if (currentLocationData != null)
             {
@@ -288,7 +290,18 @@ else
             renderCharts();
         }
 
-        allSystems = await systemClass.GetAllSystems();
+        
+
+        reportManager.EditReportRequested += Edit;
+        reportManager.DeleteReportRequested += ShowModal;
+        isLoaded = true;
+        loadingService.HideLoadingScreen();
+
+    }
+
+    public async Task SetSelectedSystem()
+    {
+        systems.Clear();
         for (int i = 0; i < allSystems.Count; i++)
         {
             if (i < 3 || allSystems[i].systemId == reports[selectedReport].systemId)
@@ -302,16 +315,13 @@ else
             {
                 if (systems[i].systemId == reports[selectedReport].systemId)
                 {
-                    await ProtectedSessionStore.SetAsync("selectedSystem", i);          
+                    await ProtectedSessionStore.SetAsync("selectedSystem", i);
+                    selectedSystem = i;
                 }
             }
             await ProtectedSessionStore.SetAsync("systems", systems);
         }
-
-        reportManager.EditReportRequested += Edit;
-        reportManager.DeleteReportRequested += ShowModal;
-        isLoaded = true;
-        loadingService.HideLoadingScreen();
+        Console.WriteLine("Selected Report: " + reports[selectedReport].systemId + " - Selected System: " + systems[selectedSystem].systemId);
 
     }
 
@@ -320,6 +330,7 @@ else
         loadingService.ShowLoadingScreen();
         Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
+        await SetSelectedSystem();
 
         currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
         if (currentLocationData != null)
@@ -353,6 +364,7 @@ else
             }
             updateCharts();
         }
+        Console.WriteLine("Report All Appliance Count: " + reportAllAppliance.Count);
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
 
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);

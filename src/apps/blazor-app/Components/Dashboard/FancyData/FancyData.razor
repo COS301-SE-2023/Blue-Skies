@@ -16,7 +16,6 @@
     </Heading>
     <div class="w-full space-y-3">
         <div class="relative md:flex w-fit mx-auto md:space-x-5 items-center">
-            <Image ImageName="Robert_Sitting.png" css="absolute left-96 top-20 z-0 h-20 rotate-[60deg]" alt="Rob" />
             <div class="z-10">
                 <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
@@ -150,7 +149,7 @@
     private Wholeroofstats? wholeroofstats = null;
     private List<Solarpanel?> solarPanels = new List<Solarpanel?>();
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {   
         if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
             satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
@@ -162,7 +161,6 @@
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
             annualKWGenerated = solarDataHandler.getAnnualKwGenerated(numSolarPanels, solarPanelsData);
         }
-
     }
 
     private void IncreamentMonthImage(){
