@@ -28,17 +28,17 @@
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
-                <div class="flex gap-2 mb-5">
-                        <label class="text-gray-400 my-auto">Search for your appliance:</label>
-                        <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
-                    <div class="my-auto" @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
-                        <Button style="pill">
-                            <content>
-                                <p>Add Variant</p>
-                            </content>
-                        </Button>
-                    </div>
+            <div class="flex mt-2 gap-4 mb-5">
+                    <label class="text-gray-400 my-auto">Search for your appliance:</label>
+                    <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
+                <div  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
+                    <Button style="pill">
+                        <content>
+                            <p>Add Variant</p>
+                        </content>
+                    </Button>
                 </div>
+            </div>
 
             @foreach (var item in customAppliancesWithCounts!)
             {
@@ -260,6 +260,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
+        applianceService.ClearSearch();
     }
 
 
