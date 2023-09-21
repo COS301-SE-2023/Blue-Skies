@@ -1292,6 +1292,10 @@ video {
   height: 100vh;
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -1440,6 +1444,10 @@ video {
 
 .w-1\/4 {
   width: 25%;
+}
+
+.w-9 {
+  width: 2.25rem;
 }
 
 .min-w-fit {
@@ -2794,6 +2802,10 @@ video {
 
 .duration-\[400ms\] {
   transition-duration: 400ms;
+}
+
+.duration-\[300ms\] {
+  transition-duration: 300ms;
 }
 
 .ease-in-out {

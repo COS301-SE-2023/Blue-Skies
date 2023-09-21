@@ -1058,7 +1058,7 @@ public class reportApplianceClass
             reportId = reportId,
             applianceId = appliance.applianceId,
             numberOfAppliances = appliance.quantity,
-            applianceModel = appliance.type,
+            applianceModel = appliance.name,
             powerUsage = appliance.powerUsage,
             durationUsed = appliance.durationUsed
         };

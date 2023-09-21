@@ -68,8 +68,8 @@
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                            <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                            <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                         </div>
                     }
                     else if (tabs[1].active)
@@ -160,6 +160,7 @@
         new TabItemModel("Finance", false),
         new TabItemModel("Fancy", false)
     };
+    private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
 
     /// <summary>

@@ -1,4 +1,5 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
+@using System.Text.Json;
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full z-20">
     <Heading css="mb-12 max-w-4xl mx-auto">
@@ -100,7 +101,8 @@
     public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
     public List<CustomApplianceModel>? customAppliances { get; set; }
-    private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
+    [Parameter]
+    public List<ApplianceModel> allAppliances { get; set; } 
 
     protected override void OnInitialized()
     {
@@ -186,7 +188,9 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 
     UpdateCustomAppliancesWithCounts();
     StateHasChanged();
-}
+
+    Console.WriteLine(JsonSerializer.Serialize(allAppliances));
+    }
     List<ApplianceModel>? customAppliancesWithCounts;
 
     // Function to update the customAppliancesWithCounts list
