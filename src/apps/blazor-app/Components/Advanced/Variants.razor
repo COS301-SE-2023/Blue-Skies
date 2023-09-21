@@ -103,7 +103,7 @@
     [Parameter]
     public List<CustomApplianceModel>? customAppliances { get; set; }
     [Parameter]
-    public List<ApplianceModel> allAppliances { get; set; } 
+    public List<ApplianceModel>? allAppliances { get; set; } 
 
     protected override void OnInitialized()
     {
@@ -115,11 +115,13 @@
     public void SetPowerUsage(ChangeEventArgs e)
     {
         powerUsage = Convert.ToInt32(e.Value);
+        Console.WriteLine("Power Usage: "+powerUsage);
     }
 
     public void SetDurationUsed(ChangeEventArgs e)
     {
         durationUsed = Convert.ToDouble(e.Value);
+        Console.WriteLine("Duration of Use: "+durationUsed);
     }
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
@@ -210,7 +212,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
         customAppliancesWithCounts = new List<ApplianceModel>();
 
-        foreach (var appliance in allAppliances)
+        foreach (var appliance in allAppliances!)
         {
             // Check if an appliance with the same name and type exists in customAppliancesWithCounts
             var existingAppliance = customAppliancesWithCounts.FirstOrDefault(a =>
@@ -236,10 +238,10 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type, int powerUsage, double durationUsed)
+    public void ChangeDefaultApplianceName(string newName, string type, int newPower, double newDuration)
     {
 
-        var defaultAppliance = allAppliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
+        var defaultAppliance = allAppliances!.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
 
         if(newName == "")
         {
@@ -250,33 +252,34 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         {
             // Change the name of the found "Default" appliance
             defaultAppliance.name = newName;
-            defaultAppliance.powerUsage = powerUsage;
+            defaultAppliance.powerUsage = newPower;
+            defaultAppliance.durationUsed = newDuration;
 
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
         else
         {
-            var existingAppliance = allAppliances.FirstOrDefault(appliance => appliance.type == type);
+            var existingAppliance = allAppliances!.FirstOrDefault(appliance => appliance.type == type);
             if (existingAppliance == null)
             {
-                allAppliances.Add(new ApplianceModel
+                allAppliances!.Add(new ApplianceModel
                 {
                     name = newName,
                     type = type,
                     quantity = 1,
                     durationUsed = 20,
-                    powerUsage = powerUsage
+                    powerUsage = newPower
                 });
             } else {
                 // Add a new appliance with the specified name
-                allAppliances.Add(new ApplianceModel
+                allAppliances!.Add(new ApplianceModel
                 {
                     name = newName,
                     type = type,
                     quantity = 1,
-                    durationUsed = durationUsed,
-                    powerUsage = powerUsage
+                    durationUsed = newDuration,
+                    powerUsage = newPower
                 });
             }
             UpdateCustomAppliancesWithCounts();
