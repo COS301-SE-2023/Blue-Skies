@@ -436,6 +436,8 @@
     public bool edit { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
+    [Parameter]
+    public List<ApplianceModel> allAppliances { get; set; } 
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -468,6 +470,8 @@
     private string customBatteriesSize = "";
     private string customModalTitle = "";
     private bool isNumericValue = true;
+
+    
 
     /// <summary>
     /// On initialisation, get the user id from local storage
@@ -795,6 +799,7 @@
 
     public async void SaveCalculation()
     {
+        Console.WriteLine("Saving Calculation");
         ModalPopup.Dismiss();
         ShowLoadingScreen();
         var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
@@ -808,16 +813,17 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, new List<ApplianceModel>());
+        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
         if(reportId != -1){
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
             await ProtectedSessionStore.SetAsync("createdReport", reportId);
             await ProtectedSessionStore.SetAsync("currentReport", reportId);
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/dashboard");
         }else{
             toastService.ShowToast("Error", "Report failed to save.", "error");
         }
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/dashboard");
+        
     }
 
     private async Task UpdateCalculation()
