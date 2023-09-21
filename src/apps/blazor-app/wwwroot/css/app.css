@@ -1179,6 +1179,10 @@ video {
   margin-top: -3.5rem;
 }
 
+.ml-5 {
+  margin-left: 1.25rem;
+}
+
 .block {
   display: block;
 }
@@ -2412,6 +2416,11 @@ video {
   padding-bottom: 1.5rem;
 }
 
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
 .pb-10 {
   padding-bottom: 2.5rem;
 }
@@ -2720,6 +2729,10 @@ video {
 
 .accent-primary-800 {
   accent-color: #1f3d6d;
+}
+
+.accent-white {
+  accent-color: #fff;
 }
 
 .opacity-0 {

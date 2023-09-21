@@ -20,81 +20,20 @@
 </div>
 <div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="relative sm:flex-shrink-0  items-center flex flex-col justify-center">
+    <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
         <Image ImageName="Robert_Pointing_Down.png" css="absolute left-72 top-8 z-0 h-32" alt="Rob" />
         <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
+        <Button style="pill">
+            <content>
+                <div class="flex gap-4 px-3 py-1">
+                    <p class="my-auto">More Calculations </p>
+                    <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+                </div>
+            </content>
+        </Button>
     </div>
     <div class="relative w-1/2 flex flex-col sm:flex-shrink-0 gap-5 ">
-        @* <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a> *@
-        @* Solar Score Card *@
-        @* <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
-            <div class="my-auto w-full">
-                <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
-                </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
-                <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
-                    <p class="text-5xl text-gray-400 font-bold">%</p>
-                </div>
-            </div>
-        </Card> *@
-        @* Daylight Hours Card *@
-        @* <Card css="border-2 flex scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72 flex  my-auto flex-col">
-            <div class="my-auto w-full ">
-                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                    <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
-                </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
-                <div class="flex gap-1 mt-3">
-                    @{
-                        double dlh = solarCalculator.getSunlightHours(locationData!.solarPanelsData, true);
-                    }
-                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                    <p class="text-5xl text-gray-400 font-bold">h</p>
-                </div>
-            </div>
-        </Card> *@
-        @* Average Energy Production Card *@
-        @* <Image ImageName="Robert_T_Pose.png" css="absolute right-14 top-[340px] z-0 h-32" alt="Rob" /> *@
-        @* <Card css=" border-2 scale-90 flex xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
-            <div class="my-auto w-full relative">
-                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                    <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
-                </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
-                <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                    <p class="text-5xl text-gray-400 font-bold">kwh</p>
-                </div>
-                <div class="flex absolute top-0 right-0 justify-evenly gap-4">
-                    @{
-                        var small = "";
-                        var medium = "";
-                        var large = "";
-                        if (systems!.Count > 0)
-                        {
-                            small = systems[0].inverterOutput + "kw";
-                            medium = systems[1].inverterOutput + "kw";
-                            large = systems[2].inverterOutput + "kw";
-                        }
-                    }
-                    <div onclick="@(() => SetSystemSize(0))"
-                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
-                        <p class="text-sm font-semibold">@small</p>
-                    </div>
-                    <div onclick="@(() => SetSystemSize(1))"
-                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
-                        <p class="text-sm font-semibold">@medium</p>
-                    </div>
-                    <div onclick="@(() => SetSystemSize(2))"
-                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
-                        <p class="text-sm font-semibold">@large</p>
-                    </div>
-                </div>
-            </div>
-        </Card> *@
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
             <div class="my-auto w-full flex gap-4 relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
@@ -137,7 +76,7 @@
                     <Appliance name="TV" imageName="TV.svg" count="2"/>
                     <Appliance name="Computer" imageName="Computer.svg" count="2"/>
 
-                    <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddCircle.svg"/>
+                    <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
 
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
