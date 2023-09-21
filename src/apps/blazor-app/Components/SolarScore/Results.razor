@@ -95,24 +95,41 @@
                 </div>
             </div>
         </Card> *@
-        <Card css=" border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
+        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
             <div class="my-auto w-full flex gap-4 relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
                 </div>
                 <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
             </div>
+
             <div class="flex gap-1 mt-3">
                 <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
-            <div class="w-full h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500"></div>
+
+            <div class="bg-gradient-to-r p-4 absolute top-5 right-5 flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-1/2 my-auto rounded-2xl">
+                <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
+                    <p class="text-center text-xl font-bold text-primary-100">Potential</p>
+                    <p class="text-center text-xl font-bold text-primary-200">Savings</p>
+                </div>
+                <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                    <p class="text-center text-xl font-bold">R </p>
+                    <p class="text-center text-xl font-bold">1280 </p>
+                    <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
+                </div>
+            </div>
+
+            <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
+                <div class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-500 @scrollLength"></div>
+            </div>
         </Card>
     </div>
 </div>
 
 
 @code {
+    private string scrollLength = "left-[0%]";
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
@@ -147,24 +164,21 @@
         satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
 
-        systems = await systemClass.GetAllSystems();
-        if (systems!.Count > 0)
-        {
-            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData) / 365, 2);
-        }
-        else
-        {
-            Console.WriteLine("Error currentReport is null or no systems found in results");
-        }
         isLoaded = true;
         loadingService.HideLoadingScreen();
+        
+        Console.WriteLine("Solar Score: " + solarScore);
+        await Task.Delay(1000);
+        scrollLength = $"left-[{solarScore}%]";
+
+        StateHasChanged();
     }
 
     /// <summary>
     /// <para>This function is called when the user selects a system size and it updates the selected system and the average energy production</para>
     /// <paramref name="selection"/> The index of the selected system.
     /// </summary>
-    private void SetSystemSize(int selection)
+    private  void SetSystemSize(int selection)
     {
         Console.WriteLine("Selected System number of panels: " + systems[selection].numberOfPanels);
         if(systems != null && locationData != null) {

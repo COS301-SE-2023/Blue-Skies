@@ -755,6 +755,10 @@ video {
   left: 24rem;
 }
 
+.left-\[0\%\] {
+  left: 0%;
+}
+
 .left-\[38\%\] {
   left: 38%;
 }
@@ -849,6 +853,30 @@ video {
 
 .top-full {
   top: 100%;
+}
+
+.left-\[\] {
+  left: ;
+}
+
+.left-\[\@scrollLength\] {
+  left: @scrollLength;
+}
+
+.left-\[\@scrollLength\%\] {
+  left: @scrollLength%;
+}
+
+.left-\[\@solarScore\%\] {
+  left: @solarScore%;
+}
+
+.left-\[\@s\%\] {
+  left: @s%;
+}
+
+.right-5 {
+  right: 1.25rem;
 }
 
 .isolate {
@@ -1143,6 +1171,10 @@ video {
   margin-top: 20rem;
 }
 
+.-mt-10 {
+  margin-top: -2.5rem;
+}
+
 .block {
   display: block;
 }
@@ -1326,6 +1358,10 @@ video {
 
 .w-16 {
   width: 4rem;
+}
+
+.w-2 {
+  width: 0.5rem;
 }
 
 .w-2\/3 {
@@ -2122,6 +2158,11 @@ video {
 .bg-primary-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(56 113 193 / var(--tw-bg-opacity));
+}
+
+.bg-primary-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(39 86 162 / var(--tw-bg-opacity));
 }
 
 .bg-red-accent-100 {
