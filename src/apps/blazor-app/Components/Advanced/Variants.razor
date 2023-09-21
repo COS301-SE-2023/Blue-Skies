@@ -54,14 +54,15 @@
                         <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" @onchange="SetDurationUsed" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" @onchange="e => SetDurationUsed(item, e)" class="w-fit h-fit my-auto rounded-md p-3 ">
+
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0"  name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" @onchange="SetPowerUsage" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0"  name="@item.name" id="appliancePower" type="number" value="@item.powerUsage" @onchange="(e => SetPowerUsage(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
@@ -112,17 +113,18 @@
 
 
 
-    public void SetPowerUsage(ChangeEventArgs e)
+    public void SetPowerUsage(ApplianceModel item, ChangeEventArgs e)
     {
+        item.powerUsage = Convert.ToInt32(e.Value);
         powerUsage = Convert.ToInt32(e.Value);
-        Console.WriteLine("Power Usage: "+powerUsage);
     }
 
-    public void SetDurationUsed(ChangeEventArgs e)
+    public void SetDurationUsed(ApplianceModel item, ChangeEventArgs e)
     {
+        item.durationUsed = Convert.ToDouble(e.Value);
         durationUsed = Convert.ToDouble(e.Value);
-        Console.WriteLine("Duration of Use: "+durationUsed);
     }
+
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
     foreach (var appliance in applianceGroups)
@@ -240,6 +242,11 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 
     public void ChangeDefaultApplianceName(string newName, string type, int newPower, double newDuration)
     {
+        Console.WriteLine("Change Default Appliance Name");
+        Console.WriteLine("New Name: "+newName);
+        Console.WriteLine("Type: "+type);
+        Console.WriteLine("New Power: "+newPower);
+        Console.WriteLine("New Duration: "+newDuration);
 
         var defaultAppliance = allAppliances!.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
 
