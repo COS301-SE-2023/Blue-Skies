@@ -4,9 +4,7 @@
     <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
-        <Subscript><p class="text-center">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. <br/>
-                                        If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance
-        </p></Subscript>
+        <Subscript><p class="text-center max-w-3xl">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance</p></Subscript>
     </Heading>
     <div class="flex gap-20 scale-90 justify-center">
             @{applianceCount = appliances.Count(x => x.quantity > 0);}
@@ -52,17 +50,17 @@
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
                             <input name="applianceName" id="applianceName" type="text" value="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
-                        <div>
+                        <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" @bind="item.durationUsed" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0"  name="appliancePower" id="appliancePower" type="number" @bind="item.powerUsage" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
