@@ -725,7 +725,7 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
@@ -745,7 +745,7 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
