@@ -162,7 +162,7 @@
 
         if (!logIn)
         {
-            ProtectedSessionStore.SetAsync("redirect", "advanced");
+            await ProtectedSessionStore.SetAsync("redirect", "advanced");
             NavigationManager.NavigateTo("/login");
         }
         else if (isAd)

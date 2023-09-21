@@ -10,7 +10,9 @@
         </p></Subscript>
     </Heading>
     <div class="flex gap-20 scale-90 justify-center">
-            @{applianceCount = appliances.Count(x => x.quantity > 0);}
+        @if (appliances != null)
+        {
+            applianceCount = appliances.Count(x => x.quantity > 0);
             @foreach (var appliance in appliances)
             {
                 if (appliance.quantity > 0)
@@ -24,6 +26,7 @@
             {
                 <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
             }
+        }
     </div>
     @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
