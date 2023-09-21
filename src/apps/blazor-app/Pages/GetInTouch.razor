@@ -3,7 +3,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
-@inject BlazorApp.Data.LoadingService loadingService
 @using BlazorApp.Models;
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
@@ -14,7 +13,6 @@
 @* Check for admin *@
 @if (isAd)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 }
 else

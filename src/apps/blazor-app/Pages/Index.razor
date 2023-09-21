@@ -8,7 +8,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStorage
 @layout MainLayout
-@inject BlazorApp.Data.LoadingService loadingService
 @using MaxRev.Gdal.Core;
 @using System.IO;
 @using System.Net.Http.Json;
@@ -22,7 +21,6 @@
   {
     @if (isAd)
     {
-      loadingService.ShowLoadingScreen();
       NavigationManager.NavigateTo("/admin/keys");
     }
     else
@@ -71,7 +69,6 @@
     await ProtectedSessionStorage.SetAsync("parent", "index");
     isAd = isAdmin.Value;
     isLoaded = true;
-    loadingService.HideLoadingScreen();
 
     var exists = await ProtectedSessionStore.GetAsync<double>("latitude");
     if (!exists.Success)
@@ -86,7 +83,6 @@
   /// </summary>
   void Register()
   {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/register");
   }
 }

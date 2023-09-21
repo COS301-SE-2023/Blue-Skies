@@ -4,7 +4,6 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 
 <div
     class="md:flex self-center items-center gap-4 justify-center mt-4 md:mt-20 @(((id + 1) % 2) == 0 ? "flex-row-reverse" : "flex-row ")">

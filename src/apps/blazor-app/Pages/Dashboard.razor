@@ -5,12 +5,10 @@
 @using BlazorApp.Components
 @using BlazorApp.FancyData
 @using ChartJs.Blazor.PolarAreaChart
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ReportManager reportManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
@@ -19,12 +17,10 @@
 else if (!logIn)
 {
     ProtectedSessionStore.SetAsync("redirect", "dashboard");
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/login");
 }
 else if (isAd)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 }
 else
@@ -238,7 +234,6 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        loadingService.ShowLoadingScreen();
         selectedReport = 0;
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -295,7 +290,6 @@ else
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         isLoaded = true;
-        loadingService.HideLoadingScreen();
 
     }
 
@@ -327,7 +321,6 @@ else
 
     public async Task updateLocationData()
     {
-        loadingService.ShowLoadingScreen();
         Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
@@ -340,7 +333,6 @@ else
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         updateAppliances();
-        loadingService.HideLoadingScreen();
     }
 
     private void Dispose()
@@ -568,7 +560,6 @@ else
     }
     private Task CreateReport()
     {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/advanced");
         return Task.CompletedTask;
     }
@@ -584,7 +575,6 @@ else
     /// </summary>
     private async void Edit()
     {
-        loadingService.ShowLoadingScreen();
         await ProtectedSessionStore.SetAsync("edit", true);
         NavigationManager.NavigateTo("/advanced");
         StateHasChanged();

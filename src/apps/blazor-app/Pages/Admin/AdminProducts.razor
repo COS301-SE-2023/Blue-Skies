@@ -8,7 +8,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 @inject BlazorApp.Data.ToastService toastService;
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Solar Products</PageTitle>
 
@@ -143,7 +142,6 @@
     protected override async Task OnInitializedAsync()
     {
         await GetProducts();
-        loadingService.HideLoadingScreen();
     }
 
     private async Task GetProducts()

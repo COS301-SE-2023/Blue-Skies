@@ -1,7 +1,6 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
-@inject BlazorApp.Data.LoadingService loadingService
 
 
 <div class="my-12 px-4">
@@ -134,14 +133,12 @@
     //Change to register page
     private void Register()
     {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/register");
     }
 
     //Change to advanced page
     private void AdvancedCalculation() 
     {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/advanced");
     }
 

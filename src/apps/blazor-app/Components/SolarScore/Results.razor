@@ -4,7 +4,6 @@
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 
 
@@ -26,7 +25,7 @@
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
     </div>
     <div class="relative grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
-        <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
+        <a href="/advanced" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
         @* Solar Score Card *@
         <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
             <div class="my-auto w-full">
@@ -160,7 +159,6 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {   
-        loadingService.ShowLoadingScreen();
         if(locationData == null) 
         {
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
@@ -187,7 +185,6 @@
             Console.WriteLine("Error currentReport is null or no systems found in results");
         }
         isLoaded = true;
-        loadingService.HideLoadingScreen();
     }
 
     /// <summary>

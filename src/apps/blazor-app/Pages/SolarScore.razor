@@ -3,7 +3,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
-@inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
 @using BlazorApp.Components.SolarScore;
@@ -13,7 +12,6 @@
 @* Check for admin *@
 @if (isAd)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 }
 else
@@ -60,7 +58,6 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        loadingService.ShowLoadingScreen();
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
 
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
@@ -75,6 +72,5 @@ else
             isAd = isAdmin.Value;
         }
 
-        loadingService.HideLoadingScreen();
     }
 }

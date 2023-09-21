@@ -6,7 +6,6 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
 
@@ -33,23 +32,26 @@
         <div class="text-center mt-2 space-y-5 my-auto ">
             <p>System Size</p>
             <div class="flex space-x-9">
-                @{
+                @if (systems != null)
+                {  
                     var small = systems[0].inverterOutput + "kw";
                     var medium = systems[1].inverterOutput + "kw";
                     var large = systems[2].inverterOutput + "kw";
+                    <div onclick="@(() => SetSystemSize(0))"
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class=" font-semibold">@small</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(1))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class="font-semibold">@medium</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(2))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                        <p class="font-semibold">@large</p>
+                    </div>
+                } else {
+                    
                 }
-                <div onclick="@(() => SetSystemSize(0))"
-                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class=" font-semibold">@small</p>
-                </div>
-                <div onclick="@(() => SetSystemSize(1))"
-                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="font-semibold">@medium</p>
-                </div>
-                <div onclick="@(() => SetSystemSize(2))"
-                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                    <p class="font-semibold">@large</p>
-                </div>
             </div>
             <div class="flex justify-center h-24">
                 @if (showCustomSystem)
@@ -801,7 +803,6 @@
     {
         Console.WriteLine("Saving Calculation");
         ModalPopup.Dismiss();
-        ShowLoadingScreen();
         var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
         if (calcName.Value != null)
         {
@@ -818,7 +819,6 @@
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
             await ProtectedSessionStore.SetAsync("createdReport", reportId);
             await ProtectedSessionStore.SetAsync("currentReport", reportId);
-            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/dashboard");
         }else{
             toastService.ShowToast("Error", "Report failed to save.", "error");
@@ -828,7 +828,6 @@
 
     private async Task UpdateCalculation()
     {
-        ShowLoadingScreen();
         if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
         {
 
@@ -843,12 +842,6 @@
             }
             await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
         }
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
-    }
-
-    private void ShowLoadingScreen()
-    {
-        loadingService.ShowLoadingScreen();
     }
 }
