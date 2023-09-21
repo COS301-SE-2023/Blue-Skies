@@ -21,12 +21,12 @@
                 <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
             </div>
             <div>
-
                 <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                 @if(monthlyFluxMap is not null){
+                <p class="text-center">@monthNames[@currentImageIndex]</p>
                 <div class="w-fit mx-auto">
                     <div class="w-fit mx-auto">
-                        <div class="flex space-x-3 mt-10">
+                        <div class="flex space-x-3 mt-4">
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementMonthImage">
                                 <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                                     css="h-12 w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
@@ -34,7 +34,6 @@
                             <div class="flex-col">
                                 <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image"
                                     css="h-[300px]" />
-                                <p class="text-center">@monthNames[@currentImageIndex]</p>
                             </div>
 
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentMonthImage">
