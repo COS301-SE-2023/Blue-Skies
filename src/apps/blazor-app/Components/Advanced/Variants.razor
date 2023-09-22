@@ -106,6 +106,7 @@
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
+        UpdateCustomAppliancesWithCounts();
     }
 
     public void UpdateAppliance(ApplianceModel item)

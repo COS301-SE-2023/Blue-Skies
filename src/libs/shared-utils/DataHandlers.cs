@@ -950,6 +950,8 @@ public class CalculationDataHandler
 
     SharedUtils.applianceClass applianceClass = new SharedUtils.applianceClass();
 
+    SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
+
     private List<ApplianceModel> originalAppliances = new List<ApplianceModel>();
 
     // Constructor
@@ -1044,4 +1046,26 @@ public class CalculationDataHandler
 
     }
 
+
+    public async Task<List<ApplianceModel>> GetReportAllAppliancesByReport(int reportId)
+    {
+        List<ReportAllApplianceModel> reportAllAppliances = await reportAllApplianceClass.GetReportAllApplianceByReportId(reportId);
+        List<ApplianceModel> allAppliances = new List<ApplianceModel>();
+        foreach (ReportAllApplianceModel reportAllAppliance in reportAllAppliances)
+        {
+            for (int i = 0; i < reportAllAppliance.numberOfAppliances; i++)
+            {
+                ApplianceModel appliance = new ApplianceModel();
+                appliance.name = reportAllAppliance.applianceModel;
+                appliance.powerUsage = reportAllAppliance.powerUsage;
+                appliance.durationUsed = reportAllAppliance.durationUsed;
+                appliance.quantity = 0;
+                appliance.type = reportAllAppliance.type;
+                appliance.applianceId = 0;
+                allAppliances.Add(appliance);
+            }
+        }
+
+        return allAppliances;
+    }
 }

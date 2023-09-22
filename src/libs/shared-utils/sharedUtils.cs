@@ -1137,6 +1137,30 @@ public class reportAllApplianceClass
         }
         return allReportAllAppliance;
     }
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllApplianceByReportId(int reportId)
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/ReportAllAppliance/getByReportId/" + reportId
+        );
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
+    }
 }
 
 public class customApplianceClass
