@@ -29,12 +29,22 @@
         {
             Options = new LineOptions
             {
+                Legend = new Legend
+                {
+                    Display = true
+                },
                 Responsive = true,
                 Title = new OptionsTitle
                 {
                     Display = true,
                     Text = "Sun path over the horizon",
                     FontSize = 20,
+                },
+                Hover = new Hover
+                {
+                    Intersect = true,
+                    Axis = ChartJs.Blazor.Common.Enums.AxisDirection.Y,
+                    Mode = ChartJs.Blazor.Common.Enums.InteractionMode.Nearest
                 },
                 Scales = new Scales
                 {
@@ -148,9 +158,13 @@
                 yRedDotValues[i] = double.NaN;
             }
         }
+
+        Image image = new Image();
+
         
         IDataset<double> redDotDataset = new LineDataset<double>(yRedDotValues)
         {
+            Order = 0,
             Label = "Your location",
             BackgroundColor = "rgba(255, 0, 0, 1)",
             BorderColor = "rgba(255, 0, 0, 1)",
@@ -164,7 +178,6 @@
             PointHoverBackgroundColor = "rgba(255, 0, 0, 1)",
             PointHoverBorderColor = "rgba(255, 0, 0, 1)",
             PointHoverBorderWidth = 1,
-            
         };
         lineConfig.Data.Datasets.Add(redDotDataset);
 
@@ -186,7 +199,8 @@
 
         IDataset<double> elevationDataset = new LineDataset<double>(yValues)
         {
-            Label = "Horison",
+            Order = 1,
+            Label = "Horizon",
             BackgroundColor = "rgba(0,15,82, 1)",
             BorderColor = "rgba(0,15,82, 1)",
             BorderWidth = 1,
@@ -231,10 +245,18 @@
                 ySunValues[i] = 0;
             }
 
-            if(xSunValues[i] >= -maxLength && xSunValues[i] <= maxLength) {
+            if(xSunValues[i] == maxLength || xSunValues[i] == -maxLength) {
+                ySunValues[i] = 0;
+            }
+            
+            if(xSunValues[i] > -maxLength && xSunValues[i] < maxLength) {
                 if(xSunValues[i] % 5 == 0) {
                     ySunValues[i] = Math.Round(Math.Pow((xSunValues[i] / maxLength), 2) * -MaxHeight + MaxHeight, 2);
                 } else {
+                    ySunValues[i] = double.NaN;
+                }
+
+                if(ySunValues[i] < yValues[i]) {
                     ySunValues[i] = double.NaN;
                 }
             }
@@ -244,6 +266,7 @@
         if (fill)
         {
             sunDataset = new LineDataset<double>(ySunValues) {    
+                Order = 2,
                 Label = labelName,
                 BackgroundColor = "rgba(255, 208, 0, 0.4)",
                 BorderColor = color,
@@ -259,7 +282,8 @@
         } 
         else if(makeBottomZero) 
         {
-            sunDataset = new LineDataset<double>(ySunValues) {    
+            sunDataset = new LineDataset<double>(ySunValues) {   
+                Order = 2, 
                 Label = labelName,
                 BorderColor = color,
                 BorderWidth = 0,
@@ -276,6 +300,7 @@
         else 
         {
             sunDataset = new LineDataset<double>(ySunValues) {    
+                Order = 2,
                 Label = labelName,
                 BackgroundColor = color,
                 BorderColor = color,
