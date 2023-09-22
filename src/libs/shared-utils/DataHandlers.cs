@@ -920,10 +920,9 @@ public class SystemsDataHandler
 
         foreach (var appliance in appliances)
         {
-            if (appliance.powerUsage != null && appliance.numberOfAppliances > 0)
+            if (appliance.numberOfAppliances > 0)
             {
-                sumOfAppliances +=
-                    (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
+                sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
             }
             else
             {
@@ -998,19 +997,23 @@ public class CalculationDataHandler
         List<ApplianceModel> uniqueAppliances = new List<ApplianceModel>();
         foreach (var appliance in appliances)
         {
-           
+            
             if (uniqueAppliances.Any(app => (app.type + app.name).Equals(appliance.type + appliance.name)))
             {
                 var app = uniqueAppliances.Find(app => (app.type + app.name).Equals(appliance.type + appliance.name));
-                app.quantity += 1;
+                if (app != null)
+                {
+                    app.quantity += 1;
+                }
             }
             else
             {
-                // Find appliance of same type
-                var oapp = originalAppliances.Find(app => app.type.Equals(appliance.type));
-                appliance.applianceId = oapp.applianceId;
-                appliance.quantity = 1;
-                uniqueAppliances.Add(appliance);
+                var oapp = originalAppliances.Find(app => app != null && app.type != null && app.type.Equals(appliance.type));
+                if(oapp != null) {
+                    appliance.applianceId = oapp.applianceId;
+                    appliance.quantity = 1;
+                    uniqueAppliances.Add(appliance);
+                }
             }
         }
         return uniqueAppliances;
