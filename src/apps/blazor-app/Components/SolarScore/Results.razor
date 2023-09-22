@@ -48,23 +48,33 @@
                 <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
-            <div class="bg-gradient-to-r p-4 absolute top-5 right-5 flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-1/2 my-auto rounded-2xl">
-                <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
-                    <p class="text-center text-xl font-bold text-primary-100">Potential</p>
-                    <p class="text-center text-xl font-bold text-primary-200">Savings</p>
+            <div class="flex gap-2 justify-end absolute top-3 right-5">
+                <div class="flex gap-3 justify-end items-end flex-col">
+                    <div class="flex gap-2">
+                        <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
+                        <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer">Calculate with Own Bill →</p>
+                    </div>
+                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                        <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
+                            <p class="text-center text-xl font-bold text-primary-100">Potential</p>
+                            <p class="text-center text-xl font-bold text-primary-200">Savings</p>
+                        </div>
+                        <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                            <p class="text-center text-xl font-bold">R </p>
+                            <p class="text-center text-xl font-bold">1280 </p>
+                            <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
+                        </div>
+                    </div>
+                    
                 </div>
-                <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
-                    <p class="text-center text-xl font-bold">R </p>
-                    <p class="text-center text-xl font-bold">1280 </p>
-                    <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
-                </div>
+
             </div>
 
             <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
                 @{
                 var percentage = solarScore + "%";
                 }
-                <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900"></div>
+                <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 "></div>
             </div>
         </Card>
         <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob"/>
@@ -85,13 +95,15 @@
                     </div>
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
-                    <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
-                    <div class="flex gap-1 mt-3">
-                        @{
-                            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);   
-                        }
-                        <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                        <p class="text-5xl text-gray-400 font-bold">kwh</p>
+                    <div class="flex flex-col gap-1">
+                        <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
+                        <div class="flex gap-1 mt-3">
+                            @{
+                                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);
+                            }
+                            <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                            <p class="text-5xl text-gray-400 font-bold">kwh</p>
+                        </div>
                     </div>
                     <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
                     <div class="flex w-full justify-center items-center gap-1 -mt-10">
@@ -116,12 +128,12 @@
                     
                     <div class="flex gap-10 justify-center items-center">
                         <div class="flex flex-col gap-2 justify-center items-center">
-                            <div class="h-24 flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                            <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
                                     var percentage = chargingLimitPercentage + "%";
                                 }
-                                <div style="height: @percentage" class="w-full bg-primary-800 transition-all rounded-lg"></div>
-                                <p class="absolute bottom-2 left-1/2 -translate-x-1/2 text-primary-500 font-bold text-md">@chargingLimitPercentage<span class="text-primary-300">%</span></p>
+                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
+                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
                                 <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                             </div>
                             <p class="text-center">Battery Utilization</p>
