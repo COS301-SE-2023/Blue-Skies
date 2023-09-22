@@ -2769,6 +2769,16 @@ video {
   color: rgb(92 142 212 / var(--tw-text-opacity));
 }
 
+.text-orange-accent-800 {
+  --tw-text-opacity: 1;
+  color: rgb(152 67 20 / var(--tw-text-opacity));
+}
+
+.text-orange-accent-600 {
+  --tw-text-opacity: 1;
+  color: rgb(231 111 15 / var(--tw-text-opacity));
+}
+
 .accent-primary-800 {
   accent-color: #1f3d6d;
 }
@@ -3426,6 +3436,11 @@ body {
 .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.hover\:text-primary-500:hover {
+  --tw-text-opacity: 1;
+  color: rgb(56 113 193 / var(--tw-text-opacity));
 }
 
 .hover\:underline:hover {
