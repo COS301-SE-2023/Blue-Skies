@@ -8,6 +8,7 @@
 @using BlazorApp.Components.Advanced
 @using BlazorApp.Components
 @using BlazorApp.FancyData
+@using System.Text.Json;
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
@@ -139,6 +140,8 @@
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+
+    private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
@@ -209,20 +212,47 @@
             currentLocationData = result;
         }
 
-        if (edit)
-        {
-            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-            currentReport = rep.Value!;
-            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
-        } else {
-            currentReport.latitude = latitude!;
-            currentReport.longitude = longitude!;
-        }
+        
+
+
 
         appliances = await applianceDataClass.GetAllAppliances();
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
+        }
+
+        if (edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            currentReport = rep.Value!;
+            Console.WriteLine("Editing a calculation for report id: " + currentReport.reportId);
+            allAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
+            @* Print allAppliances *@
+            Console.WriteLine(JsonSerializer.Serialize(allAppliances));
+            Dictionary<string , int> applianceCountDict = new Dictionary<string, int>();
+            foreach(ApplianceModel app in allAppliances)
+            {
+                if(applianceCountDict.ContainsKey(app.type))
+                {
+                    applianceCountDict[app.type] += 1;
+                }
+                else
+                {
+                    applianceCountDict.Add(app.type, 1);
+                }
+            }
+
+            foreach(ApplianceModel app in appliances)
+            {
+                if(applianceCountDict.ContainsKey(app.type))
+                {
+                    app.quantity = applianceCountDict[app.type];
+                }
+            }
+        } else {
+            currentReport.latitude = latitude!;
+            currentReport.longitude = longitude!;
         }
 
         systems = await systemDataClass.GetAllSystems();
@@ -242,6 +272,7 @@
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
         loadingService.HideLoadingScreen();
+        StateHasChanged();
     }
 
     public void SaveCalculation()
