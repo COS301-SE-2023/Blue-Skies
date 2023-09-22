@@ -1,9 +1,4 @@
-using System.Net;
-using System;
-using System.Text.Json;
 using Newtonsoft.Json;
-using System.Threading.Tasks.Dataflow;
-using System.Collections.Concurrent;
 
 namespace Api.Repository;
 
@@ -100,21 +95,21 @@ public class BusinessRequestDataRepository
 
     private double GetSunlightHours(double latitude, double longitude)
     {
-        LocationDataModel? locationData = GetLocationDataModel(latitude, longitude).Result;
+        LocationDataModel locationData = GetLocationDataModel(latitude, longitude).Result;
 
         return solarDataHandler.getSunlightHours(locationData!.solarPanelsData!);
     }
 
-  private async Task<string> GetSatelliteImage(double latitude, double longitude)
-  {
-        LocationDataModel? locationData =await  GetLocationDataModel(latitude, longitude);
+    private async Task<string> GetSatelliteImage(double latitude, double longitude)
+    {
+        LocationDataModel locationData =await  GetLocationDataModel(latitude, longitude);
 
         return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
-  }
+    }
 
-  private async Task<string> GetSolarScore(double latitude, double longitude) 
+    private async Task<string> GetSolarScore(double latitude, double longitude) 
     {
-        LocationDataModel? locationData = await GetLocationDataModel(latitude, longitude);
+        LocationDataModel locationData = await GetLocationDataModel(latitude, longitude);
                    
         return solarCalculator.getSolarScore(locationData!.solarPanelsData).ToString();
     }
