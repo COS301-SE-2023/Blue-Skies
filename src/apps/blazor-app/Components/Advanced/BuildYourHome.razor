@@ -211,11 +211,11 @@
                 <p class="text-5xl text-primary-900 font-semibold">@{
                         if (dlh == (24 - daylight))
                         {
-                                                <p>@dlh+</p>
+                            <p>@dlh+</p>
                         }
                         else
                         {
-                                                <p>@dlh</p>
+                            <p>@dlh</p>
                         }
                     }
                 </p>
@@ -435,7 +435,7 @@
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
-    public List<ApplianceModel> allAppliances { get; set; } 
+    public List<ApplianceModel>? allAppliances { get; set; } 
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -778,7 +778,7 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
+        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances!);
         if(reportId != -1){
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
             await ProtectedSessionStore.SetAsync("createdReport", reportId);
