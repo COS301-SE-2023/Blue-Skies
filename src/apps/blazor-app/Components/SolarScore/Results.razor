@@ -78,7 +78,7 @@
                 <div class="grid scale-90 grid-cols-2 gap-2 w-full">
                     <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
                     <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
-                    <Appliance name="Kettle" imageName="Kettle.svg" count="numKettles"/>
+                    <Appliance name="Computer" imageName="Computer.svg" count="numComputers"/>
 
                     <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
 
@@ -91,10 +91,10 @@
                         <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                         <p class="text-5xl text-gray-400 font-bold">kwh</p>
                     </div>
-                    <DaylightChart  hours="@dlh" daylightHours="@daylight" />
+                    <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
                     <div class="flex w-full justify-center items-center gap-1 -mt-20">
                             @{
-                                if (dlh == (24 - daylight))
+                                if (dlh == daylight)
                                 {
                                     <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
                                 }
@@ -135,15 +135,12 @@
     public int numOfPanels = 16;
     public int numOfBatteries = 2;
     public double appliancePowerUsage = 0.0;
-    public int numFridges = 10;
-    public int numTVs = 12;
-    public int numKettles = 2;
+    public int numFridges = 2;
+    public int numTVs = 2;
+    public int numComputers = 3;
     float dlh = 0f;
     float runningHoursPercentage = 0f;
-    private int daylight = 12;
-        
-
-
+    private int daylight = 24;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
@@ -165,8 +162,12 @@
         loadingService.HideLoadingScreen();
     }
 
-    private void SetAppliances(){
-        appliancePowerUsage = (numFridges * 250) + (numTVs * 60) + (numKettles * 400) / 1000.0;
+    private void SetAppliances(ChangeEventArgs? e = null){
+        if (e != null)
+        {
+            var val = e.Value!.ToString();
+            numOfPanels =  int.Parse(val!);
+        }
     }
     private void SetRunningHours(ChangeEventArgs? e = null){
         if (e != null)
@@ -174,14 +175,13 @@
             var val = e.Value!.ToString();
             numOfBatteries =  int.Parse(val!);
         }
-        appliancePowerUsage = ((numFridges * 250) + (numTVs * 60) + (numKettles * 400)) / 1000.0;
+        appliancePowerUsage = ((numFridges * 250) + (numTVs * 60) + (numComputers * 400)) / 1000.0;
         double runningHours = (numOfBatteries * 10) / appliancePowerUsage;
-        double nonDaylightHours = 12;
-        double runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        double runningHoursPercentage = (runningHours / daylight) * 100;
         if (runningHoursPercentage > 100)
         {
             runningHoursPercentage = 100;
         }
-        dlh = (float) Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+        dlh = (float) Math.Round(daylight * (runningHoursPercentage / 100), 2);
     }
 }
