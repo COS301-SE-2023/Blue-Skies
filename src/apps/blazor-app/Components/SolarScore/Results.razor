@@ -18,7 +18,7 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
+<div class="flex w-full flex-nowrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
     <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
         <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-0" alt="Rob"/>
@@ -33,7 +33,7 @@
             </content>
         </Button>
     </div>
-    <div class="relative w-1/2 flex flex-col sm:flex-shrink-0 gap-5 ">
+    <div class="relative w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
         <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             <div class="my-auto w-full flex gap-4 relative">
@@ -79,7 +79,6 @@
                     <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
                     <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
                     <Appliance name="Kettle" imageName="Kettle.svg" count="numKettles"/>
-
                     <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
 
                 </div>
@@ -111,8 +110,18 @@
                     <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                     count="@numOfPanels" />
                     <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="50" step="1" @bind-value="@numOfPanels" @oninput="SetAppliances"/>
-                    <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
-                        count="@numOfBatteries" />
+                    
+                    <div class="flex gap-10 justify-center items-center">
+                        <div class="flex flex-col gap-2 justify-center items-center">
+                            <div class="h-24 flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                <div class="w-full h-1/2 bg-primary-800 transition-all rounded-lg"></div>
+                                <p class="absolute bottom-2 left-1/2 -translate-x-1/2 text-primary-500 font-bold text-md">50<span class="text-primary-300">%</span></p>
+                                <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                            </div>
+                            <p class="text-center">Battery Utilization</p>
+                        </div>
+                        <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries" count="@numOfBatteries" />
+                    </div>
                     <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" @bind-value="@numOfBatteries" @oninput="SetRunningHours"/>
                 </div>
             </div>
