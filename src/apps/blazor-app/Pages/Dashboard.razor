@@ -39,14 +39,23 @@ else
             <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="allSystems" solarScore="solarScore" />
             <div class="mt-10 w-full">
                 <Card>
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl">Appliances</h1>
-                        </Header>
-                        <Subscript>
-                            <p>What do you want to run in a power outage?</p>
-                        </Subscript>
-                    </Heading>
+                    @if (reportAllAppliance == null)
+                    {
+                        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+                            <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-36"></div>
+                            <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-96 mt-2"></div>
+                            <span class="sr-only">Loading...</span>
+                        </div> 
+                    } else {
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Appliances</h1>
+                            </Header>
+                            <Subscript>
+                                <p>What do you want to run in a power outage?</p>
+                            </Subscript>
+                        </Heading>
+                    }
 
                         <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
                             <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">

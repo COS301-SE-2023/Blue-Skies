@@ -1196,6 +1196,10 @@ video {
   margin-bottom: 0.75rem;
 }
 
+.mt-14 {
+  margin-top: 3.5rem;
+}
+
 .block {
   display: block;
 }
@@ -1597,6 +1601,14 @@ video {
 
 .w-96 {
   width: 24rem;
+}
+
+.w-64 {
+  width: 16rem;
+}
+
+.w-3 {
+  width: 0.75rem;
 }
 
 .min-w-fit {
