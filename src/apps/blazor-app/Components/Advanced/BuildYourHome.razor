@@ -487,6 +487,12 @@
         customPanelsInput = "" + systems[3].solarInput;
         customBatteriesSize = "" + systems[3].batterySize;
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        applianceService.EmmitAppliancesRequested += UpdateAppliances;
+    }
+
+    private void UpdateAppliances (List<ApplianceModel> appliances)
+    {
+        this.appliances = appliances;
     }
 
     /// <summary>

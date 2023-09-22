@@ -32,7 +32,7 @@
                         <label class="text-gray-400 my-auto">Search for your appliance:</label>
                         <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
                     </div>
-                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage, durationUsed ))'>
+                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage ))'>
                     <Button style="pill">
                         <content>
                             <p>Add Variant</p>
@@ -49,20 +49,19 @@
                         <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
                         <div class="w-full">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
-                            <input name="applianceName" id="applianceName" type="text" value="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                            <input name="applianceName" id="applianceName" type="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
                         <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" @onchange="e => SetDurationUsed(item, e)" class="w-fit h-fit my-auto rounded-md p-3 ">
-
+                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" @bind="item.durationUsed" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0"  name="@item.name" id="appliancePower" type="number" value="@item.powerUsage" @onchange="(e => SetPowerUsage(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0"  name="@item.name" id="appliancePower" type="number" @bind="item.powerUsage" @oninput="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
@@ -109,26 +108,26 @@
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
 
-
-
-    public void SetPowerUsage(ApplianceModel item, ChangeEventArgs e)
+    public void UpdateAppliance(ApplianceModel item)
     {
-        item.powerUsage = Convert.ToInt32(e.Value);
-        powerUsage = Convert.ToInt32(e.Value);
+        item.durationUsed = durationUsed;
+        item.powerUsage = powerUsage;
     }
 
-    public void SetDurationUsed(ApplianceModel item, ChangeEventArgs e)
+    public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
     {
-        item.durationUsed = Convert.ToDouble(e.Value);
-        durationUsed = Convert.ToDouble(e.Value);
+        Console.WriteLine("Update Appliance Duration: " + item.durationUsed);
     }
+
+    public void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
+    {
+        Console.WriteLine("Update Appliance Power: " + item.powerUsage);
+    }
+
+
 
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
-    foreach (var appliance in applianceGroups)
-    {
-        Console.WriteLine(appliance.durationUsed);
-    }
     // Create a dictionary to store appliance variants by type
     Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
 
@@ -151,10 +150,6 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         allAppliances = new List<ApplianceModel>();
     }
 
-    
-
-    // Clear the customAppliances list
-    @* allAppliances.Clear(); *@
 
 
     foreach (var applianceGroup in applianceGroups)
@@ -238,15 +233,10 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type, int newPower, double newDuration)
+    public void ChangeDefaultApplianceName(string newName, string type, int newPower)
     {
-        Console.WriteLine("Change Default Appliance Name");
-        Console.WriteLine("New Name: "+newName);
-        Console.WriteLine("Type: "+type);
-        Console.WriteLine("New Power: "+newPower);
-        Console.WriteLine("New Duration: "+newDuration);
-
         var defaultAppliance = allAppliances!.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
+        double newDuration = allAppliances!.FirstOrDefault(appliance =>  appliance.type == type)!.durationUsed;
 
         if(newName == "")
         {
@@ -256,6 +246,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         if (defaultAppliance != null)
         {
             // Change the name of the found "Default" appliance
+            newDuration = defaultAppliance.durationUsed;
             defaultAppliance.name = newName;
             defaultAppliance.powerUsage = newPower;
             defaultAppliance.durationUsed = newDuration;
@@ -265,30 +256,18 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         }
         else
         {
-            var existingAppliance = allAppliances!.FirstOrDefault(appliance => appliance.type == type);
-            if (existingAppliance == null)
+            // Add a default appliance and try again
+            allAppliances!.Add(new ApplianceModel
             {
-                allAppliances!.Add(new ApplianceModel
-                {
-                    name = newName,
-                    type = type,
-                    quantity = 1,
-                    durationUsed = 20,
-                    powerUsage = newPower
-                });
-            } else {
-                // Add a new appliance with the specified name
-                allAppliances!.Add(new ApplianceModel
-                {
-                    name = newName,
-                    type = type,
-                    quantity = 1,
-                    durationUsed = newDuration,
-                    powerUsage = newPower
-                });
-            }
-            UpdateCustomAppliancesWithCounts();
-            StateHasChanged();
+                name = "Default",
+                type = type,
+                quantity = 1,
+                durationUsed = newDuration,
+                powerUsage = newPower
+            });
+            appliances!.Where(x => x.type == type).FirstOrDefault()!.quantity++;
+            ChangeDefaultApplianceName(newName, type, newPower);
+
         }
         applianceService.ClearSearch();
     }
