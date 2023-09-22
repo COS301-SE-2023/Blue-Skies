@@ -3,6 +3,7 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
@@ -26,7 +27,7 @@
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
         <Button style="pill">
             <content>
-                <div class="flex gap-4 px-3 py-1">
+                <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
                     <p class="my-auto">More Calculations </p>
                     <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
                 </div>
@@ -79,8 +80,9 @@
                     <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
                     <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
                     <Appliance name="Computer" imageName="Computer.svg" count="numComputers"/>
-                    <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
-
+                    <div class="flex mx-auto" @onclick="ShowModalCalculation">
+                        <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
+                    </div>
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
                     <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
@@ -132,6 +134,24 @@
         </Card>
     </div>
 </div>
+<ModalPopup @ref="ModalPopupLogIn" Title="Log in to access this feature">
+    <p>To provide you with a personalized experience and save your input data for enhanced calculations, 
+        please log in to our website. Your login helps us tailor our services to your specific needs.</p>
+    <div class="flex flex-row gap-4 justify-center">
+        <div @onclick="NavigateToLogin">
+            <Button>
+                <content>
+                    Log in
+                </content>
+            </Button>
+        </div>
+        <div @onclick="ModalPopupLogIn.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </div>
+</ModalPopup>
 
 
 @code {
@@ -141,6 +161,7 @@
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
     public LocationDataModel? locationData  { get; set; } = null;
+    ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
     private int solarScore = -1;
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
@@ -152,7 +173,6 @@
     public int numTVs = 2;
     public int numComputers = 3;
     float dlh = 0f;
-    float runningHoursPercentage = 0f;
     private int daylight = 24;
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
@@ -218,5 +238,20 @@
             runningHoursPercentage = 100;
         }
         dlh = (float) Math.Round(daylight * (runningHoursPercentage / 100), 2);
+    }
+
+    private async void ShowModalCalculation(){
+        var logIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        bool isLoggedIn = logIn.Value;
+        if (isLoggedIn)
+        {
+            NavigationManager.NavigateTo("/advanced");
+        }
+        else{
+            ModalPopupLogIn.Show();
+        }
+    }
+    private void NavigateToLogin(){
+        NavigationManager.NavigateTo("/Login");
     }
 }
