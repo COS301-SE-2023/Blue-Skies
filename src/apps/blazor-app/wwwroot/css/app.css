@@ -2260,6 +2260,16 @@ video {
   background-color: rgb(209 213 219 / var(--tw-bg-opacity));
 }
 
+.bg-orange-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(249 115 22 / var(--tw-bg-opacity));
+}
+
+.bg-yellow-accent-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 193 8 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -2777,6 +2787,11 @@ video {
 .text-orange-accent-600 {
   --tw-text-opacity: 1;
   color: rgb(231 111 15 / var(--tw-text-opacity));
+}
+
+.text-primary-600 {
+  --tw-text-opacity: 1;
+  color: rgb(39 86 162 / var(--tw-text-opacity));
 }
 
 .accent-primary-800 {
