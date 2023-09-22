@@ -10,7 +10,6 @@ namespace DataHandlers;
 
 public class SolarDataHandler
 {
-    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private double perfectSolarIrradiation = 1700;
     private double worstSolarIrradiation = 800;
 
