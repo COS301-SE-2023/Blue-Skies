@@ -791,25 +791,23 @@
         
     }
 
-    private async Task UpdateCalculation()
+    public async Task UpdateCalculation()
     {
+        Console.WriteLine("Updating Calculation");
+        ModalPopup.Dismiss();
         ShowLoadingScreen();
-        if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
+        bool updated = await calculationDataHandler.UpdateCalculation(currentReport!.reportId, allAppliances);
+        if (updated)
         {
-
-            toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (appliances[i].quantity != applianceQuantities[i].quantity)
-                {
-                    await reportApplianceClass.UpdateReportAppliance(currentReport.reportId, appliances[i]);
-                }
-            }
-            await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
+            toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
+            await ProtectedSessionStore.SetAsync("currentReport", currentReport!.reportId);
+            loadingService.ShowLoadingScreen();
+            NavigationManager.NavigateTo("/dashboard");
         }
-        loadingService.ShowLoadingScreen();
-        NavigationManager.NavigateTo("/dashboard");
+        else
+        {
+            toastService.ShowToast("Error", "Report failed to update.", "error");
+        }
     }
 
     private void ShowLoadingScreen()

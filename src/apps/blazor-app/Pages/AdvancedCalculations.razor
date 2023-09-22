@@ -54,7 +54,7 @@
                         <content>
                             @if (edit)
                             {
-                                <p @onclick="SaveCalculation">Update calculation</p>
+                                <p @onclick="UpdateCalculation">Update calculation</p>
                             }
                             else
                             {
@@ -286,6 +286,13 @@
     {
         await ProtectedSessionStore.SetAsync("calculationName", calculationName);
         buildYourHomeComponent!.SaveCalculation();
+        ModalPopup.Dismiss();
+    }
+
+    public async void UpdateCalculation()
+    {
+        await ProtectedSessionStore.SetAsync("calculationName", calculationName);
+        buildYourHomeComponent!.UpdateCalculation();
         ModalPopup.Dismiss();
     }
     

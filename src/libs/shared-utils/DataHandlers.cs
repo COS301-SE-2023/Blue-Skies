@@ -1024,6 +1024,10 @@ public class CalculationDataHandler
         int reportId,
         List<ApplianceModel> appliances)
     {
+        originalAppliances = await applianceClass.GetAllAppliances();
+        List<ApplianceModel> newAppliances = GetUniqueAppliances(appliances, originalAppliances);
+        Console.WriteLine("Unique appliances");
+        Console.WriteLine(JsonSerializer.Serialize(newAppliances));
         ReportModel? report = await reportClass.GetReport(reportId);
         if (report == null)
         {
@@ -1035,7 +1039,7 @@ public class CalculationDataHandler
             return false;
         }
 
-        foreach (var appliance in appliances)
+        foreach (var appliance in newAppliances)
         {
             await reportApplianceClass.CreateReportAppliance(
                 reportId,
@@ -1054,6 +1058,7 @@ public class CalculationDataHandler
     {
         List<ReportAllApplianceModel> reportAllAppliances = await reportAllApplianceClass.GetReportAllApplianceByReportId(reportId);
         List<ApplianceModel> allAppliances = new List<ApplianceModel>();
+        
         foreach (ReportAllApplianceModel reportAllAppliance in reportAllAppliances)
         {
             for (int i = 0; i < reportAllAppliance.numberOfAppliances; i++)
