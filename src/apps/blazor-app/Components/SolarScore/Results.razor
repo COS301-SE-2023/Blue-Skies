@@ -83,15 +83,16 @@
 
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
+                    <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
                     <div class="flex gap-1 mt-3">
                         @{
-                            var avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);   
+                            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);   
                         }
                         <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                         <p class="text-5xl text-gray-400 font-bold">kwh</p>
                     </div>
                     <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
-                    <div class="flex w-full justify-center items-center gap-1 -mt-20">
+                    <div class="flex w-full justify-center items-center gap-1 -mt-10">
                             @{
                                 if (dlh == daylight)
                                 {
@@ -109,13 +110,16 @@
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                     count="@numOfPanels" />
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="50" step="1" @bind-value="@numOfPanels" @oninput="SetAppliances"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
                     
                     <div class="flex gap-10 justify-center items-center">
                         <div class="flex flex-col gap-2 justify-center items-center">
                             <div class="h-24 flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
-                                <div class="w-full h-1/2 bg-primary-800 transition-all rounded-lg"></div>
-                                <p class="absolute bottom-2 left-1/2 -translate-x-1/2 text-primary-500 font-bold text-md">50<span class="text-primary-300">%</span></p>
+                                @{
+                                    var percentage = chargingLimitPercentage + "%";
+                                }
+                                <div style="height: @percentage" class="w-full bg-primary-800 transition-all rounded-lg"></div>
+                                <p class="absolute bottom-2 left-1/2 -translate-x-1/2 text-primary-500 font-bold text-md">@chargingLimitPercentage<span class="text-primary-300">%</span></p>
                                 <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                             </div>
                             <p class="text-center">Battery Utilization</p>
@@ -141,8 +145,8 @@
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
     public string? satteliteImage;
-    public int numOfPanels = 16;
-    public int numOfBatteries = 2;
+    public int numOfPanels = 8;
+    public int numOfBatteries = 3;
     public double appliancePowerUsage = 0.0;
     public int numFridges = 2;
     public int numTVs = 2;
@@ -150,6 +154,8 @@
     float dlh = 0f;
     float runningHoursPercentage = 0f;
     private int daylight = 24;
+    private double chargingLimit = 0.0;
+    private double chargingLimitPercentage = 50.0;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
@@ -161,7 +167,7 @@
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");
         }
-        SetRunningHours();
+        SetGraphicValues();
     }
 
     protected override void OnParametersSet(){
@@ -171,12 +177,14 @@
         loadingService.HideLoadingScreen();
     }
 
-    private void SetAppliances(ChangeEventArgs? e = null){
+    private void SetChargingLimit(ChangeEventArgs? e = null){
         if (e != null)
         {
             var val = e.Value!.ToString();
             numOfPanels =  int.Parse(val!);
         }
+        SetGraphicValues();
+
     }
     private void SetRunningHours(ChangeEventArgs? e = null){
         if (e != null)
@@ -184,8 +192,26 @@
             var val = e.Value!.ToString();
             numOfBatteries =  int.Parse(val!);
         }
-        appliancePowerUsage = ((numFridges * 250) + (numTVs * 60) + (numComputers * 400)) / 1000.0;
-        double runningHours = (numOfBatteries * 10) / appliancePowerUsage;
+        SetGraphicValues();
+    }
+
+    private void SetGraphicValues(){
+        appliancePowerUsage = ((numFridges * 250) + (numTVs * 70) + (numComputers * 400)) / 1000.0;
+        var avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
+        var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
+        usableHours = Math.Round(usableHours, 2);
+        chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
+        if (chargingLimit > numOfBatteries * 10)
+        {
+            chargingLimit = numOfBatteries * 10;
+            chargingLimitPercentage = 100;
+        } else
+        {
+            chargingLimitPercentage = (chargingLimit / (numOfBatteries * 10)) * 100;
+        }
+        chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
+
+        double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
         if (runningHoursPercentage > 100)
         {
