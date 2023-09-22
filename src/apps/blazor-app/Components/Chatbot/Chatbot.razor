@@ -3,8 +3,6 @@
 @using Newtonsoft.Json
 @using BlazorApp.Components.Base
 
-
-@* Namespace chatbot *@
 @namespace BlazorApp.Chatbot
 
 <div class="mx-auto">
@@ -23,7 +21,7 @@
       <div class="w-fit mx-auto flex space-x-4">
         <div class="flex items-center">
           <Image ImageName="Logo-small.svg" css="h-12 w-12" alt="Logo" />
-          <h1 class="text-2xl text-blue-500">Ask me Anything!</h1>
+          <h1 class="text-2xl text-blue-500">Ask me about Blue Skies!</h1>
         </div>
         <Image ImageName="Robert_Sitting_Panel.png" css="h-20 w-20" alt="Robert sitting on panel" />
       </div>
@@ -34,14 +32,18 @@
         <div>
           @if (mess.role == "user")
           {
-          <div class="ml-auto text-white w-fit rounded-lg bg-blue-500 p-2">
-            @mess.content
+          <div class="message-container">
+            <div class="ml-auto text-white w-fit rounded-lg bg-blue-500 p-2">
+              @mess.content
+            </div>
           </div>
           }
           else if (mess.role != "system")
           {
-          <div class="mr-auto text-black w-fit rounded-lg bg-blue-200 p-2">
-            @mess.content
+          <div class="message-container">
+            <div class="mr-auto text-black w-fit rounded-lg bg-blue-200 p-2">
+              @mess.content
+            </div>
           </div>
           }
         </div>
@@ -66,7 +68,6 @@
 
 
 
-
 @code {
 
   private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
@@ -74,14 +75,17 @@
   private readonly List<Message> _conversationHistory = new();
   private readonly string _chatBotKnowledgeScope = "" +
   "Your name is Robert, You are an assistant that help users navigate and use a website called Blue Skies" +
-  "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on Blue Skies?\"" + 
+  "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on Blue Skies?\"" +
   "A solar score measures your property's solar potential based on sunlight availability, shading, and local weather patterns. It estimates of solar panels in generating electricity for your location. "+
   "The appliances you can run on solar depend on system size. Small setups may power lights, fans, laptops, and smartphones. Larger ones can run refrigerators, air conditioners, washers, and EVs."+
   "Solar panels offer renewable energy, reduced bills, eco-friendliness, energy independence, incentives, and low maintenance." +
   "Will solar panels work during cloudy or rainy days? Yes, they work but with reduced efficiency. They generate power from sunlight, even on overcast days, though less than under direct sunlight."+
   "How much money can I save by using solar energy? Savings vary by location, panel size, electricity rates, and incentives. Long-term, solar can substantially lower bills and may lead to surplus energy sales."+
-  "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation.";
+  "Hiring a professional installer is strongly recommended as they ensure safety, handle permits, and maintain warranties, providing peace of mind for your solar panel installation." + 
+  "Do not answer questions that are not related to BlueSkies or solar."+ 
+  "Reply with short and concise answers. Do not make answers too long.";
   private string? chatbotApiKey = "";
+  private bool showMessage = true;
   private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
   protected override void OnInitialized()
   {
@@ -98,7 +102,6 @@
     if (e.Key is not "Enter") return;
     await SendMessage();
   }
-
   private async Task SendMessage()
   {
     if (string.IsNullOrWhiteSpace(_userQuestion)) return;
@@ -108,10 +111,8 @@
     await CreateCompletion();
     StateHasChanged();
   }
-
   private void AddUserQuestionToConversation()
   => _conversationHistory.Add(new Message { role = "user", content = _userQuestion });
-
 
   private async Task CreateCompletion()
   {
@@ -139,9 +140,6 @@
     {
       _conversationHistory.Add(new Message { role = "assitant", content = "Sorry, I don't know the answer that." });
     }
-
-
-
   }
 
   private void ClearInput()
