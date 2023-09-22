@@ -177,7 +177,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
                 quantity = 1
             });
         }
-
+;
         while (allAppliances.Count(x => x.type == applianceGroup.type) > applianceGroup.quantity)
         {
             if((allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)) != null) {
