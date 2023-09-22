@@ -21,7 +21,7 @@
 <div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
     <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
-        <Image ImageName="Robert_Pointing_Down.png" css="absolute left-72 top-8 z-0 h-32" alt="Rob" />
+        <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-0" alt="Rob"/>
         <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
         <Button style="pill">
@@ -34,7 +34,8 @@
         </Button>
     </div>
     <div class="relative w-1/2 flex flex-col sm:flex-shrink-0 gap-5 ">
-        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
+        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
+        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             <div class="my-auto w-full flex gap-4 relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
@@ -46,7 +47,6 @@
                 <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
             </div>
-
             <div class="bg-gradient-to-r p-4 absolute top-5 right-5 flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-1/2 my-auto rounded-2xl">
                 <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
                     <p class="text-center text-xl font-bold text-primary-100">Potential</p>
@@ -60,10 +60,14 @@
             </div>
 
             <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
-                <div class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-500 @scrollLength"></div>
+                @{
+                var percentage = solarScore + "%";
+                }
+                <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900"></div>
             </div>
         </Card>
-        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto">
+        <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob"/>
+        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             <div class="my-auto w-full flex gap-4 relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
@@ -72,32 +76,44 @@
             </div>
             <div class="flex gap-4 mt-4">
                 <div class="grid scale-90 grid-cols-2 gap-2 w-full">
-                    <Appliance name="Fridge" imageName="Fridge.svg" count="2"/>
-                    <Appliance name="TV" imageName="TV.svg" count="2"/>
-                    <Appliance name="Computer" imageName="Computer.svg" count="2"/>
+                    <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
+                    <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
+                    <Appliance name="Kettle" imageName="Kettle.svg" count="numKettles"/>
 
                     <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
 
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
                     <div class="flex gap-1 mt-3">
-                        <p class="text-5xl text-primary-900 font-semibold">126</p>
+                        @{
+                            var avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);   
+                        }
+                        <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                         <p class="text-5xl text-gray-400 font-bold">kwh</p>
                     </div>
-                    <DaylightChart />
+                    <DaylightChart  hours="@dlh" daylightHours="@daylight" />
                     <div class="flex w-full justify-center items-center gap-1 -mt-20">
-                        <p class="text-5xl text-primary-900 font-semibold">5</p>
-                        <p class="text-5xl text-gray-400 font-bold">h</p>W
+                            @{
+                                if (dlh == (24 - daylight))
+                                {
+                                    <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                }
+                                else
+                                {
+                                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                                }
+                            }      
+                        <p class="text-5xl text-gray-400 font-bold">h</p>
                     </div>
                     <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                 </div>
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
-                    count="2" />
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1000" max="7000" step="100" />
+                    count="@numOfPanels" />
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="50" step="1" @bind-value="@numOfPanels" @oninput="SetAppliances"/>
                     <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
-                        count="2" />
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1000" max="7000" step="100" />
+                        count="@numOfBatteries" />
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" @bind-value="@numOfBatteries" @oninput="SetRunningHours"/>
                 </div>
             </div>
         </Card>
@@ -106,65 +122,66 @@
 
 
 @code {
-    private string scrollLength = "left-[0%]";
+    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
     public LocationDataModel? locationData  { get; set; } = null;
-    private int solarScore = 0;
-    public List<SystemModel> systems = new List<SystemModel>();
-    public int selectedSystem = 2;
+    private int solarScore = -1;
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
     public string? satteliteImage;
+    public int numOfPanels = 16;
+    public int numOfBatteries = 2;
+    public double appliancePowerUsage = 0.0;
+    public int numFridges = 10;
+    public int numTVs = 12;
+    public int numKettles = 2;
+    float dlh = 0f;
+    float runningHoursPercentage = 0f;
+    private int daylight = 12;
+        
+
+
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
     /// </summary>
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {   
-        loadingService.ShowLoadingScreen();
         if(locationData == null) 
         {
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");
-            return;
         }
-
-        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
-        System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-        customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
-        selectedSystem = selectedSys.Value;
-
-        satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
-        solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
-
-        isLoaded = true;
-        loadingService.HideLoadingScreen();
-        
-        Console.WriteLine("Solar Score: " + solarScore);
-        await Task.Delay(1000);
-        scrollLength = $"left-[{solarScore}%]";
-
-        StateHasChanged();
+        SetRunningHours();
     }
 
-    /// <summary>
-    /// <para>This function is called when the user selects a system size and it updates the selected system and the average energy production</para>
-    /// <paramref name="selection"/> The index of the selected system.
-    /// </summary>
-    private  void SetSystemSize(int selection)
-    {
-        Console.WriteLine("Selected System number of panels: " + systems[selection].numberOfPanels);
-        if(systems != null && locationData != null) {
-            selectedSystem = selection;
-            ProtectedSessionStore.SetAsync("selectedSystem", selection);
-            if (systems!.Count > 0)
-            {
-                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData) / 365, 2);
-            }
+    protected override void OnParametersSet(){
+        satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
+        solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
+        isLoaded = true;
+        loadingService.HideLoadingScreen();
+    }
+
+    private void SetAppliances(){
+        appliancePowerUsage = (numFridges * 250) + (numTVs * 60) + (numKettles * 400) / 1000.0;
+    }
+    private void SetRunningHours(ChangeEventArgs? e = null){
+        if (e != null)
+        {
+            var val = e.Value!.ToString();
+            numOfBatteries =  int.Parse(val!);
         }
+        appliancePowerUsage = ((numFridges * 250) + (numTVs * 60) + (numKettles * 400)) / 1000.0;
+        double runningHours = (numOfBatteries * 10) / appliancePowerUsage;
+        double nonDaylightHours = 12;
+        double runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        dlh = (float) Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 }
