@@ -390,8 +390,8 @@ else
 
     public async Task updateLocationData()
     {
+        Console.WriteLine("Updating Report on Dashboard");
         loadingService.ShowLoadingScreen();
-        Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
 
@@ -403,6 +403,7 @@ else
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         updateAppliances();
+        StateHasChanged();
         loadingService.HideLoadingScreen();
     }
 
@@ -415,7 +416,9 @@ else
     private async void updateAppliances()
     {
         reportAllAppliance.Clear();
+        reportAllAppliance = await reportAllApplianceClass.GetReportAllApplianceByReportId(reports[selectedReport].reportId);
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
+        Console.WriteLine("Report All Appliance Count: " + reportAllAppliance.Count);
         allAppliances = await calculationDataHandler.GetAppliancesByTypeByReport(reports[selectedReport].reportId);
         if(allAppliances.Count > 0){
             selectedAppliance = allAppliances.Keys.First();
@@ -425,9 +428,6 @@ else
             {
                 selectedApplianceQuantity += temp[i].quantity;
             }
-
-            Console.WriteLine("Selected Appliance: " + selectedAppliance);
-            Console.WriteLine("Selected Appliance Quantity: " + selectedApplianceQuantity);
         }
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
 
@@ -440,6 +440,7 @@ else
             runningHoursPercentage = 100;
         }
         Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
+        updateCharts();
         StateHasChanged();
     }
 
@@ -499,7 +500,7 @@ else
                 countData++;
             }
         }
-
+        Console.WriteLine("Count Data: " + countData);
         int[] powerUsageData = new int[countData];
         int counter = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)
