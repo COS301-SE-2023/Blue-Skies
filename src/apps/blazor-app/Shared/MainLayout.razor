@@ -2,6 +2,7 @@
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TutorialService tutorialService
+@inject BlazorApp.Data.ChatBotService chatbotService
 @using BlazorApp.Components
 @using BlazorApp.Components.Tutorial
 @using BlazorApp.Chatbot
@@ -64,15 +65,18 @@
             <Footer />
         </div>
 
-        <div class="fixed bottom-0 z-50 right-0 flex justify-end p-3 w-full h-3/4">
-            <Chatbot />
-        </div>
+        @if (showChatBot) {
+            <div class="fixed bottom-0 z-50 right-0 flex justify-end p-3 w-full h-3/4">
+                <Chatbot />
+            </div>
+        }
     </main>
 </div>
 
 @code {
     private bool isLoading = false;
     private bool isToastVisible = false;
+    private bool showChatBot = false;
     private string activeTutorial = "Intro";
     private bool isTutorialVisible = false;
     private bool isScrollingDown = false;
@@ -94,6 +98,16 @@
         tutorialService.ShowTutorialModalRequested += ShowTutorial;
         tutorialService.HideTutorialModalRequested += HideTutorial;
         tutorialService.ToggleTutorialRequested += ToggleTutorial;
+        chatbotService.ShowChatBotRequested += ShowChatBot;
+        chatbotService.HideChatBotRequested += HideChatBot;
+    }
+
+    private void ShowChatBot() {
+        showChatBot = true;
+    }
+
+    private void HideChatBot() {
+        showChatBot = false;
     }
 
 @* Loading Service functions *@
