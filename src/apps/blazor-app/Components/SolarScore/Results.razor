@@ -22,7 +22,7 @@
 <div class="flex w-full flex-nowrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
     <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
-        <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-0" alt="Rob"/>
+        <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-10" alt="Rob"/>
         <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
         <Button style="pill">
@@ -52,7 +52,7 @@
                 <div class="flex gap-3 justify-end items-end flex-col">
                     <div class="flex gap-2">
                         <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
-                        <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer">Calculate with Own Bill →</p>
+                        <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer" @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                     </div>
                     <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
                         <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
@@ -150,11 +150,11 @@
     </div>
 </div>
 <ModalPopup @ref="ModalPopupLogIn" Title="Log in to access this feature">
-    <p>To provide you with a personalized experience and save your input data for enhanced calculations, 
+    <p class="max-w-md">To provide you with a personalized experience and save your input data for enhanced calculations, 
         please log in to our website. Your login helps us tailor our services to your specific needs.</p>
     <div class="flex flex-row gap-4 justify-center">
         <div @onclick="NavigateToLogin">
-            <Button>
+            <Button style="pill">
                 <content>
                     Log in
                 </content>
