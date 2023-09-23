@@ -44,12 +44,12 @@
                         
                 </div>
                 <div class="flex justify-center">
-                     <Button css="h-16 w-60 m-4" style="outline">
+                    <Button css="h-14 w-60 m-4" style="outline">
                         <content>
                             <p @onclick="ResetCalculation">Reset</p>
                         </content>
                     </Button>
-                    <Button css="h-16 w-60 m-4" style="pill">
+                    <Button css="h-14 w-60 m-4" style="pill">
                         <content>
                             @if (edit)
                             {
@@ -68,8 +68,8 @@
                 <div class="w-full">
                     @if(tabs[0].active) {
                         <div class="fade-in-active">
-                            <BuildYourHome @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                            <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                            <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                            <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                         </div>
                     }
                     else if (tabs[1].active)
@@ -159,6 +159,7 @@
         new TabItemModel("Finance", false),
         new TabItemModel("Fancy", false)
     };
+    private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
 
     /// <summary>

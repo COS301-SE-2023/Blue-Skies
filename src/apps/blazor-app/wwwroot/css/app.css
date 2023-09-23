@@ -567,8 +567,8 @@ video {
   bottom: -50%;
 }
 
-.-bottom-2\/3 {
-  bottom: -66.666667%;
+.-bottom-1\/3 {
+  bottom: -33.333333%;
 }
 
 .-bottom-3\/4 {
@@ -651,12 +651,12 @@ video {
   right: -57%;
 }
 
-.-top-1 {
-  top: -0.25rem;
-}
-
 .-top-1\/2 {
   top: -50%;
+}
+
+.-top-1\/3 {
+  top: -33.333333%;
 }
 
 .-top-10 {
@@ -673,6 +673,7 @@ video {
 
 .-top-2\/3 {
   top: -66.666667%;
+
 }
 
 .-top-20 {
@@ -687,12 +688,12 @@ video {
   top: -0.75rem;
 }
 
-.-top-64 {
-  top: -16rem;
-}
-
 .-top-80 {
   top: -20rem;
+}
+
+.-top-96 {
+  top: -24rem;
 }
 
 .-top-\[10\%\] {
@@ -773,10 +774,6 @@ video {
 
 .left-96 {
   left: 24rem;
-}
-
-.left-\[38\%\] {
-  left: 38%;
 }
 
 .right-0 {
@@ -1059,6 +1056,10 @@ video {
   margin-bottom: 5rem;
 }
 
+.mb-24 {
+  margin-bottom: 6rem;
+}
+
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -1303,6 +1304,10 @@ video {
   height: 20rem;
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
 .h-\[100vh\] {
   height: 100vh;
 }
@@ -1330,6 +1335,11 @@ video {
 
 .h-full {
   height: 100%;
+}
+
+.h-max {
+  height: -moz-max-content;
+  height: max-content;
 }
 
 .h-px {
@@ -1458,6 +1468,10 @@ video {
 
 .w-80 {
   width: 20rem;
+}
+
+.w-9 {
+  width: 2.25rem;
 }
 
 .w-\[100vw\] {
@@ -1668,13 +1682,13 @@ video {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.rotate-45 {
-  --tw-rotate: 45deg;
+.rotate-180 {
+  --tw-rotate: 180deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.rotate-\[15deg\] {
-  --tw-rotate: 15deg;
+.rotate-45 {
+  --tw-rotate: 45deg;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -2246,10 +2260,10 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(255 251 197 / var(--tw-bg-opacity));
 }
-
 .bg-yellow-accent-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 193 8 / var(--tw-bg-opacity));
+
 }
 
 .bg-gradient-to-br {
@@ -2901,6 +2915,10 @@ video {
 
 .duration-500 {
   transition-duration: 500ms;
+}
+
+.duration-\[300ms\] {
+  transition-duration: 300ms;
 }
 
 .duration-\[400ms\] {
@@ -3933,6 +3951,10 @@ body {
 
   .lg\:mt-44 {
     margin-top: 11rem;
+  }
+
+  .lg\:mt-96 {
+    margin-top: 24rem;
   }
 
   .lg\:block {

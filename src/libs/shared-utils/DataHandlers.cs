@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using OSGeo.GDAL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Text.Json;
 
 namespace DataHandlers;
 
@@ -948,6 +949,12 @@ public class CalculationDataHandler
     SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
     SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
 
+    SharedUtils.applianceClass applianceClass = new SharedUtils.applianceClass();
+
+    private List<ApplianceModel> originalAppliances = new List<ApplianceModel>();
+
+    // Constructor
+
     public async Task<int> SaveCalculation(
         string calculationName,
         int userId,
@@ -956,6 +963,10 @@ public class CalculationDataHandler
         double longitude,
         int systemId, List<ApplianceModel> appliances)
     {
+        originalAppliances = await applianceClass.GetAllAppliances();
+        List<ApplianceModel> newAppliances = GetUniqueAppliances(appliances, originalAppliances);
+        Console.WriteLine("Unique appliances");
+        Console.WriteLine(JsonSerializer.Serialize(newAppliances));
         int reportId = await reportClass.CreateReport(
             calculationName,
             userId,
@@ -967,10 +978,11 @@ public class CalculationDataHandler
 
         if (reportId == -1)
         {
+            Console.WriteLine("Error creating report");
             return -1;
         }
 
-        foreach (var appliance in appliances)
+        foreach (var appliance in newAppliances)
         {
             await reportApplianceClass.CreateReportAppliance(
                 reportId,
@@ -978,6 +990,29 @@ public class CalculationDataHandler
             );
         }
         return reportId;
+    }
+
+    private List<ApplianceModel> GetUniqueAppliances(List<ApplianceModel> appliances, List<ApplianceModel> originalAppliances)
+    {
+        List<ApplianceModel> uniqueAppliances = new List<ApplianceModel>();
+        foreach (var appliance in appliances)
+        {
+           
+            if (uniqueAppliances.Any(app => (app.type + app.name).Equals(appliance.type + appliance.name)))
+            {
+                var app = uniqueAppliances.Find(app => (app.type + app.name).Equals(appliance.type + appliance.name));
+                app.quantity += 1;
+            }
+            else
+            {
+                // Find appliance of same type
+                var oapp = originalAppliances.Find(app => app.type.Equals(appliance.type));
+                appliance.applianceId = oapp.applianceId;
+                appliance.quantity = 1;
+                uniqueAppliances.Add(appliance);
+            }
+        }
+        return uniqueAppliances;
     }
 
     // Update Report
