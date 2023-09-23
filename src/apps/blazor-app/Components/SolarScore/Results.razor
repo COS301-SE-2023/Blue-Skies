@@ -60,7 +60,10 @@
                         </div>
                         <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
                             <p class="text-center text-xl font-bold">R </p>
-                            <p class="text-center text-xl font-bold">1280 </p>
+                            @{
+                                var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
+                            }
+                                <p class="text-center text-xl font-bold">@savings</p>
                             <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
                         </div>
                     </div>
@@ -71,7 +74,7 @@
 
             <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
                 @{
-                var percentage = solarScore + "%";
+                    var percentage = solarScore + "%";
                 }
                 <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 "></div>
             </div>
@@ -124,8 +127,8 @@
                     count="@numOfPanels" />
                     <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
                     
-                    <div class="flex gap-10 justify-center items-center">
-                        <div class="flex flex-col gap-2 justify-center items-center">
+                    <div class="flex gap-2 pr-2 justify-start items-start">
+                        <div class="flex flex-col gap-2 justify-center items-center w-full">
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
                                     var percentage = chargingLimitPercentage + "%";
@@ -144,7 +147,6 @@
         </Card>
     </div>
 </div>
-
 
 @code {
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
@@ -179,6 +181,7 @@
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");
         }
+        avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
         SetGraphicValues();
     }
 
