@@ -9,99 +9,99 @@
 @using BlazorApp.Components
 @using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
-@inject BlazorApp.Data.LoadingService loadingService;
 
 <PageTitle>Advanced Calculations</PageTitle>
 <div class="fade-in-enter-active overflow-visible">
-    @if (isLoaded)
-    {
-        @* Check if user is logged in *@
-        if (!logIn)
+    <Image ImageName="shapes.svg"
+    css="absolute -top-[33%] sm:transform scale-[0.6] -left-[38%] -z-20 w-2/3 h-full -rotate-45" alt="Shapes" />
+    <div class="w-full px-20 ">
+        <div class="mb-20">
+            @* Load data to edit advanced calculations or display active calculation*@
+            @if (edit)
+            {
+                <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
+            }else{
+                <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
+            }
+                
+        </div>
+        <div class="flex justify-center">
+            @if (systems.Count == 0)
+            {
+                <div role="status" class="max-w-sm animate-pulse justify-center">
+                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div role="status" class="max-w-sm animate-pulse justify-center">
+                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <span class="sr-only">Loading...</span>
+                </div>
+            } else {
+                <Button css="h-14 w-60 m-4" style="outline">
+                    <content>
+                        <p @onclick="ResetCalculation">Reset</p>
+                    </content>
+                </Button>
+                <Button css="h-14 w-60 m-4" style="pill">
+                    <content>
+                        @if (edit)
+                        {
+                            <p @onclick="SaveCalculation">Update calculation</p>
+                        }
+                        else
+                        {
+                            <p @onclick="SaveCalculation">Save this calculation</p>
+                        }
+                    </content>
+                </Button>
+            }
+        </div>
+        @if (systems.Count == 0)
         {
-            ProtectedSessionStore.SetAsync("redirect", "advanced");
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/login");
-        }
-        @* Check if logged in user is admin *@
-        else if (isAd)
-        {
-            loadingService.ShowLoadingScreen();
-            NavigationManager.NavigateTo("/admin/keys");
-        }
-        else
-        {
-            <Image ImageName="shapes.svg"
-            css="absolute -top-[33%] sm:transform scale-[0.6] -left-[38%] -z-20 w-2/3 h-full -rotate-45" alt="Shapes" />
-            <div class="w-full px-20 ">
-                <div class="mb-20">
-                    @* Load data to edit advanced calculations or display active calculation*@
-                    @if (edit)
-                    {
-                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems" reportName="@currentReport.reportName"/>
-                    }else{
-                        <Results currentLocationData="currentLocationData" selectedSystem="selectedSystem" systems="systems"/>
-                    }
-                        
-                </div>
-                <div class="flex justify-center">
-                    <Button css="h-14 w-60 m-4" style="outline">
-                        <content>
-                            <p @onclick="ResetCalculation">Reset</p>
-                        </content>
-                    </Button>
-                    <Button css="h-14 w-60 m-4" style="pill">
-                        <content>
-                            @if (edit)
-                            {
-                                <p @onclick="SaveCalculation">Update calculation</p>
-                            }
-                            else
-                            {
-                                <p @onclick="SaveCalculation">Save this calculation</p>
-                            }
-                        </content>
-                    </Button>
-                </div>
-                <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
-                    <Tabs @bind-Items="tabs"></Tabs>
-                </div>
-                <div class="w-full">
-                    @if(tabs[0].active) {
-                        <div class="fade-in-active">
-                            <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                            <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
-                        </div>
-                    }
-                    else if (tabs[1].active)
-                    {
-                        <div class="fade-in-active">
-                            <Finanace />
-                        </div>
-                    }else if (tabs[2].active)
-                    {
-                        <div class="fade-in-active">
-                            @{
-                                int numSolarPanels = 0;
-                                if(systems != null) {
-                                    numSolarPanels = systems[selectedSystem].numberOfPanels;
-                                }
-                                <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
-                            }
-                        </div>
-                    }
-                </div>
+            <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto my-12">
+                <div class="h-9 bg-gray-200 rounded-lg dark:bg-gray-700 mt-4"></div>
+                <span class="sr-only">Loading...</span>
+            </div>
+        } else {
+            <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
+                <Tabs @bind-Items="tabs"></Tabs>
             </div>
         }
-    }
+        <div class="w-full">
+            @if(tabs[0].active) {
+                <div class="fade-in-active">
+                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
+                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                </div>
+            }
+            else if (tabs[1].active)
+            {
+                <div class="fade-in-active">
+                    <Finanace />
+                </div>
+            }else if (tabs[2].active)
+            {
+                <div class="fade-in-active">
+                    @{
+                        int numSolarPanels = 0;
+                        if(systems != null) {
+                            numSolarPanels = systems[selectedSystem].numberOfPanels;
+                        }
+                        <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
+                    }
+                </div>
+            }
+        </div>
+    </div>   
 </div>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     @if (edit)
     {
-                                    <p>Rename this calculation?</p>
+        <p>Rename this calculation?</p>
     }
     else
     {
-                                    <p>Add a nickname for this calculation:</p>
+        <p>Add a nickname for this calculation:</p>
     }
         <Input @bind-InputValue="calculationName" placeholder="Nickname" />
         <div class="flex flex-row gap-4 justify-center">
@@ -142,10 +142,9 @@
     BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
-    private bool isLoaded = false;
     private bool edit = false;
     private List<ApplianceModel>? appliances;
-    private List<SystemModel>? systems = new List<SystemModel>();
+    private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
@@ -175,12 +174,20 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     { 
-        loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
-        isLoaded = true;
+
+        if (!logIn)
+        {
+            await ProtectedSessionStore.SetAsync("redirect", "advanced");
+            NavigationManager.NavigateTo("/login");
+        }
+        else if (isAd)
+        {
+            NavigationManager.NavigateTo("/admin/keys");
+        }
 
         @* Get the current report either half populated from the solarScore page or a fully populated if editing an existing report *@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
@@ -240,7 +247,6 @@
 
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
-        loadingService.HideLoadingScreen();
     }
 
     public void SaveCalculation()

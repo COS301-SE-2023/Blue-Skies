@@ -23,45 +23,98 @@
     <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-48 top-10 h-72 z-0" alt="Rob" />
     <Image ImageName="Robert_Behind_Component.png" css="absolute left-48 -top-[31px] z-10 h-10" alt="Rob" />
     <div class="w-80 mx-auto">
-        <Map scale="scale-[2.6]" imageName="@satteliteImage" />
+        @if (satteliteImage == null)
+        {
+            <div class="flex items-center justify-center w-full h-80 bg-gray-300 rounded animate-pulse">
+                <svg class="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                </svg>
+            </div>
+        } else {
+            <Map scale="scale-[2.6]" imageName="@satteliteImage" />
+        }
     </div>
     <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20" alt="Rob" />
     <div class="relative flex mx-auto flex-col px-2 sm:flex-row gap-5 self-center">
-        <div class="" @onclick="ShowSolarScoreModal">
+        @if (solarScore == -1)
+        {
             <Card
                 css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms]">
-                <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
+                <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 animate-pulse">
+                    <svg class="w-8 h-8 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                    </svg>
                 </div>
-                <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
-                <div class="flex gap-1 mt-0">
-                    <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
-                    <p class="text-3xl text-gray-400 font-bold">%</p>
+                <div role="status" class="max-w-sm animate-pulse">
+                    <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[105px] mb-[30px] mt-4"></div>
+                    <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-14 mb-2.5"></div>
+                    <span class="sr-only">Loading...</span>
                 </div>
             </Card>
-        </div>
+        } else {
+            <div @onclick="ShowSolarScoreModal">
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms]">
+                    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+                        <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
+                    </div>
+                    <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
+                    <div class="flex gap-1 mt-0">
+                        <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
+                        <p class="text-3xl text-gray-400 font-bold">%</p>
+                    </div>
+                </Card>
+            </div>
+        }
         <div @onclick="ShowHoursModal">
-            <Card
-                css="border-2 border-primary-300 p-4 w-60 h-60 my-auto hover:-translate-y-1 transition-all duration-[300ms]">
-                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                    <Image ImageName="History.svg" alt="Sale" css="scale-150" />
-                </div>
-                <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
-                <div class="flex gap-1 mt-3">
-                    @{
-                        var usableHours = 0.0;
-                        if (currentLocationData != null)
-                        {
-                            usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-                            usableHours = Math.Round(usableHours, 2);
-                        }
-                    }
-                    <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
-                    <p class="text-3xl text-gray-400 font-bold">h</p>
-                </div>
-            </Card>
+            @if (usableHours == -1)
+            {
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms]">
+                    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 animate-pulse">
+                        <svg class="w-8 h-8 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                        </svg>
+                    </div>
+                    <div role="status" class="max-w-sm animate-pulse">
+                        <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] mt-4"></div>
+                        <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[150px] mb-[30px] mt-3"></div>
+                        <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-20 mb-2.5"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </Card>
+            } else {
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto hover:-translate-y-1 transition-all duration-[300ms]">
+                    <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                        <Image ImageName="History.svg" alt="Sale" css="scale-150" />
+                    </div>
+                    <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+                    <div class="flex gap-1 mt-3">
+                        <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
+                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                    </div>
+                </Card>
+            }
         </div>
         <div class="z-10" @onclick="ShowAvgModal">
+            @if (avgEnergyProduction == -1)
+            {
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms]">
+                    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 animate-pulse">
+                        <svg class="w-8 h-8 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                        </svg>
+                    </div>
+                    <div role="status" class="max-w-sm animate-pulse">
+                        <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[160px] mt-4"></div>
+                        <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[100px] mb-[30px] mt-3"></div>
+                        <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-[145px] mb-2.5"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </Card>
+            } else {
             <Card
                 css="border-2 border-primary-300 p-4 w-60 h-60 my-auto z-10 hover:-translate-y-1 transition-all duration-[300ms]">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16">
@@ -69,19 +122,11 @@
                 </div>
                 <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
                 <div class="flex gap-1 mt-3">
-                    @{
-                        var avgEnergyProduction = 0.0;
-                        if (currentLocationData != null && systems != null)
-                        {
-                            avgEnergyProduction =
-                            Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels,
-                            currentLocationData.solarPanelsData) / 365, 2);
-                        }
-                    }
                     <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                     <p class="text-3xl text-gray-400 font-bold">kwh</p>
                 </div>
             </Card>
+            }
         </div>
     </div>
 </div>
@@ -129,10 +174,12 @@
     public string? reportName { get; set; }
     [Parameter]
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
-    public int solarScore { get; set; }
+    public int solarScore { get; set; } = -1;
+    public double usableHours { get; set; } = -1;
+    public double avgEnergyProduction { get; set; } = -1;
     public ModalPopup ModalPopupSolarScore { get; set; } = new ModalPopup();
     public ModalPopup ModalPopupHours { get; set; } = new ModalPopup();
-public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
+    public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
 
 
 
@@ -145,11 +192,15 @@ public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
     /// </list>
     /// </summary>
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
-        solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
-        ModalPopupSolarScore = new ModalPopup();
+        if (currentLocationData != null)
+        {
+            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
+            usableHours = Math.Round(solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true), 2);
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+        }
     }
 
     private void ShowSolarScoreModal()

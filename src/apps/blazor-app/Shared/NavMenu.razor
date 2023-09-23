@@ -6,7 +6,6 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject BlazorApp.Data.ReportManager reportManager
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.TutorialService tutorialService
 @inject BlazorApp.Data.ChatBotService chatBotService
 
@@ -33,7 +32,7 @@
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       @* BlueSkies Logo *@
-      <a @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
+      <a @onclick='(() => forceNavigate("/"))' class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
         <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
       </a>
@@ -51,13 +50,13 @@
     </div>
     @* Desktop Menu Links *@
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'
+      <a href="" @onclick='(() => forceNavigate("/"))'
         class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");})'
+      <a href="" @onclick='(() => forceNavigate("/solarScore"))'
         class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");})'
+      <a href="" @onclick='(() => forceNavigate("/advanced"))'
         class="text-sm font-semibold leading-6 text-gray-900">Calculations</a>
-      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/getintouch");})'
+      <a href="" @onclick='(() => forceNavigate("/getintouch"))'
         class="text-sm font-semibold leading-6 text-gray-900">Get In Touch</a>
     </div>
     @* Desktop Floating Buttons *@
@@ -84,7 +83,7 @@
           </div>
         </a>
         @* Log In and Dashboard Button *@
-        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate(loggedIn);})'>
+        <a href="" @onclick='(() => forceNavigate(loggedIn))'>
           <div
             class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
@@ -102,7 +101,7 @@
           </div>
         </a>
         @* BlueSkies Floating Logo *@
-        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'>
+        <a href="" @onclick='(() => forceNavigate("/"))'>
           <div
             class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
@@ -144,10 +143,7 @@
             </div>
           </a>
           @* Edit Button *@
-          <a onclick="@(() => {
-             Edit();
-             loadingService.ShowLoadingScreen();
-             })" href="">
+          <a onclick="@(() => Edit())" href="">
             <div
               class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
               <div class="scale-75">
@@ -178,7 +174,7 @@
         class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex px-2 flex-col items-center justify-between w-full ">
           <div class="flex justify-between w-full ">
-            <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
+            <a href="" @onclick='(() => forceNavigate("/"))' class="-m-1.5 p-1.5">
               <span class="sr-only">BlueSkies</span>
               <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
             </a>
@@ -194,12 +190,12 @@
           @* Mobile Menu Links *@
           <div class="flex flex-col w-full mt-5">
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");ToggleNavMenu();})'>Home</a>
+            @onclick='(() => {forceNavigate("/");ToggleNavMenu();})'>Home</a>
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");ToggleNavMenu();})'>Solar
+            @onclick='(() => {forceNavigate("/solarScore");ToggleNavMenu();})'>Solar
               Score</a>
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
+            @onclick='(() => {forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
             @if (loggedIn == true)
             {
               <p @onclick="ToggleNavMenu"
@@ -260,7 +256,6 @@
 
   private void forceNavigate(bool loggedIn)
   {
-    loadingService.ShowLoadingScreen();
     if (loggedIn)
     {
       navigationManager.NavigateTo("/dashboard", true);
@@ -342,7 +337,6 @@
 
   private void Edit()
   {
-    loadingService.ShowLoadingScreen();
     reportManager.EditReport();
   }
 

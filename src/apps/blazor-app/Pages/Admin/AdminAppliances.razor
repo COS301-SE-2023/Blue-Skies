@@ -8,7 +8,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 @inject BlazorApp.Data.ToastService toastService;
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Appliances</PageTitle>
 
@@ -149,7 +148,6 @@
     protected override async Task OnInitializedAsync()
     {
         appliances = await applianceClass.GetAllAppliances();
-        loadingService.HideLoadingScreen();
     }
 
     private void AddAppliance()
