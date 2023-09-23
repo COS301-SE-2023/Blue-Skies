@@ -5,7 +5,7 @@ namespace BlazorApp.Data {
         public event Action? ShowChatBotRequested;
         public event Action? HideChatBotRequested;
 
-        public void ShowChatBot(string title, string message, string type)
+        public void ShowChatBot()
         {
             ShowChatBotRequested?.Invoke();
         }

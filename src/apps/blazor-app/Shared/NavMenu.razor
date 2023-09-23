@@ -8,6 +8,7 @@
 @inject BlazorApp.Data.ReportManager reportManager
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.TutorialService tutorialService
+@inject BlazorApp.Data.ChatBotService chatBotService
 
 @{
   @* Get URI of current page *@
@@ -62,7 +63,7 @@
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="relative group">
-        <div @onclick="ShowTutorial" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
+        <div @onclick="ShowChatBot" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
           <Image ImageName="Robert_Behind_Component.png"
             css="absolute z-10 right-3 h-8 group-hover:-translate-y-[36px] transition-all duration-[400ms]" alt="Rob" />
           <Button style="pill" css="z-20">
@@ -241,6 +242,11 @@
   {
     tutorialService.ToggleTutorial("Intro");
     tutorialService.ShowTutorial();
+  }
+
+  private void ShowChatBot()
+  {
+    chatBotService.ShowChatBot();
   }
   private void ToggleNavMenu()
   {

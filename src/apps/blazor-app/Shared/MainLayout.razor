@@ -66,7 +66,7 @@
         </div>
 
         @if (showChatBot) {
-            <div class="fixed bottom-0 z-50 right-0 flex justify-end p-3 w-full h-3/4">
+            <div class="fixed bottom-0 z-50 right-0 flex justify-end p-3 @chatbotAnimation">
                 <Chatbot />
             </div>
         }
@@ -85,6 +85,7 @@
     private string title = "";
     private string message = "";
     private string type = "";
+    private string chatbotAnimation = "chatbot-slide-in";
 
 
 
@@ -103,11 +104,18 @@
     }
 
     private void ShowChatBot() {
+        chatbotAnimation = "chatbot-slide-in";
+        StateHasChanged();
         showChatBot = true;
+        StateHasChanged();
     }
 
-    private void HideChatBot() {
+    private async void HideChatBot() {
+        chatbotAnimation = "chatbot-slide-out";
+        StateHasChanged();
+        await Task.Delay(300);
         showChatBot = false;
+        StateHasChanged();
     }
 
 @* Loading Service functions *@
