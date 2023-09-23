@@ -796,7 +796,7 @@
         Console.WriteLine("Updating Calculation");
         ModalPopup.Dismiss();
         ShowLoadingScreen();
-        bool updated = await calculationDataHandler.UpdateCalculation(currentReport!.reportId, allAppliances);
+        bool updated = await calculationDataHandler.UpdateCalculation(currentReport!.reportId, allAppliances!);
         if (updated)
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");

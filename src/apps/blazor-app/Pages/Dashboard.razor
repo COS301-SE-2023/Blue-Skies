@@ -81,46 +81,49 @@ else
                              @{
                                 if (selectedAppliance != "" && allAppliances.Count > 0)
                                 {
-                                    List<ApplianceModel> tempAppliances = allAppliances[selectedAppliance];
-                                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                                        <table class="w-full text-sm text-left text-gray-500 ">
-                                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                                                <tr>
-                                                    <th scope="col" class="px-6 py-3">
-                                                        Model
-                                                    </th>
-                                                    <th scope="col" class="px-6 py-3">
-                                                        Quantity
-                                                    </th>
-                                                    <th scope="col" class="px-6 py-3">
-                                                        Duration Used
-                                                    </th>
-                                                    <th scope="col" class="px-6 py-3">
-                                                        Power Usage
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var appliance in tempAppliances)
-                                                {
-                                                    <tr class="bg-white border-b">
-                                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                            @appliance.name
+                                    List<ApplianceModel>? tempAppliances = allAppliances[selectedAppliance];
+                                    if(tempAppliances is not null)
+                                    {
+                                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                            <table class="w-full text-sm text-left text-gray-500 ">
+                                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3">
+                                                            Model
                                                         </th>
-                                                        <td class="px-6 py-4">
-                                                            @appliance.quantity
-                                                        </td>
-                                                        <td class="px-6 py-4">
-                                                            @appliance.durationUsed h
-                                                        </td>
-                                                        <td class="px-6 py-4">
-                                                            @appliance.powerUsage
-                                                        </td>
+                                                        <th scope="col" class="px-6 py-3">
+                                                            Quantity
+                                                        </th>
+                                                        <th scope="col" class="px-6 py-3">
+                                                            Duration Used
+                                                        </th>
+                                                        <th scope="col" class="px-6 py-3">
+                                                            Power Usage
+                                                        </th>
                                                     </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var appliance in tempAppliances)
+                                                    {
+                                                        <tr class="bg-white border-b">
+                                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                                                @appliance.name
+                                                            </th>
+                                                            <td class="px-6 py-4">
+                                                                @appliance.quantity
+                                                            </td>
+                                                            <td class="px-6 py-4">
+                                                                @appliance.durationUsed h
+                                                            </td>
+                                                            <td class="px-6 py-4">
+                                                                @appliance.powerUsage
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
                                 }
                              }
                         </div>
@@ -500,7 +503,6 @@ else
                 countData++;
             }
         }
-        Console.WriteLine("Count Data: " + countData);
         int[] powerUsageData = new int[countData];
         int counter = 0;
         for (int i = 0; i < reportAllAppliance.Count; i++)

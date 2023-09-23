@@ -8,7 +8,6 @@
 @using BlazorApp.Components.Advanced
 @using BlazorApp.Components
 @using BlazorApp.FancyData
-@using System.Text.Json;
 @inject BlazorApp.Data.ToastService toastService;
 @inject BlazorApp.Data.LoadingService loadingService;
 
@@ -149,12 +148,10 @@
     private bool edit = false;
     private List<ApplianceModel>? appliances;
     private List<SystemModel>? systems = new List<SystemModel>();
-    private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private int numSolarPanels = 0;
     private string calculationName {get; set;} = "";
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private List<TabItemModel> tabs = new List<TabItemModel>
@@ -233,21 +230,28 @@
             Dictionary<string , int> applianceCountDict = new Dictionary<string, int>();
             foreach(ApplianceModel app in allAppliances)
             {
-                if(applianceCountDict.ContainsKey(app.type))
+                if(app.type is not null)
                 {
-                    applianceCountDict[app.type] += 1;
+                    if(applianceCountDict.ContainsKey(app.type))
+                    {
+                        applianceCountDict[app.type] += 1;
+                    }
+                    else
+                    {
+                        applianceCountDict.Add(app.type, 1);
+                    }
                 }
-                else
-                {
-                    applianceCountDict.Add(app.type, 1);
-                }
+                
             }
 
             foreach(ApplianceModel app in appliances)
             {
-                if(applianceCountDict.ContainsKey(app.type))
+                if(app.type is not null)
                 {
-                    app.quantity = applianceCountDict[app.type];
+                    if(applianceCountDict.ContainsKey(app.type))
+                    {
+                        app.quantity = applianceCountDict[app.type];
+                    }
                 }
             }
         } else {
@@ -292,7 +296,7 @@
     public async void UpdateCalculation()
     {
         await ProtectedSessionStore.SetAsync("calculationName", calculationName);
-        buildYourHomeComponent!.UpdateCalculation();
+        await buildYourHomeComponent!.UpdateCalculation();
         ModalPopup.Dismiss();
     }
     
