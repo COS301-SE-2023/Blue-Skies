@@ -107,9 +107,9 @@
             checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
             if (checkIfLocationDataExists == false)
             {
+                loadingService.ShowLoadingScreen();
                 Console.WriteLine("Location data does not exist, creating the necessary data");
                 currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
-                loadingService.ShowLoadingScreen();
             }
             else
             {

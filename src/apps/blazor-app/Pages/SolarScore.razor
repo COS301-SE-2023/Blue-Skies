@@ -3,6 +3,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
 @using BlazorApp.Components.SolarScore;
@@ -59,8 +60,8 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        loadingService.HideLoadingScreen();
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         double latitude = tempLatitude.Value;
