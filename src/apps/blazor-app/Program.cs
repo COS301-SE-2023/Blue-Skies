@@ -14,6 +14,7 @@ builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<ReportManager>();
 builder.Services.AddScoped<TutorialService>();
 builder.Services.AddScoped<ApplianceService>();
+builder.Services.AddScoped<ChatBotService>();
 
 var app = builder.Build();
 

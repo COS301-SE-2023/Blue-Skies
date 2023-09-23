@@ -107,6 +107,28 @@ body {
     animation-fill-mode: forwards;
 }
 
+.chatbot-slide-in {
+    animation: chatbotSlideIn .5s;
+    animation-fill-mode: forwards;
+}
+
+.chatbot-slide-out {
+    animation: chatbotSlideOut .5s;
+    animation-fill-mode: forwards;
+}
+
+/* Chatbot Transitions */
+@keyframes chatbotSlideIn {
+    from { height: 0%; width: 0%; opacity: 0;}
+    to { height: 75%; width: 100%; opacity: 1;  }
+}
+
+@keyframes chatbotSlideOut {
+    from { height: 75%; width: 100%; opacity: 1; }
+    to { height: 0%; width: 0%; opacity: 0; }
+}
+
+/* Wipe transitions */
 @keyframes wipeDown {
     from { opacity: 1; height: 0%;}
     to { opacity: 1; height: 100%;}
