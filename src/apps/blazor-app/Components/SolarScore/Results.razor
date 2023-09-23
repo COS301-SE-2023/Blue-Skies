@@ -207,8 +207,6 @@
     protected override void OnParametersSet(){
         satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
-        isLoaded = true;
-        loadingService.HideLoadingScreen();
     }
 
     private void SetChargingLimit(ChangeEventArgs? e = null){
@@ -226,7 +224,7 @@
             var val = e.Value!.ToString();
             numOfBatteries =  int.Parse(val!);
         }
-        isLoaded = true;
+        SetGraphicValues();
     }
 
     private void SetGraphicValues(){
