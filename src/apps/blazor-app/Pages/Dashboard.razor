@@ -421,7 +421,6 @@ else
         reportAllAppliance.Clear();
         reportAllAppliance = await reportAllApplianceClass.GetReportAllApplianceByReportId(reports[selectedReport].reportId);
         await ProtectedSessionStore.SetAsync("userReportAllAppliance", reportAllAppliance);
-        Console.WriteLine("Report All Appliance Count: " + reportAllAppliance.Count);
         allAppliances = await calculationDataHandler.GetAppliancesByTypeByReport(reports[selectedReport].reportId);
         if(allAppliances.Count > 0){
             selectedAppliance = allAppliances.Keys.First();
@@ -442,7 +441,6 @@ else
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
         updateCharts();
         StateHasChanged();
     }
