@@ -1208,6 +1208,10 @@ video {
   display: block;
 }
 
+.inline-block {
+  display: inline-block;
+}
+
 .flex {
   display: flex;
 }
@@ -2395,6 +2399,11 @@ video {
   background-color: rgb(255 193 8 / var(--tw-bg-opacity));
 }
 
+.bg-primary-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(31 53 91 / var(--tw-bg-opacity));
+}
+
 .bg-gradient-to-br {
   background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
 }
@@ -3032,6 +3041,10 @@ video {
 
 .delay-\[250ms\] {
   transition-delay: 250ms;
+}
+
+.delay-500 {
+  transition-delay: 500ms;
 }
 
 .duration-200 {
