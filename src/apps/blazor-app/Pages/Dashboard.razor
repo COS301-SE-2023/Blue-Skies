@@ -5,6 +5,7 @@
 @using BlazorApp.Components
 @using BlazorApp.FancyData
 @using ChartJs.Blazor.PolarAreaChart
+@using ApplianceEnergyConsumption
 @inject BlazorApp.Data.ReportManager reportManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -200,7 +201,7 @@ else
                                                         <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
                                                             <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
                                                             <div class="flex relative flex-col justify-center w-full">
-                                                                <Chart Config="polarAreaConfig"></Chart>
+                                                                <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                                                             </div>
                                                         </div>
                                                     </div>

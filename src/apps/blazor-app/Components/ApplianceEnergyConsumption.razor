@@ -7,6 +7,9 @@
 
     [Parameter]
     public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
+
+    [Parameter]
+    public bool animated { get; set; } = true;
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
 
     private int[][] colours = new int[][] {
@@ -19,6 +22,7 @@
     @* OnInitialized *@
     protected override void OnInitialized()
     {
+        Console.WriteLine("Creating Appliances Polar Chart");
         polarAreaConfig = new PolarAreaConfig()
         {
             Options = new PolarAreaOptions
@@ -31,7 +35,7 @@
                 },
                 Animation = new ArcAnimation
                 {
-                    AnimateRotate = true,
+                    AnimateRotate = animated,
                     Duration = 2000,
 
                 },
@@ -56,15 +60,27 @@
 
             }
         };
+        RenderCharts();
+    }
 
+    @* OnParametersSet *@
+    protected override void OnParametersSet()
+    {
+        RenderCharts();
+    }
+
+    public void RenderCharts()
+    {
+        
         if(reportAllAppliance is not null)
         {
+            polarAreaConfig.Data.Labels.Clear();
+            polarAreaConfig.Data.Datasets.Clear();
             int[] powerUsageData = new int[reportAllAppliance.Count];
             for (int i = 0; i < reportAllAppliance.Count; i++)
             {
                 powerUsageData[i] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
-                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);
-                
+                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);                
             }
             string[] backgroundColor = new string[reportAllAppliance.Count];
             for (int i = 0; i < reportAllAppliance.Count; i++)
@@ -79,8 +95,9 @@
             };
 
             polarAreaConfig.Data.Datasets.Add(polarDataset);
+            StateHasChanged();
+        }else{
+            Console.WriteLine("reportAllAppliance is null");
         }
-
-
     }
 }
