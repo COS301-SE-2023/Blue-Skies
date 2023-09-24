@@ -150,6 +150,7 @@
     private ReportModel currentReport = new ReportModel(); 
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
+    private List<ReportAllApplianceModel>? reportAllAppliance;
     private int selectedSystem = 0;
     private string calculationName {get; set;} = "";
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
