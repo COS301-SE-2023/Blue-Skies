@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+.tooltip {
+    /* @apply invisible absolute; */
+    position: absolute;
+    opacity: 0;
+  }
+  
+  .has-tooltip:hover .tooltip {
+    opacity: 1;
+    z-index: 50;
+  }j
+
 body {
     font-family: 'Montserrat', sans-serif;
 }
