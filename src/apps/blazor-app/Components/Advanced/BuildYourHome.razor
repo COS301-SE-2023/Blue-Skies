@@ -868,7 +868,6 @@
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
             await ProtectedSessionStore.SetAsync("currentReport", currentReport!.reportId);
-            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/dashboard");
         }
         else
