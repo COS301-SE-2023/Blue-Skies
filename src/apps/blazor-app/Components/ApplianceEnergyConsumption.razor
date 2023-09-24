@@ -22,7 +22,6 @@
     @* OnInitialized *@
     protected override void OnInitialized()
     {
-        Console.WriteLine("Creating Appliances Polar Chart");
         polarAreaConfig = new PolarAreaConfig()
         {
             Options = new PolarAreaOptions
@@ -36,7 +35,7 @@
                 Animation = new ArcAnimation
                 {
                     AnimateRotate = animated,
-                    Duration = 2000,
+                    Duration = animated == true ? 2000 : 0,
 
                 },
                 Tooltips = new Tooltips
