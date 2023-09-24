@@ -84,6 +84,7 @@ else
                                     List<ApplianceModel>? tempAppliances = allAppliances[selectedAppliance];
                                     if(tempAppliances is not null)
                                     {
+                                        double dU = Math.Round(tempAppliances[0].durationUsed, 3);
                                         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                                             <table class="w-full text-sm text-left text-gray-500 ">
                                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
@@ -113,10 +114,10 @@ else
                                                                 @appliance.quantity
                                                             </td>
                                                             <td class="px-6 py-4">
-                                                                @appliance.durationUsed h
+                                                                @dU h
                                                             </td>
                                                             <td class="px-6 py-4">
-                                                                @appliance.powerUsage
+                                                                @appliance.powerUsage kW/h
                                                             </td>
                                                         </tr>
                                                     }
