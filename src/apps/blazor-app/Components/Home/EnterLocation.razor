@@ -77,10 +77,6 @@
     public async void generateLocationData()
     {
         currentLocationData = new LocationDataModel();
-
-        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-        customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
 
