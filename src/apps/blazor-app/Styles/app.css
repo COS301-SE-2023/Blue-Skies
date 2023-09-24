@@ -2,13 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .tooltip {
     position: absolute;
     opacity: 0;
-  }
-
-  .has-tooltip {
-    /* position: relative; */
   }
   
   .has-tooltip:hover .tooltip {

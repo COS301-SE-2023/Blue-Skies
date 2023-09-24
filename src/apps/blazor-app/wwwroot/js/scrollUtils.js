@@ -31,3 +31,18 @@ window.scrollToBottom = (elementId) => {
       container.scrollTop = container.scrollHeight;
   }
 };
+
+window.initializeMouseFollower = (divToMove) => {
+  const follower = divToMove;
+  
+  // Function to update the div's position based on mouse X coordinate
+  const updatePosition = (e) => {
+      const x = e.clientX;
+      follower.style.left = x + 'px';
+      x
+  };
+  
+  // Add a mousemove event listener to track mouse movement
+  document.addEventListener('mousemove', updatePosition);
+};
+
