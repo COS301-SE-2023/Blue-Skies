@@ -4,7 +4,7 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
 @using ChartJs.Blazor.PolarAreaChart
-
+@using ApplianceEnergyConsumption
 
 @layout AuthLayout
 <div class="pageA4 mx-auto">
@@ -81,7 +81,7 @@
                     <div>
                         <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours on Batteries</h3>
                         <Chart Config="pieConfig"></Chart>
-                        <div class="flex w-fit mx-auto ">
+                        <div class="flex w-fit mx-auto">
                             <p class="text-primary-900 font-semibold">
                                 @{
                                     if (dlh == (24 - daylight))
@@ -96,6 +96,11 @@
                             </p>
                             <p class="text-center text-gray-400 font-bold">h</p>
                         </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption
+</h3>
+                        <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                     </div>
                 </div>
                 @* <div class="w-full flex">

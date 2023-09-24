@@ -1,0 +1,86 @@
+@using ChartJs.Blazor.PolarAreaChart
+@namespace ApplianceEnergyConsumption
+
+<Chart Config="polarAreaConfig"></Chart>
+
+@code{
+
+    [Parameter]
+    public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
+    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
+
+    private int[][] colours = new int[][] {
+        new int[] { 255,193,8 },
+        new int[] { 246,135,18},
+        new int[] { 56,113,193 },
+        new int[] { 0,15,82 }
+    };
+
+    @* OnInitialized *@
+    protected override void OnInitialized()
+    {
+        polarAreaConfig = new PolarAreaConfig()
+        {
+            Options = new PolarAreaOptions
+            {
+                Responsive = true,
+                AspectRatio = 1.5,
+                Legend = new Legend
+                {
+                    Display = false,
+                },
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    Duration = 2000,
+
+                },
+                Tooltips = new Tooltips
+                {
+                    Enabled = true,
+                    Mode = InteractionMode.Index,
+                    Intersect = false
+                },
+                Hover = new Hover
+                {
+                    Mode = InteractionMode.Index,
+                    Intersect = false
+                },
+                Scale = new LinearRadialAxis
+                {
+                    Ticks = new LinearRadialTicks
+                    {
+                        Display = false,
+                    }
+                }
+
+            }
+        };
+
+        if(reportAllAppliance is not null)
+        {
+            int[] powerUsageData = new int[reportAllAppliance.Count];
+            for (int i = 0; i < reportAllAppliance.Count; i++)
+            {
+                powerUsageData[i] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
+                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);
+                
+            }
+            string[] backgroundColor = new string[reportAllAppliance.Count];
+            for (int i = 0; i < reportAllAppliance.Count; i++)
+            {
+                backgroundColor[i] = $"rgba({colours[i % colours.Count()][0]},{colours[i % colours.Count()][1]},{colours[i % colours.Count()][2]},1)";
+
+            }
+            PolarAreaDataset<int> polarDataset = new PolarAreaDataset<int>(powerUsageData)
+            {
+                BackgroundColor = backgroundColor,
+                BorderWidth = 0,
+            };
+
+            polarAreaConfig.Data.Datasets.Add(polarDataset);
+        }
+
+
+    }
+}
