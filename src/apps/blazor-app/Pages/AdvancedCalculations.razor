@@ -220,29 +220,46 @@
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
             reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
+
+            @* systems array received from session storage should be the 3 default systems and 1 custom system *@
+            var s = await ProtectedSessionStore.GetAsync<List<SystemModel>>("systems");
+            systems = s.Value!;
+            for (int i = 0; i < systems.Count; i++)
+            {
+                if (currentReport.systemId == systems[i].systemId)
+                {
+                    selectedSystem = i;
+                }
+            }
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
+
+            systems = await systemDataClass.GetAllSystems();
+            if (systems.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("systems", systems);
+            }
+            selectedSystem = 0;
+            for (int i = systems.Count - 1; i > 2; i--)
+            {
+                systems.RemoveAt(i);
+            }
+            SystemModel system = new SystemModel();
+            system.systemId = -1;
+            system.systemSize = "Custom";
+            system.numberOfPanels = -1;
+            system.numberOfBatteries = -1;
+            system.batterySize = -1;
+            system.inverterOutput = -1;
+            system.solarInput = -1;
+            systems.Add(system);
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
-        }
-
-        systems = await systemDataClass.GetAllSystems();
-        if (systems.Count > 0)
-        {
-            await ProtectedSessionStore.SetAsync("systems", systems);
-        }
-
-        for (int i = 0; i < systems.Count; i++)
-        {
-            if (currentReport.systemId == systems[i].systemId)
-            {
-                selectedSystem = i;
-            }
         }
 
         @* Get custom Appliances *@

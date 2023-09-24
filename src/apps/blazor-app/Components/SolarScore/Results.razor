@@ -27,7 +27,7 @@
         <Button style="pill">
             <content>
                 <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                    <p class="my-auto">More Calculations </p>
+                    <p class="my-auto">More Calculations</p>
                     <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
                 </div>
             </content>
@@ -97,7 +97,7 @@
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
                     <div class="flex flex-col gap-1">
-                        <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
+                        <h3 class="font-medium text-lg text-primary-900 text-left mx-auto">Avg Energy Produced</h3>
                         <div class="flex gap-1 mt-3">
                             @{
                                 avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);
@@ -123,9 +123,9 @@
                     <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                 </div>
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
-                    <div class="-mt-10 mb-5 w-full flex flex-col">
+                    <div class="-mt-10 mb-2 w-full flex flex-col">
                         <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"count="@numOfPanels" />
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full">
@@ -229,7 +229,7 @@
 
     private void SetGraphicValues(){
         appliancePowerUsage = ((numFridges * 250) + (numTVs * 70) + (numComputers * 400)) / 1000.0;
-        var avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
+        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
