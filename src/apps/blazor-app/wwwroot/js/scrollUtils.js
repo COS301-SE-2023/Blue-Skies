@@ -34,15 +34,23 @@ window.scrollToBottom = (elementId) => {
 
 window.initializeMouseFollower = (divToMove) => {
   const follower = divToMove;
+  const parent = follower.parentElement;
   
   // Function to update the div's position based on mouse X coordinate
   const updatePosition = (e) => {
       const x = e.clientX;
-      follower.style.left = x + 'px';
-      x
+      const parentRect = parent.getBoundingClientRect();
+      const minX = parentRect.left;
+      const maxX = parentRect.right - follower.clientWidth;
+      
+      // Ensure the follower stays within the bounds of the parent div
+      if (x >= minX && x <= maxX) {
+          follower.style.left = x - parentRect.left + 'px';
+      }
   };
   
   // Add a mousemove event listener to track mouse movement
   document.addEventListener('mousemove', updatePosition);
 };
+
 
