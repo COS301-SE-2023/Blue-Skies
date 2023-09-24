@@ -24,3 +24,10 @@ window.GenerateReport = function () {
 
   doc.save('a4.pdf');
 };
+
+window.scrollToBottom = (elementId) => {
+  var container = document.getElementById(elementId);
+  if (container) {
+      container.scrollTop = container.scrollHeight;
+  }
+};

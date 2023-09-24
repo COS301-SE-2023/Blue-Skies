@@ -5,12 +5,10 @@
 @using BlazorApp.Components
 @using BlazorApp.FancyData
 @using ChartJs.Blazor.PolarAreaChart
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ReportManager reportManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
@@ -19,12 +17,10 @@
 else if (!logIn)
 {
     ProtectedLocalStore.SetAsync("redirect", "dashboard");
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/login");
 }
 else if (isAd)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 }
 else
@@ -43,14 +39,23 @@ else
             <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="allSystems" solarScore="solarScore" />
             <div class="mt-10 w-full">
                 <Card>
-                    <Heading>
-                        <Header>
-                            <h1 class="text-xl">Appliances</h1>
-                        </Header>
-                        <Subscript>
-                            <p>What do you want to run in a power outage?</p>
-                        </Subscript>
-                    </Heading>
+                    @if (reportAllAppliance == null)
+                    {
+                        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+                            <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-36"></div>
+                            <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-96 mt-2"></div>
+                            <span class="sr-only">Loading...</span>
+                        </div> 
+                    } else {
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Appliances</h1>
+                            </Header>
+                            <Subscript>
+                                <p>What do you want to run in a power outage?</p>
+                            </Subscript>
+                        </Heading>
+                    }
 
                         <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
                             <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
@@ -299,7 +304,6 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        loadingService.ShowLoadingScreen();
         selectedReport = 0;
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -350,7 +354,6 @@ else
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         isLoaded = true;
-        loadingService.HideLoadingScreen();
 
     }
 
@@ -394,8 +397,7 @@ else
 
     public async Task updateLocationData()
     {
-        Console.WriteLine("Updating Report on Dashboard");
-        loadingService.ShowLoadingScreen();
+        Console.WriteLine("Update Location Data");
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
 
@@ -407,8 +409,6 @@ else
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         updateAppliances();
-        StateHasChanged();
-        loadingService.HideLoadingScreen();
     }
 
     private void Dispose()
@@ -632,7 +632,6 @@ else
     }
     private Task CreateReport()
     {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/advanced");
         return Task.CompletedTask;
     }
@@ -648,7 +647,6 @@ else
     /// </summary>
     private async void Edit()
     {
-        loadingService.ShowLoadingScreen();
         await ProtectedSessionStore.SetAsync("edit", true);
         NavigationManager.NavigateTo("/advanced");
         StateHasChanged();

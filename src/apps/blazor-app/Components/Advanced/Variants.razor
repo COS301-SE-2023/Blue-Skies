@@ -8,7 +8,9 @@
         <Subscript><p class="text-center max-w-4xl">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance</p></Subscript>
     </Heading>
     <div class="flex gap-20 scale-90 justify-center">
-            @{applianceCount = appliances.Count(x => x.quantity > 0);}
+        @if (appliances != null)
+        {
+            applianceCount = appliances.Count(x => x.quantity > 0);
             @foreach (var appliance in appliances)
             {
                 if (appliance.quantity > 0)
@@ -22,6 +24,7 @@
             {
                 <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
             }
+        }
     </div>
     @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
@@ -187,7 +190,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
                 quantity = 1
             });
         }
-
+;
         while (allAppliances.Count(x => x.type == applianceGroup.type) > applianceGroup.quantity)
         {
             if((allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)) != null) {

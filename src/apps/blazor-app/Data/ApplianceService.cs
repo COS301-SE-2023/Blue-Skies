@@ -7,7 +7,6 @@ namespace BlazorApp.Data
 
         public event Action? ClearSearchRequested;
 
-
         public void UpdateAppliance(List<ApplianceModel> appliances)
         {
             UpdateAppliancesRequested?.Invoke(appliances);
