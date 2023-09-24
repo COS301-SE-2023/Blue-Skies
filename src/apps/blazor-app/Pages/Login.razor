@@ -93,6 +93,7 @@
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var re = await ProtectedLocalStore.GetAsync<string>("redirect");
         redirect = re.Value;
+        Console.WriteLine("redirect:" + redirect);
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
         isLoaded = true;

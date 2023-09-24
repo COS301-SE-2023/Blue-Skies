@@ -725,7 +725,7 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
@@ -745,7 +745,7 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
@@ -1058,7 +1058,7 @@ public class reportApplianceClass
             reportId = reportId,
             applianceId = appliance.applianceId,
             numberOfAppliances = appliance.quantity,
-            applianceModel = appliance.type,
+            applianceModel = appliance.name,
             powerUsage = appliance.powerUsage,
             durationUsed = appliance.durationUsed
         };
@@ -1071,7 +1071,7 @@ public class reportApplianceClass
         var response = await client.SendAsync(request);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
+            Console.WriteLine("Failed to create ReportAppliance - " + JsonSerializer.Serialize(postBody));
         }
     }
 
@@ -1122,6 +1122,30 @@ public class reportAllApplianceClass
         List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
+    }
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllApplianceByReportId(int reportId)
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/ReportAllAppliance/getByReportId/" + reportId
+        );
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
