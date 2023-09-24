@@ -3,9 +3,12 @@
 @tailwind utilities;
 
 .tooltip {
-    /* @apply invisible absolute; */
     position: absolute;
     opacity: 0;
+  }
+
+  .has-tooltip {
+    /* position: relative; */
   }
   
   .has-tooltip:hover .tooltip {
