@@ -70,8 +70,8 @@
         <div class="w-full">
             @if(tabs[0].active) {
                 <div class="fade-in-active">
-                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
+                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                 </div>
             }
             else if (tabs[1].active)
@@ -147,10 +147,10 @@
     private bool edit = false;
     private List<ApplianceModel>? appliances;
     private List<SystemModel> systems = new List<SystemModel>();
+    private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
-    private List<ReportAllApplianceModel>? reportAllAppliance;
     private int selectedSystem = 0;
     private string calculationName {get; set;} = "";
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
