@@ -18,7 +18,7 @@
 @if (!isLoaded) { }
 else if (!logIn)
 {
-    ProtectedSessionStore.SetAsync("redirect", "dashboard");
+    ProtectedLocalStore.SetAsync("redirect", "dashboard");
     loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/login");
 }

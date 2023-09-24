@@ -18,7 +18,6 @@
         @* Check if user is logged in *@
         if (!logIn)
         {
-            ProtectedSessionStore.SetAsync("redirect", "advanced");
             loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/login");
         }
@@ -176,6 +175,10 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     { 
+        await ProtectedLocalStore.SetAsync("redirect", "advanced");
+        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        Console.WriteLine("Redirect set to: " + re.Value);
+
         loadingService.ShowLoadingScreen();
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
@@ -208,10 +211,6 @@
         {
             currentLocationData = result;
         }
-
-        
-
-
 
         appliances = await applianceDataClass.GetAllAppliances();
         if (appliances.Count > 0)

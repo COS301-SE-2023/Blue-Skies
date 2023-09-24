@@ -250,7 +250,7 @@
     navigationManager.NavigateTo(url, true);
   }
 
-  private void forceNavigate(bool loggedIn)
+  private async void forceNavigate(bool loggedIn)
   {
     loadingService.ShowLoadingScreen();
     if (loggedIn)
@@ -259,6 +259,7 @@
     }
     else
     {
+      await ProtectedLocalStore.SetAsync("redirect", "dashboard");
       navigationManager.NavigateTo("/login", true);
     }
   }
@@ -312,7 +313,7 @@
   {
     await ProtectedSessionStore.DeleteAsync("reportAppliances");
     await ProtectedSessionStore.DeleteAsync("selectedReport");
-    await ProtectedSessionStore.DeleteAsync("redirect");
+    await ProtectedLocalStore.DeleteAsync("redirect");
     await ProtectedLocalStore.DeleteAsync("isAdmin");
     await ProtectedLocalStore.DeleteAsync("userEmail");
     await ProtectedLocalStore.DeleteAsync("userId");
