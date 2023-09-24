@@ -224,7 +224,7 @@ public class SolarDataHandler
         return monthlySolarRadiation;
     }
 
-    public double getAnnualKwGenerated(int numberOfPanels, RooftopInformationModel? rooftopInformationModel, bool round = false)
+    public double getAnnualKwGenerated(int numberOfPanels, RooftopInformationModel? rooftopInformationModel, bool round = false, double solarPanelInputWatts = -1)
     {
         double annualKwGenerated = 0.0;
         int counter = 0;
@@ -234,7 +234,11 @@ public class SolarDataHandler
                 var solarPanel in rooftopInformationModel.solarPotential.solarPanels
             )
             {
-                annualKwGenerated += solarPanel.yearlyEnergyDcKwh;
+                if(solarPanelInputWatts > 0) {
+                    annualKwGenerated += solarPanel.yearlyEnergyDcKwh * (solarPanelInputWatts / rooftopInformationModel.solarPotential.panelCapacityWatts);
+                } else {
+                    annualKwGenerated += solarPanel.yearlyEnergyDcKwh;
+                }
                 if (counter >= numberOfPanels)
                 {
                     break;
