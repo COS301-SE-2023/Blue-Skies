@@ -3,27 +3,45 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
-@inject BlazorApp.Data.LoadingService loadingService
 @inject IJSRuntime JSRuntime
 
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
-    <div class="flex flex-col justify-center items-center ">
-        <div class="w-60  my-auto">
-            <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-            <select @onchange="OnSelectedReportChanged" id="selectReport"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                @for (int i = 0; i < userReports!.Count; i++)
-                {
-                    <option value="@i">@userReports[i].reportName</option>
-                }
-                @if (userReports.Count == 0)
-                {
-                    <option value="0">No reports to select</option>
-                }
-            </select> 
+    @if (userReports == null)
+    {
+        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+            <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-40"></div>
+            <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-64 mt-2"></div>
+            <span class="sr-only">Loading...</span>
         </div>
-    </div>
+        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+            <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-32"></div>
+            <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-2"></div>
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+            <div class="h-12 bg-gray-200 rounded-full dark:bg-gray-700 w-52 mt-2"></div>
+            <span class="sr-only">Loading...</span>
+        </div>
+        
+    } else {
+        <div class="flex flex-col justify-center items-center ">
+            <div class="w-60 my-auto">
+                <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
+                <select @onchange="OnSelectedReportChanged" id="selectReport"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                    @for (int i = 0; i < userReports!.Count; i++)
+                    {
+                        <option value="@i">@userReports[i].reportName</option>
+                    }
+                    @if (userReports.Count == 0)
+                    {
+                        <option value="0">No reports to select</option>
+                    }
+                </select> 
+            </div>
+        </div>
     <Heading>
+        
         <Superscript>Date Saved</Superscript>
         <Header>
             @{
@@ -37,7 +55,9 @@
             <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
         </content>
     </Button>
+    }
 </Card>
+
 @if (isReportGenerated)
 {
     <iframe src="@pdfUrl" width="800" height="500">
@@ -108,12 +128,10 @@
     private async void GenerateReport()
     {
         //await JSRuntime.InvokeVoidAsync("GenerateReport");
-        loadingService.ShowLoadingScreen();
         Console.WriteLine("Generating report");
         var data = Convert.ToBase64String(await reportClass.GenerateReport(userId, userReports![selectedReport].reportId));
         pdfUrl = $"data:application/pdf;base64,{data}";
         isReportGenerated = true;
-        loadingService.HideLoadingScreen();
         StateHasChanged();
     }
 }

@@ -5,7 +5,6 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 
 
@@ -43,7 +42,6 @@
                 </div>
                 <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
             </div>
-
             <div class="flex gap-1 mt-3">
                 <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                 <p class="text-5xl text-gray-400 font-bold">%</p>
@@ -209,8 +207,6 @@
     protected override void OnParametersSet(){
         satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
-        isLoaded = true;
-        loadingService.HideLoadingScreen();
     }
 
     private void SetChargingLimit(ChangeEventArgs? e = null){
