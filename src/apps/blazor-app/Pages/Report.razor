@@ -4,7 +4,7 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
 @using ChartJs.Blazor.PolarAreaChart
-
+@using ApplianceEnergyConsumption
 
 @layout AuthLayout
 <div class="pageA4 mx-auto">
@@ -81,7 +81,7 @@
                     <div>
                         <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours on Batteries</h3>
                         <Chart Config="pieConfig"></Chart>
-                        <div class="flex w-fit mx-auto ">
+                        <div class="flex w-fit mx-auto">
                             <p class="text-primary-900 font-semibold">
                                 @{
                                     if (dlh == (24 - daylight))
@@ -97,25 +97,11 @@
                             <p class="text-center text-gray-400 font-bold">h</p>
                         </div>
                     </div>
-                </div>
-                @* <div class="w-full flex">
-                    <div class="w-1/2">
-                        <div class="w-full flex flex-col gap-4 justify-start items-center">
-                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
-                            <div class="flex flex-col justify-center w-full">
-                                <Chart Config="pieConfig"></Chart>
-                                <p class="text-center text-base text-primary-900 font-semibold">
-                                    @locationData.daylightHours h</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="w-1/2">
+                    <div>
                         <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
-                        <Chart Config="polarAreaConfig"></Chart>
+                        <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance" animated="false"/>
                     </div>
-                </div> *@
+                </div>
             </div> @* *@
             @* Fancy Data *@
             <div class="w-full new-page">

@@ -170,7 +170,7 @@
             BorderColor = "rgba(255, 0, 0, 1)",
             BorderWidth = 1,
             Fill = FillingMode.Disabled,
-            PointRadius = 8,
+            PointRadius = animated == true ? 8 : 2,
             PointHoverRadius = 8,
             PointBackgroundColor = "rgba(255, 0, 0, 1)",
             PointBorderColor = "rgba(255, 0, 0, 1)",
@@ -275,7 +275,7 @@
                 PointHoverRadius = 15,
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 10,
-                PointRadius = 5,
+                PointRadius = animated == true ? 5 : 1,
                 PointBackgroundColor = "rgba(246,135,18, 1)",
                 SpanGaps = true,
             };
@@ -291,7 +291,7 @@
                 PointHoverRadius = 15,
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 32,
-                PointRadius = 5,
+                PointRadius = animated == true ? 5 : 1,
                 PointBackgroundColor = "rgba(246,135,18, 1)",
                 PointBorderWidth = 0,
                 SpanGaps = true,
@@ -307,7 +307,7 @@
                 BorderWidth = 1,
                 Fill = FillingMode.Disabled,
                 PointHoverRadius = 15,
-                PointRadius = 5,
+                PointRadius = animated == true ? 5 : 1,
             };
         }
 
