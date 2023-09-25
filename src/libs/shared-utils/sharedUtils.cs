@@ -787,22 +787,23 @@ public class otherDataClass
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private string mapboxAccessToken = "";
 
-    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
+    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery, CancellationToken cancellationToken)
+{
+    if (mapboxAccessToken == "")
     {
-        if (mapboxAccessToken == "")
+        await GetMapboxAccessToken();
+    }
+
+    string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+
+    string requestUrl =
+        $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
+
+    try
+    {
+        using (HttpClient httpClient = new HttpClient())
         {
-            await GetMapboxAccessToken();
-        }
-
-        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-
-        string requestUrl =
-            $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
-
-        try
-        {
-            HttpClient httpClient = new HttpClient();
-            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl, cancellationToken);
             List<LocationSuggestion> suggestions =
                 mapResponse?.Features ?? new List<LocationSuggestion>();
             if (suggestions.Count == 0)
@@ -811,13 +812,13 @@ public class otherDataClass
             }
             return suggestions;
         }
-        catch (Exception ex)
-        {
-            // Handle any errors or exceptions
-            Console.WriteLine(ex.Message);
-            return new List<LocationSuggestion>();
-        }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+        return new List<LocationSuggestion>();
+    }
+}
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {

@@ -36,23 +36,31 @@
     <div class="relative w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
         <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
-            <div class="my-auto w-full flex gap-4 relative">
-                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
+            <div class="has-tooltip">
+                <Tooltip>
+                    <p>The percentage of sunlight exposure on your property's roof compared to an optimal roof.</p>
+                </Tooltip>
+                <div class="my-auto w-full flex gap-4 relative">
+                    <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                        <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
+                    </div>
+                    <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
                 </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
-            </div>
-            <div class="flex gap-1 mt-3">
-                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
-                <p class="text-5xl text-gray-400 font-bold">%</p>
+                <div class="flex gap-1 mt-3">
+                    <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
+                    <p class="text-5xl text-gray-400 font-bold">%</p>
+                </div>
             </div>
             <div class="flex gap-2 justify-end absolute top-3 right-5">
-                <div class="flex gap-3 justify-end items-end flex-col">
+                <div class="flex gap-3 justify-end items-end flex-col ">
                     <div class="flex gap-2">
                         <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
                         <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer" @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                     </div>
-                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
+                        <Tooltip>
+                            <p>How much money you can save monthly by producing clean energy.</p>
+                        </Tooltip>
                         <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
                             <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                             <p class="text-center text-xl font-bold text-primary-200">Savings</p>
@@ -66,7 +74,6 @@
                             <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
                         </div>
                     </div>
-                    
                 </div>
 
             </div>
@@ -96,7 +103,10 @@
                     </div>
                 </div>
                 <div class="flex flex-col justify-center w-full items-center gap-5">
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-1 has-tooltip">
+                        <Tooltip>
+                            <p>The daily energy your solar panels produce averaged over a year.</p>
+                        </Tooltip>
                         <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
                         <div class="flex gap-1 mt-3">
                             @{
