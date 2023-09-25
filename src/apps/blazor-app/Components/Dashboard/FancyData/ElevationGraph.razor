@@ -31,7 +31,7 @@
             {
                 Legend = new Legend
                 {
-                    Display = true
+                    Display = false
                 },
                 Responsive = true,
                 Title = new OptionsTitle
@@ -57,7 +57,7 @@
                             },
                             Ticks = new LinearCartesianTicks
                             {
-                                BeginAtZero = true
+                                BeginAtZero = true,
                             }
                         }
                     }
@@ -157,8 +157,6 @@
             }
         }
 
-        Image image = new Image();
-
         
         IDataset<double> redDotDataset = new LineDataset<double>(yRedDotValues)
         {
@@ -199,8 +197,8 @@
         {
             Order = 1,
             Label = "Horizon",
-            BackgroundColor = "rgba(0,15,82, 1)",
-            BorderColor = "rgba(0,15,82, 1)",
+            BackgroundColor = "rgba(100,100,100, 1)",
+            BorderColor = "rgba(100,100,100, 1)",
             BorderWidth = 1,
             Fill = FillingMode.Start,
             PointRadius = 0,
@@ -224,11 +222,12 @@
                     Ticks = new LinearCartesianTicks
                     {
                         Max = maxY 
-                    }
+                    },
                 }
-            }
+            }, 
         };
     }
+
 
     private void addSunDataSet(int MaxHeight, int maxLength, string labelName, double[] xValues, double[] yValues, string color = "rgba(255, 255, 0, 1)", bool fill = false, int fillNum = 0, bool makeBottomZero = false) {
         double[] xSunValues = new double[xValues.Length];
@@ -274,7 +273,7 @@
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 10,
                 PointRadius = 5,
-                PointBackgroundColor = "rgba(246,135,18, 1)",
+                PointBackgroundColor = "rgba(231, 111, 15, 1)",
                 SpanGaps = true,
             };
         } 
@@ -290,7 +289,7 @@
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 32,
                 PointRadius = 5,
-                PointBackgroundColor = "rgba(246,135,18, 1)",
+                PointBackgroundColor = "rgba(251, 200, 118, 1)",
                 PointBorderWidth = 0,
                 SpanGaps = true,
             };
@@ -306,9 +305,26 @@
                 Fill = FillingMode.Disabled,
                 PointHoverRadius = 15,
                 PointRadius = 5,
+                PointBackgroundColor = "rgba(246, 135, 18, 1)",
+                PointBorderWidth = 0,
             };
         }
 
         lineConfig!.Data.Datasets.Add(sunDataset);
     }
 }
+
+@* 
+--ecstasy-50: 255 249 237;
+--ecstasy-100: 254 241 214;
+--ecstasy-200: 253 223 171;
+--ecstasy-300: 251 200 118;
+--ecstasy-400: 249 165 62;
+--ecstasy-500: 246 135 18;
+--ecstasy-600: 231 111 15;
+--ecstasy-700: 192 84 14;
+--ecstasy-800: 152 67 20;
+--ecstasy-900: 123 57 19;
+--ecstasy-950: 66 26 8;
+
+ *@
