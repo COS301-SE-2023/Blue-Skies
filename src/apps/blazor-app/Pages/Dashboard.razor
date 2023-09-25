@@ -287,7 +287,6 @@ else
     public int selectedReport { get; set; }
     public int selectedSystem { get; set; }
     private DateTime selectedDate;
-    private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
     public LocationDataModel? currentLocationData = new LocationDataModel();
     public int solarScore = 0;
@@ -347,11 +346,7 @@ else
 
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             updateAppliances();
-            renderCharts();
         }
-
-        
-
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         isLoaded = true;
@@ -443,194 +438,9 @@ else
         {
             runningHoursPercentage = 100;
         }
-        updateCharts();
         StateHasChanged();
     }
 
-    private void renderCharts()
-    {
-        @* **************************************** Polar Area Chart Config ************************************************ *@
-        polarAreaConfig = new PolarAreaConfig()
-            {
-                Options = new PolarAreaOptions
-                {
-                    Responsive = true,
-                    AspectRatio = 1.5,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = true,
-                        Duration = 2000,
-
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    Scale = new LinearRadialAxis
-                    {
-                        Ticks = new LinearRadialTicks
-                        {
-                            Display = false,
-                        }
-                    }
-
-                }
-            };
-        updateCharts();
-    }
-    private void updateCharts()
-    {
-        @* **************************************** Polar Area Chart Update Data ************************************************ *@
-
-        polarAreaConfig.Data.Datasets.Clear();
-        polarAreaConfig.Data.Labels.Clear();
-        int countData = 0;
-        for (int i = 0; i < reportAllAppliance.Count; i++)
-        {
-            if (reportAllAppliance[i].numberOfAppliances != 0)
-            {
-                countData++;
-            }
-        }
-        int[] powerUsageData = new int[countData];
-        int counter = 0;
-        for (int i = 0; i < reportAllAppliance.Count; i++)
-        {
-            if (reportAllAppliance[i].numberOfAppliances != 0)
-            {
-                powerUsageData[counter] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
-                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type);
-                counter++;
-            }
-        }
-        PolarAreaDataset<int> polarDataset;
-        switch (counter)
-        {
-            case 0:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 1:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 2:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 3:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 4:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 5:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 6:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 7:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                            ColorUtil.ColorHexString(246,135,18),
-                            ColorUtil.ColorHexString(255,193,8),
-                            ColorUtil.ColorHexString(56,113,193),
-                            ColorUtil.ColorHexString(0,15,82),
-                        }
-                    };
-                break;
-            case 8:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                        ColorUtil.ColorHexString(246,135,18),
-                        ColorUtil.ColorHexString(255,193,8),
-                        ColorUtil.ColorHexString(56,113,193),
-                        ColorUtil.ColorHexString(0,15,82),
-                        ColorUtil.ColorHexString(246,135,18), // orange
-                        ColorUtil.ColorHexString(255,193,8), // yellow
-                        ColorUtil.ColorHexString(56,113,193),// l blue
-                        ColorUtil.ColorHexString(0,15,82), // blue
-                        }
-                    };
-                break;
-            default:
-                polarDataset = new PolarAreaDataset<int>(powerUsageData)
-                    {
-                        BackgroundColor = new[] {
-                            ColorUtil.ColorHexString(0,15,82), // Slice 1 aka "Red"
-                        }
-                    };
-                break;
-        }
-        if (polarAreaConfig != null)
-        {
-            polarAreaConfig.Data.Datasets.Add(polarDataset);
-        }
-    }
     private Task CreateReport()
     {
         NavigationManager.NavigateTo("/advanced");
