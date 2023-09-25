@@ -62,12 +62,14 @@
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
                                 @for (int i = 0; i < 8; i++)
                                 {
-                                    <div>
+                                    
                                         @if (appliances.Count > i + appliancesPage * 8)
                                         {
-                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliances[i + appliancesPage * 8].type + ".svg")" name="@appliances[i + appliancesPage * 8].type" count="@appliances[i + appliancesPage * 8].quantity" />     
+                                            ApplianceModel appliance = appliances[i + appliancesPage * 8];
+                                            <div @onclick="@(() => ToggleAppliance(appliance))">
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
+                                            </div>
                                         }
-                                    </div>
                                 }
                             </div>
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
@@ -851,6 +853,22 @@
         applianceService.UpdateAppliance(appliances);
     }
 
+    private void ToggleAppliance(ApplianceModel appliance)
+    {
+        Console.WriteLine("Toggling - " + appliance.type);
+        if (appliance.quantity > 0)
+        {
+            appliance.quantity = 0;
+        }
+        else
+        {
+            appliance.quantity = 1;
+        }
+        SetGraphicValues();
+        UpdateApplianceStorage();
+        applianceService.UpdateAppliance(appliances);
+    }
+
     private async void UpdateApplianceStorage()
     {
         await ProtectedSessionStore.SetAsync("advancedCalculationAppliances", appliances);
@@ -1017,6 +1035,7 @@
         } else {
             appliancesPage = 0;
         }
+        StateHasChanged();
     }
     private void DecrementAppliancePage(){
         if(appliancesPage != 0){
@@ -1024,5 +1043,6 @@
         } else {
             appliancesPage = (int) Math.Ceiling(appliances.Count / 8.0) - 1;
         }
+        StateHasChanged();
     }
 }
