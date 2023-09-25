@@ -51,16 +51,18 @@
                     <p class="text-5xl text-gray-400 font-bold">%</p>
                 </div>
             </div>
-            <div class="flex gap-2 justify-end absolute top-3 right-5">
-                <div class="flex gap-3 justify-end items-end flex-col ">
+            <div class="flex gap-2 justify-end absolute top-3 right-5 has-tooltip">
+                <Tooltip>
+                        <p>How much money you can save monthly by producing clean energy.</p>
+                    </Tooltip>
+                <div class="flex gap-3 justify-end items-end flex-col">
+                     
                     <div class="flex gap-2">
                         <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
                         <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer" @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                     </div>
-                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
-                        <Tooltip>
-                            <p>How much money you can save monthly by producing clean energy.</p>
-                        </Tooltip>
+                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                       
                         <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
                             <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                             <p class="text-center text-xl font-bold text-primary-200">Savings</p>
@@ -175,6 +177,25 @@
         </div>
     </div>
 </ModalPopup>
+<ModalPopup @ref="ModalPopupAppliances" Title="Continue with adding appliances?">
+    <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location by continuing. 
+        Do you still want to continue?
+    </p>
+    <div class="flex flex-row gap-4 justify-center">
+        <div @onclick="NavigateToAdnavced">
+            <Button style="pill">
+                <content>
+                    Continue
+                </content>
+            </Button>
+        </div>
+        <div @onclick="ModalPopupAppliances.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </div>
+</ModalPopup>
 
 @code {
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
@@ -184,6 +205,7 @@
     [Parameter]
     public LocationDataModel? locationData  { get; set; } = null;
     ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
+    ModalPopup ModalPopupAppliances { get; set; } = new ModalPopup();
     private int solarScore = -1;
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
@@ -274,6 +296,11 @@
         }
     }
     private void NavigateToLogin(){
+        ModalPopupLogIn.Dismiss();
         NavigationManager.NavigateTo("/Login");
+    }
+    private void NavigateToAdnavced(){
+        ModalPopupAppliances.Dismiss();
+        NavigationManager.NavigateTo("/advanced");
     }
 }
