@@ -51,7 +51,7 @@
             </div>
             <input
         class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        type="text" placeholder="Search..">
+        type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
                 @if (appliances != null)
                 {
                         <div class="flex">
@@ -60,16 +60,16 @@
                                     css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
+                                
                                 @for (int i = 0; i < 8; i++)
                                 {
-                                    
-                                        @if (appliances.Count > i + appliancesPage * 8)
-                                        {
-                                            ApplianceModel appliance = appliances[i + appliancesPage * 8];
-                                            <div @onclick="@(() => ToggleAppliance(appliance))">
-                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
-                                            </div>
-                                        }
+                                    ApplianceModel appliance = appliances[i + appliancesPage * 8];
+                                    @if (appliances.Count > i + appliancesPage * 8 && appliance.type.ToLower().Contains(applianceSearch.ToLower()))
+                                    {   
+                                        <div @onclick="@(() => ToggleAppliance(appliance))">
+                                            <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
+                                        </div>
+                                    }
                                 }
                             </div>
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
@@ -584,6 +584,8 @@
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
     private string applianceAnimation = "";
+
+    private string applianceSearch = "";
 
 
     /// <summary>
