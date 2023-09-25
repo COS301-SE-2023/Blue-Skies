@@ -879,6 +879,26 @@ video {
   top: 100%;
 }
 
+.-right-1 {
+  right: -0.25rem;
+}
+
+.-top-1 {
+  top: -0.25rem;
+}
+
+.-left-1 {
+  left: -0.25rem;
+}
+
+.-left-2 {
+  left: -0.5rem;
+}
+
+.-left-5 {
+  left: -1.25rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1202,6 +1222,14 @@ video {
 
 .mt-80 {
   margin-top: 20rem;
+}
+
+.-mr-2 {
+  margin-right: -0.5rem;
+}
+
+.-mb-2 {
+  margin-bottom: -0.5rem;
 }
 
 .block {
