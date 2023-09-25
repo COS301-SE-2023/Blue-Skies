@@ -37,9 +37,9 @@
         <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             <div class="has-tooltip">
-                <Tooltip>
-                    <p>The percentage of sunlight exposure on your property's roof compared to an optimal roof.</p>
-                </Tooltip>
+                    <Tooltip>
+                        <p>The percentage of sunlight exposure on your property's roof compared to an optimal roof.</p>
+                    </Tooltip>
                 <div class="my-auto w-full flex gap-4 relative">
                     <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                         <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
@@ -120,7 +120,13 @@
                         </div>
                     </div>
                     <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
-                    <div class="flex w-full justify-center items-center gap-1 -mt-10">
+                    <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
+                        <div class="translate-y-10 w-full">
+                            <Tooltip>
+                                <p>The total time which you can run the chosen appliances exclusively using battery power.</p>
+                            </Tooltip>
+                        </div>
+                        <div class="flex flex-row gap-1">
                             @{
                                 if (dlh == daylight)
                                 {
@@ -131,16 +137,20 @@
                                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                                 }
                             }      
-                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                        </div>
+                        <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                     </div>
-                    <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                 </div>
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <div class="-mt-10 mb-2 w-full flex flex-col">
                         <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"count="@numOfPanels" />
                         <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
                     </div>
-                    <div class="flex gap-2 pr-2 justify-start items-start">
+                    <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
+                        <Tooltip>
+                            <p>The maximum percentage your batteries can charge, while running the selected appliances.</p>
+                        </Tooltip>
                         <div class="flex flex-col gap-2 justify-center items-center w-full">
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
