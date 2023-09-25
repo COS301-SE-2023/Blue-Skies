@@ -243,7 +243,10 @@
                         </div>
                         <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
                     </div>
-                    <div class="flex gap-2 pr-2 justify-start items-start">
+                    <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
+                        <Tooltip>
+                           <p>The maximum percentage your batteries can charge during the usable sunlight hours, while running the selected appliances.</p>
+                        </Tooltip>
                         <div class="flex flex-col gap-2 justify-center items-center w-full">
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
