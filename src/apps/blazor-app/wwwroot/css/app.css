@@ -1224,6 +1224,10 @@ video {
   margin-top: 20rem;
 }
 
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
 .block {
   display: block;
 }
@@ -3660,6 +3664,11 @@ html {
 .hover\:bg-slate-200:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(226 232 240 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-primary-200:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(199 215 240 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-gradient-to-br:hover {

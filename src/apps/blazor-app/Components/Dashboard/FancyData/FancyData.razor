@@ -6,7 +6,7 @@
 
 
     <div class="w-full">
-        <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
+        <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
             <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
             <Header><h1 class="text-center">Advanced Calculations</h1></Header>
             <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
@@ -14,7 +14,7 @@
 
         <div class="w-full flex justify-center items-center gap-4">
             <div class="flex w-full flex-col gap-4 p-20">
-                    <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
+                    <h1 class="text-primary-800 font-semibold text-center text-xl">Annual Flux Map</h1>
                     <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your rooftop.</p>
                     <Image ImageName="@satteliteImageSrc" css="2/3" alt="sattelite Image" />
                     <div class="flex justify-between w-full">
@@ -69,64 +69,37 @@
                 <p>Solar Panels Data is not available</p>
                 }
             </div>
-
         </div>
 
-
-
+        <div class="w-full flex justify-center items-center gap-4">
+            <div class="flex w-2/3 flex-col justify-center items-center gap-3">
+                <h1 class="text-center text-primary-800 font-semibold text-xl">Monthly Flux Map</h1>
+                @if(monthlyFluxMap is not null) {
+                    <p class="text-center text-lg">@monthNames[@currentImageIndex]</p>
+                    
+                    <div class="flex justify-center gap-1 items-center w-full">
+                        <div class="my-auto" @onclick="DecrementMonthImage">
+                            <Image ImageName="Arrow-Left.svg" alt="Left Arrow" css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
+                        </div>
+                            <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="w-3/4" />
+                        <div class="my-auto" @onclick="IncreamentMonthImage">
+                            <Image ImageName="Arrow-Right.svg" alt="Right Arrow" css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
+                        </div>
+                    </div>
+                }
+                else{
+                    <p>Monthly Flux Map is not available</p>
+                } 
+            </div>
+            <div class="w-full">
+                    <h1 class="text-center text-primary-800 font-semibold text-xl">Solar Irradiance Per Month</h1>
+                    <SolarIrradiationPerMonth currentMonth="@currentImageIndex" monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
+            </div>
+        </div>
     </div>
 
 
             @* <div class="w-full flex">
-                <div class="z-10 flex flex-col gap-4">
-                    <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
-                    <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
-                </div>
-                <div class="w-fit mx-auto space-x-8 flex h-fit my-auto">
-                        <div class="">
-                            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
-                        </div>
-
-                        @if(solarPanelsData is not null){
-                            <div class="">
-                                <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
-                                <div class="mx-auto space-y-4 w-fit">
-                                    @{
-                                    double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
-                                    double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
-                                    double maxHoursSunlightPerDay =
-                                    Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
-                                    }
-                                    <IconToolTip imageName="Home.svg" tooltipMessage="The size of your roof">
-                                        <content>
-                                            <p>@squaredArea m&sup2;</p>
-                                        </content>
-                                    </IconToolTip>
-                                    <IconToolTip imageName="SolarPanels.svg"
-                                        tooltipMessage="The maximum number of panels you can have">
-                                        <content>
-                                            <p>@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
-                                        </content>
-                                    </IconToolTip>
-                                    <IconToolTip imageName="Area.svg"
-                                        tooltipMessage="The maximum area that you can put solar panels">
-                                        <content>
-                                            <p>@maxArraArea m&sup2;</p>
-                                        </content>
-                                    </IconToolTip>
-                                    <IconToolTip imageName="Sun-outline.svg"
-                                        tooltipMessage="The maximum number of hours of sunlight per day">
-                                        <content>
-                                            <p>@maxHoursSunlightPerDay h</p>
-                                        </content>
-                                    </IconToolTip>
-                                </div>
-                            </div>
-                        }
-                        else{
-                        <p>Solar Panels Data is not available</p>
-                        }
-                    </div> *@
                     
                     @* <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                     @if(monthlyFluxMap is not null){
