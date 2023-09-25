@@ -37,7 +37,7 @@
 @* Add Appliances *@
 <div class="hidden lg:flex w-full h-full px-4 mb-20">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
+        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-[420px]">
             <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
@@ -49,32 +49,32 @@
                     </div>
                 </div>
             </div>
-            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
                 @if (appliances != null)
                 {
-                    if (tabs[0].active)
-                    {
-                        @foreach (var appliance in appliances)
-                        {
-                                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                        </div>
-                        }
-                    }
-                    else
-                    {
-                        @foreach (var appliance in appliances)
-                        {
-                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                        </div>
-                        }
-                    }
+                        <div class="flex">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
+                                @for (int i = 0; i < 8; i++)
+                                {
+                                    <div>
+                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliances[i + appliancesPage * 8].type + ".svg")" name="@appliances[i + appliancesPage * 8].type" count="@appliances[i + appliancesPage * 8].quantity" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentAppliancePage">
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                        </div>
                 }
                 else
                 {
-                    for (int i = 0; i < 8; i++)
+            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+
+                    @for (int i = 0; i < 8; i++)
                     {
                         <div class="justify-center">
                             <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
@@ -88,11 +88,11 @@
                             </div>
                         </div>
                     }
-                }
             </div>
+                }
         </div>
     </div>
-    <div class="w-full pl-64 flex flex-col justify-center items-center">
+    <div class="w-full flex flex-col justify-center items-center pl-64">
         @* Home images *@
         <div class="flex pjustify-center items-center h-full">
             @switch (selectedSystem)
@@ -576,6 +576,7 @@
     private bool isNumericValue = true;
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
+    private int appliancesPage = 0;
 
 
 
@@ -1030,5 +1031,20 @@
             await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
         }
         NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void IncreamentAppliancePage(){
+        if(appliancesPage != 2){
+            appliancesPage++;
+        } else {
+            appliancesPage = 0;
+        }
+    }
+    private void DecrementAppliancePage(){
+        if(appliancesPage != 0){
+            appliancesPage--;
+        } else {
+            appliancesPage = 2;
+        }
     }
 }
