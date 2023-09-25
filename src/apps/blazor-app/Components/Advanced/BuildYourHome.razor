@@ -533,8 +533,6 @@
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
     [Parameter]
-    public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
-    [Parameter]
     public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
@@ -608,46 +606,7 @@
             displayCreatedCustomSystem = true;
         }
 
-        if (reportAllAppliance != null)
-        {
-            for (int i = 0; i < reportAllAppliance!.Count; i++)
-            {
-
-                if (reportAllAppliance[i].type!.Equals("Kettle"))
-                {
-                    appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("Fridge"))
-                {
-                    appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("Lights"))
-                {
-                    appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("TV"))
-                {
-                    appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("Computer"))
-                {
-                    appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("Microwave"))
-                {
-                    appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("CCTV"))
-                {
-                    appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-                else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
-                {
-                    appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
-                }
-
-            }
-        }
+     
         calculationName = currentReport!.reportName;
         if (appliances != null)
         {
@@ -915,51 +874,39 @@
             case "2":
                 homeSize = "Small";
                 selectedSystem = 0;
-                appliances[0].quantity = 1;
-                appliances[1].quantity = 1;
-                appliances[2].quantity = 15;
-                appliances[3].quantity = 1;
-                appliances[4].quantity = 0;
-                appliances[5].quantity = 1;
-                appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                int[] applianceQuantities = { 1, 1, 15, 1, 0, 1, 0, 0 };
+                for (int i = 0; i < appliances.Count; i++)
+                {
+                    appliances[i].quantity = applianceQuantities[i];
+                }
 
                 break;
             case "3":
                 homeSize = "Medium";
                 selectedSystem = 1;
-                appliances[0].quantity = 1;
-                appliances[1].quantity = 1;
-                appliances[2].quantity = 20;
-                appliances[3].quantity = 1;
-                appliances[4].quantity = 1;
-                appliances[5].quantity = 1;
-                appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                int[] applianceQuantities2 = { 1, 1, 20, 1, 1, 1, 0, 0 };
+                for (int i = 0; i < appliances.Count; i++)
+                {
+                    appliances[i].quantity = applianceQuantities2[i];
+                }
                 break;
             case "4":
                 homeSize = "Large";
                 selectedSystem = 2;
-                appliances[0].quantity = 2;
-                appliances[1].quantity = 1;
-                appliances[2].quantity = 30;
-                appliances[3].quantity = 2;
-                appliances[4].quantity = 2;
-                appliances[5].quantity = 1;
-                appliances[6].quantity = 0;
-                appliances[7].quantity = 1;
+                int[] applianceQuantities3 = { 2, 1, 30, 2, 2, 1, 0, 1 };
+                for (int i = 0; i < appliances.Count; i++)
+                {
+                    appliances[i].quantity = applianceQuantities3[i];
+                }
                 break;
             default:
                 homeSize = "Small";
                 selectedSystem = 0;
-                appliances[0].quantity = 1;
-                appliances[1].quantity = 1;
-                appliances[2].quantity = 15;
-                appliances[3].quantity = 1;
-                appliances[4].quantity = 0;
-                appliances[5].quantity = 1;
-                appliances[6].quantity = 0;
-                appliances[7].quantity = 0;
+                int[] applianceQuantities4 = { 1, 1, 15, 1, 0, 1, 0, 0 };
+                for (int i = 0; i < appliances.Count; i++)
+                {
+                    appliances[i].quantity = applianceQuantities4[i];
+                }
                 break;
         }
         applianceService.UpdateAppliance(appliances);
@@ -970,14 +917,10 @@
     {
         Console.WriteLine("Resetting");
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
-        appliances[0].quantity = 0;
-        appliances[1].quantity = 0;
-        appliances[2].quantity = 0;
-        appliances[3].quantity = 0;
-        appliances[4].quantity = 0;
-        appliances[5].quantity = 0;
-        appliances[6].quantity = 0;
-        appliances[7].quantity = 0;
+        foreach (var appliance in appliances)
+        {
+            appliance.quantity = 0;
+        }
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
@@ -999,7 +942,10 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
+        int reportId = -1;
+        if(allAppliances != null) {
+            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
+        }
         if (reportId != -1)
         {
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
@@ -1014,21 +960,18 @@
 
     }
 
-    private async Task UpdateCalculation()
+    public async Task UpdateCalculation()
     {
         if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
+
         {
-
-            toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
-
-            for (int i = 0; i < 8; i++)
-            {
-                if (appliances[i].quantity != applianceQuantities[i].quantity)
-                {
-                    await reportApplianceClass.UpdateReportAppliance(currentReport.reportId, appliances[i]);
-                }
-            }
-            await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
+            toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
+            await ProtectedSessionStore.SetAsync("currentReport", currentReport!.reportId);
+            NavigationManager.NavigateTo("/dashboard");
+        }
+        else
+        {
+            toastService.ShowToast("Error", "Report failed to update.", "error");
         }
         NavigationManager.NavigateTo("/dashboard");
     }
