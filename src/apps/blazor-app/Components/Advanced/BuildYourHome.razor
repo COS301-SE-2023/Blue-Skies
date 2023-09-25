@@ -877,7 +877,15 @@
                 int[] applianceQuantities = { 1, 1, 15, 1, 0, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities[i];
+                    if(i >= applianceQuantities.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities[i];
+                    }
+                    
                 }
 
                 break;
@@ -887,7 +895,14 @@
                 int[] applianceQuantities2 = { 1, 1, 20, 1, 1, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities2[i];
+                    if(i >= applianceQuantities2.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities2[i];
+                    }
                 }
                 break;
             case "4":
@@ -896,7 +911,14 @@
                 int[] applianceQuantities3 = { 2, 1, 30, 2, 2, 1, 0, 1 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities3[i];
+                    if(i >= applianceQuantities3.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities3[i];
+                    }
                 }
                 break;
             default:
@@ -905,7 +927,14 @@
                 int[] applianceQuantities4 = { 1, 1, 15, 1, 0, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities4[i];
+                    if(i >= applianceQuantities4.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities4[i];
+                    }
                 }
                 break;
         }
