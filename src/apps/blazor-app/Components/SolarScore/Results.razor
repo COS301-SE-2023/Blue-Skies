@@ -120,7 +120,13 @@
                         </div>
                     </div>
                     <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
-                    <div class="flex w-full justify-center items-center gap-1 -mt-10">
+                    <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
+                        <div class="translate-y-10 w-full">
+                            <Tooltip>
+                                <p>The total time which you can run the chosen appliances exclusively using battery power.</p>
+                            </Tooltip>
+                        </div>
+                        <div class="flex flex-row gap-1">
                             @{
                                 if (dlh == daylight)
                                 {
@@ -131,9 +137,10 @@
                                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                                 }
                             }      
-                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                        </div>
+                        <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                     </div>
-                    <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                 </div>
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <div class="-mt-10 mb-2 w-full flex flex-col">
