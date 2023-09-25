@@ -53,8 +53,8 @@
             </div>
             <div class="flex gap-2 justify-end absolute top-3 right-5 has-tooltip">
                 <Tooltip>
-                        <p>How much money you can save monthly by producing clean energy.</p>
-                    </Tooltip>
+                    <p>How much money you can save monthly by producing clean energy.</p>
+                </Tooltip>
                 <div class="flex gap-3 justify-end items-end flex-col">
                      
                     <div class="flex gap-2">
@@ -100,7 +100,7 @@
                     <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
                     <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
                     <Appliance name="Computer" imageName="Computer.svg" count="numComputers"/>
-                    <div class="flex mx-auto" @onclick="ShowModalCalculation">
+                    <div class="flex mx-auto" @onclick="showModalAppliancesPopup">
                         <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
 </ModalPopup>
 <ModalPopup @ref="ModalPopupAppliances" Title="Continue with adding appliances?">
     <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location by continuing. 
-        Do you still want to continue?
+        Do you want to continue?
     </p>
     <div class="flex flex-row gap-4 justify-center">
         <div @onclick="NavigateToAdnavced">
@@ -294,6 +294,10 @@
         else{
             ModalPopupLogIn.Show();
         }
+    }
+
+    private void showModalAppliancesPopup(){
+        ModalPopupAppliances.Show();
     }
     private void NavigateToLogin(){
         ModalPopupLogIn.Dismiss();
