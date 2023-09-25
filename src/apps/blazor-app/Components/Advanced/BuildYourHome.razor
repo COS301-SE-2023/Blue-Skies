@@ -339,7 +339,7 @@
             <p>Number of solar panels:</p>
             <Input  @bind-InputValue="customPanels" placeholder="8" type="number" min="4"/>
             <p>Solar panel power output (W/h): </p>
-            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" value="customPanelsInputNumber" min="300"/>
+            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" min="300"/>
     }
     else
     {
@@ -723,6 +723,7 @@
 
     private void SetNumberPanels(ChangeEventArgs e){
         var val = e.Value!.ToString();
+        customPanels = val!;
         if (selectedSystem < 3)
         {
             systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
@@ -739,6 +740,7 @@
     }
     private void SetRunningHours(ChangeEventArgs e){
         var val = e.Value!.ToString();
+        customBatteries = val!;
         if (selectedSystem < 3)
         {
             systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
@@ -758,7 +760,16 @@
         isNumericValue = true;
         try
         {
+            if (selectedSystem < 3)
+            {
+                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+                systems[3].batterySize = systems[selectedSystem].batterySize;
+                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+                systems[3].solarInput = systems[selectedSystem].solarInput;
+                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+            }
             selectedSystem = 3;
+            systems[3].numberOfPanels = Convert.ToInt32(customPanels);
             systems[3].solarInput = Convert.ToInt32(customPanelsInput);
             if ( customPanelsInput.Equals(""))
             {
@@ -780,7 +791,16 @@
         isNumericValue = true;
         try
         {
+            if (selectedSystem < 3)
+            {
+                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+                systems[3].batterySize = systems[selectedSystem].batterySize;
+                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+                systems[3].solarInput = systems[selectedSystem].solarInput;
+                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+            }
             selectedSystem = 3;
+            systems[3].numberOfBatteries = Convert.ToInt32(customBatteries);
             systems[3].batterySize = Convert.ToInt32(customBatteriesSize);
             SystemModalPopup.Dismiss();
         }
