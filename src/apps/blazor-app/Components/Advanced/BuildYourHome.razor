@@ -246,11 +246,9 @@
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
-                            <div class="-translate-x-2 w-full">
-                                <Tooltip pointer="50">
-                                    <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
-                                </Tooltip>
-                            </div>
+                            <Tooltip pointer="50">
+                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                            </Tooltip>
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
                                     var percentage = chargingLimitPercentage + "%";
