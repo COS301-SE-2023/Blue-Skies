@@ -26,6 +26,7 @@
                 
         </div>
         <div class="flex justify-center">
+            @*
             @if (systems.Count == 0)
             {
                 <div role="status" class="max-w-sm animate-pulse justify-center">
@@ -37,7 +38,7 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             } else {
-                <Button css="h-14 w-60 m-4" style="outline">
+             <Button css="h-14 w-60 m-4" style="outline">
                     <content>
                         <p @onclick="ResetCalculation">Reset</p>
                     </content>
@@ -53,18 +54,51 @@
                             <p @onclick="SaveCalculation">Save this calculation</p>
                         }
                     </content>
-                </Button>
+                </Button> 
             }
+                *@
         </div>
         @if (systems.Count == 0)
         {
-            <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto my-12">
-                <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
-                <span class="sr-only">Loading...</span>
+            <div class="relative flex justify-evenly items-center w-full mx-auto  my-7">
+                <div role="status" class="max-w-sm animate-pulse justify-center">
+                    <div class="h-14 bg-gray-200 rounded-full w-60 m-4"></div> 
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="w-[700px]">
+                    <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto -mt-6">
+                        <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div role="status" class="max-w-sm animate-pulse justify-center">
+                    <div class="h-14 bg-gray-200 rounded-full w-60 m-4"></div>
+                    <span class="sr-only">Loading...</span>
+                </div>
             </div>
+            
         } else {
-            <div class="relative flex justify-center items-center w-full max-w-2xl mx-auto  my-7">
-                <Tabs @bind-Items="tabs"></Tabs>
+            <div class="relative flex justify-evenly items-center w-full mx-auto  my-7">
+                <Button css="h-14 w-60 m-4 right-10" style="outline">
+                    <content>
+                        <p @onclick="ResetCalculation">Reset</p>
+                    </content>
+                </Button>
+                <div class="w-[700px]">
+                    <Tabs @bind-Items="tabs"></Tabs>
+                </div>
+                <Button css="h-14 w-60 m-4" style="pill">
+                    <content>
+                        @if (edit)
+                        {
+                            <p @onclick="SaveCalculation">Update calculation</p>
+                        }
+                        else
+                        {
+                            <p @onclick="SaveCalculation">Save this calculation</p>
+                        }
+                    </content>
+                </Button>
             </div>
         }
         <div class="w-full">
