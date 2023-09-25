@@ -29,11 +29,11 @@
             @if (systems.Count == 0)
             {
                 <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
                     <span class="sr-only">Loading...</span>
                 </div>
                 <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
                     <span class="sr-only">Loading...</span>
                 </div>
             } else {
@@ -59,7 +59,7 @@
         @if (systems.Count == 0)
         {
             <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto my-12">
-                <div class="h-9 bg-gray-200 rounded-lg dark:bg-gray-700 mt-4"></div>
+                <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
                 <span class="sr-only">Loading...</span>
             </div>
         } else {
@@ -227,6 +227,7 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
+
             Console.WriteLine("Editing a calculation for report id: " + currentReport.reportId);
             allAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
             @* Print allAppliances *@
@@ -261,7 +262,28 @@
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
+
+            systems = await systemDataClass.GetAllSystems();
+            if (systems.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("systems", systems);
+            }
+            selectedSystem = 0;
+            for (int i = systems.Count - 1; i > 2; i--)
+            {
+                systems.RemoveAt(i);
+            }
+            SystemModel system = new SystemModel();
+            system.systemId = -1;
+            system.systemSize = "Custom";
+            system.numberOfPanels = -1;
+            system.numberOfBatteries = -1;
+            system.batterySize = -1;
+            system.inverterOutput = -1;
+            system.solarInput = -1;
+            systems.Add(system);
         }
+
 
         systems = await systemDataClass.GetAllSystems();
         if (systems.Count > 0)

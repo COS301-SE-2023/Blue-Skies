@@ -27,7 +27,7 @@
         <Button style="pill">
             <content>
                 <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                    <p class="my-auto">More Calculations </p>
+                    <p class="my-auto">More Calculations</p>
                     <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
                 </div>
             </content>
@@ -51,16 +51,18 @@
                     <p class="text-5xl text-gray-400 font-bold">%</p>
                 </div>
             </div>
-            <div class="flex gap-2 justify-end absolute top-3 right-5">
-                <div class="flex gap-3 justify-end items-end flex-col ">
+            <div class="flex gap-2 justify-end absolute top-3 right-5 has-tooltip">
+                <Tooltip>
+                    <p>How much money you can save monthly by producing clean energy.</p>
+                </Tooltip>
+                <div class="flex gap-3 justify-end items-end flex-col">
+                     
                     <div class="flex gap-2">
                         <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
                         <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer" @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                     </div>
-                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
-                        <Tooltip>
-                            <p>How much money you can save monthly by producing clean energy.</p>
-                        </Tooltip>
+                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                       
                         <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
                             <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                             <p class="text-center text-xl font-bold text-primary-200">Savings</p>
@@ -98,7 +100,7 @@
                     <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
                     <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
                     <Appliance name="Computer" imageName="Computer.svg" count="numComputers"/>
-                    <div class="flex mx-auto" @onclick="ShowModalCalculation">
+                    <div class="flex mx-auto" @onclick="showModalAppliancesPopup">
                         <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
                     </div>
                 </div>
@@ -108,6 +110,7 @@
                             <p>The daily energy your solar panels produce averaged over a year.</p>
                         </Tooltip>
                         <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
+
                         <div class="flex gap-1 mt-3">
                             @{
                                 avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);
@@ -133,9 +136,9 @@
                     <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                 </div>
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
-                    <div class="-mt-10 mb-5 w-full flex flex-col">
+                    <div class="-mt-10 mb-2 w-full flex flex-col">
                         <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"count="@numOfPanels" />
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full">
@@ -175,6 +178,25 @@
         </div>
     </div>
 </ModalPopup>
+<ModalPopup @ref="ModalPopupAppliances" Title="Continue with adding appliances?">
+    <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location by continuing. 
+        Do you want to continue?
+    </p>
+    <div class="flex flex-row gap-4 justify-center">
+        <div @onclick="NavigateToAdnavced">
+            <Button style="pill">
+                <content>
+                    Continue
+                </content>
+            </Button>
+        </div>
+        <div @onclick="ModalPopupAppliances.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </div>
+</ModalPopup>
 
 @code {
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
@@ -184,6 +206,7 @@
     [Parameter]
     public LocationDataModel? locationData  { get; set; } = null;
     ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
+    ModalPopup ModalPopupAppliances { get; set; } = new ModalPopup();
     private int solarScore = -1;
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
@@ -239,7 +262,7 @@
 
     private void SetGraphicValues(){
         appliancePowerUsage = ((numFridges * 250) + (numTVs * 70) + (numComputers * 400)) / 1000.0;
-        var avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
+        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
@@ -273,7 +296,16 @@
             ModalPopupLogIn.Show();
         }
     }
+
+    private void showModalAppliancesPopup(){
+        ModalPopupAppliances.Show();
+    }
     private void NavigateToLogin(){
+        ModalPopupLogIn.Dismiss();
         NavigationManager.NavigateTo("/Login");
+    }
+    private void NavigateToAdnavced(){
+        ModalPopupAppliances.Dismiss();
+        NavigationManager.NavigateTo("/advanced");
     }
 }
