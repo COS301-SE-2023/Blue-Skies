@@ -17,6 +17,10 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 /* Fade-In Transition */
 .fade-in-enter-active {
     animation: fadeIn .6s;

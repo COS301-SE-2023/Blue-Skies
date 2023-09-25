@@ -5,20 +5,130 @@
 @namespace BlazorApp.FancyData
 
 
-    <div>
+    <div class="w-full">
         <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
             <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
             <Header><h1 class="text-center">Advanced Calculations</h1></Header>
             <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
         </Heading>
-        <div class="w-full space-y-3">
-            <div class="relative md:flex w-fit mx-auto md:space-x-5 items-center">
-                <div class="z-10">
+
+        <div class="w-full flex justify-center items-center gap-4">
+            <div class="flex w-full flex-col gap-4 p-20">
+                    <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
+                    <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your rooftop.</p>
+                    <Image ImageName="@satteliteImageSrc" css="2/3" alt="sattelite Image" />
+                    <div class="flex justify-between w-full">
+                        <div class="flex gap-2">
+                            <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-red-accent-500"></div>
+                            <p class="text-lg text-primary-800 my-auto">High sunlight exposure</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-yellow-accent-500"></div>
+                            <p class="text-lg text-primary-800 my-auto">Low sunlight exposure</p>
+                        </div>
+                    </div>
+            </div>
+
+            <div class="flex flex-col gap-4 justify-center w-full">
+                <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+
+                @if(solarPanelsData is not null){
+                    <Card css="w-full flex flex-col gap-10">
+                        <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
+                        <div class="flex flex-col gap-2">
+                            @{
+                                double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
+                                double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                                double maxHoursSunlightPerDay =
+                                Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
+                            }
+
+                                <div class="flex w-full gap-4">
+                                    <Image ImageName="Home.svg" alt="Home Icon" css="w-8 h-8" />
+                                    <p class="my-auto">@squaredArea m&sup2;</p>
+                                </div>
+
+                                <div class="flex w-full gap-4">
+                                    <Image ImageName="SolarPanels.svg" alt="Solar Panels Icon" css="w-8 h-8" />
+                                    <p class="my-auto">@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
+                                </div>
+
+                                <div class="flex w-full gap-4">
+                                    <Image ImageName="Area.svg" alt="Area Icon" css="w-8 h-8" />
+                                    <p class="my-auto">@maxArraArea m&sup2;</p>
+                                </div>
+
+                                <div class="flex w-full gap-4">
+                                    <Image ImageName="Sun-outline.svg" alt="Sun Icon" css="w-8 h-8" />
+                                    <p class="my-auto">@maxHoursSunlightPerDay h</p>
+                                </div>
+                        </div>
+                    </Card>
+                }
+                else{
+                <p>Solar Panels Data is not available</p>
+                }
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+            @* <div class="w-full flex">
+                <div class="z-10 flex flex-col gap-4">
                     <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
                     <Image ImageName="@satteliteImageSrc" alt="sattelite Image" />
                 </div>
-                <div>
-                    <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
+                <div class="w-fit mx-auto space-x-8 flex h-fit my-auto">
+                        <div class="">
+                            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+                        </div>
+
+                        @if(solarPanelsData is not null){
+                            <div class="">
+                                <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
+                                <div class="mx-auto space-y-4 w-fit">
+                                    @{
+                                    double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
+                                    double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                                    double maxHoursSunlightPerDay =
+                                    Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
+                                    }
+                                    <IconToolTip imageName="Home.svg" tooltipMessage="The size of your roof">
+                                        <content>
+                                            <p>@squaredArea m&sup2;</p>
+                                        </content>
+                                    </IconToolTip>
+                                    <IconToolTip imageName="SolarPanels.svg"
+                                        tooltipMessage="The maximum number of panels you can have">
+                                        <content>
+                                            <p>@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
+                                        </content>
+                                    </IconToolTip>
+                                    <IconToolTip imageName="Area.svg"
+                                        tooltipMessage="The maximum area that you can put solar panels">
+                                        <content>
+                                            <p>@maxArraArea m&sup2;</p>
+                                        </content>
+                                    </IconToolTip>
+                                    <IconToolTip imageName="Sun-outline.svg"
+                                        tooltipMessage="The maximum number of hours of sunlight per day">
+                                        <content>
+                                            <p>@maxHoursSunlightPerDay h</p>
+                                        </content>
+                                    </IconToolTip>
+                                </div>
+                            </div>
+                        }
+                        else{
+                        <p>Solar Panels Data is not available</p>
+                        }
+                    </div> *@
+                    
+                    @* <h1 class="text-center text-primary-950 font-semibold text-xl">Monthly Flux Map</h1>
                     @if(monthlyFluxMap is not null){
                     <p class="text-center">@monthNames[@currentImageIndex]</p>
                     <div class="w-fit mx-auto">
@@ -42,69 +152,19 @@
                     }
                     else{
                     <p>Monthly Flux Map is not available</p>
-                    }
-                </div>
-            </div>
+                    } *@
+            @* </div>
             <div class="w-full flex my-4">
                 <div class="w-1/2">
                     <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
                 </div>
                 <div class="w-1/2 h-full">
-                    <div class="w-fit mx-auto space-x-8 flex h-fit my-auto">
-                        <div class="">
-                            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
-                        </div>
-                        @* solarPanelsData *@
-                        @if(solarPanelsData is not null){
-                        <div class="">
-                            <h1 class="text-primary-950 font-semibold text-center text-xl">Rooftop Stats</h1>
-                            <div class="mx-auto space-y-4 w-fit">
-                                @{
-                                double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
-                                double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
-                                double maxHoursSunlightPerDay =
-                                Math.Round(solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
-                                }
-                                <IconToolTip imageName="Home.svg" tooltipMessage="The size of your roof">
-                                    <content>
-                                        <p>@squaredArea m&sup2;</p>
-                                    </content>
-                                </IconToolTip>
-                                <IconToolTip imageName="SolarPanels.svg"
-                                    tooltipMessage="The maximum number of panels you can have">
-                                    <content>
-                                        <p>@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
-                                    </content>
-                                </IconToolTip>
-                                <IconToolTip imageName="Area.svg"
-                                    tooltipMessage="The maximum area that you can put solar panels">
-                                    <content>
-                                        <p>@maxArraArea m&sup2;</p>
-                                    </content>
-                                </IconToolTip>
-                                <IconToolTip imageName="Sun-outline.svg"
-                                    tooltipMessage="The maximum number of hours of sunlight per day">
-                                    <content>
-                                        <p>@maxHoursSunlightPerDay h</p>
-                                    </content>
-                                </IconToolTip>
-                            </div>
-                        </div>
-                        }
-                        else{
-                        <p>Solar Panels Data is not available</p>
-                        }
-                    </div>
+                    
                 </div>
             </div>
-            <div>
+            <div class="w-2/3">
                 <ElevationGraph elevationValues="@horisonElevationData" />
-            </div>
-            <div>
-                <BestSolarPanels solarPanels="@solarPanels" />
-            </div>
-        </div>
-    </div>
+            </div> *@
 
 
 @code {
