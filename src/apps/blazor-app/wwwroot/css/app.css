@@ -1056,6 +1056,10 @@ video {
   margin-top: -1rem;
 }
 
+.-mt-6 {
+  margin-top: -1.5rem;
+}
+
 .-mt-7 {
   margin-top: -1.75rem;
 }
@@ -1230,10 +1234,6 @@ video {
 
 .mt-80 {
   margin-top: 20rem;
-}
-
-.-mt-6 {
-  margin-top: -1.5rem;
 }
 
 .block {
@@ -1633,6 +1633,10 @@ video {
   width: 65px;
 }
 
+.w-\[700px\] {
+  width: 700px;
+}
+
 .w-\[70px\] {
   width: 70px;
 }
@@ -1669,18 +1673,6 @@ video {
 
 .w-screen {
   width: 100vw;
-}
-
-.w-\[500px\] {
-  width: 500px;
-}
-
-.w-\[00px\] {
-  width: 00px;
-}
-
-.w-\[700px\] {
-  width: 700px;
 }
 
 .min-w-fit {
@@ -1734,14 +1726,6 @@ video {
 
 .max-w-xs {
   max-width: 20rem;
-}
-
-.max-w-6xl {
-  max-width: 72rem;
-}
-
-.max-w-5xl {
-  max-width: 64rem;
 }
 
 .-translate-x-1\/2 {
@@ -3284,6 +3268,84 @@ body {
   animation-fill-mode: forwards;
 }
 
+/* Appliance transitions */
+
+.appliance-slide-out-left {
+  animation: slideLeftOut .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-in-left {
+  animation: slideLeftIn .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-out-right {
+  animation: slideRightOut .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-in-right {
+  animation: slideRightIn .2s;
+  animation-fill-mode: forwards;
+}
+
+/* Slide Left Out Transition */
+
+@keyframes slideLeftOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}
+
+/* Slide Left In Transition */
+
+@keyframes slideLeftIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide Right Out Transition */
+
+@keyframes slideRightOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+}
+
+/* Slide Right In Transition */
+
+@keyframes slideRightIn {
+  from {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Chatbot Transitions */
 
 @keyframes chatbotSlideIn {
@@ -3863,18 +3925,6 @@ body {
 .peer:focus ~ .peer-focus\:outline-none {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .dark\:bg-gray-700 {
-    --tw-bg-opacity: 1;
-    background-color: rgb(55 65 81 / var(--tw-bg-opacity));
-  }
-
-  .dark\:text-gray-600 {
-    --tw-text-opacity: 1;
-    color: rgb(75 85 99 / var(--tw-text-opacity));
-  }
 }
 
 @media not all and (min-width: 1024px) {

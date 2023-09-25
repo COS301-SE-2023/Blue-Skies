@@ -59,7 +59,7 @@
                                 <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                                     css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
-                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
                                 @for (int i = 0; i < 8; i++)
                                 {
                                     
@@ -583,7 +583,7 @@
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
-
+    private string applianceAnimation = "";
 
 
     /// <summary>
@@ -614,7 +614,7 @@
             displayCreatedCustomSystem = true;
         }
 
-     
+
         calculationName = currentReport!.reportName;
         if (appliances != null)
         {
@@ -847,7 +847,7 @@
             appliance.quantity = 0;
         }
         SetGraphicValues();
-        
+
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
@@ -909,7 +909,7 @@
                     {
                         appliances[i].quantity = applianceQuantities[i];
                     }
-                    
+
                 }
 
                 break;
@@ -1029,20 +1029,28 @@
         NavigationManager.NavigateTo("/dashboard");
     }
 
-    private void IncrementAppliancePage(){
+    private async void IncrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-left";
+        StateHasChanged();
+        await Task.Delay(100);
         if(appliancesPage != Math.Ceiling(appliances.Count / 8.0) - 1){
             appliancesPage++;
         } else {
             appliancesPage = 0;
         }
+        applianceAnimation = "appliance-slide-in-right";
         StateHasChanged();
     }
-    private void DecrementAppliancePage(){
+    private async void DecrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-right";
+        StateHasChanged();
+        await Task.Delay(100);
         if(appliancesPage != 0){
             appliancesPage--;
         } else {
             appliancesPage = (int) Math.Ceiling(appliances.Count / 8.0) - 1;
         }
+        applianceAnimation = "appliance-slide-in-left";
         StateHasChanged();
     }
 }
