@@ -218,6 +218,7 @@
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
+        
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
