@@ -10,7 +10,6 @@ namespace DataHandlers;
 
 public class SolarDataHandler
 {
-    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private double perfectSolarIrradiation = 1700;
     private double worstSolarIrradiation = 800;
 
@@ -925,10 +924,9 @@ public class SystemsDataHandler
 
         foreach (var appliance in appliances)
         {
-            if (appliance.powerUsage != null && appliance.numberOfAppliances > 0)
+            if (appliance.numberOfAppliances > 0)
             {
-                sumOfAppliances +=
-                    (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
+                sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
             }
             else
             {
@@ -954,6 +952,8 @@ public class CalculationDataHandler
     SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
 
     SharedUtils.applianceClass applianceClass = new SharedUtils.applianceClass();
+
+    SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
 
     private List<ApplianceModel> originalAppliances = new List<ApplianceModel>();
 
@@ -1001,19 +1001,24 @@ public class CalculationDataHandler
         List<ApplianceModel> uniqueAppliances = new List<ApplianceModel>();
         foreach (var appliance in appliances)
         {
-           
+
             if (uniqueAppliances.Any(app => (app.type + app.name).Equals(appliance.type + appliance.name)))
             {
                 var app = uniqueAppliances.Find(app => (app.type + app.name).Equals(appliance.type + appliance.name));
-                app.quantity += 1;
+                if (app != null)
+                {
+                    app.quantity += 1;
+                }
             }
             else
             {
-                // Find appliance of same type
-                var oapp = originalAppliances.Find(app => app.type.Equals(appliance.type));
-                appliance.applianceId = oapp.applianceId;
-                appliance.quantity = 1;
-                uniqueAppliances.Add(appliance);
+                var oapp = originalAppliances.Find(app => app != null && app.type != null && app.type.Equals(appliance.type));
+                if (oapp != null)
+                {
+                    appliance.applianceId = oapp.applianceId;
+                    appliance.quantity = 1;
+                    uniqueAppliances.Add(appliance);
+                }
             }
         }
         return uniqueAppliances;
@@ -1024,6 +1029,10 @@ public class CalculationDataHandler
         int reportId,
         List<ApplianceModel> appliances)
     {
+        originalAppliances = await applianceClass.GetAllAppliances();
+        List<ApplianceModel> newAppliances = GetUniqueAppliances(appliances, originalAppliances);
+        Console.WriteLine("Unique appliances");
+        Console.WriteLine(JsonSerializer.Serialize(newAppliances));
         ReportModel? report = await reportClass.GetReport(reportId);
         if (report == null)
         {
@@ -1035,7 +1044,7 @@ public class CalculationDataHandler
             return false;
         }
 
-        foreach (var appliance in appliances)
+        foreach (var appliance in newAppliances)
         {
             await reportApplianceClass.CreateReportAppliance(
                 reportId,
@@ -1049,4 +1058,68 @@ public class CalculationDataHandler
 
     }
 
+
+    public async Task<List<ApplianceModel>> GetReportAllAppliancesByReport(int reportId)
+    {
+        List<ReportAllApplianceModel> reportAllAppliances = await reportAllApplianceClass.GetReportAllApplianceByReportId(reportId);
+        List<ApplianceModel> allAppliances = new List<ApplianceModel>();
+
+        foreach (ReportAllApplianceModel reportAllAppliance in reportAllAppliances)
+        {
+            for (int i = 0; i < reportAllAppliance.numberOfAppliances; i++)
+            {
+                ApplianceModel appliance = new ApplianceModel
+                {
+                    name = reportAllAppliance.applianceModel,
+                    powerUsage = reportAllAppliance.powerUsage,
+                    durationUsed = reportAllAppliance.durationUsed,
+                    quantity = 0,
+                    type = reportAllAppliance.type,
+                    applianceId = 0
+                };
+                allAppliances.Add(appliance);
+            }
+        }
+
+        return allAppliances;
+    }
+
+    public async Task<Dictionary<String, List<ApplianceModel>>> GetAppliancesByTypeByReport(int reportId)
+    {
+        List<ReportAllApplianceModel> reportAllAppliances = await reportAllApplianceClass.GetReportAllApplianceByReportId(reportId);
+        Dictionary<String, List<ApplianceModel>> allAppliances = new Dictionary<String, List<ApplianceModel>>();
+
+        foreach (ReportAllApplianceModel reportAllAppliance in reportAllAppliances)
+        {
+            if(allAppliances.ContainsKey(reportAllAppliance.type!))
+            {
+                List<ApplianceModel> appliances = allAppliances[reportAllAppliance.type!];
+                appliances.Add(new ApplianceModel
+                {
+                    name = reportAllAppliance.applianceModel,
+                    powerUsage = reportAllAppliance.powerUsage,
+                    durationUsed = reportAllAppliance.durationUsed,
+                    quantity = reportAllAppliance.numberOfAppliances,
+                    type = reportAllAppliance.type,
+                    applianceId = reportAllAppliance.applianceId
+                });
+            }else{
+                List<ApplianceModel> appliances = new List<ApplianceModel>();
+                appliances.Add(new ApplianceModel
+                {
+                    name = reportAllAppliance.applianceModel,
+                    powerUsage = reportAllAppliance.powerUsage,
+                    durationUsed = reportAllAppliance.durationUsed,
+                    quantity = reportAllAppliance.numberOfAppliances,
+                    type = reportAllAppliance.type,
+                    applianceId = reportAllAppliance.applianceId
+                });
+                allAppliances.Add(reportAllAppliance.type!, appliances);
+            }
+        }
+
+
+        return allAppliances;
+
+    }
 }

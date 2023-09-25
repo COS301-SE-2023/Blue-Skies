@@ -5,9 +5,7 @@
     <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
-        <Subscript><p class="text-center">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. <br/>
-                                        If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance
-        </p></Subscript>
+        <Subscript><p class="text-center max-w-4xl">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance</p></Subscript>
     </Heading>
     <div class="flex gap-20 scale-90 justify-center">
         @if (appliances != null)
@@ -28,7 +26,7 @@
             }
         }
     </div>
-    @if (selectedAppliance != "" && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
+    @if (selectedAppliance != "" && appliances != null && appliances.Where(x => x.type == selectedAppliance)?.FirstOrDefault()?.quantity != 0) {
 
         <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
             @* Add variant button *@
@@ -37,7 +35,7 @@
                         <label class="text-gray-400 my-auto">Search for your appliance:</label>
                         <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
                     </div>
-                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage))'>
+                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage ))'>
                     <Button style="pill">
                         <content>
                             <p>Add Variant</p>
@@ -54,19 +52,19 @@
                         <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
                         <div class="w-full">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
-                            <input name="applianceName" id="applianceName" type="text" value="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                            <input name="applianceName" id="applianceName" type="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
-                        <div>
+                        <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="applianceDuration" id="applianceDuration" type="number" value="@item.durationUsed" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" @bind="item.durationUsed" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input name="appliancePower" id="appliancePower" type="number" value="@item.powerUsage" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0"  name="@item.name" id="appliancePower" type="number" @bind="item.powerUsage" @oninput="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
@@ -80,6 +78,7 @@
 @code {
     private string? value = "";
     private int powerUsage = 0;
+    private double durationUsed = 0;
     private string selectedAppliance = "";
     private int applianceCount = 0;
     [Parameter]
@@ -93,8 +92,6 @@
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
     [Parameter]
-    public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
-    [Parameter]
     public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
@@ -107,21 +104,34 @@
     [Parameter]
     public List<CustomApplianceModel>? customAppliances { get; set; }
     [Parameter]
-    public List<ApplianceModel> allAppliances { get; set; } 
+    public List<ApplianceModel>? allAppliances { get; set; } 
 
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
+        UpdateCustomAppliancesWithCounts();
+    }
+
+    public void UpdateAppliance(ApplianceModel item)
+    {
+        item.durationUsed = durationUsed;
+        item.powerUsage = powerUsage;
+    }
+
+    public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
+    {
+        Console.WriteLine("Update Appliance Duration: " + item.durationUsed);
+    }
+
+    public void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
+    {
+        Console.WriteLine("Update Appliance Power: " + item.powerUsage);
     }
 
 
 
 public void UpdateAppliances(List<ApplianceModel> applianceGroups)
 {
-    foreach (var appliance in applianceGroups)
-    {
-        Console.WriteLine(appliance.durationUsed);
-    }
     // Create a dictionary to store appliance variants by type
     Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
 
@@ -144,8 +154,6 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         allAppliances = new List<ApplianceModel>();
     }
 
-    // Clear the customAppliances list
-    @* allAppliances.Clear(); *@
 
 
     foreach (var applianceGroup in applianceGroups)
@@ -195,7 +203,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     StateHasChanged();
 
     Console.WriteLine(JsonSerializer.Serialize(allAppliances));
-}
+    }
     List<ApplianceModel>? customAppliancesWithCounts;
 
     // Function to update the customAppliancesWithCounts list
@@ -203,7 +211,7 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
         customAppliancesWithCounts = new List<ApplianceModel>();
 
-        foreach (var appliance in allAppliances)
+        foreach (var appliance in allAppliances!)
         {
             // Check if an appliance with the same name and type exists in customAppliancesWithCounts
             var existingAppliance = customAppliancesWithCounts.FirstOrDefault(a =>
@@ -229,45 +237,41 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type, int powerUsage)
+    public void ChangeDefaultApplianceName(string newName, string type, int newPower)
     {
+        var defaultAppliance = allAppliances!.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
+        double newDuration = allAppliances!.FirstOrDefault(appliance =>  appliance.type == type)!.durationUsed;
 
-        var defaultAppliance = allAppliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
+        if(newName == "")
+        {
+            newName = "Default";
+        }
 
         if (defaultAppliance != null)
         {
             // Change the name of the found "Default" appliance
+            newDuration = defaultAppliance.durationUsed;
             defaultAppliance.name = newName;
-            defaultAppliance.powerUsage = powerUsage;
+            defaultAppliance.powerUsage = newPower;
+            defaultAppliance.durationUsed = newDuration;
+
             UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
         else
         {
-            var existingAppliance = allAppliances.FirstOrDefault(appliance => appliance.type == type);
-            if (existingAppliance == null)
+            // Add a default appliance and try again
+            allAppliances!.Add(new ApplianceModel
             {
-                allAppliances.Add(new ApplianceModel
-                {
-                    name = newName,
-                    type = type,
-                    quantity = 1,
-                    durationUsed = 20,
-                    powerUsage = powerUsage
-                });
-            } else {
-                // Add a new appliance with the specified name
-                allAppliances.Add(new ApplianceModel
-                {
-                    name = newName,
-                    type = type,
-                    quantity = 1,
-                    durationUsed = existingAppliance!.durationUsed,
-                    powerUsage = powerUsage
-                });
-            }
-            UpdateCustomAppliancesWithCounts();
-            StateHasChanged();
+                name = "Default",
+                type = type,
+                quantity = 1,
+                durationUsed = newDuration,
+                powerUsage = newPower
+            });
+            appliances!.Where(x => x.type == type).FirstOrDefault()!.quantity++;
+            ChangeDefaultApplianceName(newName, type, newPower);
+
         }
         applianceService.ClearSearch();
     }

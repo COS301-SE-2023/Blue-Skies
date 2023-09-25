@@ -31,3 +31,27 @@ window.scrollToBottom = (elementId) => {
       container.scrollTop = container.scrollHeight;
   }
 };
+
+window.initializeMouseFollower = (divToMove) => {
+  const follower = divToMove;
+  const parent = follower.parentElement;
+  const grandparent = parent.parentElement;
+  
+  // Function to update the div's position based on mouse X coordinate
+  const updatePosition = (e) => {
+      const x = e.clientX;
+      const parentRect = parent.getBoundingClientRect();
+      const minX = parentRect.left;
+      const maxX = parentRect.right - follower.clientWidth;
+      
+      // Ensure the follower stays within the bounds of the parent div
+      if (x >= minX && x <= maxX) {
+          follower.style.left = x - parentRect.left + 'px';
+      }
+  };
+
+  // Add event listeners to div
+  grandparent.addEventListener('mouseenter', updatePosition);
+};
+
+

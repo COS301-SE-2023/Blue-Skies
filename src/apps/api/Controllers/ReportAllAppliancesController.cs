@@ -32,16 +32,16 @@ public class ReportAllApplianceController : ControllerBase
 
     //get a reportAllAppliance by reportId
     [HttpGet]
-    [Route("get/{id}")]
-    public async Task<IActionResult> GetReport([FromRoute] int id)
+    [Route("getByReportId/{reportId}")]
+    public async Task<IActionResult> GetReport([FromRoute] int reportId)
     {
-        Console.WriteLine("reportId: " + id);
+        Console.WriteLine("reportId: " + reportId);
         try
         {
-            var data = await _reportAllApplianceRepository.GetReportAllApplianceById(id);
+            var data = await _reportAllApplianceRepository.GetReportAllApplianceById(reportId);
             if (data == null)
             {
-                return StatusCode(404, "Report with id: " + id + " not found");
+                return StatusCode(404, "Report with id: " + reportId + " not found");
             }
             return Ok(data);
         }
