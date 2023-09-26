@@ -49,11 +49,29 @@
                 if (item.type == selectedAppliance)
                 {
                     <div class="flex gap-4">
-                        <Appliance fade="@item.fade" css="hover:shadow bg-white transition-all duration-300 hover:-translate-y-1" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
+
+                        <div class="flex w-fit justify-center gap-4">
+                            <div class="transition-all w-full my-auto duration-300 hover:-translate-y-1" @onclick="@(() => DecrementAppliance(item))">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="16" cy="16" r="16" fill="#F14624"/>
+                                    <path d="M9 16.5C9 15.9477 9.44772 15.5 10 15.5H23C23.5523 15.5 24 15.9477 24 16.5V16.5C24 17.0523 23.5523 17.5 23 17.5H10C9.44772 17.5 9 17.0523 9 16.5V16.5Z" fill="white"/>
+                                </svg>
+                            </div>
+                            <Appliance fade="@item.fade" css="bg-white" imageName="@(item.type + ".svg")" name="@item.type" count="@item.quantity" />
+                            <div class="transition-all w-full my-auto duration-300 hover:-translate-y-1" @onclick="@(() => IncrementAppliance(item))">
+                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="16" cy="16" r="16" fill="#00C48B"/>
+                                    <path d="M8.5 16.5C8.5 15.9477 8.94772 15.5 9.5 15.5H22.5C23.0523 15.5 23.5 15.9477 23.5 16.5V16.5C23.5 17.0523 23.0523 17.5 22.5 17.5H9.5C8.94772 17.5 8.5 17.0523 8.5 16.5V16.5Z" fill="white"/>
+                                    <rect x="15" y="24" width="15" height="2" rx="1" transform="rotate(-90 15 24)" fill="white"/>
+                                </svg>
+                            </div>
+                        </div>
+
                         <div class="w-full">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
-                            <input name="applianceName" id="applianceName" type="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                            <input name="applianceName" id="applianceName" tyžpe="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
+
                         <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
@@ -126,6 +144,21 @@
     public void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
     {
         Console.WriteLine("Update Appliance Power: " + item.powerUsage);
+    }
+
+    public void IncrementAppliance(ApplianceModel item)
+    {
+        item.quantity++;
+        StateHasChanged();
+    }
+
+    public void DecrementAppliance(ApplianceModel item)
+    {
+        if (item.quantity > 0)
+        {
+            item.quantity--;
+            StateHasChanged();
+        }
     }
 
 
