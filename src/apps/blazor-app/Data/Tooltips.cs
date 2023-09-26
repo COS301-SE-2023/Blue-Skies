@@ -28,5 +28,11 @@ namespace BlazorApp.Data {
             }
             return string.Empty;
         }
+        public string SetCustomTooltip(string tooltip)
+        {
+        return tooltip;
+        }
     }
+
+    
 }
