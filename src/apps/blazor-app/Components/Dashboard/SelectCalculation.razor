@@ -50,17 +50,13 @@
             <h1 class="text-lg">@date</h1>
         </Header>
     </Heading>
-    <Button style="pill" css="h-14 max-w-sm">
-        <content>
-            @if(isGenerateReport)
-            {
-                <a @onclick="CancelGenerateReport" class="text-sm font-semibold hover:text-white">Cancel</a>
-            }else
-            {
-                <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
-            }
-        </content>
-    </Button>
+    <div @onclick="GenerateReport">
+        <Button style="pill" css="h-14 max-w-sm">
+            <content>
+                <a class="text-sm font-semibold hover:text-white">Generate Report</a>
+            </content>
+        </Button>
+    </div>
     }
 </Card>
 

@@ -17,6 +17,10 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 /* Fade-In Transition */
 .fade-in-enter-active {
     animation: fadeIn .6s;
@@ -149,8 +153,6 @@ body {
     from { opacity: 1; height: 100%;}
     to { opacity: 1; height: 0%; }
 }
-
-
 
 /* Slide Up Out Transition */
 @keyframes slideUpOut {
