@@ -6,11 +6,13 @@
 .tooltip {
     position: absolute;
     opacity: 0;
+    display: none;
   }
   
   .has-tooltip:hover .tooltip {
     opacity: 1;
     z-index: 50;
+    display: block ;
   }j
 
 body {
@@ -268,6 +270,7 @@ html {
     from { opacity: 0; transform: translateX(-150%); }
     to { opacity: 1;  transform: translateX(0);}
 }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(1%); }
     to { opacity: 1;}
