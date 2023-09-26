@@ -3,6 +3,7 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject ProtectedSessionStorage ProtectedSessionStore;
 @inject NavigationManager NavigationManager;
+@inject BlazorApp.Data.LoadingService loadingService
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
 @using BlazorApp.Components.SolarScore;
@@ -18,7 +19,7 @@ else
 {
     <div class="fade-in-enter-active">
         <div class="w-full">
-            @if (locationData != null)
+            @if (!locationIsReceivedAndNull)
             {
                 <div class="mb-20 -mt-10">
                     <Results locationData="@locationData"/>
@@ -51,6 +52,7 @@ else
     private bool isAd = false;
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private LocationDataModel? locationData = null;
+    private bool locationIsReceivedAndNull = false;
 
     /// <summary>
     /// On page load, check if user is admin.
@@ -58,8 +60,8 @@ else
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        loadingService.HideLoadingScreen();
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-
         var tempLatitude = await ProtectedSessionStore.GetAsync<double>("latitude");
         var tempLongitude = await ProtectedSessionStore.GetAsync<double>("longitude");
         double latitude = tempLatitude.Value;
@@ -68,8 +70,14 @@ else
         if(latitude != 0 && longitude != 0)
         {
             locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            if(locationData == null)
+            {
+                locationIsReceivedAndNull = true;
+            }
             await ProtectedSessionStore.SetAsync("parent", "solarScore");
             isAd = isAdmin.Value;
+        } else {
+            locationIsReceivedAndNull = true;
         }
 
     }

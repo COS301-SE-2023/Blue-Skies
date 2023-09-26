@@ -90,7 +90,9 @@
             List<double> cord = new List<double>();
             if (locationSuggestion.Geometry != null)
             {
-                cord = locationSuggestion.Geometry.Coordinates!;
+                loadingService.ShowLoadingScreen();
+                Console.WriteLine("Location data does not exist, creating the necessary data");
+                currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
             }
             double longitude = cord[0];
             double latitude = cord[1];

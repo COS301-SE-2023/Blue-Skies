@@ -2,6 +2,7 @@
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TutorialService tutorialService
 @inject BlazorApp.Data.ChatBotService chatbotService
+@inject BlazorApp.Data.LoadingService loadingService
 @using BlazorApp.Components
 @using BlazorApp.Components.Tutorial
 @using BlazorApp.Chatbot
@@ -98,6 +99,8 @@
         tutorialService.ToggleTutorialRequested += ToggleTutorial;
         chatbotService.ShowChatBotRequested += ShowChatBot;
         chatbotService.HideChatBotRequested += HideChatBot;
+        loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
+        loadingService.HideLoadingScreenRequested += HideLoadingScreen;
     }
 
     private void ShowChatBot() {
@@ -119,7 +122,6 @@
 @* Loading Service functions *@
     public void ShowLoadingScreen()
     {
-
         isLoading = true;
         StateHasChanged();
     }

@@ -21,35 +21,91 @@
 </div>
 <div class="flex w-full flex-nowrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
+    <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center w-full max-w-lg">
         <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-10" alt="Rob"/>
-        <Map css="scale-90 z-10" ImageName="@satteliteImage" />
-        <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
-        <Button style="pill">
-            <content>
-                <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                    <p class="my-auto">More Calculations</p>
-                    <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+        @if (satteliteImage != null)
+        {
+            <Map css="scale-90 z-10" ImageName="@satteliteImage" />
+        }
+        else
+        {
+            <div class="z-10 flex items-center justify-center w-[360px] h-[360px] bg-gray-300 rounded">
+                <svg class="animate-pulse w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                </svg>
+            </div>
+        }
+        @if (locationData != null)
+        {     
+            <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
+            <Button style="pill">
+                <content>
+                    <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
+                        <p class="my-auto">More Calculations </p>
+                        <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+                    </div>
+                </content>
+            </Button>
+        }
+        else
+        {
+            <div role="status" class="animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center w-[470px] max-w-[470px]">
+                <svg class="w-10 h-10 text-gray-200 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                </svg>
+                <div class="w-full">
+                    <div class="h-4 bg-gray-200 rounded-full dark:bg-gray-700 w-24 mb-3 mt-3"></div>
+                    <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-[360px] mb-2"></div>
+                    <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-24 mb-2"></div>
                 </div>
-            </content>
-        </Button>
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="w-full animate-pulse">
+                <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-72 mx-auto"></div>
+            </div>
+        }
     </div>
     <div class="relative w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
         <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
+            @if (solarScore == -1)
+            {
+                <div role="status" class="animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
+                    <div class="z-10 flex items-center justify-center w-16 h-16 bg-gray-300 rounded-md ">
+                        <svg class="w-10 h-10 text-gray-200 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                        </svg>
+                    </div>
+                    <div class="w-full">
+                        <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-28 mb-3 mt-3"></div>
+                    </div>
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="w-full animate-pulse">
+                    <div class="h-16 bg-gray-200 rounded-full dark:bg-gray-700 w-28 mt-2"></div>
+                </div>
+                <div class="flex gap-2 justify-end absolute top-3 right-5">
+                    <div class="flex gap-3 justify-end items-end flex-col">
+                        <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[660px] mt-1.5 animate-pulse"></div>
+                        <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                            <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
+                                <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-52 mt-1.5 animate-pulse"></div>
+                            </div>
+                            <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                                <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-28 mt-1.5 animate-pulse "></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-full mt-1.5 animate-pulse"></div>
+            } else {
             <div class="has-tooltip">
                 <Tooltip pointer="20">
                     <p>@tooltipService.GetTooltip("solarScore")</p>
                 </Tooltip>
-                <div class="my-auto w-full flex gap-4 relative">
-                    <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                        <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
-                    </div>
-                    <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
-                </div>
-                <div class="flex gap-1 mt-3">
-                    <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
-                    <p class="text-5xl text-gray-400 font-bold">%</p>
+            <div class="my-auto w-full flex gap-4 relative">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
                 </div>
             </div>
             <div class="flex gap-2 justify-end absolute top-3 right-5 has-tooltip">
@@ -73,19 +129,19 @@
                             @{
                                 var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
                             }
-                                <p class="text-center text-xl font-bold">@savings</p>
+                            <p class="text-center text-xl font-bold">@savings</p>
                             <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
                 @{
                     var percentage = solarScore + "%";
                 }
                 <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 "></div>
             </div>
+            }
         </Card>
         <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob"/>
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
@@ -117,6 +173,7 @@
                             <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                             <p class="text-5xl text-gray-400 font-bold">kwh</p>
                         </div>
+                        <div class="h-6 bg-gray-200 rounded-full dark:bg-gray-700 w-60 -mt-8 animate-pulse"></div>
                     </div>
                     <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
                     <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
@@ -153,19 +210,51 @@
                         <div class="flex flex-col gap-2 justify-center items-center w-full">
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
-                                    var percentage = chargingLimitPercentage + "%";
+                                    avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);
                                 }
-                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
-                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
-                                <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                                <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                                <p class="text-5xl text-gray-400 font-bold">kwh</p>
                             </div>
-                            <p class="text-center">Battery Utilization</p>
                         </div>
-                        <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries" count="@numOfBatteries" />
+                        <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
+                        <div class="flex w-full justify-center items-center gap-1 -mt-10">
+                                @{
+                                    if (dlh == daylight)
+                                    {
+                                        <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                                    }
+                                }      
+                            <p class="text-5xl text-gray-400 font-bold">h</p>
+                        </div>
+                        <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" @bind-value="@numOfBatteries" @oninput="SetRunningHours"/>
+                    <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
+                        <div class="-mt-10 mb-5 w-full flex flex-col">
+                            <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"count="@numOfPanels" />
+                            <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
+                        </div>
+                        <div class="flex gap-2 pr-2 justify-start items-start">
+                            <div class="flex flex-col gap-2 justify-center items-center w-full">
+                                <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                    @{
+                                        var percentage = chargingLimitPercentage + "%";
+                                    }
+                                    <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
+                                    <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                    <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                                </div>
+                                <p class="text-center">Battery Utilization</p>
+                            </div>
+                            <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries" count="@numOfBatteries" />
+                        </div>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" @bind-value="@numOfBatteries" @oninput="SetRunningHours"/>
+                    </div>
                 </div>
-            </div>
+            }
         </Card>
     </div>
 </div>
@@ -218,7 +307,6 @@
     ModalPopup ModalPopupAppliances { get; set; } = new ModalPopup();
     private int solarScore = -1;
     public double avgEnergyProduction = 0.0;
-    public bool isLoaded = false;
     public string? satteliteImage;
     public int numOfPanels = 8;
     public int numOfBatteries = 3;
@@ -231,17 +319,14 @@
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
 
-    /// <summary>
-    /// This function is called when the page is loaded and it gets the data from the session storage and the API
-    /// </summary>
-    protected override void OnInitialized()
-    {   
-        if(locationData == null) 
+    protected override void OnParametersSet(){
+        if (locationData != null)
         {
-            toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
-            NavigationManager.NavigateTo("/");
+            satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
+            solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
+            SetGraphicValues();
         }
-
         avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
         SetGraphicValues();
     }
