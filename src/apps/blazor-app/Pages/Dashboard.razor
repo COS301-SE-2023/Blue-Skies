@@ -60,7 +60,7 @@ else
                         </Heading>
                     }
 
-                        <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                    <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
                             <div class="grid grid-cols-2 md:flex gap-4 justify-center">
                                 @{
                                     @* Loop over allAppliances *@
@@ -77,74 +77,6 @@ else
                                             <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
                                         </div>                            
                                     }
-                                    if (allAppliances.Count == 0)
-
-                    <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
-                        <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
-                            @{
-                                @* Loop over allAppliances *@
-                                foreach(KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
-                                {
-                                    string iconName = app.Key + ".svg";
-                                    int count = 0;
-                                    List<ApplianceModel> tempAppliances = app.Value;
-                                    for (int i = 0; i < tempAppliances.Count; i++)
-                                    {
-                                        count += tempAppliances[i].quantity;
-                                    }
-                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl' @onclick='(() =>  SelectAppliance(app.Key))'>
-                                        <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
-                                    </div>                            
-                                }
-                             </div>
-                             @{
-                                if (selectedAppliance != "" && allAppliances.Count > 0)
-                                {
-                                    List<ApplianceModel>? tempAppliances = allAppliances[selectedAppliance];
-                                    if(tempAppliances is not null)
-                                    {
-                                        double dU = Math.Round(tempAppliances[0].durationUsed, 3);
-                                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-primary-100 p-2">
-                                            <table class="w-full text-sm text-left text-gray-500 ">
-                                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                                                    <tr>
-                                                        <th scope="col" class="px-6 py-3">
-                                                            Model
-                                                        </th>
-                                                        <th scope="col" class="px-6 py-3">
-                                                            Quantity
-                                                        </th>
-                                                        <th scope="col" class="px-6 py-3">
-                                                            Duration Used
-                                                        </th>
-                                                        <th scope="col" class="px-6 py-3">
-                                                            Power Usage
-                                                        </th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var appliance in tempAppliances)
-                                                    {
-                                                        <tr class="bg-white border-b">
-                                                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                                                @appliance.name
-                                                            </th>
-                                                            <td class="px-6 py-4">
-                                                                @appliance.quantity
-                                                            </td>
-                                                            <td class="px-6 py-4">
-                                                                @dU h
-                                                            </td>
-                                                            <td class="px-6 py-4">
-                                                                @appliance.powerUsage kW/h
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    }
-
                                 if (allAppliances.Count == 0)
                                 {
                                     <p class="text-center">No appliances added</p>
