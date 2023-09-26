@@ -1247,6 +1247,10 @@ video {
   margin-top: 20rem;
 }
 
+.mt-12 {
+  margin-top: 3rem;
+}
+
 .block {
   display: block;
 }
@@ -1385,6 +1389,10 @@ video {
 
 .h-\[300px\] {
   height: 300px;
+}
+
+.h-\[30px\] {
+  height: 30px;
 }
 
 .h-\[30rem\] {
@@ -1646,6 +1654,10 @@ video {
 
 .w-\[360px\] {
   width: 360px;
+}
+
+.w-\[388px\] {
+  width: 388px;
 }
 
 .w-\[420px\] {
