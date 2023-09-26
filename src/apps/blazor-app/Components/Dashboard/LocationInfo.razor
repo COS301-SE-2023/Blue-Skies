@@ -7,8 +7,39 @@
     <Image ImageName="Robert_Confused_Half.png" css="absolute right-20 bottom-0 z-0 h-12" alt="Rob" />
     <div class="w-full md:w-2/3 z-10">
         <Card>
-            @if (currentLocationData == null)
+            @if (currentLocationData != null && displayNewData)
             {
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Location</h1>
+                    </Header>
+                </Heading>
+                    <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+                        <div class="w-80">
+                            <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
+                        </div>
+                        <div class="flex flex-col justify-start gap-10">
+                            @if (systems.Count != 0 && displayNewData)
+                            {
+                                var location = "";
+                                var sScore = "";
+                                var avgEnergyProduction = "";
+                                if (reports != null)
+                                {
+                                    location = currentLocationData!.locationName;
+                                    sScore = solarScore + "%";
+                                    avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
+                                }    
+                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
+                                <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
+                                <div class="translate-x-1">
+                                    <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
+                                        Text=@avgEnergyProduction />
+                                </div>
+                            }
+                        </div>  
+                    </div>
+            } else {
                 <div role="status" class="max-w-sm animate-pulse w-32">
                     <div class="h-6 bg-gray-200 rounded-full w-32"></div>
                     <span class="sr-only">Loading...</span>
@@ -52,37 +83,6 @@
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
-                </div>    
-            } else  {
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl">Location</h1>
-                    </Header>
-                </Heading>
-                <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
-
-                    <div class="w-80">
-                        <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
-                    </div>
-                    <div class="flex flex-col justify-start gap-10">
-                        @{
-                            var location = "";
-                            var sScore = "";
-                            var avgEnergyProduction = "";
-                            if (reports != null)
-                            {
-                                location = currentLocationData!.locationName;
-                                sScore = solarScore + "%";
-                                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
-                            }
-                        }
-                        <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
-                        <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
-                        <div class="translate-x-1">
-                            <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
-                                Text=@avgEnergyProduction />
-                        </div>
-                    </div>
                 </div>
             }
         </Card>
@@ -90,8 +90,36 @@
     <div class="w-full md:w-1/3">
         <Card css="h-full">
             <div class="flex flex-col justify-center">
-            @if (currentLocationData == null)
+            @if (systems.Count != 0 && displayNewData)
             {
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl text-start">System Size</h1>
+                    </Header>
+                </Heading>
+                <div class="flex justify-around gap-4 mt-16 scale-75">
+                    @{
+                        var numPanels = 0;
+                        var numBatteries = 0;
+                        var systemSize = 0;
+                        for (int i = 0; i < systems!.Count; i++)
+                        {
+                            if (systems[i].systemId == reports![selectedReport].systemId)
+                            {
+                                systemSize = systems[i].inverterOutput;
+                                numPanels = systems[i].numberOfPanels;
+                                numBatteries = systems[i].numberOfBatteries;
+                            }
+                        }
+                    }
+                    <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
+                    <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@numBatteries />
+                </div>
+                <div class="flex w-full justify-center items-center gap-1 mt-4">
+                    <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
+                    <p class="text-5xl text-gray-400 font-bold">kw</p>
+                </div>
+            } else {
                 <div role="status" class="max-w-sm animate-pulse w-32">
                     <div class="h-6 bg-gray-200 rounded-full w-32"></div>
                     <span class="sr-only">Loading...</span>
@@ -126,34 +154,6 @@
                         <span class="sr-only">Loading...</span>
                     </div> 
                 </div>
-            } else {
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl text-start">System Size</h1>
-                    </Header>
-                </Heading>
-                <div class="flex justify-around gap-4 mt-16 scale-75">
-                    @{
-                        var numPanels = 0;
-                        var numBatteries = 0;
-                        var systemSize = 0;
-                        for (int i = 0; i < systems!.Count; i++)
-                        {
-                            if (systems[i].systemId == reports![selectedReport].systemId)
-                            {
-                                systemSize = systems[i].inverterOutput;
-                                numPanels = systems[i].numberOfPanels;
-                                numBatteries = systems[i].numberOfBatteries;
-                            }
-                        }
-                    }
-                    <Appliance ImageName="SolarPanels.svg" Name="Number of Panels" Count=@numPanels />
-                    <Appliance ImageName="Batteries.svg" Name="Number of Batteries" Count=@numBatteries />
-                </div>
-                <div class="flex w-full justify-center items-center gap-1 mt-4">
-                    <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
-                    <p class="text-5xl text-gray-400 font-bold">kw</p>
-                </div>
             }
             </div>
         </Card>
@@ -173,9 +173,11 @@
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
-    public List<SystemModel>? systems { get; set; }
+    public List<SystemModel> systems { get; set; } = new List<SystemModel>();
     [Parameter]
-    public int solarScore { get; set; } 
+    public int solarScore { get; set; }
+    [Parameter]
+    public bool displayNewData { get; set; }
     public int selectedSystem { get; set; }
 
     protected override void OnParametersSet(){
