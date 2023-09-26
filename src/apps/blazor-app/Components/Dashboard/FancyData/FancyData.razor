@@ -52,7 +52,7 @@
                 @if(solarPanelsData is not null){
                     <Card css="w-full flex flex-col gap-10">
                         <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
-                        <div class="flex flex-col gap-2">
+                        <div class="grid grid-cols-2 justify-center items-center gap-2">
                             @{
                                 double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
                                 double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
