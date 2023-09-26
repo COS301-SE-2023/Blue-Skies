@@ -2329,6 +2329,21 @@ video {
   background-color: rgb(34 197 94 / var(--tw-bg-opacity));
 }
 
+.bg-orange-accent-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 223 171 / var(--tw-bg-opacity));
+}
+
+.bg-orange-accent-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(246 135 18 / var(--tw-bg-opacity));
+}
+
+.bg-orange-accent-600 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(231 111 15 / var(--tw-bg-opacity));
+}
+
 .bg-primary-100 {
   --tw-bg-opacity: 1;
   background-color: rgb(230 236 248 / var(--tw-bg-opacity));
@@ -2411,26 +2426,6 @@ video {
 .bg-yellow-accent-500 {
   --tw-bg-opacity: 1;
   background-color: rgb(255 193 8 / var(--tw-bg-opacity));
-}
-
-.bg-gray-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
-}
-
-.bg-orange-accent-500 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(246 135 18 / var(--tw-bg-opacity));
-}
-
-.bg-orange-accent-200 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(253 223 171 / var(--tw-bg-opacity));
-}
-
-.bg-orange-accent-600 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(231 111 15 / var(--tw-bg-opacity));
 }
 
 .bg-gradient-to-br {
