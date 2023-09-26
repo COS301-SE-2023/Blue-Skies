@@ -35,7 +35,7 @@
                         <label class="text-gray-400 my-auto">Search for your appliance:</label>
                         <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
                     </div>
-                <div class="my-auto translate-y-2"  @onclick='@(() => ChangeDefaultApplianceName(value!, selectedAppliance, powerUsage ))'>
+                <div class="my-auto translate-y-2"  @onclick='@(() => AddVariant(value!, selectedAppliance, powerUsage ))'>
                     <Button style="pill">
                         <content>
                             <p>Add Variant</p>
@@ -130,12 +130,6 @@
         UpdateCustomAppliancesWithCounts();
     }
 
-    public void UpdateAppliance(ApplianceModel item)
-    {
-        item.durationUsed = durationUsed;
-        item.powerUsage = powerUsage;
-    }
-
     public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
     {
         Console.WriteLine("Update Appliance Duration: " + item.durationUsed);
@@ -148,94 +142,108 @@
 
     public void IncrementAppliance(ApplianceModel item)
     {
+        appliances.FirstOrDefault(x => x.type == item.type && x.name == item.name && x.quantity == item.quantity && x.powerUsage == item.powerUsage && x.durationUsed == item.durationUsed)!.quantity++;
         item.quantity++;
-        StateHasChanged();
+        applianceService.UpdateAppliance(appliances);
     }
 
     public void DecrementAppliance(ApplianceModel item)
     {
-        if (item.quantity > 0)
+        Console.WriteLine("Decrement Appliance");
+        Console.WriteLine("Item: " + JsonSerializer.Serialize(item));
+        Console.WriteLine("Appliances: " + JsonSerializer.Serialize(appliances));
+        if(appliances.FirstOrDefault(x => x.type == item.type && x.name == item.name && x.quantity == item.quantity && x.powerUsage == item.powerUsage && x.durationUsed == item.durationUsed) == null)
         {
-            item.quantity--;
-            StateHasChanged();
+            Console.WriteLine("Item not found");
+            return;
         }
+
+        if (item.quantity > 1)
+        {
+            appliances.FirstOrDefault(x => x.type == item.type && x.name == item.name && x.quantity == item.quantity && x.powerUsage == item.powerUsage && x.durationUsed == item.durationUsed)!.quantity--;
+            item.quantity--;    
+        } else {
+            appliances.FirstOrDefault(x => x.type == item.type && x.name == item.name && x.quantity == item.quantity && x.powerUsage == item.powerUsage && x.durationUsed == item.durationUsed)!.quantity = 0;
+            item.quantity = 0;
+        }
+        Console.WriteLine("Success");
+        applianceService.UpdateAppliance(appliances);
     }
 
-
-
-public void UpdateAppliances(List<ApplianceModel> applianceGroups)
-{
-    // Create a dictionary to store appliance variants by type
-    Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
-
-    if (allAppliances != null)
+    public void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
-        foreach (var appliance in allAppliances)
+        Console.WriteLine("Update Appliances");
+        // Create a dictionary to store appliance variants by type
+        Dictionary<string, List<ApplianceModel>> customAppliancesVariants = new Dictionary<string, List<ApplianceModel>>();
+
+        if (allAppliances != null)
         {
-            if (appliance.name != "Default")
+            foreach (var appliance in allAppliances)
             {
-                if (!customAppliancesVariants.ContainsKey(appliance.type!))
+                if (appliance.name != "Default")
                 {
-                    customAppliancesVariants[appliance.type!] = new List<ApplianceModel>();
+                    if (!customAppliancesVariants.ContainsKey(appliance.type!))
+                    {
+                        customAppliancesVariants[appliance.type!] = new List<ApplianceModel>();
+                    }
+                    customAppliancesVariants[appliance.type!].Add(appliance);
                 }
-                customAppliancesVariants[appliance.type!].Add(appliance);
             }
         }
-    }
-    else
-    {
-        allAppliances = new List<ApplianceModel>();
-    }
-
-
-
-    foreach (var applianceGroup in applianceGroups)
-    {
-        for (int i = 0; i < applianceGroup.quantity; i++)
+        else
         {
-            allAppliances.Add(new ApplianceModel
-            {
-                name = applianceGroup.name,
-                type = applianceGroup.type,
-                powerUsage = applianceGroup.powerUsage,
-                durationUsed = applianceGroup.durationUsed,
-                quantity = 0
-            });
+            allAppliances = new List<ApplianceModel>();
         }
-    }
 
-    // Add the non-"Default" appliances back to customAppliances
-    foreach (var variantList in customAppliancesVariants.Values)
-    {
-        allAppliances.AddRange(variantList);
-    }
 
-    foreach (var applianceGroup in applianceGroups)
-    {
-        while(allAppliances.Count(x => x.type == applianceGroup.type) < applianceGroup.quantity)
+
+        foreach (var applianceGroup in applianceGroups)
         {
-            allAppliances.Add(new ApplianceModel
+            for (int i = 0; i < applianceGroup.quantity; i++)
             {
-                name = "Default",
-                type = applianceGroup.type,
-                powerUsage = applianceGroup.powerUsage,
-                durationUsed = applianceGroup.durationUsed,
-                quantity = 1
-            });
-        }
-;
-        while (allAppliances.Count(x => x.type == applianceGroup.type) > applianceGroup.quantity)
-        {
-            if((allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)) != null) {
-                allAppliances.Remove(allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)!);
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = applianceGroup.name,
+                    type = applianceGroup.type,
+                    powerUsage = applianceGroup.powerUsage,
+                    durationUsed = applianceGroup.durationUsed,
+                    quantity = 0
+                });
             }
         }
-    }
 
-    UpdateCustomAppliancesWithCounts();
-    StateHasChanged();
+        // Add the non-"Default" appliances back to customAppliances
+        foreach (var variantList in customAppliancesVariants.Values)
+        {
+            allAppliances.AddRange(variantList);
+        }
 
-    Console.WriteLine(JsonSerializer.Serialize(allAppliances));
+        foreach (var applianceGroup in applianceGroups)
+        {
+            while(allAppliances.Count(x => x.type == applianceGroup.type) < applianceGroup.quantity)
+            {
+                allAppliances.Add(new ApplianceModel
+                {
+                    name = "Default",
+                    type = applianceGroup.type,
+                    powerUsage = applianceGroup.powerUsage,
+                    durationUsed = applianceGroup.durationUsed,
+                    quantity = 1
+                });
+            };
+
+            while (allAppliances.Count(x => x.type == applianceGroup.type) > applianceGroup.quantity)
+            {
+                if((allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)) != null) {
+                    allAppliances.Remove(allAppliances.FirstOrDefault(x => x.type == applianceGroup.type)!);
+                }
+            }
+        }
+
+        UpdateCustomAppliancesWithCounts();
+        StateHasChanged();
+
+        Console.WriteLine(JsonSerializer.Serialize(allAppliances));
     }
     List<ApplianceModel>? customAppliancesWithCounts;
 
@@ -270,22 +278,22 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
         }
     }
 
-    public void ChangeDefaultApplianceName(string newName, string type, int newPower)
+    public void AddVariant(string name, string type, int power)
     {
         var defaultAppliance = allAppliances!.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
         double newDuration = allAppliances!.FirstOrDefault(appliance =>  appliance.type == type)!.durationUsed;
 
-        if(newName == "")
+        if(name == "")
         {
-            newName = "Default";
+            name = "Default";
         }
 
         if (defaultAppliance != null)
         {
             // Change the name of the found "Default" appliance
             newDuration = defaultAppliance.durationUsed;
-            defaultAppliance.name = newName;
-            defaultAppliance.powerUsage = newPower;
+            defaultAppliance.name = name;
+            defaultAppliance.powerUsage = power;
             defaultAppliance.durationUsed = newDuration;
 
             UpdateCustomAppliancesWithCounts();
@@ -300,16 +308,14 @@ public void UpdateAppliances(List<ApplianceModel> applianceGroups)
                 type = type,
                 quantity = 1,
                 durationUsed = newDuration,
-                powerUsage = newPower
+                powerUsage = power
             });
             appliances!.Where(x => x.type == type).FirstOrDefault()!.quantity++;
-            ChangeDefaultApplianceName(newName, type, newPower);
-
+            AddVariant(name, type, power);
         }
+        applianceService.UpdateAppliance(appliances);
         applianceService.ClearSearch();
     }
-
-
 
 
     public Task SelectAppliance (string appliance)

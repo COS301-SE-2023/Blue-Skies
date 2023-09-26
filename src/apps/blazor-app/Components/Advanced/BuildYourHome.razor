@@ -621,6 +621,7 @@
         {
             SetGraphicValues();
         }
+        applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
 
     /// <summary>
@@ -871,6 +872,13 @@
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
+    }
+
+    public void UpdateAppliances(List<ApplianceModel> applianceGroups)
+    {
+        appliances = applianceGroups;
+        SetGraphicValues();
+        StateHasChanged();
     }
 
     private void ToggleAppliance(ApplianceModel appliance)
