@@ -31,14 +31,12 @@
             {
                 Legend = new Legend
                 {
-                    Display = true
+                    Display = false
                 },
                 Responsive = true,
                 Title = new OptionsTitle
                 {
-                    Display = true,
-                    Text = "Sun path over the horizon",
-                    FontSize = 20,
+                    Display = false,
                 },
                 Hover = new Hover
                 {
@@ -59,7 +57,21 @@
                             },
                             Ticks = new LinearCartesianTicks
                             {
-                                BeginAtZero = true
+                                BeginAtZero = true,
+                            }
+                        }
+                    },
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            GridLines = new GridLines
+                            {
+                                Display = false, // Set Display to false to remove X-axis grid lines
+                            },
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
                             }
                         }
                     }
@@ -159,8 +171,6 @@
             }
         }
 
-        Image image = new Image();
-
         
         IDataset<double> redDotDataset = new LineDataset<double>(yRedDotValues)
         {
@@ -201,8 +211,8 @@
         {
             Order = 1,
             Label = "Horizon",
-            BackgroundColor = "rgba(0,15,82, 1)",
-            BorderColor = "rgba(0,15,82, 1)",
+            BackgroundColor = "rgba(31, 52, 91, 1)",
+            BorderColor = "rgba(31, 52, 91, 1)",
             BorderWidth = 1,
             Fill = FillingMode.Start,
             PointRadius = 0,
@@ -226,11 +236,12 @@
                     Ticks = new LinearCartesianTicks
                     {
                         Max = maxY 
-                    }
+                    },
                 }
-            }
+            }, 
         };
     }
+
 
     private void addSunDataSet(int MaxHeight, int maxLength, string labelName, double[] xValues, double[] yValues, string color = "rgba(255, 255, 0, 1)", bool fill = false, int fillNum = 0, bool makeBottomZero = false) {
         double[] xSunValues = new double[xValues.Length];
@@ -275,8 +286,8 @@
                 PointHoverRadius = 15,
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 10,
-                PointRadius = animated == true ? 5 : 1,
-                PointBackgroundColor = "rgba(246,135,18, 1)",
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(231, 111, 15, 1)",
                 SpanGaps = true,
             };
         } 
@@ -291,8 +302,8 @@
                 PointHoverRadius = 15,
                 BorderDash = new int[] { 20, 20 },
                 BorderDashOffset = 32,
-                PointRadius = animated == true ? 5 : 1,
-                PointBackgroundColor = "rgba(246,135,18, 1)",
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(251, 200, 118, 1)",
                 PointBorderWidth = 0,
                 SpanGaps = true,
             };
@@ -307,10 +318,27 @@
                 BorderWidth = 1,
                 Fill = FillingMode.Disabled,
                 PointHoverRadius = 15,
-                PointRadius = animated == true ? 5 : 1,
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(246, 135, 18, 1)",
+                PointBorderWidth = 0,
             };
         }
 
         lineConfig!.Data.Datasets.Add(sunDataset);
     }
 }
+
+@* 
+--ecstasy-50: 255 249 237;
+--ecstasy-100: 254 241 214;
+--ecstasy-200: 253 223 171;
+--ecstasy-300: 251 200 118;
+--ecstasy-400: 249 165 62;
+--ecstasy-500: 246 135 18;
+--ecstasy-600: 231 111 15;
+--ecstasy-700: 192 84 14;
+--ecstasy-800: 152 67 20;
+--ecstasy-900: 123 57 19;
+--ecstasy-950: 66 26 8;
+
+ *@

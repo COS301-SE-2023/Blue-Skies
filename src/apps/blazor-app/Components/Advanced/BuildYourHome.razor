@@ -8,6 +8,7 @@
 @inject IJSRuntime JSRuntime
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
@@ -51,7 +52,7 @@
             </div>
             <input
         class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        type="text" placeholder="Search..">
+        type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
                 @if (appliances != null)
                 {
                         <div class="flex">
@@ -60,16 +61,23 @@
                                     css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
-                                @for (int i = 0; i < 8; i++)
-                                {
-                                    
-                                        @if (appliances.Count > i + appliancesPage * 8)
-                                        {
-                                            ApplianceModel appliance = appliances[i + appliancesPage * 8];
+                                @{
+                                    filteredAppliances = appliances.Where(app => app.type!.ToLower().Contains(applianceSearch.ToLower())).ToList();
+                                    if(filteredAppliances.Count <= 8)
+                                    {
+                                        appliancesPage = 0;
+                                    }
+                                    @for (int i = 0; i < 8 && filteredAppliances.Count > 0; i++)
+                                    {
+                                        
+                                        @if (filteredAppliances.Count > i + appliancesPage * 8)
+                                        {   
+                                            ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
                                             <div @onclick="@(() => ToggleAppliance(appliance))">
                                                 <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
                                             </div>
                                         }
+                                    }
                                 }
                             </div>
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
@@ -252,7 +260,10 @@
                         <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
-                        <div class="flex flex-col gap-2 justify-center items-center w-full">
+                        <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
+                            <Tooltip pointer="50">
+                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                            </Tooltip>
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
                                     var percentage = chargingLimitPercentage + "%";
@@ -319,9 +330,14 @@
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-        <div class="flex relative flex-col justify-center w-full">
+        <div class="flex relative flex-col justify-center w-full has-tooltip">
+            <div>
+                <Tooltip pointer="48">
+                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                </Tooltip>
+            </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                     @{
                         if (dlh == (24 - daylight))
                         {
@@ -584,6 +600,10 @@
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
     private string applianceAnimation = "";
+
+    private string applianceSearch = "";
+
+    private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
 
 
     /// <summary>
