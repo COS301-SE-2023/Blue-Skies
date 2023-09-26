@@ -58,17 +58,11 @@
     }
 
     /// <summary>
-    /// <list type="number">
-    /// <item>Gets the longitude and latitude from the location suggestion.</item>
-    /// <item>Gets the location name from the location suggestion.</item>
-    /// <item>Checks if the location data exists in the database.</item>
-    /// <item>If the location data does not exist:</item>
     /// <list type="bullet">
     /// <item>Gets the daylight hours for the location.</item>
     /// <item>Downloads the image from the Google Maps Static API.</item>
     /// <item>Saves the image to the local storage.</item>
     /// <item>Creates a new row in the database for the location data.</item>
-    /// </list>
     /// <item>Saves the location data to the currentLocationData variable.</item>
     /// <item>Saves the currentLocationData variable to the session storage.</item>
     /// <item>Navigates to the solarScore page.</item>
@@ -90,9 +84,7 @@
             List<double> cord = new List<double>();
             if (locationSuggestion.Geometry != null)
             {
-                loadingService.ShowLoadingScreen();
-                Console.WriteLine("Location data does not exist, creating the necessary data");
-                currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
+                cord = locationSuggestion.Geometry.Coordinates!;
             }
             double longitude = cord[0];
             double latitude = cord[1];
