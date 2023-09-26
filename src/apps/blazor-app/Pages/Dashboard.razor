@@ -60,8 +60,8 @@ else
                         </Heading>
                     }
 
-                        <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
-                            <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
+                        <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                            <div class="grid grid-cols-2 md:flex gap-4 justify-center">
                                 @{
                                     @* Loop over allAppliances *@
                                     foreach(KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
@@ -73,7 +73,7 @@ else
                                         {
                                             count += tempAppliances[i].quantity;
                                         }
-                                        <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl' @onclick='(() =>  SelectAppliance(app.Key))'>
+                                        <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") p-3 rounded-2xl cursor-pointer rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
                                             <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
                                         </div>                            
                                     }
@@ -83,9 +83,6 @@ else
                                     }
                                 }
                              </div>
-                            
-                               
-
                              @{
                                 if (selectedAppliance != "" && allAppliances.Count > 0)
                                 {
@@ -93,7 +90,7 @@ else
                                     if(tempAppliances is not null)
                                     {
                                         double dU = Math.Round(tempAppliances[0].durationUsed, 3);
-                                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-primary-100 p-2">
                                             <table class="w-full text-sm text-left text-gray-500 ">
                                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                                     <tr>

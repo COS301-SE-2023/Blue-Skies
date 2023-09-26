@@ -61,7 +61,7 @@
                             </div>
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
                                 @{
-                                    filteredAppliances = appliances.Where(app => app.type.ToLower().Contains(applianceSearch.ToLower())).ToList();
+                                    filteredAppliances = appliances.Where(app => app.type!.ToLower().Contains(applianceSearch.ToLower())).ToList();
                                     if(filteredAppliances.Count <= 8)
                                     {
                                         appliancesPage = 0;

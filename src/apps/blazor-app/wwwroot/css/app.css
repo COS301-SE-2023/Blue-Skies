@@ -2269,6 +2269,11 @@ video {
   border-top-right-radius: 0.5rem;
 }
 
+.rounded-b-none {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
 .border {
   border-width: 1px;
 }
