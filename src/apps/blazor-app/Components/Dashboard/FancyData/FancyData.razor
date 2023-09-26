@@ -1,16 +1,33 @@
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager navigationManager
 @using BlazorApp.EnviromentImpact
 @using BlazorApp.BestSolarPanels
 @namespace BlazorApp.FancyData
 
+@{
+    Uri uri = new Uri(navigationManager.Uri);
+    string[] segments = uri.Segments;
+    currentPage = segments[segments.Length - 1];
+}
 
     <div class="w-full">
-        <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
-            <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
-            <Header><h1 class="text-center">Advanced Calculations</h1></Header>
-            <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
-        </Heading>
+        @if (currentPage == "dashboard") {
+            <Heading>
+                <Header>
+                    <h1 class="text-xl">Advanced Calculations</h1>
+                </Header>
+                <Subscript>
+                    <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
+                </Subscript>
+            </Heading>
+        } else {
+            <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
+                <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
+                <Header><h1 class="text-center">Advanced Calculations</h1></Header>
+                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
+            </Heading>
+        }
 
         <div class="w-full flex justify-center items-center gap-4">
             <div class="flex w-full flex-col gap-4 p-20">
@@ -35,7 +52,7 @@
                 @if(solarPanelsData is not null){
                     <Card css="w-full flex flex-col gap-10">
                         <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
-                        <div class="flex flex-col gap-2">
+                        <div class="grid grid-cols-2 justify-center items-center gap-2">
                             @{
                                 double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
                                 double maxArraArea = Math.Round(solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
@@ -130,7 +147,6 @@
     </div>
 
 
-
 @code {
     [Parameter]
     public byte[]? monthlyFluxData { get; set; }
@@ -151,6 +167,7 @@
 
     [Parameter]
     public RooftopInformationModel? solarPanelsData { get; set; }
+    public string? currentPage { get; set; }
 
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
