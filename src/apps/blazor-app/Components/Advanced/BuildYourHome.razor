@@ -8,6 +8,7 @@
 @inject IJSRuntime JSRuntime
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
@@ -259,7 +260,10 @@
                         <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
-                        <div class="flex flex-col gap-2 justify-center items-center w-full">
+                        <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
+                            <Tooltip pointer="50">
+                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                            </Tooltip>
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
                                     var percentage = chargingLimitPercentage + "%";
@@ -326,7 +330,12 @@
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-        <div class="flex relative flex-col justify-center w-full">
+        <div class="flex relative flex-col justify-center w-full has-tooltip">
+            <div>
+                <Tooltip pointer="48">
+                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                </Tooltip>
+            </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                     @{

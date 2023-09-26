@@ -26,7 +26,7 @@ else if (isAd)
 }
 else
 {
-        <div class="fade-in-active px-1 md:px-5">
+    <div class="fade-in-active px-1 md:px-5">
         @if (reports.Count > 0)
         {
         <div class="flex flex-col justify-center items-center px-10">
@@ -78,9 +78,23 @@ else
                                         </div>                            
                                     }
                                     if (allAppliances.Count == 0)
+
+                    <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
+                        <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
+                            @{
+                                @* Loop over allAppliances *@
+                                foreach(KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
+                                {
+                                    string iconName = app.Key + ".svg";
+                                    int count = 0;
+                                    List<ApplianceModel> tempAppliances = app.Value;
+                                    for (int i = 0; i < tempAppliances.Count; i++)
                                     {
-                                        <p class="text-center">No appliances added</p>
+                                        count += tempAppliances[i].quantity;
                                     }
+                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl' @onclick='(() =>  SelectAppliance(app.Key))'>
+                                        <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
+                                    </div>                            
                                 }
                              </div>
                              @{
@@ -130,103 +144,157 @@ else
                                             </table>
                                         </div>
                                     }
-                                }
-                             }
-                        </div>
 
+                                if (allAppliances.Count == 0)
+                                {
+                                    <p class="text-center">No appliances added</p>
+                                }
+                            }
+                        </div>
+                        @{
+                        if (selectedAppliance != "" && allAppliances.Count > 0)
+                        {
+                            List<ApplianceModel>? tempAppliances = allAppliances[selectedAppliance];
+                            if(tempAppliances is not null)
+                            {
+                                double dU = Math.Round(tempAppliances[0].durationUsed, 3);
+                                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                                    <table class="w-full text-sm text-left text-gray-500 ">
+                                        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                            <tr>
+                                                <th scope="col" class="px-6 py-3">
+                                                    Model
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    Quantity
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    Duration Used
+                                                </th>
+                                                <th scope="col" class="px-6 py-3">
+                                                    Power Usage
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var appliance in tempAppliances)
+                                            {
+                                                <tr class="bg-white border-b">
+                                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                                        @appliance.name
+                                                    </th>
+                                                    <td class="px-6 py-4">
+                                                        @appliance.quantity
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        @dU h
+                                                    </td>
+                                                    <td class="px-6 py-4">
+                                                        @appliance.powerUsage kW/h
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        }
+                        }
+                    </div>
                     <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
                         <div class="w-full flex flex-col gap-4 justify-start items-center">
                             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
                             <div class="flex relative flex-col justify-center w-full">
-                        @{
-                            dlh = 0;
-                            if (currentLocationData != null)
-                            {
-                                daylight = 12;
-                                dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-                            }
-                        }
-                        <DaylightChart hours="@dlh" daylightHours="@daylight" />
-                        <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                            <p class="text-5xl text-primary-900 font-semibold">
                                 @{
-                                    if (dlh == (24 - daylight))
+                                    dlh = 0;
+                                    if (currentLocationData != null)
                                     {
-                                        <p>@dlh+</p>
+                                        daylight = 12;
+                                        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
                                     }
-                                    else
-                                    {
-                                        <p>@dlh</p>
-                                                }
-                                            }
-                                            </p>
-                                            <p class="text-5xl text-gray-400 font-bold">h</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="hidden md:block w-full">
-                                @{
-                                    var imageName = "";
-                                    if (reports.Count > selectedReport)
-                                    {
-                                        var sysId = reports[selectedReport].systemId;
-                                        var sysSize = "Small";
-                                        foreach (var sys in systems)
-                                        {
-                                            if (sys.systemId == sysId)
+                                }
+                                <DaylightChart hours="@dlh" daylightHours="@daylight" />
+                                <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                                    <p class="text-5xl text-primary-900 font-semibold">
+                                        @{
+                                            if (dlh == (24 - daylight))
                                             {
-                                                sysSize = sys.systemSize;
-                                            }
-                                        }
-                                        if (sysSize != null)
-                                        {
-                                            if (sysSize.Equals("Small"))
-                                            {
-                                                imageName = reports[selectedReport].homeSize + "-Home1.svg";
-                                            }
-                                            else if (sysSize.Equals("Medium"))
-                                            {
-                                                imageName = reports[selectedReport].homeSize + "-Home2.svg";
+                                                <p>@dlh+</p>
                                             }
                                             else
                                             {
-                                                imageName = reports[selectedReport].homeSize + "-Home3.svg";
+                                                <p>@dlh</p>
                                             }
+                                        }
+                                    </p>
+                                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hidden md:block w-full">
+                            @{
+                                var imageName = "";
+                                if (reports.Count > selectedReport)
+                                {
+                                    var sysId = reports[selectedReport].systemId;
+                                    var sysSize = "Small";
+                                    foreach (var sys in systems)
+                                    {
+                                        if (sys.systemId == sysId)
+                                        {
+                                            sysSize = sys.systemSize;
+                                        }
+                                    }
+                                    if (sysSize != null)
+                                    {
+                                        if (sysSize.Equals("Small"))
+                                        {
+                                            imageName = reports[selectedReport].homeSize + "-Home1.svg";
+                                        }
+                                        else if (sysSize.Equals("Medium"))
+                                        {
+                                            imageName = reports[selectedReport].homeSize + "-Home2.svg";
+                                        }
+                                        else
+                                        {
+                                            imageName = reports[selectedReport].homeSize + "-Home3.svg";
                                         }
                                     }
                                 }
-                                                            <Image ImageName=@imageName alt="House" css="scale-90" />
-                                                        </div>
-                                                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                                            <div class="flex relative flex-col justify-center w-full">
-                                                                <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-            </div>
-            <div class="mt-10 w-full">
-                @{
-                    int numSolarPanels = 0;
-                    if(systems != null) {
-                        if (systems.Count > 0)
-                        {
-                            for (int i = 0; i < systems.Count; i++)
+                            }
+                            <Image ImageName=@imageName alt="House" css="scale-90" />
+                        </div>
+                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                            <div class="flex relative flex-col justify-center w-full">
+                                <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
+                            </div>
+                        </div>
+                        </div>
+                    </Card>
+                </div>
+                <div class="mt-10 w-full">
+                    @{
+                        int numSolarPanels = 0;
+                        if(systems != null) {
+                            if (systems.Count > 0)
                             {
-                                if (systems[i].systemId == reports[selectedReport].systemId)
+                                for (int i = 0; i < systems.Count; i++)
                                 {
-                                    numSolarPanels = systems[i].numberOfPanels;
+                                    if (systems[i].systemId == reports[selectedReport].systemId)
+                                    {
+                                        numSolarPanels = systems[i].numberOfPanels;
+                                    }
                                 }
                             }
                         }
+                        <Card css="w-full mb-5">
+                            <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" solarPanelsData="@currentLocationData.solarPanelsData" numSolarPanels="@numSolarPanels"/>`
+                        </Card>
                     }
-                    <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" solarPanelsData="@currentLocationData.solarPanelsData" numSolarPanels="@numSolarPanels"/>
-                }
-            </div>
+                </div>
             }
         </div>
-                    
         }
         else
         {
