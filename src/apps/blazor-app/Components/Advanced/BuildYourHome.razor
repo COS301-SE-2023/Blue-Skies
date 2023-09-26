@@ -8,6 +8,7 @@
 @inject IJSRuntime JSRuntime
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
@@ -17,8 +18,8 @@
             @if (systems.Count == 0)
             {
                 <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-3 bg-gray-200 rounded-full dark:bg-gray-700 w-[70px] mb-2.5 mx-auto"></div>
-                    <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-[240px] p-2.5"></div>
+                    <div class="h-3 bg-gray-200 rounded-full w-[70px] mb-2.5 mx-auto"></div>
+                    <div class="h-8 bg-gray-200 rounded-full w-[240px] p-2.5"></div>
                     <span class="sr-only">Loading...</span>
                 </div>
             } else {
@@ -37,7 +38,7 @@
 @* Add Appliances *@
 <div class="hidden lg:flex w-full h-full px-4 mb-20">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
+        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-[420px]">
             <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
@@ -49,50 +50,50 @@
                     </div>
                 </div>
             </div>
-            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
                 @if (appliances != null)
                 {
-                    if (tabs[0].active)
-                    {
-                        @foreach (var appliance in appliances)
-                        {
-                                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                        </div>
-                        }
-                    }
-                    else
-                    {
-                        @foreach (var appliance in appliances)
-                        {
-                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                        </div>
-                        }
-                    }
+                        <div class="flex">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
+                                @for (int i = 0; i < 8; i++)
+                                {
+                                    <div>
+                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliances[i + appliancesPage * 8].type + ".svg")" name="@appliances[i + appliancesPage * 8].type" count="@appliances[i + appliancesPage * 8].quantity" />
+                                    </div>
+                                }
+                            </div>
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentAppliancePage">
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                        </div>
                 }
                 else
                 {
-                    for (int i = 0; i < 8; i++)
+            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+
+                    @for (int i = 0; i < 8; i++)
                     {
                         <div class="justify-center">
                             <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
-                                <svg class="w-14 h-14 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                     <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
                                 </svg>
                             </div>
                             <div role="status" class="max-w-sm animate-pulse mt-3">
-                                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[100px] mb-2.5"></div>
+                                <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
                                 <span class="sr-only">Loading...</span>
                             </div>
                         </div>
                     }
-                }
             </div>
+                }
         </div>
     </div>
-    <div class="w-full pl-64 flex flex-col justify-center items-center">
+    <div class="w-full flex flex-col justify-center items-center pl-64">
         @* Home images *@
         <div class="flex pjustify-center items-center h-full">
             @switch (selectedSystem)
@@ -208,24 +209,24 @@
             {
                     <div class="flex space-x-9">
                         <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                 <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
                             </svg>
                         </div>
                         <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                 <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
                             </svg>
                         </div>
                             <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                 <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
                             </svg>
                         </div>
                     </div>
                     <div class="flex justify-center h-24">
                         <div role="status" class="max-w-sm animate-pulse">
-                            <div class="h-8 bg-gray-200 rounded-full dark:bg-gray-700 w-[105px] mb-2.5"></div>
+                            <div class="h-8 bg-gray-200 rounded-full w-[105px] mb-2.5"></div>
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
@@ -233,70 +234,95 @@
 
         </div>
     @* System details *@
-        <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 scale-75">
             @if (systems.Count > 0)
             {
-                if (showCustomSystem)
-                {
-                            <div @onclick='@(() => CustomSystemModal("Panels"))'>
-                                <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
-                                    count=@systems[3].numberOfPanels />
+                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
+                    <div class="mb-2 w-full flex flex-col">
+                        <div @onclick='@(() => CustomSystemModal("Panels"))'>
+                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
+                        </div>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
+                    </div>
+                    <div class="flex gap-2 pr-2 justify-start items-start">
+                        <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
+                            <Tooltip pointer="50">
+                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                            </Tooltip>
+                            <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                @{
+                                    var percentage = chargingLimitPercentage + "%";
+                                }
+                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
+                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                             </div>
-                            <div @onclick='@(() => CustomSystemModal("Batteries"))'>
-                                <Appliance ImageName="Batteries.svg" name="Number of Batteries"
-                                    count=@systems[3].numberOfBatteries />
-                            </div>
-                }
-                else
-                {
-                            <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
-                                count=@systems[selectedSystem].numberOfPanels />
-                            <Appliance ImageName="Batteries.svg" name="Number of Batteries"
-                                count=@systems[selectedSystem].numberOfBatteries />
-                }
+                            <p class="text-center">Battery Utilization</p>
+                        </div>
+                        <div @onclick='@(() => CustomSystemModal("Batteries"))'>
+                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
+                        </div>
+                    </div>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="SetRunningHours"/>
+                </div>
             }
             else
             {
-                    <div class="flex space-x-9">
-                        <div class="justify-center">
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
-                                <svg class="w-14 h-14 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                </svg>
+                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
+                        <div class="mb-2 w-full flex flex-col">
+                            <div class="justify-center">
+                                <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center mt-3">
+                                    <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                                    </svg>
+                                </div>
+                                <div role="status" class="max-w-sm animate-pulse mt-3">
+                                    <div class="h-3 bg-gray-200 rounded-full w-[120px] mb-2 mx-auto"></div>
+                                    <span class="sr-only">Loading...</span>
+                                </div>
                             </div>
-                            <div role="status" class="max-w-sm animate-pulse mt-3">
-                                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[125px] mb-2.5"></div>
-                                <span class="sr-only">Loading...</span>
-                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mb-2.5 mx-auto animate-pulse mt-2"></div>
                         </div>
-                        <div class="justify-center">
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
-                                <svg class="w-14 h-14 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                </svg>
+                        <div class="justify-start items-start">
+                            <div class="flex">
+                                <div class="flex flex-col gap-2 justify-center items-center w-full">
+                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[120px] animate-pulse items-center justify-center">
+                                        <svg class="self-center w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                                        </svg>
+                                    </div>
+                                    <div role="status" class="max-w-sm animate-pulse mt-3">
+                                        <div class="h-3 bg-gray-200 rounded-full w-[140px] mb-2.5"></div>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="mx-auto">
+                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center">
+                                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                                        </svg>
+                                    </div>
+                                    <div role="status" class="max-w-sm animate-pulse mt-3">
+                                        <div class="h-3 bg-gray-200 rounded-full w-[110px] mb-2.5 mx-auto"></div>
+                                        <div class="h-3 bg-gray-200 rounded-full w-[80px] mb-2 mx-auto"></div>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div role="status" class="max-w-sm animate-pulse mt-3">
-                                <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 w-[125px] mb-2.5"></div>
-                                <span class="sr-only">Loading...</span>
-                            </div>
+                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mt-2.5 animate-pulse"></div>
                         </div>
                     </div>
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-        <div class="flex relative flex-col justify-center w-full">
-            @{
-                dlh = 0;
-                if (currentReport != null)
-                {
-                    daylight = 12;
-                    dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-
-                }
-            }
+        <div class="flex relative flex-col justify-center w-full has-tooltip">
+            <div>
+                <Tooltip pointer="48">
+                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                </Tooltip>
+            </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-4">
                     @{
                         if (dlh == (24 - daylight))
                         {
@@ -322,7 +348,7 @@
             <p>Number of solar panels:</p>
             <Input  @bind-InputValue="customPanels" placeholder="8" type="number" min="4"/>
             <p>Solar panel power output (W/h): </p>
-            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" value="customPanelsInputNumber" min="300"/>
+            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" min="300"/>
     }
     else
     {
@@ -505,6 +531,7 @@
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
 
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
@@ -541,7 +568,7 @@
     };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
-    float daylight = 0f;
+    float daylight = 12f;
     DaylightChart daylightChart = new DaylightChart();
     private string homeSize = "Small";
     private string homeType = "";
@@ -554,6 +581,9 @@
     private string customBatteriesSize = "";
     private string customModalTitle = "";
     private bool isNumericValue = true;
+    private double chargingLimit = 0.0;
+    private double chargingLimitPercentage = 50.0;
+    private int appliancesPage = 0;
 
 
 
@@ -570,11 +600,7 @@
         }
         if (systems.Count > 0)
         {
-            customPanels = "" + systems[3].numberOfPanels;
-            customBatteries = "" + systems[3].numberOfBatteries;
-            customPanelsInput = "" + systems[3].solarInput;
-            customBatteriesSize = "" + systems[3].batterySize;
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+            SetGraphicValues();
         }
     }
 
@@ -603,11 +629,15 @@
                 applianceQuantities.Add(appliance);
             }
         }
+        if (systems.Count > 0)
+        {
+            SetGraphicValues();
+        }
     }
 
     public void CreateCustomSystem()
     {
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        SetGraphicValues();
         if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) > systems[selectedSystem].inverterOutput * 1000)
         {
             toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
@@ -619,7 +649,6 @@
         }
         else
         {
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             displayCreatedCustomSystem = true;
             selectedSystemChanged.InvokeAsync(selectedSystem);
             ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
@@ -629,18 +658,6 @@
     public void CustomSystemSelected()
     {
         selectedSystem = 3;
-        if (systems.Count == 3)
-        {
-            SystemModel system = new SystemModel();
-            system.systemId = -1;
-            system.systemSize = "Custom";
-            system.numberOfPanels = -1;
-            system.numberOfBatteries = -1;
-            system.batterySize = -1;
-            system.inverterOutput = -1;
-            system.solarInput = -1;
-            systems.Add(system);
-        }
         selectedSystemChanged.InvokeAsync(selectedSystem);
         if (showCustomSystem)
         {
@@ -673,14 +690,57 @@
         SystemModalPopup.Show();
     }
 
+    private void SetNumberPanels(ChangeEventArgs e){
+        var val = e.Value!.ToString();
+        customPanels = val!;
+        if (selectedSystem < 3)
+        {
+            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+            systems[3].batterySize = systems[selectedSystem].batterySize;
+            systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+            systems[3].solarInput = systems[selectedSystem].solarInput;
+            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+        }
+        selectedSystem = 3;
+        systems[3].numberOfPanels =  int.Parse(val!);
+        selectedSystemChanged.InvokeAsync(selectedSystem);
+        SetGraphicValues(); 
+
+    }
+    private void SetRunningHours(ChangeEventArgs e){
+        var val = e.Value!.ToString();
+        customBatteries = val!;
+        if (selectedSystem < 3)
+        {
+            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+            systems[3].batterySize = systems[selectedSystem].batterySize;
+            systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+            systems[3].solarInput = systems[selectedSystem].solarInput;
+            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+        }
+        selectedSystem = 3;
+        systems[3].numberOfBatteries =  int.Parse(val!);
+        selectedSystemChanged.InvokeAsync(selectedSystem);
+        SetGraphicValues();
+    }
+
     public void SetPanels()
     {
         isNumericValue = true;
         try
         {
+            if (selectedSystem < 3)
+            {
+                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+                systems[3].batterySize = systems[selectedSystem].batterySize;
+                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+                systems[3].solarInput = systems[selectedSystem].solarInput;
+                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+            }
+            selectedSystem = 3;
             systems[3].numberOfPanels = Convert.ToInt32(customPanels);
             systems[3].solarInput = Convert.ToInt32(customPanelsInput);
-            if (customPanels.Equals("") || customPanelsInput.Equals(""))
+            if ( customPanelsInput.Equals(""))
             {
                 isNumericValue = false;
             }
@@ -691,6 +751,8 @@
         {
             isNumericValue = false;
         }
+        SetGraphicValues(); 
+
     }
 
     public void SetNumberOfBatteries()
@@ -698,15 +760,55 @@
         isNumericValue = true;
         try
         {
+            if (selectedSystem < 3)
+            {
+                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+                systems[3].batterySize = systems[selectedSystem].batterySize;
+                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
+                systems[3].solarInput = systems[selectedSystem].solarInput;
+                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+            }
+            selectedSystem = 3;
             systems[3].numberOfBatteries = Convert.ToInt32(customBatteries);
             systems[3].batterySize = Convert.ToInt32(customBatteriesSize);
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             SystemModalPopup.Dismiss();
         }
         catch (System.Exception)
         {
             isNumericValue = false;
         }
+        SetGraphicValues(); 
+
+    }
+
+    private void SetGraphicValues(){
+        var appliancePowerUsage = systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) / 1000.0;
+        Console.WriteLine("Appliance Power Usage: " + appliancePowerUsage);
+        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
+        Console.WriteLine("Average Energy Production: " + avgEnergyProduction);
+        var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
+        usableHours = Math.Round(usableHours, 2);
+        Console.WriteLine("Usable Hours: " + usableHours);
+        chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
+        Console.WriteLine("Charging Limit: " + chargingLimit);
+        if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
+        {
+            chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
+            chargingLimitPercentage = 100;
+        } else
+        {
+            chargingLimitPercentage = (chargingLimit / (systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)) * 100;
+        }
+        chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
+
+        double runningHours = chargingLimit / appliancePowerUsage;
+        double runningHoursPercentage = (runningHours / daylight) * 100;
+        if (runningHoursPercentage > 100)
+        {
+            runningHoursPercentage = 100;
+        }
+        Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
+        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
     /// <summary>
@@ -715,6 +817,7 @@
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
         selectedSystem = Convert.ToInt32(e.Value);
+        SetGraphicValues();
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
 
@@ -729,7 +832,7 @@
             appliance.fade = "fade-in-active";
             appliance.quantity++;
             UpdateApplianceStorage();
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+            SetGraphicValues();
             applianceService.UpdateAppliance(appliances);
         }
     }
@@ -744,7 +847,8 @@
         {
             appliance.quantity = 0;
         }
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        SetGraphicValues();
+        
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
@@ -764,7 +868,8 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        SetGraphicValues();
+
     }
 
     /// <summary>
@@ -781,7 +886,15 @@
                 int[] applianceQuantities = { 1, 1, 15, 1, 0, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities[i];
+                    if(i >= applianceQuantities.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities[i];
+                    }
+                    
                 }
 
                 break;
@@ -791,7 +904,14 @@
                 int[] applianceQuantities2 = { 1, 1, 20, 1, 1, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities2[i];
+                    if(i >= applianceQuantities2.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities2[i];
+                    }
                 }
                 break;
             case "4":
@@ -800,7 +920,14 @@
                 int[] applianceQuantities3 = { 2, 1, 30, 2, 2, 1, 0, 1 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities3[i];
+                    if(i >= applianceQuantities3.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities3[i];
+                    }
                 }
                 break;
             default:
@@ -809,12 +936,19 @@
                 int[] applianceQuantities4 = { 1, 1, 15, 1, 0, 1, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
-                    appliances[i].quantity = applianceQuantities4[i];
+                    if(i >= applianceQuantities4.Length)
+                    {
+                        appliances[i].quantity = 0;
+                    }
+                    else
+                    {
+                        appliances[i].quantity = applianceQuantities4[i];
+                    }
                 }
                 break;
         }
         applianceService.UpdateAppliance(appliances);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        SetGraphicValues();
     }
 
     public async void ResetHome()
@@ -828,7 +962,7 @@
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        SetGraphicValues();
     }
 
     public async void SaveCalculation()
@@ -878,5 +1012,20 @@
             toastService.ShowToast("Error", "Report failed to update.", "error");
         }
         NavigationManager.NavigateTo("/dashboard");
+    }
+
+    private void IncreamentAppliancePage(){
+        if(appliancesPage != 2){
+            appliancesPage++;
+        } else {
+            appliancesPage = 0;
+        }
+    }
+    private void DecrementAppliancePage(){
+        if(appliancesPage != 0){
+            appliancesPage--;
+        } else {
+            appliancesPage = 2;
+        }
     }
 }

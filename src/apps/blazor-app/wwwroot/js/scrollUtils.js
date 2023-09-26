@@ -35,6 +35,7 @@ window.scrollToBottom = (elementId) => {
 window.initializeMouseFollower = (divToMove) => {
   const follower = divToMove;
   const parent = follower.parentElement;
+  const grandparent = parent.parentElement;
   
   // Function to update the div's position based on mouse X coordinate
   const updatePosition = (e) => {
@@ -48,9 +49,9 @@ window.initializeMouseFollower = (divToMove) => {
           follower.style.left = x - parentRect.left + 'px';
       }
   };
-  
-  // Add a mousemove event listener to track mouse movement
-  document.addEventListener('mousemove', updatePosition);
+
+  // Add event listeners to div
+  grandparent.addEventListener('mouseenter', updatePosition);
 };
 
 
