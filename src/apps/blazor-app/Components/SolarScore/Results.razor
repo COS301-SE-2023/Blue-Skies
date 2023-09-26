@@ -370,12 +370,11 @@
                             </h3>
                         </div>
                     </div>
-                    <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
-                        <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
-                            <div class="-mt-10 mb-5 w-full flex flex-col">
+                        <div class="flex flex-col w-full justify-center items-center gap-4 -mt-10">
+                            <div class="-mt-10 mb-2 w-full flex flex-col">
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
-                                <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
+                                <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20"
                                     step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit" />
                             </div>
                             <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
@@ -408,7 +407,6 @@
                             <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
                             @bind-value="@numOfBatteries" @oninput="SetRunningHours" />
                         </div>
-                    </div>
                 </div>
             }
         </Card>
