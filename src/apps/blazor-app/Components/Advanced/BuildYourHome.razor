@@ -46,10 +46,13 @@
                     <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
                     <div
                         class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+                        <p class="text-gray-900">Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below</p>
                     </div>
                 </div>
             </div>
+            <input
+        class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+        type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
                 @if (appliances != null)
                 {
                         <div class="flex">
@@ -57,15 +60,27 @@
                                 <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                                     css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
-                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
-                                @for (int i = 0; i < 8; i++)
-                                {
-                                    <div>
-                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliances[i + appliancesPage * 8].type + ".svg")" name="@appliances[i + appliancesPage * 8].type" count="@appliances[i + appliancesPage * 8].quantity" />
-                                    </div>
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
+                                @{
+                                    filteredAppliances = appliances.Where(app => app.type!.ToLower().Contains(applianceSearch.ToLower())).ToList();
+                                    if(filteredAppliances.Count <= 8)
+                                    {
+                                        appliancesPage = 0;
+                                    }
+                                    @for (int i = 0; i < 8 && filteredAppliances.Count > 0; i++)
+                                    {
+                                        
+                                        @if (filteredAppliances.Count > i + appliancesPage * 8)
+                                        {   
+                                            ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
+                                            <div @onclick="@(() => ToggleAppliance(appliance))">
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
+                                            </div>
+                                        }
+                                    }
                                 }
                             </div>
-                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentAppliancePage">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
                                 <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                                     css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
@@ -322,7 +337,7 @@
                 </Tooltip>
             </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-4">
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                     @{
                         if (dlh == (24 - daylight))
                         {
@@ -584,7 +599,11 @@
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
+    private string applianceAnimation = "";
 
+    private string applianceSearch = "";
+
+    private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
 
 
     /// <summary>
@@ -615,7 +634,7 @@
             displayCreatedCustomSystem = true;
         }
 
-     
+
         calculationName = currentReport!.reportName;
         if (appliances != null)
         {
@@ -848,8 +867,24 @@
             appliance.quantity = 0;
         }
         SetGraphicValues();
-        
+
         StateHasChanged();
+        UpdateApplianceStorage();
+        applianceService.UpdateAppliance(appliances);
+    }
+
+    private void ToggleAppliance(ApplianceModel appliance)
+    {
+        Console.WriteLine("Toggling - " + appliance.type);
+        if (appliance.quantity > 0)
+        {
+            appliance.quantity = 0;
+        }
+        else
+        {
+            appliance.quantity = 1;
+        }
+        SetGraphicValues();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
     }
@@ -894,7 +929,7 @@
                     {
                         appliances[i].quantity = applianceQuantities[i];
                     }
-                    
+
                 }
 
                 break;
@@ -1014,18 +1049,28 @@
         NavigationManager.NavigateTo("/dashboard");
     }
 
-    private void IncreamentAppliancePage(){
-        if(appliancesPage != 2){
+    private async void IncrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-left";
+        StateHasChanged();
+        await Task.Delay(100);
+        if(appliancesPage != Math.Ceiling(appliances.Count / 8.0) - 1){
             appliancesPage++;
         } else {
             appliancesPage = 0;
         }
+        applianceAnimation = "appliance-slide-in-right";
+        StateHasChanged();
     }
-    private void DecrementAppliancePage(){
+    private async void DecrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-right";
+        StateHasChanged();
+        await Task.Delay(100);
         if(appliancesPage != 0){
             appliancesPage--;
         } else {
-            appliancesPage = 2;
+            appliancesPage = (int) Math.Ceiling(appliances.Count / 8.0) - 1;
         }
+        applianceAnimation = "appliance-slide-in-left";
+        StateHasChanged();
     }
 }

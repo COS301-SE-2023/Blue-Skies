@@ -60,23 +60,23 @@ else
                         </Heading>
                     }
 
-                    <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
-                        <div class="grid grid-cols-2 md:flex gap-4 justify-evenly scale-90">
-                            @{
-                                @* Loop over allAppliances *@
-                                foreach(KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
-                                {
-                                    string iconName = app.Key + ".svg";
-                                    int count = 0;
-                                    List<ApplianceModel> tempAppliances = app.Value;
-                                    for (int i = 0; i < tempAppliances.Count; i++)
+                    <div class="p-10 justify-start flex flex-col rounded-3xl w-full">
+                            <div class="grid grid-cols-2 md:flex gap-4 justify-center">
+                                @{
+                                    @* Loop over allAppliances *@
+                                    foreach(KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
                                     {
-                                        count += tempAppliances[i].quantity;
+                                        string iconName = app.Key + ".svg";
+                                        int count = 0;
+                                        List<ApplianceModel> tempAppliances = app.Value;
+                                        for (int i = 0; i < tempAppliances.Count; i++)
+                                        {
+                                            count += tempAppliances[i].quantity;
+                                        }
+                                        <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") p-3 rounded-2xl cursor-pointer rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
+                                            <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
+                                        </div>                            
                                     }
-                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl' @onclick='(() =>  SelectAppliance(app.Key))'>
-                                        <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
-                                    </div>                            
-                                }
                                 if (allAppliances.Count == 0)
                                 {
                                     <p class="text-center">No appliances added</p>

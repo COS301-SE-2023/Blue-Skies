@@ -1055,6 +1055,10 @@ video {
   margin-top: -1rem;
 }
 
+.-mt-6 {
+  margin-top: -1.5rem;
+}
+
 .-mt-7 {
   margin-top: -1.75rem;
 }
@@ -1658,6 +1662,10 @@ video {
 
 .w-\[660px\] {
   width: 660px;
+}
+
+.w-\[700px\] {
+  width: 700px;
 }
 
 .w-\[70px\] {
@@ -2269,6 +2277,11 @@ video {
   border-bottom-left-radius: 1.5rem;
 }
 
+.rounded-b-none {
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
 .rounded-l-lg {
   border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem;
@@ -2467,6 +2480,11 @@ video {
 .bg-primary-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(31 53 91 / var(--tw-bg-opacity));
+}
+
+.bg-red-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(252 165 165 / var(--tw-bg-opacity));
 }
 
 .bg-red-accent-100 {
@@ -3323,6 +3341,84 @@ html {
 .chatbot-slide-out {
   animation: chatbotSlideOut .5s;
   animation-fill-mode: forwards;
+}
+
+/* Appliance transitions */
+
+.appliance-slide-out-left {
+  animation: slideLeftOut .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-in-left {
+  animation: slideLeftIn .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-out-right {
+  animation: slideRightOut .2s;
+  animation-fill-mode: forwards;
+}
+
+.appliance-slide-in-right {
+  animation: slideRightIn .2s;
+  animation-fill-mode: forwards;
+}
+
+/* Slide Left Out Transition */
+
+@keyframes slideLeftOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}
+
+/* Slide Left In Transition */
+
+@keyframes slideLeftIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide Right Out Transition */
+
+@keyframes slideRightOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+}
+
+/* Slide Right In Transition */
+
+@keyframes slideRightIn {
+  from {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Chatbot Transitions */

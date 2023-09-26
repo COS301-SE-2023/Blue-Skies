@@ -61,6 +61,20 @@
                             }
                         }
                     },
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            GridLines = new GridLines
+                            {
+                                Display = false, // Set Display to false to remove X-axis grid lines
+                            },
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
+                            }
+                        }
+                    }
                 }
             }
         };
