@@ -29,11 +29,11 @@
             @if (systems.Count == 0)
             {
                 <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
                     <span class="sr-only">Loading...</span>
                 </div>
                 <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full dark:bg-gray-700 w-60 mt-6 mx-4"></div>
+                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
                     <span class="sr-only">Loading...</span>
                 </div>
             } else {
@@ -59,7 +59,7 @@
         @if (systems.Count == 0)
         {
             <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto my-12">
-                <div class="h-9 bg-gray-200 rounded-lg dark:bg-gray-700 mt-4"></div>
+                <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
                 <span class="sr-only">Loading...</span>
             </div>
         } else {
@@ -70,8 +70,8 @@
         <div class="w-full">
             @if(tabs[0].active) {
                 <div class="fade-in-active">
-                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" />
-                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" reportAllAppliance="reportAllAppliance" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
+                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                 </div>
             }
             else if (tabs[1].active)
@@ -139,6 +139,8 @@
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.customApplianceClass customApplianceClass = new SharedUtils.customApplianceClass();
+
+    private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     BuildYourHome? buildYourHomeComponent;
     private bool logIn = false;
     private bool isAd = false;
@@ -156,7 +158,7 @@
     {
         new TabItemModel("Appliances", true),
         new TabItemModel("Finance", false),
-        new TabItemModel("Fancy", false)
+        new TabItemModel("Advanced", false)
     };
     private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
@@ -215,21 +217,73 @@
             currentLocationData = result;
         }
 
-        if (edit)
-        {
-            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
-            currentReport = rep.Value!;
-            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
-        } else {
-            currentReport.latitude = latitude!;
-            currentReport.longitude = longitude!;
-        }
-
         appliances = await applianceDataClass.GetAllAppliances();
         if (appliances.Count > 0)
         {
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
         }
+
+        if (edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            currentReport = rep.Value!;
+
+            Console.WriteLine("Editing a calculation for report id: " + currentReport.reportId);
+            allAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
+            @* Print allAppliances *@
+            Console.WriteLine(JsonSerializer.Serialize(allAppliances));
+            Dictionary<string , int> applianceCountDict = new Dictionary<string, int>();
+            foreach(ApplianceModel app in allAppliances)
+            {
+                if(app.type is not null)
+                {
+                    if(applianceCountDict.ContainsKey(app.type))
+                    {
+                        applianceCountDict[app.type] += 1;
+                    }
+                    else
+                    {
+                        applianceCountDict.Add(app.type, 1);
+                    }
+                }
+                
+            }
+
+            foreach(ApplianceModel app in appliances)
+            {
+                if(app.type is not null)
+                {
+                    if(applianceCountDict.ContainsKey(app.type))
+                    {
+                        app.quantity = applianceCountDict[app.type];
+                    }
+                }
+            }
+        } else {
+            currentReport.latitude = latitude!;
+            currentReport.longitude = longitude!;
+
+            systems = await systemDataClass.GetAllSystems();
+            if (systems.Count > 0)
+            {
+                await ProtectedSessionStore.SetAsync("systems", systems);
+            }
+            selectedSystem = 0;
+            for (int i = systems.Count - 1; i > 2; i--)
+            {
+                systems.RemoveAt(i);
+            }
+            SystemModel system = new SystemModel();
+            system.systemId = -1;
+            system.systemSize = "Custom";
+            system.numberOfPanels = -1;
+            system.numberOfBatteries = -1;
+            system.batterySize = -1;
+            system.inverterOutput = -1;
+            system.solarInput = -1;
+            systems.Add(system);
+        }
+
 
         systems = await systemDataClass.GetAllSystems();
         if (systems.Count > 0)
@@ -260,6 +314,13 @@
     {
         await ProtectedSessionStore.SetAsync("calculationName", calculationName);
         buildYourHomeComponent!.SaveCalculation();
+        ModalPopup.Dismiss();
+    }
+
+    public async void UpdateCalculation()
+    {
+        await ProtectedSessionStore.SetAsync("calculationName", calculationName);
+        await buildYourHomeComponent!.UpdateCalculation();
         ModalPopup.Dismiss();
     }
     

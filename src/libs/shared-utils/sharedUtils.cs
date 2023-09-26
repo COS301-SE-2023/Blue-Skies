@@ -725,7 +725,7 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
@@ -745,7 +745,7 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
@@ -787,22 +787,23 @@ public class otherDataClass
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
     private string mapboxAccessToken = "";
 
-    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
+    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery, CancellationToken cancellationToken)
+{
+    if (mapboxAccessToken == "")
     {
-        if (mapboxAccessToken == "")
+        await GetMapboxAccessToken();
+    }
+
+    string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+
+    string requestUrl =
+        $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
+
+    try
+    {
+        using (HttpClient httpClient = new HttpClient())
         {
-            await GetMapboxAccessToken();
-        }
-
-        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-
-        string requestUrl =
-            $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
-
-        try
-        {
-            HttpClient httpClient = new HttpClient();
-            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl, cancellationToken);
             List<LocationSuggestion> suggestions =
                 mapResponse?.Features ?? new List<LocationSuggestion>();
             if (suggestions.Count == 0)
@@ -811,13 +812,13 @@ public class otherDataClass
             }
             return suggestions;
         }
-        catch (Exception ex)
-        {
-            // Handle any errors or exceptions
-            Console.WriteLine(ex.Message);
-            return new List<LocationSuggestion>();
-        }
     }
+    catch (Exception ex)
+    {
+        Console.WriteLine(ex.Message);
+        return new List<LocationSuggestion>();
+    }
+}
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {
@@ -1058,7 +1059,7 @@ public class reportApplianceClass
             reportId = reportId,
             applianceId = appliance.applianceId,
             numberOfAppliances = appliance.quantity,
-            applianceModel = appliance.type,
+            applianceModel = appliance.name,
             powerUsage = appliance.powerUsage,
             durationUsed = appliance.durationUsed
         };
@@ -1071,7 +1072,7 @@ public class reportApplianceClass
         var response = await client.SendAsync(request);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
+            Console.WriteLine("Failed to create ReportAppliance - " + JsonSerializer.Serialize(postBody));
         }
     }
 
@@ -1122,6 +1123,30 @@ public class reportAllApplianceClass
         List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
+    }
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllApplianceByReportId(int reportId)
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/ReportAllAppliance/getByReportId/" + reportId
+        );
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {

@@ -2,8 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.tooltip {
+    position: absolute;
+    opacity: 0;
+  }
+  
+  .has-tooltip:hover .tooltip {
+    opacity: 1;
+    z-index: 50;
+  }j
+
 body {
     font-family: 'Montserrat', sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 /* Fade-In Transition */
@@ -138,8 +153,6 @@ body {
     from { opacity: 1; height: 100%;}
     to { opacity: 1; height: 0%; }
 }
-
-
 
 /* Slide Up Out Transition */
 @keyframes slideUpOut {

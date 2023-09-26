@@ -8,7 +8,6 @@ public class BusinessRequestDataRepository
         public const string SOLAR_SCORE = "solar score";
         public const string SOLAR_ARRAY = "solar array";
         public const string SATELLITE_IMAGE = "satellite image";
-        public const string ELEVATION = "elevation";
         public const string ADDRESS = "address";
         public const string SUNLIGHT_HOURS = "sunlight hours";
     }
@@ -56,8 +55,8 @@ public class BusinessRequestDataRepository
             typeOfData = data!;
             switch(data!.ToLower()){
                 case DataType.SOLAR_SCORE : 
-                    var content = await GetSolarScore(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(content);
+                    var solarScore = await GetSolarScore(latitude, longitude);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarScore));
                     break;
                 case DataType.SOLAR_ARRAY : 
                     var solarArray = await GetSolarRadiationList(latitude, longitude);
@@ -65,19 +64,15 @@ public class BusinessRequestDataRepository
                     break;
                 case DataType.SATELLITE_IMAGE : 
                     var satelliteImage = await GetSatelliteImage(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(satelliteImage);
-                    break;
-                case DataType.ELEVATION :
-                    var elevation = await locationDataClass.GetHorisonElevationData(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(elevation!);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(satelliteImage));
                     break;
                 case DataType.ADDRESS :
                     var address = getAddress();
-                    dataTypeResponse.Content = new StringContent(address);
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(address));
                     break;
                 case DataType.SUNLIGHT_HOURS :
                     var sunlightHours = GetSunlightHours(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(sunlightHours.ToString());
+                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(sunlightHours));
                     break;
                 default : 
                     dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
@@ -93,25 +88,28 @@ public class BusinessRequestDataRepository
         }
     }
 
-    private double GetSunlightHours(double latitude, double longitude)
+    private SunlightHours GetSunlightHours(double latitude, double longitude)
     {
         LocationDataModel locationData = GetLocationDataModel(latitude, longitude).Result;
-
-        return solarDataHandler.getSunlightHours(locationData!.solarPanelsData!);
+        SunlightHours sunlightHours = new SunlightHours();
+        sunlightHours.sunlight_hours = solarDataHandler.getSunlightHours(locationData!.solarPanelsData!);
+        return sunlightHours;
     }
 
-    private async Task<string> GetSatelliteImage(double latitude, double longitude)
+    private async Task<Base64Image> GetSatelliteImage(double latitude, double longitude)
     {
         LocationDataModel locationData =await  GetLocationDataModel(latitude, longitude);
-
-        return rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
+        Base64Image base64Image = new Base64Image();
+        base64Image.base64_image = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!)!;
+        return base64Image!;
     }
 
-    private async Task<string> GetSolarScore(double latitude, double longitude) 
+    private async Task<SolarScore> GetSolarScore(double latitude, double longitude) 
     {
         LocationDataModel locationData = await GetLocationDataModel(latitude, longitude);
-                   
-        return solarCalculator.getSolarScore(locationData!.solarPanelsData).ToString();
+        SolarScore solarScore = new SolarScore();
+        solarScore.solar_score = solarCalculator.getSolarScore(locationData!.solarPanelsData);  
+        return solarScore;
     }
 
     private async Task<List<DateRadiationModel>> GetSolarRadiationList(double latitude, double longitude)
@@ -122,8 +120,10 @@ public class BusinessRequestDataRepository
         return solarCalculator.getSolarRadiationList(locationDataModel);
     }
 
-    private string getAddress(){
-        return locationName;
+    private Address getAddress(){
+        Address address = new Address();
+        address.address = locationName;
+        return address;
     }
 
     private async Task<LocationDataModel> GetLocationDataModel(double latitude, double longitude)
