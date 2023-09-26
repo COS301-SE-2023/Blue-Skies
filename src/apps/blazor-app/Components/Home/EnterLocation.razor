@@ -26,7 +26,7 @@
             </Subscript>
         </Heading>
         <div class="relative">
-            <AutoComplete />
+            <AutoComplete @bind-searchQuery="@searchQuery" />
         </div>
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <div @onclick="generateLocationData">
@@ -36,7 +36,7 @@
                     </content>
                 </Button>
             </div>
-            <a href="/dashboard" @onclick="() => loadingService.ShowLoadingScreen()" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
+            <a href="/dashboard" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
                     aria-hidden="true"></span></a>
         </div>
     </div>
@@ -46,6 +46,7 @@
 @code {
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private LocationDataModel? currentLocationData;
+    public string searchQuery = "";
     public string parent = "index";
     /// <summary>
     /// Gets the parent page from the session storage.
@@ -58,96 +59,97 @@
 
     /// <summary>
     /// <list type="number">
-    ///     <item>Gets the longitude and latitude from the location suggestion.</item>
-    ///     <item>Gets the location name from the location suggestion.</item>
-    ///     <item>Checks if the location data exists in the database.</item>
-    ///     <item>If the location data does not exist:</item>
-    ///     <list type="bullet">
-    ///         <item>Gets the daylight hours for the location.</item>
-    ///         <item>Downloads the image from the Google Maps Static API.</item>
-    ///         <item>Saves the image to the local storage.</item>
-    ///         <item>Creates a new row in the database for the location data.</item>
-    ///     </list>
-    ///     <item>Saves the location data to the currentLocationData variable.</item>
-    ///     <item>Saves the currentLocationData variable to the session storage.</item>
-    ///     <item>Navigates to the solarScore page.</item>
+    /// <item>Gets the longitude and latitude from the location suggestion.</item>
+    /// <item>Gets the location name from the location suggestion.</item>
+    /// <item>Checks if the location data exists in the database.</item>
+    /// <item>If the location data does not exist:</item>
+    /// <list type="bullet">
+    /// <item>Gets the daylight hours for the location.</item>
+    /// <item>Downloads the image from the Google Maps Static API.</item>
+    /// <item>Saves the image to the local storage.</item>
+    /// <item>Creates a new row in the database for the location data.</item>
+    /// </list>
+    /// <item>Saves the location data to the currentLocationData variable.</item>
+    /// <item>Saves the currentLocationData variable to the session storage.</item>
+    /// <item>Navigates to the solarScore page.</item>
     /// </list>
     /// </summary>
 
     public async void generateLocationData()
     {
-        ShowLoadingScreen();
         currentLocationData = new LocationDataModel();
-
-        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-        customCulture.NumberFormat.NumberDecimalSeparator = ".";
-        System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
         var locationTemp = await ProtectedSessionStore.GetAsync<LocationSuggestion>("location");
         LocationSuggestion locationSuggestion = locationTemp.Value!;
-
-        List<double> cord = new List<double>();
-        if (locationSuggestion.Geometry != null)
+        await ProtectedSessionStore.DeleteAsync("location");
+        if (locationSuggestion == null || !searchQuery.Equals(locationSuggestion.Place_Name))
         {
-            cord = locationSuggestion.Geometry.Coordinates!;
+            toastService.ShowToast("Please select a location", "Please select a location from the drop down list", "error");
         }
-        double longitude = cord[0];
-        double latitude = cord[1];
-        var location = "";
-        if (locationSuggestion != null)
+        else
         {
-            location = locationSuggestion.Place_Name;
-        }
-
-        currentLocationData!.locationName = location;
-        currentLocationData.latitude = latitude;
-        currentLocationData.longitude = longitude;
-
-        byte[] imageBytes = new byte[0];
-        bool checkIfLocationDataExists = false;
-        try {
-            checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
-            if (checkIfLocationDataExists == false)
+            List<double> cord = new List<double>();
+            if (locationSuggestion.Geometry != null)
             {
-                Console.WriteLine("Location data does not exist, creating the necessary data");
-                currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
+                cord = locationSuggestion.Geometry.Coordinates!;
             }
-            else
+            double longitude = cord[0];
+            double latitude = cord[1];
+            var location = "";
+            if (locationSuggestion != null)
             {
-                Console.WriteLine("Location data exists, fetching it");
+                location = locationSuggestion.Place_Name;
             }
 
-            if(currentLocationData == null)
-            {
-                toastService.ShowToast("Could not find data for this location", "Try another location", "error");
-                HideLoadingScreen();
-                NavigationManager.NavigateTo("/");
-            } 
-            else 
-            {
-                await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
-                await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
+            currentLocationData!.locationName = location;
+            currentLocationData.latitude = latitude;
+            currentLocationData.longitude = longitude;
 
-                await ProtectedSessionStore.SetAsync("parent", "");
-                parent = "";
-                await ProtectedSessionStore.SetAsync("edit", false);
-
-                if (parent.Equals("index"))
+            byte[] imageBytes = new byte[0];
+            bool checkIfLocationDataExists = false;
+            try
+            {
+                checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
+                if (checkIfLocationDataExists == false)
                 {
+                    Console.WriteLine("Location data does not exist, creating the necessary data");
+                    currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
                     loadingService.ShowLoadingScreen();
-                    NavigationManager.NavigateTo("/solarScore");
                 }
                 else
                 {
-                    NavigationManager.NavigateTo("/solarScore", true);
-                    ShowLoadingScreen();
+                    Console.WriteLine("Location data exists, fetching it");
+                }
+
+                if (currentLocationData == null)
+                {
+                    toastService.ShowToast("Could not find data for this location", "Try another location", "error");
+                    NavigationManager.NavigateTo("/");
+                }
+                else
+                {
+                    await ProtectedSessionStore.SetAsync("latitude", currentLocationData!.latitude!);
+                    await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude!);
+
+                    await ProtectedSessionStore.SetAsync("parent", "");
+                    parent = "";
+                    await ProtectedSessionStore.SetAsync("edit", false);
+
+                    if (parent.Equals("index"))
+                    {
+                        NavigationManager.NavigateTo("/solarScore");
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/solarScore", true);
+                    }
                 }
             }
-        } catch {
-            toastService.ShowToast("Could not make connection to the database", "Try again later", "error");
-            HideLoadingScreen();
-            NavigationManager.NavigateTo("/");
+            catch
+            {
+                toastService.ShowToast("Could not make connection to the database", "Try again later", "error");
+                NavigationManager.NavigateTo("/");
+            }
         }
-        
     }
 
     /// <summary>
@@ -156,7 +158,8 @@
     /// </summary>
     private async Task SaveImageToLocalStorage(byte[] imageBytes)
     {
-        if(imageBytes.Length == 0) {
+        if (imageBytes.Length == 0)
+        {
             Console.WriteLine("Image bytes is empty");
             return;
         }
@@ -166,15 +169,5 @@
             File.Delete(imagePath);
         }
         await File.WriteAllBytesAsync(imagePath, imageBytes);
-    }
-    
-    private void ShowLoadingScreen()
-    {
-        loadingService.ShowLoadingScreen();
-    }
-
-    private void HideLoadingScreen()
-    {
-        loadingService.HideLoadingScreen();
     }
 }

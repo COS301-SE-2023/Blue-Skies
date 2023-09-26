@@ -1,9 +1,8 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
-@inject BlazorApp.Data.LoadingService loadingService
 
 
-<div class="mt-28">
+<div class="mt-28 mb-24">
     <div class="relative ">
       <Image ImageName="Banhoek-landscape.jpg" css="w-full  h-[30rem] lg:h-[50rem] object-cover -z-10" alt="background image" />
       <Image ImageName="19.svg"
@@ -33,7 +32,7 @@
         </Heading>
 
         <div class="flex space-x-3 mt-5">
-          <a href="/solarscore" @onclick="() => loadingService.ShowLoadingScreen()">
+          <a href="/solarscore" >
             <Button css="h-14" style="pill">
               <content>
                 <p class="text-sm sm:text-base">Get Started</p>
@@ -45,7 +44,6 @@
               <input type="submit"  value="Sign Up" @onclick="Register" />
             </content>
           </Button>
-
         </div>
       </Card>
     </div>
@@ -57,7 +55,6 @@
 /// </summary>
   void Register()
   {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/register");
   }
 }
