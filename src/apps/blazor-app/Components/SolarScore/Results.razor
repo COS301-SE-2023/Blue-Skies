@@ -3,10 +3,9 @@
 @using BlazorApp.Models
 @using System.Text.Json;
 @inject ProtectedSessionStorage ProtectedSessionStore
-@inject ProtectedLocalStorage ProtectedLocalStore
 @inject NavigationManager NavigationManager
+@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
-@inject BlazorApp.Data.TooltipService tooltipService
 
 
 <div class="mt-24 text-center">
@@ -15,306 +14,196 @@
             <h1 class="text-3xl">Your results in numbers</h1>
         </Header>
         <Subscript>
-            <p class="text-primary-700 mt-2">The following numbers are based on your location.</p>
+            <p class="text-primary-700">The following numbers are based on your location.</p>
         </Subscript>
     </Heading>
 </div>
-<div class="flex w-full flex-nowrap gap-4 flex-row justify-center mt-4 md:mt-20">
+<div class="flex w-full flex-wrap gap-4 flex-row justify-center mt-4 md:mt-20">
     @* Map Container *@
-    <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center">
-        <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-10" alt="Rob"/>
+    <div class="relative sm:flex-shrink-0  items-center flex flex-col justify-center">
+        <Image ImageName="Robert_Pointing_Down.png" css="absolute left-72 top-8 z-0 h-32" alt="Rob" />
         <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
-        <Button style="pill">
-            <content>
-                <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                    <p class="my-auto">More Calculations</p>
-                    <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
-                </div>
-            </content>
-        </Button>
     </div>
-    <div class="relative w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
-        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob"/>
-        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
-            <div class="has-tooltip">
-                <Tooltip pointer="20">
-                    <p>@tooltipService.GetTooltip("solarScore")</p>
-                </Tooltip>
-                <div class="my-auto w-full flex gap-4 relative">
-                    <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                        <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
-                    </div>
-                    <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
+    <div class="relative grid sm:flex-shrink-0 grid-cols-1 sm:grid-cols-2 gap-5 xl:gap-10">
+        <a href="/advanced" @onclick="() => loadingService.ShowLoadingScreen()" class=" text-right -mb-4 col-span-2 w-full text-base font-normal leading-6 text-orange-accent-500 mr-32">Advanced Calculation →</a>
+        @* Solar Score Card *@
+        <Card css="border-2 scale-90 flex xl:scale-100 border-primary-300 w-72 h-72 relative">
+            <div class="my-auto w-full">
+                <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150"/>
                 </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Solar Score</h1>
                 <div class="flex gap-1 mt-3">
                     <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                     <p class="text-5xl text-gray-400 font-bold">%</p>
                 </div>
             </div>
-            <div class="flex gap-2 justify-end absolute top-3 right-5 has-tooltip">
-                <Tooltip pointer="80">
-                    <p>@tooltipService.GetTooltip("potential savings")</p>
-                </Tooltip>
-                <div class="flex gap-3 justify-end items-end flex-col">
-                     
-                    <div class="flex gap-2">
-                        <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
-                        <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer" @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
-                    </div>
-                    <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
-                       
-                        <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
-                            <p class="text-center text-xl font-bold text-primary-100">Potential</p>
-                            <p class="text-center text-xl font-bold text-primary-200">Savings</p>
-                        </div>
-                        <div class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
-                            <p class="text-center text-xl font-bold">R </p>
-                            @{
-                                var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
-                            }
-                                <p class="text-center text-xl font-bold">@savings</p>
-                            <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
-                        </div>
-                    </div>
+        </Card>
+        @* Daylight Hours Card *@
+        <Card css="border-2 flex scale-90 xl:scale-100 border-primary-300 p-4 w-72 h-72 flex  my-auto flex-col">
+            <div class="my-auto w-full ">
+                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                    <Image ImageName="History.svg" alt="Sale" css="scale-150"/>
+                </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+                <div class="flex gap-1 mt-3">
+                    @{
+                        @* Round off to 2 decimal places *@
+                        double dlh = solarCalculator.getSunlightHours(locationData!.solarPanelsData, true);
+                    }
+                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                    <p class="text-5xl text-gray-400 font-bold">h</p>
                 </div>
             </div>
-
-            <div class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
-                @{
-                    var percentage = solarScore + "%";
-                }
-                <div style="left: @percentage" class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 "></div>
-            </div>
         </Card>
-        <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob"/>
-        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
-            <div class="my-auto w-full flex gap-4 relative">
+        @* Average Energy Production Card *@
+        <Image ImageName="Robert_T_Pose.png" css="absolute right-14 top-[340px] z-0 h-32" alt="Rob" />
+        <Card css=" border-2 scale-90 sm:col-span-2 flex xl:scale-100 border-primary-300 p-4 w-full h-full my-auto">
+            <div class="my-auto w-full relative">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150"/>
                 </div>
-                <h1  class="text-xl text-primary-800 font-semibold mt-3">Potential Solar System</h1>
-            </div>
-            <div class="flex gap-4 mt-4">
-                <div class="grid scale-90 grid-cols-2 gap-2 w-full">
-                    <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges"/>
-                    <Appliance name="TV" imageName="TV.svg" count="numTVs"/>
-                    <Appliance name="Computer" imageName="Computer.svg" count="numComputers"/>
-                    <div class="flex mx-auto" @onclick="showModalAppliancesPopup">
-                        <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add" imageName="AddSquare.svg"/>
-                    </div>
+                <h1  class="text-xl text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
+                <div class="flex gap-1 mt-3">
+                    <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                    <p class="text-5xl text-gray-400 font-bold">kwh</p>
                 </div>
-                <div class="flex flex-col justify-center w-full items-center gap-5">
-                    <div class="flex flex-col gap-1 has-tooltip">
-                        <Tooltip pointer="15">
-                            <p>@tooltipService.GetTooltip("average energy produced")</p>
-                        </Tooltip>
-                        <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
-                        <div class="flex gap-1 mt-3">
-                            @{
-                                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData.solarPanelsData) / 365, 2);
-                            }
-                            <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                            <p class="text-5xl text-gray-400 font-bold">kwh</p>
-                        </div>
+                <div class="flex absolute top-0 right-0 justify-evenly gap-4">
+                    @{
+                        var small = "";
+                        var medium = "";
+                        var large = "";
+                        if (systems!.Count > 0)
+                        {
+                            small = systems[0].inverterOutput + "kw";
+                            medium = systems[1].inverterOutput + "kw";
+                            large = systems[2].inverterOutput + "kw";
+                        }
+                    }
+                    <div onclick="@(() => SetSystemSize(0))"
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@small</p>
                     </div>
-                    <DaylightChart  hours="@dlh" daylightHours="@daylight" fullDay="true"/>
-                    <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
-                        <div class="translate-y-10 w-full">
-                            <Tooltip pointer="45">
-                                <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                            </Tooltip>
-                        </div>
-                        <div class="flex flex-row gap-1">
-                            @{
-                                if (dlh == daylight)
-                                {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
-                                }
-                                else
-                                {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                                }
-                            }      
-                            <p class="text-5xl text-gray-400 font-bold">h</p>
-                        </div>
-                        <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
+                    <div onclick="@(() => SetSystemSize(1))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@medium</p>
                     </div>
-                </div>
-                <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
-                    <div class="-mt-10 mb-2 w-full flex flex-col">
-                        <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"count="@numOfPanels" />
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit"/>
+                    <div onclick="@(() => SetSystemSize(2))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-gradient-to-bl from-primary-400 to-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@large</p>
                     </div>
-                    <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
-                        <Tooltip pointer="26">
-                            <p>@tooltipService.GetTooltip("battery utilisation")</p>
-                        </Tooltip>
-                        <div class="flex flex-col gap-2 justify-center items-center w-full">
-                            <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
-                                @{
-                                    var percentage = chargingLimitPercentage + "%";
-                                }
-                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
-                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
-                                <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
-                            </div>
-                            <p class="text-center">Battery Utilization</p>
-                        </div>
-                        <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries" count="@numOfBatteries" />
-                    </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" @bind-value="@numOfBatteries" @oninput="SetRunningHours"/>
                 </div>
             </div>
         </Card>
+        @* System used Card *@
+        @* <Card css="border-2 scale-90 flex xl:scale-100  border-primary-300 w-72 h-72">
+            <div class="my-auto flex flex-col gap-4 w-full ">
+                <h1 class="text-xl text-primary-800 font-semibold mt-3">Solar System Used for Calculations</h1>
+                <div class="flex justify-evenly gap-4">
+                    @{
+                        var small = "";
+                        var medium = "";
+                        var large = "";
+                        if (systems!.Count > 0)
+                        {
+                            small = systems[0].inverterOutput + "kw";
+                            medium = systems[1].inverterOutput + "kw";
+                            large = systems[2].inverterOutput + "kw";
+                        }
+                    }
+                    <div onclick="@(() => SetSystemSize(0))"
+                        class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@small</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(1))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@medium</p>
+                    </div>
+                    <div onclick="@(() => SetSystemSize(2))"
+                        class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-xl justify-center items-center w-12 h-12">
+                        <p class="text-sm font-semibold">@large</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 mt-3">
+                    @{
+                        var selectedPanels = 0;
+                        if (systems.Count > 0)
+                        {
+                            selectedPanels = systems[selectedSystem].numberOfPanels;
+                        }
+                    }
+                    <p class="text-5xl text-pkrimary-900 font-semibold">@selectedPanels</p>
+                    <p class="text-4xl text-gray-400 translate-y-1 font-semibold">panels</p>
+                </div>
+            </div>
+        </Card> *@
     </div>
 </div>
-<ModalPopup @ref="ModalPopupLogIn" Title="Log in to access this feature">
-    <p class="max-w-md">To provide you with a personalized experience and save your input data for enhanced calculations, 
-        please log in to our website. Your login helps us tailor our services to your specific needs.</p>
-    <div class="flex flex-row gap-4 justify-center">
-        <div @onclick="NavigateToLogin">
-            <Button style="pill">
-                <content>
-                    Log in
-                </content>
-            </Button>
-        </div>
-        <div @onclick="ModalPopupLogIn.Dismiss">
-            <Button style="outline">
-                <content>Cancel</content>
-            </Button>
-        </div>
-    </div>
-</ModalPopup>
-<ModalPopup @ref="ModalPopupAppliances" Title="Continue with adding appliances?">
-    <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location by continuing. 
-        Do you want to continue?
-    </p>
-    <div class="flex flex-row gap-4 justify-center">
-        <div @onclick="NavigateToAdnavced">
-            <Button style="pill">
-                <content>
-                    Continue
-                </content>
-            </Button>
-        </div>
-        <div @onclick="ModalPopupAppliances.Dismiss">
-            <Button style="outline">
-                <content>Cancel</content>
-            </Button>
-        </div>
-    </div>
-</ModalPopup>
+
 
 @code {
-    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
     public LocationDataModel? locationData  { get; set; } = null;
-    ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
-    ModalPopup ModalPopupAppliances { get; set; } = new ModalPopup();
-    private int solarScore = -1;
+    private int solarScore = 0;
+    public List<SystemModel> systems = new List<SystemModel>();
+    public int selectedSystem = 2;
     public double avgEnergyProduction = 0.0;
     public bool isLoaded = false;
     public string? satteliteImage;
-    public int numOfPanels = 8;
-    public int numOfBatteries = 3;
-    public double appliancePowerUsage = 0.0;
-    public int numFridges = 2;
-    public int numTVs = 2;
-    public int numComputers = 3;
-    float dlh = 0f;
-    private int daylight = 24;
-    private double chargingLimit = 0.0;
-    private double chargingLimitPercentage = 50.0;
 
     /// <summary>
     /// This function is called when the page is loaded and it gets the data from the session storage and the API
     /// </summary>
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {   
+        loadingService.ShowLoadingScreen();
         if(locationData == null) 
         {
             toastService.ShowToast("Solar Score not Created", "You must first create a solar score", "error");
             NavigationManager.NavigateTo("/");
+            return;
         }
 
-        avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365, 2);
-        SetGraphicValues();
-    }
+        System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)
+        System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+        customCulture.NumberFormat.NumberDecimalSeparator = ".";
+        var selectedSys = await ProtectedSessionStore.GetAsync<int>("selectedSystem");
+        selectedSystem = selectedSys.Value;
 
-    protected override void OnParametersSet(){
-        satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
+        satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
         solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
+
+        systems = await systemClass.GetAllSystems();
+        if (systems!.Count > 0)
+        {
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, locationData.solarPanelsData) / 365, 2);
+        }
+        else
+        {
+            Console.WriteLine("Error currentReport is null or no systems found in results");
+        }
+        isLoaded = true;
+        loadingService.HideLoadingScreen();
     }
 
-    private void SetChargingLimit(ChangeEventArgs? e = null){
-        if (e != null)
-        {
-            var val = e.Value!.ToString();
-            numOfPanels =  int.Parse(val!);
+    /// <summary>
+    /// <para>This function is called when the user selects a system size and it updates the selected system and the average energy production</para>
+    /// <paramref name="selection"/> The index of the selected system.
+    /// </summary>
+    private void SetSystemSize(int selection)
+    {
+        Console.WriteLine("Selected System number of panels: " + systems[selection].numberOfPanels);
+        if(systems != null && locationData != null) {
+            selectedSystem = selection;
+            ProtectedSessionStore.SetAsync("selectedSystem", selection);
+            if (systems!.Count > 0)
+            {
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selection].numberOfPanels, locationData.solarPanelsData) / 365, 2);
+            }
         }
-        SetGraphicValues(); 
-
-    }
-    private void SetRunningHours(ChangeEventArgs? e = null){
-        if (e != null)
-        {
-            var val = e.Value!.ToString();
-            numOfBatteries =  int.Parse(val!);
-        }
-        SetGraphicValues();
-    }
-
-    private void SetGraphicValues(){
-        appliancePowerUsage = ((numFridges * 250) + (numTVs * 70) + (numComputers * 400)) / 1000.0;
-        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
-        var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
-        usableHours = Math.Round(usableHours, 2);
-        chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        if (chargingLimit > numOfBatteries * 10)
-        {
-            chargingLimit = numOfBatteries * 10;
-            chargingLimitPercentage = 100;
-        } else
-        {
-            chargingLimitPercentage = (chargingLimit / (numOfBatteries * 10)) * 100;
-        }
-        chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
-
-        double runningHours = chargingLimit / appliancePowerUsage;
-        double runningHoursPercentage = (runningHours / daylight) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
-        dlh = (float) Math.Round(daylight * (runningHoursPercentage / 100), 2);
-    }
-
-    private async void ShowModalCalculation(){
-        var logIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
-        bool isLoggedIn = logIn.Value;
-        if (isLoggedIn)
-        {
-            NavigationManager.NavigateTo("/advanced");
-        }
-        else{
-            ModalPopupLogIn.Show();
-        }
-    }
-
-    private void showModalAppliancesPopup(){
-        ModalPopupAppliances.Show();
-    }
-    private void NavigateToLogin(){
-        ModalPopupLogIn.Dismiss();
-        NavigationManager.NavigateTo("/Login");
-    }
-    private void NavigateToAdnavced(){
-        ModalPopupAppliances.Dismiss();
-        NavigationManager.NavigateTo("/advanced");
     }
 }

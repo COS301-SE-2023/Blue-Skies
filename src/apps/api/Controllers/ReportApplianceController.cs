@@ -27,8 +27,8 @@ public class ReportApplianceController : ControllerBase
                 report.applianceId,
                 report.numberOfAppliances,
                 report.applianceModel!,
-                report.powerUsage,
-                report.durationUsed
+                report.powerUsage!.Value,
+                report.durationUsed!.Value
             );
             return Ok(data);
         }

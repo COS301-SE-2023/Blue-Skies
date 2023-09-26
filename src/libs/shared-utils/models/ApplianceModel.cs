@@ -5,7 +5,7 @@ public class ApplianceModel
     public int powerUsage { get; set; }
     public bool? recordState { get; set; }
     public int quantity { get; set; } = 0;
-    public double durationUsed { get; set; }
+    public float durationUsed { get; set; }
     public string? fade { get; set; } = "fade-in-enter-active";
     public string? name { get; set; } = "Default";
 }

@@ -6,8 +6,8 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject BlazorApp.Data.ReportManager reportManager
+@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.TutorialService tutorialService
-@inject BlazorApp.Data.ChatBotService chatBotService
 
 @{
   @* Get URI of current page *@
@@ -32,7 +32,7 @@
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       @* BlueSkies Logo *@
-      <a @onclick='(() => forceNavigate("/"))' class="-m-1.5 p-1.5">
+      <a @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
         <span class="sr-only">BLueSkies</span>
         <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
       </a>
@@ -50,19 +50,19 @@
     </div>
     @* Desktop Menu Links *@
     <div class="hidden lg:flex lg:gap-x-12">
-      <a href="" @onclick='(() => forceNavigate("/"))'
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'
         class="text-sm font-semibold leading-6 text-gray-900">Home</a>
-      <a href="" @onclick='(() => forceNavigate("/solarScore"))'
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");})'
         class="text-sm font-semibold leading-6 text-gray-900">Solar Score</a>
-      <a href="" @onclick='(() => forceNavigate("/advanced"))'
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");})'
         class="text-sm font-semibold leading-6 text-gray-900">Calculations</a>
-      <a href="" @onclick='(() => forceNavigate("/getintouch"))'
+      <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/getintouch");})'
         class="text-sm font-semibold leading-6 text-gray-900">Get In Touch</a>
     </div>
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="relative group">
-        <div @onclick="ShowChatBot" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
+        <div @onclick="ShowTutorial" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
           <Image ImageName="Robert_Behind_Component.png"
             css="absolute z-10 right-3 h-8 group-hover:-translate-y-[36px] transition-all duration-[400ms]" alt="Rob" />
           <Button style="pill" css="z-20">
@@ -83,7 +83,7 @@
           </div>
         </a>
         @* Log In and Dashboard Button *@
-        <a href="" @onclick='(() => forceNavigate(loggedIn))'>
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate(loggedIn);})'>
           <div
             class="z-40 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center @width">
             <Image ImageName="User Circle.svg" alt="User Circle" css="w-10 h-10" />
@@ -101,7 +101,7 @@
           </div>
         </a>
         @* BlueSkies Floating Logo *@
-        <a href="" @onclick='(() => forceNavigate("/"))'>
+        <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})'>
           <div
             class="shadow w-14 h-14 hover:w-44 group transition-all duration-300 overflow-hidden  bg-white rounded-full flex gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center  @(isScrollingDown ? "opacity-100" : "opacity-0") ">
             <Image ImageName="Logo-small.svg" alt="User Circle" css="w-10 h-10" />
@@ -118,8 +118,9 @@
         <div
           class="fixed toast-slide-in top-5 left-3 flex flex-col-reverse justify-start items-start gap-4 z-30 transition-all duration-300 delay-300 @(isScrollingDown? "translate-y-0" : "translate-y-24")">
           @* Delete Button *@
+          <a href="">
             <div @onclick="Delete"
-              class="cursor-pointer flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
+              class="flex shadow group w-14 h-14 hover:w-36 transition-all duration-300 overflow-hidden bg-white rounded-full gap-2 border delay-[250ms] hover:delay-0 border-primary-500 p-2 items-center ">
               <div class="scale-75">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path class="group-hover:fill-red-accent-500 transition-colors duration-300"
@@ -140,8 +141,12 @@
               </div>
               <p class="">Delete</p>
             </div>
+          </a>
           @* Edit Button *@
-          <a onclick="@(() => Edit())" href="">
+          <a onclick="@(() => {
+             Edit();
+             loadingService.ShowLoadingScreen();
+             })" href="">
             <div
               class="shadow group w-14 h-14 hover:w-32 group transition-all duration-300 overflow-hidden bg-white rounded-full flex gap-2 border border-primary-500 p-2 items-center ">
               <div class="scale-75">
@@ -172,7 +177,7 @@
         class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
         <div class="flex px-2 flex-col items-center justify-between w-full ">
           <div class="flex justify-between w-full ">
-            <a href="" @onclick='(() => forceNavigate("/"))' class="-m-1.5 p-1.5">
+            <a href="" @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");})' class="-m-1.5 p-1.5">
               <span class="sr-only">BlueSkies</span>
               <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
             </a>
@@ -188,12 +193,12 @@
           @* Mobile Menu Links *@
           <div class="flex flex-col w-full mt-5">
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/");ToggleNavMenu();})'>Home</a>
+            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/");ToggleNavMenu();})'>Home</a>
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/solarScore");ToggleNavMenu();})'>Solar
+            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/solarScore");ToggleNavMenu();})'>Solar
               Score</a>
             <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
+            @onclick='(() => {loadingService.ShowLoadingScreen(); forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
             @if (loggedIn == true)
             {
               <p @onclick="ToggleNavMenu"
@@ -237,11 +242,6 @@
     tutorialService.ToggleTutorial("Intro");
     tutorialService.ShowTutorial();
   }
-
-  private void ShowChatBot()
-  {
-    chatBotService.ShowChatBot();
-  }
   private void ToggleNavMenu()
   {
     collapseNavMenu = !collapseNavMenu;
@@ -252,15 +252,15 @@
     navigationManager.NavigateTo(url, true);
   }
 
-  private async void forceNavigate(bool loggedIn)
+  private void forceNavigate(bool loggedIn)
   {
+    loadingService.ShowLoadingScreen();
     if (loggedIn)
     {
       navigationManager.NavigateTo("/dashboard", true);
     }
     else
     {
-      await ProtectedLocalStore.SetAsync("redirect", "dashboard");
       navigationManager.NavigateTo("/login", true);
     }
   }
@@ -314,7 +314,7 @@
   {
     await ProtectedSessionStore.DeleteAsync("reportAppliances");
     await ProtectedSessionStore.DeleteAsync("selectedReport");
-    await ProtectedLocalStore.DeleteAsync("redirect");
+    await ProtectedSessionStore.DeleteAsync("redirect");
     await ProtectedLocalStore.DeleteAsync("isAdmin");
     await ProtectedLocalStore.DeleteAsync("userEmail");
     await ProtectedLocalStore.DeleteAsync("userId");
@@ -336,6 +336,7 @@
 
   private void Edit()
   {
+    loadingService.ShowLoadingScreen();
     reportManager.EditReport();
   }
 

@@ -1,38 +1,38 @@
 @using BlazorApp.FancyData
 @namespace BlazorApp.EnviromentImpact
 
-<Card css="w-full gap-10 flex flex-col">
-    <h1 class="text-primary-950 font-semibold text-start text-xl">Enviroment Impact Over 10 Years</h1>
-    <div class="w-full grid grid-cols-2 gap-2">
+<div>
+    <p class="text-primary-950 font-semibold text-center text-xl">Enviroment Impact Over 10 Years</p>
+    <div class="mx-auto space-y-4 w-fit">
 
-        <div class="flex w-full gap-4">
-            <Image ImageName="Bolt-Circle.svg" css="w-8 h-8" alt="Bolt"/>
-            <p class="my-auto">@totalPowerSaved kW</p>
-        </div>
-
-        <div class="flex w-full gap-4">
-            <Image ImageName="CO2.svg" css="w-8 h-8" alt="CO2"/>
-            <p class="my-auto">@totalCO2Saved kg</p>
-        </div>
-
-
-        <div class="flex w-full gap-4">
-            <Image ImageName="Waterdrops.svg" css="w-8 h-8" alt="Waterdrops"/>
-            <p class="my-auto">@totalWaterSaved L</p>
-        </div>
-
-        <div class="flex w-full gap-4">
-            <Image ImageName="Coal.svg" css="w-8 h-8" alt="Coal"/>
-            <p class="my-auto">@totalCoalNotBurnt kg</p>
-        </div>
-        
-        <div class="flex w-full gap-4">
-            <Image ImageName="Tree.svg" css="w-8 h-8" alt="Tree"/>
-            <p class="my-auto">@totalTreesPlanted</p>
-        </div>
-
+    
+    <IconToolTip imageName="Bolt-Circle.svg" tooltipMessage="Total power saved">
+        <content>
+            <p>@totalPowerSaved kW</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="CO2.svg" tooltipMessage="Total CO2 saved">
+        <content>
+            <p>@totalCO2Saved kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Waterdrops.svg" tooltipMessage="Total water saved">
+        <content>
+            <p>@totalWaterSaved L</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Coal.svg" tooltipMessage="Total coal not burnt">
+        <content>
+            <p>@totalCoalNotBurnt kg</p>
+        </content>
+    </IconToolTip>
+    <IconToolTip imageName="Tree.svg" tooltipMessage="Total trees planted">
+        <content>
+            <p>@totalTreesPlanted</p>
+        </content>
+    </IconToolTip>
     </div>
-</Card>
+</div>
 
 @code {
 

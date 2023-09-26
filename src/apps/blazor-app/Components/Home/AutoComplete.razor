@@ -67,17 +67,12 @@
 @code {
     private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    [Parameter]
-    public string searchQuery { get; set; } = "";
-    [Parameter]
-    public EventCallback<string> SearchQueryChanged { get; set; }
+    private string searchQuery = "";
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
-    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private async void OnSuggestionClick(LocationSuggestion suggestion)
     {
         searchQuery = suggestion.Place_Name;
-        await SearchQueryChanged.InvokeAsync(searchQuery);
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
         await ProtectedSessionStorage.SetAsync("location", suggestion);
     }
@@ -95,25 +90,11 @@
 
     private async Task OnSearchInput(ChangeEventArgs e)
     {
-        cancellationTokenSource.Cancel();
-        
-        cancellationTokenSource = new CancellationTokenSource();
-
-        if (e.Value != null && e.Value.ToString() != "")
+        if(e.Value != null && e.Value.ToString() != "")
         {
             searchQuery = e.Value.ToString()!;
-            await SearchQueryChanged.InvokeAsync(searchQuery);
-            try
-            {
-                suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery), cancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                // Handle cancellation if needed
-            }
-        }
-        else
-        {
+            suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery));
+        } else {
             suggestions = new List<LocationSuggestion>();
         }
     }

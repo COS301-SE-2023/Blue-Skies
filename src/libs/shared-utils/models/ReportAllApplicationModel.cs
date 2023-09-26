@@ -6,9 +6,9 @@ public class ReportAllApplianceModel
     public string? type { get; set; }
 
     public string? applianceModel { get; set; }
-    public int powerUsage { get; set; }
+    public int? powerUsage { get; set; }
     // durationUsed
-    public float durationUsed { get; set; }
+    public float? durationUsed { get; set; }
     // defaultPowerUsage
     public int defaultPowerUsage { get; set; }
     // defaultDurationUsed

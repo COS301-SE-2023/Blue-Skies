@@ -3,45 +3,27 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using System.Text.Json
 @using BlazorApp.Models
+@inject BlazorApp.Data.LoadingService loadingService
 @inject IJSRuntime JSRuntime
 
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
-    @if (userReports == null)
-    {
-        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
-            <div class="h-3 bg-gray-200 rounded-full w-40"></div>
-            <div class="h-8 bg-gray-200 rounded-full w-64 mt-2"></div>
-            <span class="sr-only">Loading...</span>
+    <div class="flex flex-col justify-center items-center ">
+        <div class="w-60  my-auto">
+            <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
+            <select @onchange="OnSelectedReportChanged" id="selectReport"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                @for (int i = 0; i < userReports!.Count; i++)
+                {
+                    <option value="@i">@userReports[i].reportName</option>
+                }
+                @if (userReports.Count == 0)
+                {
+                    <option value="0">No reports to select</option>
+                }
+            </select> 
         </div>
-        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
-            <div class="h-6 bg-gray-200 rounded-full w-32"></div>
-            <div class="h-8 bg-gray-200 rounded-full w-60 mt-2"></div>
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
-            <div class="h-12 bg-gray-200 rounded-full w-52 mt-2"></div>
-            <span class="sr-only">Loading...</span>
-        </div>
-        
-    } else {
-        <div class="flex flex-col justify-center items-center ">
-            <div class="w-60 my-auto">
-                <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-                <select @onchange="OnSelectedReportChanged" id="selectReport"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                    @for (int i = 0; i < userReports!.Count; i++)
-                    {
-                        <option value="@i">@userReports[i].reportName</option>
-                    }
-                    @if (userReports.Count == 0)
-                    {
-                        <option value="0">No reports to select</option>
-                    }
-                </select> 
-            </div>
-        </div>
+    </div>
     <Heading>
-        
         <Superscript>Date Saved</Superscript>
         <Header>
             @{
@@ -50,31 +32,16 @@
             <h1 class="text-lg">@date</h1>
         </Header>
     </Heading>
-    <div @onclick="GenerateReport">
-        <Button style="pill" css="h-14 max-w-sm">
-            <content>
-                <a class="text-sm font-semibold hover:text-white">Generate Report</a>
-            </content>
-        </Button>
-    </div>
-    }
+    <Button style="pill" css="h-14 max-w-sm">
+        <content>
+            <a @onclick="GenerateReport" class="text-sm font-semibold hover:text-white">Generate Report</a>
+        </content>
+    </Button>
 </Card>
-
 @if (isReportGenerated)
 {
-    if(pdfUrl != "")
-    {   
-        <iframe src="@pdfUrl" class="w-4/5" height="500">
-        </iframe>
-    }else
-    {
-        <div class="flex items-center animate-pulse justify-center w-4/5 h-screen bg-gray-300 rounded">
-            <svg class="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
-                <path d="M14.066 0H7v5a2 2 0 0 1-2 2H0v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 16 18V2a1.97 1.97 0 0 0-1.934-2ZM10.5 6a1.5 1.5 0 1 1 0 2.999A1.5 1.5 0 0 1 10.5 6Zm2.221 10.515a1 1 0 0 1-.858.485h-8a1 1 0 0 1-.9-1.43L5.6 10.039a.978.978 0 0 1 .936-.57 1 1 0 0 1 .9.632l1.181 2.981.541-1a.945.945 0 0 1 .883-.522 1 1 0 0 1 .879.529l1.832 3.438a1 1 0 0 1-.031.988Z"/>
-                <path d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z"/>
-            </svg>
-        </div>
-    }
+    <iframe src="@pdfUrl" width="800" height="500">
+    </iframe>
 }
 
 @code {
@@ -89,13 +56,9 @@
     [Parameter]
     public DateTime? dateCreated { get; set; }
     [Parameter]
-    public EventCallback switchReport { get; set; }
+    public EventCallback updateLocation { get; set; }
     [Parameter]
     public EventCallback systemChanged { get; set; }
-    [Parameter]
-    public EventCallback<bool> isGenerateReportChanged { get; set; }
-    [Parameter]
-    public bool isGenerateReport { get; set; } =  false;
     private bool isReportGenerated = false;
     private  string pdfUrl = "";
     private int userId = 0;
@@ -103,7 +66,7 @@
     {
         selectedReport = Convert.ToInt32(e.Value);
         await selectedReportChanged.InvokeAsync(selectedReport);
-        await switchReport.InvokeAsync();
+        await updateLocation.InvokeAsync();
         return;
     }
 
@@ -117,31 +80,40 @@
 
         if (userReports!.Count > 0)
         {
-            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectReport').value = " + (userReports.Count - 1) + ";");
+            if (createdReport != 0)
+            {
+                setSelectedReport(createdReport);
+            }
         }
 
          var userIdTemp = await ProtectedLocalStore.GetAsync<int>("userId");
         userId = userIdTemp.Value;
     }
 
+    private async void setSelectedReport(int reportId)
+    {
+        for (int i = 0; i < userReports!.Count; i++)
+        {
+            if (userReports[i].reportId == reportId)
+            {
+                selectedReport = i;
+                await ProtectedSessionStore.SetAsync("currentReport", userReports![selectedReport]);
+                await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectReport').value = " + selectedReport + ";");
+                await selectedReportChanged.InvokeAsync(selectedReport);
+            }
+        }
+        await ProtectedSessionStore.DeleteAsync("createdReport");
+    }
+
     private async void GenerateReport()
     {
-        isGenerateReport = true;
-        await isGenerateReportChanged.InvokeAsync(isGenerateReport);
-        isReportGenerated = true;
-        StateHasChanged();
+        //await JSRuntime.InvokeVoidAsync("GenerateReport");
+        loadingService.ShowLoadingScreen();
         Console.WriteLine("Generating report");
         var data = Convert.ToBase64String(await reportClass.GenerateReport(userId, userReports![selectedReport].reportId));
         pdfUrl = $"data:application/pdf;base64,{data}";
-        StateHasChanged();
-    }
-
-    private async void CancelGenerateReport()
-    {
-        isGenerateReport = false;
-        await isGenerateReportChanged.InvokeAsync(isGenerateReport);
-        isReportGenerated = false;
-        pdfUrl = "";
+        isReportGenerated = true;
+        loadingService.HideLoadingScreen();
         StateHasChanged();
     }
 }

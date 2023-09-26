@@ -2,23 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-
-.tooltip {
-    position: absolute;
-    opacity: 0;
-  }
-  
-  .has-tooltip:hover .tooltip {
-    opacity: 1;
-    z-index: 50;
-  }j
-
 body {
     font-family: 'Montserrat', sans-serif;
-}
-
-html {
-    scroll-behavior: smooth;
 }
 
 /* Fade-In Transition */
@@ -122,28 +107,6 @@ html {
     animation-fill-mode: forwards;
 }
 
-.chatbot-slide-in {
-    animation: chatbotSlideIn .5s;
-    animation-fill-mode: forwards;
-}
-
-.chatbot-slide-out {
-    animation: chatbotSlideOut .5s;
-    animation-fill-mode: forwards;
-}
-
-/* Chatbot Transitions */
-@keyframes chatbotSlideIn {
-    from { height: 0%; width: 0%; opacity: 0;}
-    to { height: 75%; width: 100%; opacity: 1;  }
-}
-
-@keyframes chatbotSlideOut {
-    from { height: 75%; width: 100%; opacity: 1; }
-    to { height: 0%; width: 0%; opacity: 0; }
-}
-
-/* Wipe transitions */
 @keyframes wipeDown {
     from { opacity: 1; height: 0%;}
     to { opacity: 1; height: 100%;}
@@ -153,6 +116,8 @@ html {
     from { opacity: 1; height: 100%;}
     to { opacity: 1; height: 0%; }
 }
+
+
 
 /* Slide Up Out Transition */
 @keyframes slideUpOut {

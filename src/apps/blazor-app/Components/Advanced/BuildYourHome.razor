@@ -6,40 +6,96 @@
 @inject NavigationManager NavigationManager
 @using System.Text.Json
 @inject IJSRuntime JSRuntime
+@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
-@inject BlazorApp.Data.TooltipService tooltipService
 
 
-<div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
+<div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
+    <div class=" flex items-center justify-center lg:w-6/12 gap-4">
+        <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
+    </div>
     <div class="w-full flex flex-col justify-center items-center ">
         @* Home Template Dropdown *@
-        <div class="w-60 text-center my-auto translate-y-10">
-            @if (systems.Count == 0)
-            {
-                <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-3 bg-gray-200 rounded-full w-[70px] mb-2.5 mx-auto"></div>
-                    <div class="h-8 bg-gray-200 rounded-full w-[240px] p-2.5"></div>
-                    <span class="sr-only">Loading...</span>
+        <div class="w-60  my-auto">
+            <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
+            <select @onchange="ApplyTemplate" id="selectHome"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                <option disabled selected value="1">Select a template</option>
+                <option value="2">2 Bedroom House</option>
+                <option value="3">3 Bedroom House</option>
+                <option value="4">4+ Bedroom House</option>
+            </select>
+        </div>
+    </div>
+    @* Select System Size *@
+    <div class="lg:w-6/12 px-4 z-20 flex flex-col justify-center items-center gap-4 my-auto">
+        <div class="text-center mt-2 space-y-5 my-auto ">
+            <p>System Size</p>
+            <div class="flex space-x-9">
+                @{
+                    var small = systems[0].inverterOutput + "kw";
+                    var medium = systems[1].inverterOutput + "kw";
+                    var large = systems[2].inverterOutput + "kw";
+                }
+                <div onclick="@(() => SetSystemSize(0))"
+                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class=" font-semibold">@small</p>
                 </div>
-            } else {
-                <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
-                <select @onchange="ApplyTemplate" id="selectHome"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
-                    <option disabled selected value="1">Select a template</option>
-                    <option value="2">2 Bedroom House</option>
-                    <option value="3">3 Bedroom House</option>
-                    <option value="4">4+ Bedroom House</option>
-                </select>
-            }
+                <div onclick="@(() => SetSystemSize(1))"
+                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">@medium</p>
+                </div>
+                <div onclick="@(() => SetSystemSize(2))"
+                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                    <p class="font-semibold">@large</p>
+                </div>
+            </div>
+            <div class="flex justify-center h-24">
+                @if (showCustomSystem)
+                {
+                    if (displayCreatedCustomSystem)
+                    {
+                        var customSize = systems[3].inverterOutput + "kw";
+                        <div @onclick="CreateCustomSystem"
+                            class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                            <p class="font-semibold">@customSize</p>
+                        </div>
+                    }
+                    else
+                    {
+                    <div>
+                        <div class="gap-2 px-6">
+                            <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                        </div>
+                        <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                            <Button style="pill" >
+                                <content>
+                                    <p  class="font-semibold">Create</p>
+                                </content>
+                            </Button>
+                        </div>
+                    </div>
+                    }
+                }
+                else
+                {
+                    <div @onclick="CustomSystemSelected">
+                        <Button style="pill" >
+                            <content>
+                                <p  class="font-semibold">Custom</p>
+                            </content>
+                        </Button>
+                    </div>
+                }
+                </div>
         </div>
     </div>
 </div>
 @* Add Appliances *@
-<div class="hidden lg:flex w-full h-full px-4 mb-20">
+<div class="hidden lg:flex w-full h-full -mt-20 px-4">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
-        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-[420px]">
-            <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
+        <div class="flex flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8">
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
                 <div class="group">
@@ -50,50 +106,35 @@
                     </div>
                 </div>
             </div>
-                @if (appliances != null)
+            @* Tabs to add or remove *@
+            <div class="flex flex-col gap-2 justify-center items-center w-full  my-7">
+                @* <Tabs @bind-Items="categories"></Tabs> *@
+                <Tabs @bind-Items="tabs"></Tabs>
+            </div>
+            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+                @if (tabs[0].active)
                 {
-                        <div class="flex">
-                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
-                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
-                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
-                            </div>
-                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px]">
-                                @for (int i = 0; i < 8; i++)
-                                {
-                                    <div>
-                                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliances[i + appliancesPage * 8].type + ".svg")" name="@appliances[i + appliancesPage * 8].type" count="@appliances[i + appliancesPage * 8].quantity" />
-                                    </div>
-                                }
-                            </div>
-                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncreamentAppliancePage">
-                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
-                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
-                            </div>
+                    @foreach (var appliance in appliances)
+                    {
+                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                         </div>
+                    }
                 }
                 else
                 {
-            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
-
-                    @for (int i = 0; i < 8; i++)
+                    @foreach (var appliance in appliances)
                     {
-                        <div class="justify-center">
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
-                                <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                </svg>
-                            </div>
-                            <div role="status" class="max-w-sm animate-pulse mt-3">
-                                <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                                <span class="sr-only">Loading...</span>
-                            </div>
+                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                         </div>
                     }
-            </div>
                 }
+            </div>
         </div>
     </div>
-    <div class="w-full flex flex-col justify-center items-center pl-64">
+    <div class="w-full pl-32 flex flex-col justify-center items-center">
         @* Home images *@
         <div class="flex pjustify-center items-center h-full">
             @switch (selectedSystem)
@@ -131,257 +172,153 @@
             <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full" />
         </div>
     </div>
-    <div class="w-6/12 px-1 flex flex-col justify-center items-center gap-4 -mt-4">
-    @* Select System Size *@
-        <div class="text-center mt-2 space-y-5">
-            <h1 class="text-blue-950 translate-y-8 font-semibold text-center text-3xl mb-5 ">Solar System</h1>
-            <div class="flex gap-3 w-full relative justify-center">
-                <h1 class="text-base font-medium text-center mb-2  text-primary-900">Inverter size</h1>
-                <div class="group">
-                    <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                    <div
-                        class=" transform -scale-x-100 absolute hidden fade-in-active w-full -top-[70px] -translate-x-64 max-w-md group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900 transform -scale-x-100">Your inverter determines how many appliances you can run at once</p>
-                    </div>
-                </div>
-            </div>
-            @if (systems.Count > 2)
-            {  
-                <div class="flex space-x-9">
-                    @{
-                        var small = systems[0].inverterOutput + "kw";
-                        var medium = systems[1].inverterOutput + "kw";
-                        var large = systems[2].inverterOutput + "kw";
-                    }
-                                <div onclick="@(() => SetSystemSize(0))"
-                                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class=" font-semibold">@small</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(1))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@medium</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(2))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@large</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-center h-24">
-                    @if (showCustomSystem)
-                    {
-                        if (displayCreatedCustomSystem)
-                        {
-                            var customSize = systems[3].inverterOutput + "kw";
-                                        <div @onclick="CreateCustomSystem"
-                                            class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
-                                            <p class="font-semibold">@customSize</p>
-                                        </div>
-                        }
-                        else
-                        {
-                                        <div>
-                                            <div class="gap-2 px-6">
-                                                <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
-                                            </div>
-                                            <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
-                                                <Button style="pill" >
-                                                    <content>
-                                                        <p  class="font-semibold">Create</p>
-                                                    </content>
-                                                </Button>
-                                            </div>
-                                        </div>
-                        }
-                    }
-                    else
-                    {
-                                <div @onclick="CustomSystemSelected">
-                                    <Button style="pill" >
-                                        <content>
-                                            <p  class="font-semibold">Custom</p>
-                                        </content>
-                                    </Button>
-                                </div>
-                    }
-                        </div>
-            }
-            else
-            {
-                    <div class="flex space-x-9">
-                        <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                        <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex justify-center h-24">
-                        <div role="status" class="max-w-sm animate-pulse">
-                            <div class="h-8 bg-gray-200 rounded-full w-[105px] mb-2.5"></div>
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-            }
-
-        </div>
     @* System details *@
-        <div class="flex justify-between gap-4 scale-75">
-            @if (systems.Count > 0)
+    <div class="w-6/12 px-1 -mt-40 flex flex-col justify-center items-center gap-4">
+        <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
+        <div class="flex justify-between gap-4 scale-75 mt-4 mb-16">
+            @if (showCustomSystem)
             {
-                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
-                    <div class="mb-2 w-full flex flex-col">
-                        <div @onclick='@(() => CustomSystemModal("Panels"))'>
-                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
-                        </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
-                    </div>
-                    <div class="flex gap-2 pr-2 justify-start items-start">
-                        <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
-                            <Tooltip pointer="50">
-                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
-                            </Tooltip>
-                            <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
-                                @{
-                                    var percentage = chargingLimitPercentage + "%";
-                                }
-                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
-                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
-                                <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
-                            </div>
-                            <p class="text-center">Battery Utilization</p>
-                        </div>
-                        <div @onclick='@(() => CustomSystemModal("Batteries"))'>
-                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
-                        </div>
-                    </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="SetRunningHours"/>
+                <div @onclick='@(() => CustomSystemModal("Panels"))'>
+                    <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                        count=@systems[3].numberOfPanels />
+                </div>
+                <div @onclick='@(() => CustomSystemModal("Batteries"))'>
+                    <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                        count=@systems[3].numberOfBatteries />
                 </div>
             }
             else
             {
-                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
-                        <div class="mb-2 w-full flex flex-col">
-                            <div class="justify-center">
-                                <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center mt-3">
-                                    <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                    </svg>
-                                </div>
-                                <div role="status" class="max-w-sm animate-pulse mt-3">
-                                    <div class="h-3 bg-gray-200 rounded-full w-[120px] mb-2 mx-auto"></div>
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mb-2.5 mx-auto animate-pulse mt-2"></div>
-                        </div>
-                        <div class="justify-start items-start">
-                            <div class="flex">
-                                <div class="flex flex-col gap-2 justify-center items-center w-full">
-                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[120px] animate-pulse items-center justify-center">
-                                        <svg class="self-center w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                        </svg>
-                                    </div>
-                                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                                        <div class="h-3 bg-gray-200 rounded-full w-[140px] mb-2.5"></div>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                                <div class="mx-auto">
-                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center">
-                                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                        </svg>
-                                    </div>
-                                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                                        <div class="h-3 bg-gray-200 rounded-full w-[110px] mb-2.5 mx-auto"></div>
-                                        <div class="h-3 bg-gray-200 rounded-full w-[80px] mb-2 mx-auto"></div>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mt-2.5 animate-pulse"></div>
-                        </div>
-                    </div>
+                <Appliance ImageName="SolarPanels.svg" name="Number of Panels"
+                    count=@systems[selectedSystem].numberOfPanels />
+                <Appliance ImageName="Batteries.svg" name="Number of Batteries"
+                    count=@systems[selectedSystem].numberOfBatteries />
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-        <div class="flex relative flex-col justify-center w-full has-tooltip">
-            <div>
-                <Tooltip pointer="48">
-                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                </Tooltip>
-            </div>
+        <div class="flex relative flex-col justify-center w-full">
+            @{
+                dlh = 0;
+                if (currentReport != null)
+                {
+                    daylight = 12;
+                    dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+
+                }
+            }
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-4">
-                    @{
+            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
+                <p class="text-5xl text-primary-900 font-semibold">@{
                         if (dlh == (24 - daylight))
                         {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                                <p>@dlh+</p>
                         }
                         else
                         {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                                                <p>@dlh</p>
                         }
                     }
+                </p>
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
     </div>
 </div>
 
+@* Appliance Summary *@
 
+@* <div class="hidden lg:flex gap-5 px-10 w-full mt-10">
+    <div
+        class="border-primary-500 transition-all duration-200 border-1 p-10 justify-start flex flex-col rounded-3xl w-full">
+        <div class="flex gap-4 justify-start mb-10 relative">
+            <h1 class="text-base font-semibold text-primary-900">What do you want to run in a power outage?</h1>
+            <div class="group">
+                <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                <div
+                    class="absolute hidden fade-in-active w-full -top-10 left-[38%] max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                    <p class="text-gray-900">Click on the appliances to add them to your calculation.</p>
+                </div>
+            </div>
+        </div>
+        <div class="flex gap-10 scale-90 justify-stretchs">
+            @foreach (var appliance in appliances)
+            {
+                if (appliance.quantity > 0)
+                {
+                                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                            <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
+                                                        </div>
+                }
+            }
+        </div>
+    </div>
+    <div class="w-4/12 justify-center flex">
+        <div class="flex flex-col my-auto gap-6 items-center>">
+            <Button css="h-16 w-60" style="outline">
+                <content>
+                    <p @onclick="ResetHome">Reset</p>
+                </content>
+            </Button>
+            <Button css="h-16 w-60" style="pill">
+                <content>
+                    @if (edit)
+                    {
+                                            <p @onclick="ModalPopup.Show">Update calculation</p>
+                    }
+                    else
+                    {
+                                            <p @onclick="ModalPopup.Show">Save this calculation</p>
+                    }
+                </content>
+            </Button>
+        </div>
+    </div> 
+</div> *@
+
+@* <SelectVariant type="Fridge" customAppliances="@customAppliances"/> *@
 
 <ModalPopup @ref="SystemModalPopup" Title=@customModalTitle>
 
     @if (@customModalTitle == "Number of Solar Panels")
     {
-            <p>Number of solar panels:</p>
-            <Input  @bind-InputValue="customPanels" placeholder="8" type="number" min="4"/>
-            <p>Solar panel power output (W/h): </p>
-            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" min="300"/>
+                                    <p>Number of solar panels:</p>
+                                    <Input  @bind-InputValue="customPanels" placeholder="8" type="number" min="4"/>
+                                    <p>Solar panel power output (W/h): </p>
+                                    <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" value="customPanelsInputNumber" min="300"/>
     }
     else
     {
-            <p>Number of batteries: </p>
-            <Input  @bind-InputValue="customBatteries" placeholder="1" type="number" min="1"/>    
-            <p>Battery Size (kW): </p>
-            <Input  @bind-InputValue="customBatteriesSize" placeholder="10" type="number" min="4"/>
+                                    <p>Number of batteries: </p>
+                                    <Input  @bind-InputValue="customBatteries" placeholder="1" type="number" min="1"/>    
+                                    <p>Battery Size (kW): </p>
+                                    <Input  @bind-InputValue="customBatteriesSize" placeholder="10" type="number" min="4"/>
     }
     @if (!isNumericValue)
     {
-           <p class="mt-8 text-red-600 font-bold">Please provide valid input <br/> for all fields</p>
+                                   <p class="mt-8 text-red-600 font-bold">Please provide valid input <br/> for all fields</p>
     }
             <div class="flex flex-row gap-4 justify-center">
 
         @if (@customModalTitle == "Number of Solar Panels")
         {
-            <div @onclick="SetPanels">
-                <Button>
-                    <content>
-                        Save
-                    </content>
-                </Button>
-            </div>
+                                    <div @onclick="SetPanels">
+                                        <Button>
+                                            <content>
+                                                Save
+                                            </content>
+                                        </Button>
+                                    </div>
         }
         else
         {
-            <div @onclick="SetNumberOfBatteries">
-                <Button>
-                    <content>
-                        Save
-                    </content>
-                </Button>
-            </div>
+                                    <div @onclick="SetNumberOfBatteries">
+                                        <Button>
+                                            <content>
+                                                Save
+                                            </content>
+                                        </Button>
+                                    </div>
         }
             <div @onclick="SystemModalPopup.Dismiss">
                 <Button style="outline">
@@ -394,33 +331,33 @@
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
     @if (edit)
     {
-            <p>Rename this calculation?</p>
+                                    <p>Rename this calculation?</p>
     }
     else
     {
-            <p>Add a nickname for this calculation:</p>
+                                    <p>Add a nickname for this calculation:</p>
     }
         <Input @bind-InputValue="calculationName" placeholder="Nickname" />
         <div class="flex flex-row gap-4 justify-center">
         @if (edit)
         {
-                <div @onclick="UpdateCalculation">
-                    <Button>
-                        <content>
-                        Update
-                            </content>
-                    </Button>
-                </div>
+                                        <div @onclick="UpdateCalculation">
+                                            <Button>
+                                                <content>
+                                                Update
+                                                    </content>
+                                            </Button>
+                                        </div>
         }
         else
         {
-                <div @onclick="SaveCalculation">
-                    <Button>
-                        <content>
-                            Save
-                        </content>
-                    </Button>
-                </div>
+                                        <div @onclick="SaveCalculation">
+                                            <Button>
+                                                <content>
+                                                    Save
+                                                </content>
+                                            </Button>
+                                        </div>
         }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
@@ -432,7 +369,7 @@
 
 
 @* Mobile Viewport *@
-@* <div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
+<div class="flex flex-col justify-center lg:hidden w-full h-full px-4">
     <div class="w-full px-4 flex flex-col justify-center items-center gap-4">
         <h1 class="text-base font-medium text-center text-primary-900">What this means for you</h1>
         <div class="flex justify-between gap-4 mt-4 mb-16">
@@ -444,33 +381,35 @@
     </div>
     <div class="w-full flex flex-col justify-center items-center">
         <div class="flex mb-10 justify-center items-center h-full">
+            @*
+            <Image ImageName="House 3.svg" alt="House" css="scale-105" /> *@
             @switch (selectedSystem)
             {
                 case 0:
-                    <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
+                                                                            <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" />
                     break;
                 case 1:
-                    <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
                 case 2:
-                    <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                                                                            <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
                     break;
                 case 3:
                     if (systems[3].inverterOutput <= 5)
                     {
-                        <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" /> 
+                                                                                                        <Image ImageName="Small-Home3.svg" alt="House" css="scale-95" /> 
                     }
                     else if (systems[3].inverterOutput <= 8)
                     {
-                        <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                                                                                        <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     }
                     else
                     {
-                        <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
+                                                                                                        <Image ImageName="Small-Home1.svg" alt="House" css="scale-95" />
                     }
                     break;
                 default:
-                        <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
+                                                                            <Image ImageName="Small-Home2.svg" alt="House" css="scale-95" />
                     break;
             }
         </div>
@@ -487,17 +426,17 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                    </div>
+                                                                                                        <div @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                                                                ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                                                                        </div>
                 }
                 else
                 {
-                    <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                    </div>
+                                                                                                        <div class="fade-in-active" @onclick="@(() => IncrementApplianceCount(appliance))">
+                                                                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                                                                ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                                                                        </div>
                 }
             }
         }
@@ -507,31 +446,42 @@
             {
                 if (appliance.quantity > 0)
                 {
-                    <div @onclick="@(() => DecrementApplianceCount(appliance))">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
-                    </div>
+                                                                                                        <div @onclick="@(() => DecrementApplianceCount(appliance))">
+                                                                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                                                                ImageName="@(appliance.type + ".svg")" Name="@appliance.type" Count="@appliance.quantity" />
+                                                                                                        </div>
                 }
                 else
                 {   
-                    <div class="fade-in-active">
-                        <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
-                            ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
-                    </div>
+                                                                                                        <div class="fade-in-active">
+                                                                                                            <Appliance css="hover:shadow transition-all duration-300 hover:-translate-y-1"
+                                                                                                                ImageName="@(appliance.type + ".svg")" Name="@appliance.type" />
+                                                                                                        </div>
                 }
             }
         }
     </div>
-</div> *@
+    @* <div class="flex mt-10 mx-auto gap-6 items-center>">
+        <Button css="h-16 w-full" style="outline">
+            <content>
+                <p @onclick="ResetHome">Reset</p>
+            </content>
+        </Button>
+        <Button css="h-16 w-full" style="pill">
+            <content>
+                <p @onclick="SaveCalculation">Save this calculation</p>
+            </content>
+        </Button>
+    </div> *@
+</div>
 
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
-
+    
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
-    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
 
     [Parameter]
     public List<ApplianceModel> appliances { get; set; } = new List<ApplianceModel>();
@@ -542,13 +492,13 @@
     [Parameter]
     public EventCallback<int> selectedSystemChanged { get; set; }
     [Parameter]
+    public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
+    [Parameter]
     public ReportModel? currentReport { get; set; }
     [Parameter]
     public bool edit { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
-    [Parameter]
-    public List<ApplianceModel>? allAppliances { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -568,7 +518,7 @@
     };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
-    float daylight = 12f;
+    float daylight = 0f;
     DaylightChart daylightChart = new DaylightChart();
     private string homeSize = "Small";
     private string homeType = "";
@@ -581,11 +531,6 @@
     private string customBatteriesSize = "";
     private string customModalTitle = "";
     private bool isNumericValue = true;
-    private double chargingLimit = 0.0;
-    private double chargingLimitPercentage = 50.0;
-    private int appliancesPage = 0;
-
-
 
     /// <summary>
     /// On initialisation, get the user id from local storage
@@ -598,10 +543,11 @@
         {
             homeSize = currentReport.homeSize;
         }
-        if (systems.Count > 0)
-        {
-            SetGraphicValues();
-        }
+        customPanels = "" + systems[3].numberOfPanels;
+        customBatteries = "" + systems[3].numberOfBatteries;
+        customPanelsInput = "" + systems[3].solarInput;
+        customBatteriesSize = "" + systems[3].batterySize;
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     /// <summary>
@@ -609,46 +555,80 @@
     /// </summary>
     protected override void OnParametersSet()
     {
+        Console.WriteLine("selected system - " + selectedSystem);
         if (selectedSystem == 3)
         {
             showCustomSystem = true;
             displayCreatedCustomSystem = true;
         }
 
-     
-        calculationName = currentReport!.reportName;
-        if (appliances != null)
+        if (reportAllAppliance != null)
         {
-            for (int i = 0; i < appliances.Count; i++)
+            for (int i = 0; i < reportAllAppliance!.Count; i++)
             {
-                ApplianceModel appliance = new ApplianceModel();
-                appliance.applianceId = appliances[i].applianceId;
-                appliance.type = appliances[i].type;
-                appliance.powerUsage = appliances[i].powerUsage;
-                appliance.quantity = appliances[i].quantity;
-                applianceQuantities.Add(appliance);
+
+                if (reportAllAppliance[i].type!.Equals("Kettle"))
+                {
+                    appliances[0].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Fridge"))
+                {
+                    appliances[1].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Lights"))
+                {
+                    appliances[2].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("TV"))
+                {
+                    appliances[3].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Computer"))
+                {
+                    appliances[4].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Microwave"))
+                {
+                    appliances[5].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("CCTV"))
+                {
+                    appliances[6].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+                else if (reportAllAppliance[i].type!.Equals("Washing Machine"))
+                {
+                    appliances[7].quantity = reportAllAppliance[i].numberOfAppliances;
+                }
+
             }
         }
-        if (systems.Count > 0)
+        calculationName = currentReport!.reportName;
+
+        for (int i = 0; i < appliances.Count; i++)
         {
-            SetGraphicValues();
+            ApplianceModel appliance = new ApplianceModel();
+            appliance.applianceId = appliances[i].applianceId;
+            appliance.type = appliances[i].type;
+            appliance.powerUsage = appliances[i].powerUsage;
+            appliance.quantity = appliances[i].quantity;
+            applianceQuantities.Add(appliance);
         }
     }
 
     public void CreateCustomSystem()
     {
-        SetGraphicValues();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) > systems[selectedSystem].inverterOutput * 1000)
         {
             toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
-        }
-        else if (displayCreatedCustomSystem)
+        } else if (displayCreatedCustomSystem)
         {
 
             displayCreatedCustomSystem = false;
         }
         else
         {
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             displayCreatedCustomSystem = true;
             selectedSystemChanged.InvokeAsync(selectedSystem);
             ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
@@ -658,6 +638,18 @@
     public void CustomSystemSelected()
     {
         selectedSystem = 3;
+        if (systems.Count == 3)
+        {
+            SystemModel system = new SystemModel();
+            system.systemId = -1;
+            system.systemSize = "Custom";
+            system.numberOfPanels = -1;
+            system.numberOfBatteries = -1;
+            system.batterySize = -1;
+            system.inverterOutput = -1;
+            system.solarInput = -1;
+            systems.Add(system);
+        }
         selectedSystemChanged.InvokeAsync(selectedSystem);
         if (showCustomSystem)
         {
@@ -690,57 +682,14 @@
         SystemModalPopup.Show();
     }
 
-    private void SetNumberPanels(ChangeEventArgs e){
-        var val = e.Value!.ToString();
-        customPanels = val!;
-        if (selectedSystem < 3)
-        {
-            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
-            systems[3].batterySize = systems[selectedSystem].batterySize;
-            systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
-            systems[3].solarInput = systems[selectedSystem].solarInput;
-            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
-        }
-        selectedSystem = 3;
-        systems[3].numberOfPanels =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues(); 
-
-    }
-    private void SetRunningHours(ChangeEventArgs e){
-        var val = e.Value!.ToString();
-        customBatteries = val!;
-        if (selectedSystem < 3)
-        {
-            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
-            systems[3].batterySize = systems[selectedSystem].batterySize;
-            systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
-            systems[3].solarInput = systems[selectedSystem].solarInput;
-            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
-        }
-        selectedSystem = 3;
-        systems[3].numberOfBatteries =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues();
-    }
-
     public void SetPanels()
     {
         isNumericValue = true;
         try
         {
-            if (selectedSystem < 3)
-            {
-                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
-                systems[3].batterySize = systems[selectedSystem].batterySize;
-                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
-                systems[3].solarInput = systems[selectedSystem].solarInput;
-                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
-            }
-            selectedSystem = 3;
             systems[3].numberOfPanels = Convert.ToInt32(customPanels);
             systems[3].solarInput = Convert.ToInt32(customPanelsInput);
-            if ( customPanelsInput.Equals(""))
+            if (customPanels.Equals("") || customPanelsInput.Equals(""))
             {
                 isNumericValue = false;
             }
@@ -751,8 +700,6 @@
         {
             isNumericValue = false;
         }
-        SetGraphicValues(); 
-
     }
 
     public void SetNumberOfBatteries()
@@ -760,55 +707,15 @@
         isNumericValue = true;
         try
         {
-            if (selectedSystem < 3)
-            {
-                systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
-                systems[3].batterySize = systems[selectedSystem].batterySize;
-                systems[3].inverterOutput = systems[selectedSystem].inverterOutput;
-                systems[3].solarInput = systems[selectedSystem].solarInput;
-                systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
-            }
-            selectedSystem = 3;
             systems[3].numberOfBatteries = Convert.ToInt32(customBatteries);
             systems[3].batterySize = Convert.ToInt32(customBatteriesSize);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             SystemModalPopup.Dismiss();
         }
         catch (System.Exception)
         {
             isNumericValue = false;
         }
-        SetGraphicValues(); 
-
-    }
-
-    private void SetGraphicValues(){
-        var appliancePowerUsage = systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) / 1000.0;
-        Console.WriteLine("Appliance Power Usage: " + appliancePowerUsage);
-        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        Console.WriteLine("Average Energy Production: " + avgEnergyProduction);
-        var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-        usableHours = Math.Round(usableHours, 2);
-        Console.WriteLine("Usable Hours: " + usableHours);
-        chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        Console.WriteLine("Charging Limit: " + chargingLimit);
-        if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
-        {
-            chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
-            chargingLimitPercentage = 100;
-        } else
-        {
-            chargingLimitPercentage = (chargingLimit / (systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)) * 100;
-        }
-        chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
-
-        double runningHours = chargingLimit / appliancePowerUsage;
-        double runningHoursPercentage = (runningHours / daylight) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
-        Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
-        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
     /// <summary>
@@ -817,7 +724,6 @@
     public Task OnSelectedSystemChanged(ChangeEventArgs e)
     {
         selectedSystem = Convert.ToInt32(e.Value);
-        SetGraphicValues();
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
 
@@ -832,7 +738,7 @@
             appliance.fade = "fade-in-active";
             appliance.quantity++;
             UpdateApplianceStorage();
-            SetGraphicValues();
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
             applianceService.UpdateAppliance(appliances);
         }
     }
@@ -847,8 +753,7 @@
         {
             appliance.quantity = 0;
         }
-        SetGraphicValues();
-        
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
@@ -868,8 +773,7 @@
         selectedSystem = selection;
         ProtectedSessionStore.SetAsync("selectedSystem", selectedSystem);
         selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues();
-
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     /// <summary>
@@ -883,92 +787,79 @@
             case "2":
                 homeSize = "Small";
                 selectedSystem = 0;
-                int[] applianceQuantities = { 1, 1, 15, 1, 0, 1, 0, 0 };
-                for (int i = 0; i < appliances.Count; i++)
-                {
-                    if(i >= applianceQuantities.Length)
-                    {
-                        appliances[i].quantity = 0;
-                    }
-                    else
-                    {
-                        appliances[i].quantity = applianceQuantities[i];
-                    }
-                    
-                }
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 15;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 0;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
 
                 break;
             case "3":
                 homeSize = "Medium";
                 selectedSystem = 1;
-                int[] applianceQuantities2 = { 1, 1, 20, 1, 1, 1, 0, 0 };
-                for (int i = 0; i < appliances.Count; i++)
-                {
-                    if(i >= applianceQuantities2.Length)
-                    {
-                        appliances[i].quantity = 0;
-                    }
-                    else
-                    {
-                        appliances[i].quantity = applianceQuantities2[i];
-                    }
-                }
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 20;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 1;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
                 break;
             case "4":
                 homeSize = "Large";
                 selectedSystem = 2;
-                int[] applianceQuantities3 = { 2, 1, 30, 2, 2, 1, 0, 1 };
-                for (int i = 0; i < appliances.Count; i++)
-                {
-                    if(i >= applianceQuantities3.Length)
-                    {
-                        appliances[i].quantity = 0;
-                    }
-                    else
-                    {
-                        appliances[i].quantity = applianceQuantities3[i];
-                    }
-                }
+                appliances[0].quantity = 2;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 30;
+                appliances[3].quantity = 2;
+                appliances[4].quantity = 2;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 1;
                 break;
             default:
                 homeSize = "Small";
                 selectedSystem = 0;
-                int[] applianceQuantities4 = { 1, 1, 15, 1, 0, 1, 0, 0 };
-                for (int i = 0; i < appliances.Count; i++)
-                {
-                    if(i >= applianceQuantities4.Length)
-                    {
-                        appliances[i].quantity = 0;
-                    }
-                    else
-                    {
-                        appliances[i].quantity = applianceQuantities4[i];
-                    }
-                }
+                appliances[0].quantity = 1;
+                appliances[1].quantity = 1;
+                appliances[2].quantity = 15;
+                appliances[3].quantity = 1;
+                appliances[4].quantity = 0;
+                appliances[5].quantity = 1;
+                appliances[6].quantity = 0;
+                appliances[7].quantity = 0;
                 break;
         }
         applianceService.UpdateAppliance(appliances);
-        SetGraphicValues();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     public async void ResetHome()
     {
         Console.WriteLine("Resetting");
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
-        foreach (var appliance in appliances)
-        {
-            appliance.quantity = 0;
-        }
+        appliances[0].quantity = 0;
+        appliances[1].quantity = 0;
+        appliances[2].quantity = 0;
+        appliances[3].quantity = 0;
+        appliances[4].quantity = 0;
+        appliances[5].quantity = 0;
+        appliances[6].quantity = 0;
+        appliances[7].quantity = 0;
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues();
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
     }
 
     public async void SaveCalculation()
     {
-        Console.WriteLine("Saving Calculation");
         ModalPopup.Dismiss();
+        ShowLoadingScreen();
         var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
         if (calcName.Value != null)
         {
@@ -980,52 +871,41 @@
             systems[3].systemId = await systemClass.CreateSystem(systems[3]);
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
-        int reportId = -1;
-        if(allAppliances != null) {
-            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
-        }
-        if (reportId != -1)
-        {
+        int reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, new List<ApplianceModel>());
+        if(reportId != -1){
             toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
             await ProtectedSessionStore.SetAsync("createdReport", reportId);
             await ProtectedSessionStore.SetAsync("currentReport", reportId);
-            NavigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
+        }else{
             toastService.ShowToast("Error", "Report failed to save.", "error");
         }
-
-    }
-
-    public async Task UpdateCalculation()
-    {
-        if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
-
-        {
-            toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
-            await ProtectedSessionStore.SetAsync("currentReport", currentReport!.reportId);
-            NavigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
-            toastService.ShowToast("Error", "Report failed to update.", "error");
-        }
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/dashboard");
     }
 
-    private void IncreamentAppliancePage(){
-        if(appliancesPage != 2){
-            appliancesPage++;
-        } else {
-            appliancesPage = 0;
+    private async Task UpdateCalculation()
+    {
+        ShowLoadingScreen();
+        if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
+        {
+
+            toastService.ShowToast("Updated Calculation", "Report updated saved.", "success");
+
+            for (int i = 0; i < 8; i++)
+            {
+                if (appliances[i].quantity != applianceQuantities[i].quantity)
+                {
+                    await reportApplianceClass.UpdateReportAppliance(currentReport.reportId, appliances[i]);
+                }
+            }
+            await ProtectedSessionStore.SetAsync("createdReport", currentReport.reportId);
         }
+        loadingService.ShowLoadingScreen();
+        NavigationManager.NavigateTo("/dashboard");
     }
-    private void DecrementAppliancePage(){
-        if(appliancesPage != 0){
-            appliancesPage--;
-        } else {
-            appliancesPage = 2;
-        }
+
+    private void ShowLoadingScreen()
+    {
+        loadingService.ShowLoadingScreen();
     }
 }

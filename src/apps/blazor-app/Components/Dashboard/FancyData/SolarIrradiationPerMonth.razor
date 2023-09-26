@@ -12,8 +12,6 @@
     
     [Parameter]
     public bool animated { get; set; } = true;
-    [Parameter]
-    public int currentMonth { get; set; } = 0;
 
     private BarConfig? barConfig;
     private Dictionary<string, Dictionary<string, float>> data = new Dictionary<string, Dictionary<string, float>>();
@@ -41,7 +39,9 @@
                 },
                 Title = new OptionsTitle
                 {
-                    Display = false,
+                    Display = true,
+                    Text = "Solar Irradiance Per Month",
+                    FontSize = 20,
                 },
                 Scales = new BarScales
                 {
@@ -102,14 +102,13 @@
 
         barConfig.Data.Datasets.Clear();
 
-        string[] backgroundColors = new string[] { "rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)","rgba(255,193,8, 1)"};
-        backgroundColors[currentMonth] = "rgba(246,135,18, 1)";
+        string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)"};
         string[] borderColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)", "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)" };
 
         barConfig.Data.Datasets.Add(new BarDataset<double>
         (monthlySolarRadiation){
             Label = "Solar Irradiance Per Month",
-            BackgroundColor = backgroundColors,
+            BackgroundColor = backgroundColors[0],
             BorderColor = borderColors[0],
             BorderWidth = 1
         });

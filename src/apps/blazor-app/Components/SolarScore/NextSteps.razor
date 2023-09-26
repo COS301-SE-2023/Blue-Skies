@@ -1,16 +1,18 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.LoadingService loadingService
 
 
-<div class="my-12 px-10">
+<div class="my-12 px-4">
 
     <div class="w-fit mx-auto text-center my-5">
         <Heading>
             <Superscript>
+                <p class="text-lg font-medium">Next steps</p>
             </Superscript>
             <Header>
-                <h1 class="text-3xl">Next Steps</h1>
+                <h1 class="text-3xl">Get solar as easy as 1, 2, 3</h1>
             </Header>
             <Subscript>
                 <p class="text-primary-700 max-w-xl">Embracing complete independence for your home and brightening your days with solar power, is only a few steps away!</p>
@@ -18,109 +20,110 @@
         </Heading>
     </div>
 
-    <div class="mt-8 flex justify-center items-center mx-auto">
-      @* Get a solar score *@
-      <div class="flex-col relative">
-        <Image css="absolute top-8 left-10 -z-50 scale-[1.3]" ImageName="02.svg" alt="02"/>
-        <div class="bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 m-auto">
-          <Image ImageName="UserPlus.svg" alt="Score" />
+    <div class="mt-8 space-y-24 lg:space-y-0 lg:flex justify-center gap-5 max-w-[95%] mx-auto">
+
+        @* Sign Up fore more advanced *@
+        <div class="flex-col">
+            <div class="bg-gray-100 shadow rounded-full w-40 h-40 mx-auto p-14">
+                <Image ImageName="Point On Map.svg" alt="Point On Map" />
+            </div>
+
+            <div class="text-center max-w-sm mx-auto mt-4">
+                <Heading>
+                    <Header>
+                        <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Sign Up fore more advanced
+                            calculations</h1>
+                    </Header>
+                    <Subscript>
+                        <p class="font-normal">Access our advanced calculation tool! Add appliances, determine your power usage, and needs for your setup.</p>
+                    </Subscript>
+                </Heading>
+            </div>
+
+            <Button css="mt-10 mx-auto flex w-fit" style="outline">
+                <content>
+                    <div @onclick="Register" class="flex items-center space-x-3">
+                        <p>Sign Up</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9.4043 2.6543L15.7499 8.99995L9.4043 15.3456" stroke="#3A3A77" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M15.7499 9L2.25 9" stroke="#3A3A77" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </content>
+            </Button>
+
         </div>
 
-        <div class="text-center max-w-sm mx-auto mt-4">
-          <Heading>
-            <Header>
-              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Log In or Sign Up</h1>
-            </Header>
-            <Subscript>
-              <p class="font-normal">Login or Register to access more tools to help you discover the perfect system for your needs.</p>
-            </Subscript>
-          </Heading>
-        </div>
-      </div>
+        @* Get the perfect system to fit your needs *@
+        <div class="flex-col">
+            <div class="bg-gray-100 shadow rounded-full p-14 w-40 h-40 m-auto">
+                <Image ImageName="Sale.svg" alt="Score" />
+            </div>
 
-      <div class="flex-col hidden lg:block">
-        <Image ImageName="Line.svg" alt="Line"/>
-      </div>
-      <div class="flex-col w-full lg:hidden">
-        <Image ImageName="line-down.svg" css="mx-auto" alt="Line"/>
-      </div>
-
-      @* Get a report *@
-      <div class="flex-col relative">
-        <Image css="absolute top-8 left-10 -z-20 scale-[1.3]" ImageName="03.svg" alt="03"/>
-        <div class="relative bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 mx-auto">
-          <Image ImageName="Sale.svg" css="z-10" alt="Report"/>
-        </div>
-
-        <div class="text-center max-w-sm mx-auto mt-4">
-          <Heading>
-            <Header>
-              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get Personalised Calculations</h1>
-            </Header>
-            <Subscript>
-              <p class="font-normal">Empower Your Choices with Personalized Calculations: Discover the Best System for You.</p>
-            </Subscript>
-
-          </Heading>
-        </div>
-      </div>
-      
-      <div class="flex-col hidden lg:block">
-        <Image ImageName="Line.svg" alt="Line"/>
-      </div>
-      <div class="flex-col w-full lg:hidden">
-        <Image ImageName="line-down.svg" css="mx-auto" alt="Line"/>
-      </div>
-      @* Get a report *@
-      <div class="flex-col relative">
-        <Image css="absolute top-8 left-10 -z-20 scale-[1.3]" ImageName="04.svg" alt="04"/>
-        <div class="relative bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 mx-auto">
-          <Image ImageName="Pie Chart 2.svg" css="z-10" alt="Report"/>
+            <div class="text-center max-w-sm mx-auto mt-4">
+                <Heading>
+                    <Header>
+                        <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get the perfect system to fit
+                            your needs</h1>
+                    </Header>
+                    <Subscript>
+                        <p class="font-normal">Utilize our advanced calculator to determine the recommended number of batteries and solar panels based on your household's power usage.</p>
+                    </Subscript>
+                </Heading>
+            </div>
+            <Button css="mt-10 w-fit mx-auto" style="outline">
+                <content>
+                    <div @onclick="AdvancedCalculation" class="flex items-center space-x-3">
+                        <p>Discover</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9.4043 2.6543L15.7499 8.99995L9.4043 15.3456" stroke="#3A3A77" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M15.7499 9L2.25 9" stroke="#3A3A77" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </content>
+            </Button>
         </div>
 
-        <div class="text-center max-w-sm mx-auto mt-4">
-          <Heading>
-            <Header>
-              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get Report</h1>
-            </Header>
-            <Subscript>
-              <p class="font-normal">Gain comprehensive insights with a detailed solar report for informed decision-making.</p>
-            </Subscript>
-          </Heading>
+        @* Contact your nearest
+        Solar service provider *@
+        <div class="flex-col">
+            <div class="bg-gray-100 shadow rounded-full p-14 w-40 h-40 mx-auto">
+                <Image ImageName="Pie Chart 2.svg" alt="Report" />
+            </div>
+
+            <div class="text-center max-w-sm mx-auto mt-4">
+                <Heading>
+                    <Header>
+                        <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Contact your nearest
+                            Solar service provider</h1>
+                    </Header>
+                    <Subscript>
+                        <p class="font-normal">Once you have used our advanced calculation tool, you can click here to get in touch with a solar provider near you.</p>
+                    </Subscript>
+                </Heading>
+            </div>
+            <Button css="mt-10 w-fit mx-auto" style="outline">
+                <content>
+                    <div @onclick="GetInTouch" class="flex items-center space-x-3">
+                        <p> Get in touch</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M9.4043 2.6543L15.7499 8.99995L9.4043 15.3456" stroke="#3A3A77" stroke-width="1.5"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M15.7499 9L2.25 9" stroke="#3A3A77" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </content>
+            </Button>
         </div>
-      </div>
-
-      <div class="flex-col hidden lg:block">
-        <Image ImageName="Line.svg" alt="Line"/>
-      </div>
-      <div class="flex-col w-full lg:hidden">
-        <Image ImageName="line-down.svg" css="mx-auto" alt="Line"/>
-      </div>
-
-      @* Get a report *@
-      <div class="flex-col relative">
-        <Image css="absolute top-8 left-10 -z-20 scale-[1.3]" ImageName="05.svg" alt="05"/>
-        <div class="relative bg-gray-100 shadow rounded-3xl p-8 w-24 h-24 mx-auto">
-          <Image ImageName="Pie Chart 2.svg" css="z-10" alt="Report"/>
-        </div>
-
-
-        <div class="text-center max-w-sm mx-auto mt-4">
-          <Heading>
-            <Header>
-              <h1 class="font-semibold text-2xl leading-[150%] tracking-tight	">Get in touch</h1>
-            </Header>
-            <Subscript>
-              <p class="font-normal">Contact your nearest Solar service provider.</p>
-            </Subscript>
-          </Heading>
-        </div>
-      </div>
     </div>
 </div>
 
 @code {
-  
     private async void ShowLoadingScreen()
     {
         toastService.ShowToast("Hello", "Please wait while we load the calculator", "info");
@@ -131,12 +134,14 @@
     //Change to register page
     private void Register()
     {
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/register");
     }
 
     //Change to advanced page
     private void AdvancedCalculation() 
     {
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/advanced");
     }
 
