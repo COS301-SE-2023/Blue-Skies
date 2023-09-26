@@ -183,11 +183,17 @@
     private void IncreamentMonthImage(){
         if(currentImageIndex < monthlyFluxMap!.Length - 1){
             currentImageIndex++;
+        } else if (currentImageIndex == monthlyFluxMap!.Length - 1)
+        {
+            currentImageIndex = 0;
         }
     }
     private void DecrementMonthImage(){
         if(currentImageIndex > 0){
             currentImageIndex--;
-        }   
+        } else if (currentImageIndex == 0)
+        {
+            currentImageIndex = monthlyFluxMap!.Length - 1;
+        }
     }
 } 
