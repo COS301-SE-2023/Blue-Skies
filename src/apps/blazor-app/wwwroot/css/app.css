@@ -1424,10 +1424,6 @@ video {
   height: 100vh;
 }
 
-.h-64 {
-  height: 16rem;
-}
-
 .max-h-96 {
   max-height: 24rem;
 }
