@@ -62,7 +62,7 @@
                             </div>
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
                                 @{
-                                    filteredAppliances = getFilteredAppliances(applianceSearch);
+                                    filteredAppliances = appliances.Where(app => app.type!.ToLower().Contains(applianceSearch.ToLower())).ToList();
                                     if(filteredAppliances.Count <= 8)
                                     {
                                         appliancesPage = 0;
@@ -72,14 +72,9 @@
                                         
                                         @if (filteredAppliances.Count > i + appliancesPage * 8)
                                         {   
-                                            int applianceQuantity = 0;
-                                            foreach (ApplianceModel app in appliances.Where(app => app.type == filteredAppliances[i + appliancesPage * 8].type))
-                                            {
-                                                applianceQuantity += app.quantity;
-                                            }
                                             ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
                                             <div @onclick="@(() => ToggleAppliance(appliance))">
-                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@applianceQuantity" />     
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
                                             </div>
                                         }
                                     }
@@ -884,18 +879,9 @@
     private void ToggleAppliance(ApplianceModel appliance)
     {
         Console.WriteLine("Toggling - " + appliance.type);
-        List<ApplianceModel> groupAppliance = appliances.Where(x => x.type == appliance.type).ToList();
-        if (groupAppliance.FindAll(x => x.quantity > 0).Count > 0)
+        if (appliance.quantity > 0)
         {
-            foreach (var app in groupAppliance)
-            {
-                if(app.name == "Default") 
-                {
-                    app.quantity = 0;
-                } else {
-                    appliances.Remove(app);
-                }
-            }
+            appliance.quantity = 0;
         }
         else
         {
@@ -1071,7 +1057,7 @@
         applianceAnimation = "appliance-slide-out-left";
         StateHasChanged();
         await Task.Delay(100);
-        if(appliancesPage != Math.Ceiling(getFilteredAppliances(applianceSearch).Count / 8.0) - 1){
+        if(appliancesPage != Math.Ceiling(appliances.Count / 8.0) - 1){
             appliancesPage++;
         } else {
             appliancesPage = 0;
@@ -1086,13 +1072,9 @@
         if(appliancesPage != 0){
             appliancesPage--;
         } else {
-            appliancesPage = (int) Math.Ceiling(getFilteredAppliances(applianceSearch).Count / 8.0) - 1;
+            appliancesPage = (int) Math.Ceiling(appliances.Count / 8.0) - 1;
         }
         applianceAnimation = "appliance-slide-in-left";
         StateHasChanged();
-    }
-
-    private List<ApplianceModel> getFilteredAppliances(string search) {
-        return appliances.Where(app => app.type!.ToLower().Contains(search.ToLower()) && app.name == "Default").ToList();
     }
 }
