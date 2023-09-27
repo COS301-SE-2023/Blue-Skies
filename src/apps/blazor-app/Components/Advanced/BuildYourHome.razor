@@ -801,14 +801,10 @@
 
     private void SetGraphicValues(){
         var appliancePowerUsage = systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) / 1000.0;
-        Console.WriteLine("Appliance Power Usage: " + appliancePowerUsage);
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        Console.WriteLine("Average Energy Production: " + avgEnergyProduction);
         var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
-        Console.WriteLine("Usable Hours: " + usableHours);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        Console.WriteLine("Charging Limit: " + chargingLimit);
         if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
         {
             chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
@@ -825,7 +821,6 @@
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
@@ -839,7 +834,7 @@
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
 
-    private void IncrementApplianceCount(ApplianceModel appliance)
+    @* private void IncrementApplianceCount(ApplianceModel appliance)
     {
         if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) > systems[selectedSystem].inverterOutput * 1000)
         {
@@ -853,9 +848,9 @@
             SetGraphicValues();
             applianceService.UpdateAppliance(appliances);
         }
-    }
+    } *@
 
-    /// <summary>
+    @* /// <summary>
     /// On appliance count changed, update the appliance count and calculate the running hours
     /// </summary>
     private void DecrementApplianceCount(ApplianceModel appliance)
@@ -870,7 +865,7 @@
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
-    }
+    } *@
 
     private void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
@@ -918,6 +913,7 @@
     /// </summary>
     private void ApplyTemplate(ChangeEventArgs e)
     {
+        Console.WriteLine("Applying Templete");
         showCustomSystem = false;
         switch (e.Value)
         {
