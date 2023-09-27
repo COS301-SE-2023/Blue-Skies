@@ -27,7 +27,7 @@
             } else {
                 <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
                 <select @onchange="ApplyTemplate" id="selectHome"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5 hover:cursor-pointer">
                     <option disabled selected value="1">Select a template</option>
                     <option value="2">2 Bedroom House</option>
                     <option value="3">3 Bedroom House</option>
@@ -170,15 +170,15 @@
                         var large = systems[2].inverterOutput + "kw";
                     }
                                 <div onclick="@(() => SetSystemSize(0))"
-                                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class=" font-semibold">@small</p>
                                 </div>
                                 <div onclick="@(() => SetSystemSize(1))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class="font-semibold">@medium</p>
                                 </div>
                                 <div onclick="@(() => SetSystemSize(2))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class="font-semibold">@large</p>
                                 </div>
                             </div>
