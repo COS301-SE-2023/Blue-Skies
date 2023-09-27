@@ -131,6 +131,7 @@
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
+        UpdateCustomAppliancesWithCounts();
     }
 
     public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
@@ -207,46 +208,29 @@
             name = "Default";
         }
 
-        ApplianceModel? defaultAppliance = appliances.FirstOrDefault(appliance => appliance.name == "Default" && appliance.type == type);
-        if(name == "Default") {
-            if(defaultAppliance != null)
-            {
-                IncrementAppliance(defaultAppliance);
-                StateHasChanged();
-            } else {
-                appliances.Add(new ApplianceModel
-                {
-                    name = "Default",
-                    type = type,
-                    quantity = 1,
-                    durationUsed = 0,
-                    powerUsage = power
-                });
-                StateHasChanged();
-            }
-        } else {
-            ApplianceModel? newModelGroup = appliances.FirstOrDefault(appliance => appliance.type == type && appliance.name == name && appliance.powerUsage == power);
-            if(newModelGroup != null) {
-                IncrementAppliance(newModelGroup);
-                StateHasChanged();
-            } else {
-                appliances.Add(new ApplianceModel
-                {
-                    name = name,
-                    type = type,
-                    quantity = 1,
-                    durationUsed = 0,
-                    powerUsage = power
-                });
-                StateHasChanged();
-            }
-
-            if(defaultAppliance != null)
-            {
-                DecrementAppliance(defaultAppliance);
-            }
+        if (defaultAppliance != null)
+        {
+            // Change the name of the found "Default" appliance
+            newDuration = defaultAppliance.durationUsed;
+            defaultAppliance.name = name;
+            defaultAppliance.powerUsage = power;
+            defaultAppliance.durationUsed = newDuration;
+            StateHasChanged();
         }
-
+        else
+        {
+            // Add a default appliance and try again
+            allAppliances!.Add(new ApplianceModel
+            {
+                name = "Default",
+                type = type,
+                quantity = 1,
+                durationUsed = newDuration,
+                powerUsage = power
+            });
+            appliances!.Where(x => x.type == type).FirstOrDefault()!.quantity++;
+            AddVariant(name, type, power);
+        }
         applianceService.UpdateAppliance(appliances);
         applianceService.ClearSearch();
     }
