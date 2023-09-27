@@ -753,7 +753,6 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
         }
-        selectedSystem = 3;
         systems[3].numberOfPanels =  int.Parse(val!);
         panelTimer.Start();
     }
@@ -771,12 +770,12 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
         }
-        selectedSystem = 3;
         systems[3].numberOfBatteries =  int.Parse(val!);
         batteryTimer.Start();
     }
 
     private void UpdateSelectedSystem(){
+        selectedSystem = 3;
         selectedSystemChanged.InvokeAsync(3);
     }
     public void SetPanels()

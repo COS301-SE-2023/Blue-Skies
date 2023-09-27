@@ -77,7 +77,6 @@
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     private Timer aTimer = default!;
 
-
     protected override void OnInitialized(){
         aTimer = new Timer(100);
         aTimer.Elapsed += Search;
