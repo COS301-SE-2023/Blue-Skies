@@ -8,6 +8,7 @@
 @using BlazorApp.Components.Advanced
 @using BlazorApp.Components
 @using BlazorApp.FancyData
+@using BlazorApp.Components.Advanced.Skeletons
 @inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
@@ -61,45 +62,34 @@
         </div>
         @if (systems.Count == 0)
         {
-            <div class="relative flex justify-evenly items-center w-full mx-auto  my-7">
-                <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full w-60 m-4"></div> 
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div class="w-[700px]">
-                    <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto -mt-6">
-                        <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full w-60 m-4"></div>
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
+            <TabSkeleton />
             
         } else {
-            <div class="relative flex justify-evenly items-center w-full mx-auto  my-7">
-                <Button css="h-14 w-60 m-4 right-10" style="outline">
-                    <content>
-                        <p @onclick="ResetCalculation">Reset</p>
-                    </content>
-                </Button>
-                <div class="w-[700px]">
+            <div class="relative flex flex-col justify-evenly items-center w-full mx-auto my-7">
+                <div @onclick="ResetCalculation" class="w-full cursor-pointer">
+                    <Button css="h-14 w-60 mx-auto right-10" style="outline">
+                        <content>
+                            <p>Reset</p>
+                        </content>
+                    </Button>
+                </div>
+                <div class="w-full">
                     <Tabs @bind-Items="tabs"></Tabs>
                 </div>
-                <Button css="h-14 w-60 m-4" style="pill">
-                    <content>
-                        @if (edit)
-                        {
-                            <p @onclick="SaveCalculation">Update calculation</p>
-                        }
-                        else
-                        {
-                            <p @onclick="SaveCalculation">Save this calculation</p>
-                        }
-                    </content>
-                </Button>
+                <div @onclick="SaveCalculation" class="w-full cursor-pointer">
+                    <Button css="h-14 w-60 mx-auto" style="pill">
+                        <content>
+                            @if (edit)
+                            {
+                                <p>Update calculation</p>
+                            }
+                            else
+                            {
+                                <p>Save this calculation</p>
+                            }
+                        </content>
+                    </Button>
+                </div>
             </div>
         }
         @* <div class="w-full">

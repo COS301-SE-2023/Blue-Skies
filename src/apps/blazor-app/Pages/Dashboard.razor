@@ -329,11 +329,13 @@
                         <p class="text-center">You have no reports. Create a report to get started.</p>
                     </div>
                     <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
-                        <Button style="pill" css="h-14">
-                            <content>
-                                <p @onclick='() => CreateReport()' class="text-sm font-semibold hover:text-white">Create a Report </p>
-                            </content>
-                        </Button>
+                        <div @onclick='() => CreateReport()'>
+                            <Button style="pill" css="h-14">
+                                <content>
+                                    <p class="text-sm font-semibold hover:text-white">Create a Report </p>
+                                </content>
+                            </Button>
+                        </div>
                     </div>
                 </div>
         }

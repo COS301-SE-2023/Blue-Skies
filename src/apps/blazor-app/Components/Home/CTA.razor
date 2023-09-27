@@ -39,11 +39,13 @@
               </content>
             </Button>
           </a>
-          <Button style="outline" >
-            <content>
-              <input type="submit"  value="Sign Up" @onclick="Register" />
-            </content>
-          </Button>
+          <div @onclick="Register">
+            <Button style="outline" >
+              <content>
+                <input type="submit"  value="Sign Up" />
+              </content>
+            </Button>
+          </div>
         </div>
       </Card>
     </div>

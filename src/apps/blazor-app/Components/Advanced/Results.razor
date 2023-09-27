@@ -20,10 +20,10 @@
         </Subscript>
     </Heading>
 </div>
-<div class="relative flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
+<div class="relative w-fit flex flex-col xl:flex-row mx-auto gap-4 mt-10">
     @* <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-48 top-10 h-72 z-0" alt="Rob" /> *@
     @* <Image ImageName="Robert_Behind_Component.png" css="absolute left-48 -top-[31px] z-10 h-10" alt="Rob" /> *@
-    <div class="w-80 mx-auto">
+    <div class="w-60 sm:w-80 mx-auto">
         @if (satteliteImage == null)
         {
             <MapSkeleton />
@@ -32,7 +32,7 @@
         }
     </div>
     @* <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20" alt="Rob" /> *@
-    <div class="relative flex mx-auto flex-col px-2 sm:flex-row gap-5 self-center">
+    <div class="relative w-full flex mx-auto justify-center items-center flex-col px-2 md:flex-row gap-2 md:gap-5">
         @if (solarScore == -1)
         {
             <ScoreSkeleton />
