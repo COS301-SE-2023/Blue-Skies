@@ -60,7 +60,7 @@ else if (logIn)
                         <Input type="password" name="password" placeholder="Enter password"   
                         @bind-InputValue="password" />
                     } else {
-                        <p class="mt-8 text-red-600 font-bold">Password must be at least 6 characters.</p>
+                        <p class="mt-8 text-red-600 font-bold">Password must be at least 8 characters.</p>
                         <Input css="border-1 border-red-400 rounded-md"  type="password" name="password" placeholder="Enter password"
                             @bind-InputValue="password" />
                     }
@@ -140,7 +140,7 @@ private async Task HandleValidSubmit()
     else
     {
         showError = "visible";
-        errorMessage = "Could not register";
+        errorMessage = "Email already exists";
         Console.WriteLine("Not OK");
     }
 }
@@ -212,7 +212,7 @@ private bool ValidateForm()
         Console.WriteLine("password is empty");
         validPassword = false;
         return false;
-    } else if (password.Length < 6)
+    } else if (password.Length < 8)
     {
         Console.WriteLine("password is too short");
         validPassword = false;
