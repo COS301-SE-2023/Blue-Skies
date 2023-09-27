@@ -144,7 +144,6 @@
 
     public void IncrementAppliance(ApplianceModel item)
     {
-        Console.WriteLine("Increment Appliance: " + item.quantity);
         item.quantity++;
         applianceService.UpdateAppliance(appliances);
     }
@@ -162,7 +161,6 @@
                 item.quantity = 0;
             }
         }
-        printNonZeroAppliances();
         applianceService.UpdateAppliance(appliances);
     }
 
@@ -187,8 +185,6 @@
             }
         }
 
-        Console.WriteLine("Different Appliance Groups: " + JsonSerializer.Serialize(differentApplianceGroups));
-
         return differentApplianceGroups;
     }
 
@@ -200,7 +196,6 @@
 
     public void AddVariant(string name, string type, int power)
     {
-        Console.WriteLine("Adding Variant");
         if(name == "")
         {
             name = "Default";
@@ -246,8 +241,6 @@
             }
         }
 
-        printNonZeroAppliances();
-
         applianceService.UpdateAppliance(appliances);
         applianceService.ClearSearch();
     }
@@ -264,7 +257,6 @@
 
     public Task SelectAppliance (string appliance)
     {
-        Console.WriteLine("Selected appliance" + appliance);
         if (appliance == selectedAppliance)
         {
             selectedAppliance = "";
