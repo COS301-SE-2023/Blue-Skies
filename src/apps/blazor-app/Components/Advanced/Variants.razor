@@ -80,14 +80,14 @@
                         <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" type="number" @bind="item.durationUsed" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" value="@item.durationUsed" type="number" @onchange="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0"  name="@item.name" id="appliancePower" type="number" @bind="item.powerUsage" @oninput="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <input min="0"  name="@item.name" id="appliancePower" type="number" value="@item.powerUsage" @onchange="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
                                 <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
                             </div>
                         </div>
@@ -126,6 +126,8 @@
     public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
     public List<CustomApplianceModel>? customAppliances { get; set; }
+    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
+    @inject BlazorApp.Data.ToastService toastService
 
     protected override void OnInitialized()
     {
@@ -134,18 +136,27 @@
 
     public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
     {
+        item.durationUsed = Convert.ToDouble(e.Value);
         Console.WriteLine("Update Appliance Duration: " + item.durationUsed);
+        applianceService.UpdateAppliance(appliances);
     }
 
     public void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
     {
+        item.powerUsage = Convert.ToInt32(e.Value);
         Console.WriteLine("Update Appliance Power: " + item.powerUsage);
+        applianceService.UpdateAppliance(appliances);
     }
 
     public void IncrementAppliance(ApplianceModel item)
     {
-        item.quantity++;
-        applianceService.UpdateAppliance(appliances);
+        if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, item) > systems[selectedSystem].inverterOutput * 1000)
+        {
+            toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
+        } else {
+            item.quantity++;
+            applianceService.UpdateAppliance(appliances);
+        }
     }
 
     public void DecrementAppliance(ApplianceModel item)
