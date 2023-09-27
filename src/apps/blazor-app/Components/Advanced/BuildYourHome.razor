@@ -9,6 +9,8 @@
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
 @inject BlazorApp.Data.TooltipService tooltipService
+@using System.Timers
+@implements IDisposable
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
@@ -256,7 +258,7 @@
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
@@ -277,7 +279,7 @@
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
                         </div>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="SetRunningHours"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
                 </div>
             }
             else
@@ -389,7 +391,7 @@
         }
         else
         {
-            <div @onclick="SetNumberOfBatteries">
+            <div @onclick="SetBatteries">
                 <Button>
                     <content>
                         Save
@@ -599,17 +601,25 @@
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
     private string applianceAnimation = "";
-
     private string applianceSearch = "";
-
     private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
-
+    private Timer panelTimer = default!;
+    private Timer batteryTimer = default!;
 
     /// <summary>
     /// On initialisation, get the user id from local storage
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        panelTimer = new Timer(100);
+        panelTimer.Elapsed += SetNumberPanels;
+        panelTimer.AutoReset = false;
+        panelTimer.Enabled = true;
+
+        batteryTimer = new Timer(100);
+        batteryTimer.Elapsed += SetNumberOfBatteries;
+        batteryTimer.AutoReset = false;
+        batteryTimer.Enabled = true;
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         userId = usId.Value;
         if (currentReport!.homeSize != null)
@@ -708,7 +718,31 @@
         SystemModalPopup.Show();
     }
 
-    private void SetNumberPanels(ChangeEventArgs e){
+    private async void SetNumberPanels(Object? source, ElapsedEventArgs e){
+        if (currentLocationData != null)
+        {
+            SetGraphicValues();
+        } 
+        await InvokeAsync(StateHasChanged);
+
+    }
+    private async void SetNumberOfBatteries(Object? source, ElapsedEventArgs e){
+        if (currentLocationData != null)
+        {
+            SetGraphicValues();
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void IDisposable.Dispose()
+    {
+        panelTimer.Dispose();
+        batteryTimer.Dispose();
+    }
+
+    private void ResetPanelTimer(ChangeEventArgs e)
+    {
+        panelTimer.Stop();
         var val = e.Value!.ToString();
         customPanels = val!;
         if (selectedSystem < 3)
@@ -721,11 +755,12 @@
         }
         selectedSystem = 3;
         systems[3].numberOfPanels =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues(); 
-
+        panelTimer.Start();
     }
-    private void SetRunningHours(ChangeEventArgs e){
+
+    private void ResetBatteryTimer(ChangeEventArgs e)
+    {
+        batteryTimer.Stop();
         var val = e.Value!.ToString();
         customBatteries = val!;
         if (selectedSystem < 3)
@@ -738,10 +773,12 @@
         }
         selectedSystem = 3;
         systems[3].numberOfBatteries =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues();
+        batteryTimer.Start();
     }
 
+    private void UpdateSelectedSystem(){
+        selectedSystemChanged.InvokeAsync(3);
+    }
     public void SetPanels()
     {
         isNumericValue = true;
@@ -773,7 +810,7 @@
 
     }
 
-    public void SetNumberOfBatteries()
+    public void SetBatteries()
     {
         isNumericValue = true;
         try
