@@ -1,32 +1,47 @@
 @using BlazorApp.FancyData
+@inject BlazorApp.Data.TooltipService tooltipService
 @namespace BlazorApp.EnviromentImpact
 
 <Card css="w-full gap-10 flex flex-col">
     <h1 class="text-primary-950 font-semibold text-start text-xl">Enviroment Impact Over 10 Years</h1>
     <div class="w-full grid grid-cols-2 gap-2">
 
-        <div class="flex w-full gap-4">
+        <div class="flex w-full gap-4 has-tooltip">
+            <Tooltip>
+                <p>@tooltipService.SetCustomTooltip("Total power generated")</p>
+            </Tooltip>
             <Image ImageName="Bolt-Circle.svg" css="w-8 h-8" alt="Bolt"/>
             <p class="my-auto">@totalPowerSaved kW</p>
         </div>
 
-        <div class="flex w-full gap-4">
+        <div class="flex w-full gap-4 has-tooltip">
+            <Tooltip>
+                <p>@tooltipService.SetCustomTooltip("Total Carbon not emmitted ")</p>
+            </Tooltip>
             <Image ImageName="CO2.svg" css="w-8 h-8" alt="CO2"/>
             <p class="my-auto">@totalCO2Saved kg</p>
         </div>
 
-
-        <div class="flex w-full gap-4">
+        <div class="flex w-full gap-4 has-tooltip">
+             <Tooltip>
+                <p>@tooltipService.SetCustomTooltip("Total water saved")</p>
+            </Tooltip>
             <Image ImageName="Waterdrops.svg" css="w-8 h-8" alt="Waterdrops"/>
             <p class="my-auto">@totalWaterSaved L</p>
         </div>
 
-        <div class="flex w-full gap-4">
+        <div class="flex w-full gap-4 has-tooltip">
+             <Tooltip>
+                <p>@tooltipService.SetCustomTooltip("Total coal not burnt")</p>
+            </Tooltip>
             <Image ImageName="Coal.svg" css="w-8 h-8" alt="Coal"/>
             <p class="my-auto">@totalCoalNotBurnt kg</p>
         </div>
         
-        <div class="flex w-full gap-4">
+        <div class="flex w-full gap-4 has-tooltip">
+             <Tooltip>
+                <p>@tooltipService.SetCustomTooltip("Total trees not cut down")</p>
+            </Tooltip>
             <Image ImageName="Tree.svg" css="w-8 h-8" alt="Tree"/>
             <p class="my-auto">@totalTreesPlanted</p>
         </div>

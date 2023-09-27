@@ -9,6 +9,8 @@
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.ApplianceService applianceService
 @inject BlazorApp.Data.TooltipService tooltipService
+@using System.Timers
+@implements IDisposable
 
 
 <div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
@@ -25,7 +27,7 @@
             } else {
                 <h2 class="text-sm mb-2 font-medium text-gray-900">Home size</h2>
                 <select @onchange="ApplyTemplate" id="selectHome"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5">
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5 hover:cursor-pointer">
                     <option disabled selected value="1">Select a template</option>
                     <option value="2">2 Bedroom House</option>
                     <option value="3">3 Bedroom House</option>
@@ -93,8 +95,7 @@
                 }
                 else
                 {
-            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
-
+                <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
                     @for (int i = 0; i < 8; i++)
                     {
                         <div class="justify-center">
@@ -109,7 +110,7 @@
                             </div>
                         </div>
                     }
-            </div>
+                </div>
                 }
         </div>
     </div>
@@ -174,15 +175,15 @@
                         var large = systems[2].inverterOutput + "kw";
                     }
                                 <div onclick="@(() => SetSystemSize(0))"
-                                    class=" flex shadow-md transition-all duration-500  @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class=" font-semibold">@small</p>
                                 </div>
                                 <div onclick="@(() => SetSystemSize(1))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class="font-semibold">@medium</p>
                                 </div>
                                 <div onclick="@(() => SetSystemSize(2))"
-                                    class="flex shadow-md transition-all duration-500 @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
                                     <p class="font-semibold">@large</p>
                                 </div>
                             </div>
@@ -262,7 +263,7 @@
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="SetNumberPanels"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
@@ -283,7 +284,7 @@
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
                         </div>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="SetRunningHours"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
                 </div>
             }
             else
@@ -346,11 +347,11 @@
                     @{
                         if (dlh == (24 - daylight))
                         {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                            <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
                         }
                         else
                         {
-                                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                         }
                     }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
@@ -395,7 +396,7 @@
         }
         else
         {
-            <div @onclick="SetNumberOfBatteries">
+            <div @onclick="SetBatteries">
                 <Button>
                     <content>
                         Save
@@ -603,17 +604,25 @@
     private double chargingLimitPercentage = 50.0;
     private int appliancesPage = 0;
     private string applianceAnimation = "";
-
     private string applianceSearch = "";
-
     private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
-
+    private Timer panelTimer = default!;
+    private Timer batteryTimer = default!;
 
     /// <summary>
     /// On initialisation, get the user id from local storage
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        panelTimer = new Timer(100);
+        panelTimer.Elapsed += SetNumberPanels;
+        panelTimer.AutoReset = false;
+        panelTimer.Enabled = true;
+
+        batteryTimer = new Timer(100);
+        batteryTimer.Elapsed += SetNumberOfBatteries;
+        batteryTimer.AutoReset = false;
+        batteryTimer.Enabled = true;
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         userId = usId.Value;
         if (currentReport!.homeSize != null)
@@ -713,7 +722,31 @@
         SystemModalPopup.Show();
     }
 
-    private void SetNumberPanels(ChangeEventArgs e){
+    private async void SetNumberPanels(Object? source, ElapsedEventArgs e){
+        if (currentLocationData != null)
+        {
+            SetGraphicValues();
+        } 
+        await InvokeAsync(StateHasChanged);
+
+    }
+    private async void SetNumberOfBatteries(Object? source, ElapsedEventArgs e){
+        if (currentLocationData != null)
+        {
+            SetGraphicValues();
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void IDisposable.Dispose()
+    {
+        panelTimer.Dispose();
+        batteryTimer.Dispose();
+    }
+
+    private void ResetPanelTimer(ChangeEventArgs e)
+    {
+        panelTimer.Stop();
         var val = e.Value!.ToString();
         customPanels = val!;
         if (selectedSystem < 3)
@@ -726,11 +759,12 @@
         }
         selectedSystem = 3;
         systems[3].numberOfPanels =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues(); 
-
+        panelTimer.Start();
     }
-    private void SetRunningHours(ChangeEventArgs e){
+
+    private void ResetBatteryTimer(ChangeEventArgs e)
+    {
+        batteryTimer.Stop();
         var val = e.Value!.ToString();
         customBatteries = val!;
         if (selectedSystem < 3)
@@ -743,10 +777,12 @@
         }
         selectedSystem = 3;
         systems[3].numberOfBatteries =  int.Parse(val!);
-        selectedSystemChanged.InvokeAsync(selectedSystem);
-        SetGraphicValues();
+        batteryTimer.Start();
     }
 
+    private void UpdateSelectedSystem(){
+        selectedSystemChanged.InvokeAsync(3);
+    }
     public void SetPanels()
     {
         isNumericValue = true;
@@ -778,7 +814,7 @@
 
     }
 
-    public void SetNumberOfBatteries()
+    public void SetBatteries()
     {
         isNumericValue = true;
         try

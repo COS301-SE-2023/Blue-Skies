@@ -9,7 +9,38 @@
         @* <Image ImageName="Hero Image.jpg" css="absolute z-10 rounded-3xl" />
         <Image ImageName="Image Container.jpg" css="scale-150 translate-x-60 blur-lg" /> *@
         <Image ImageName="LandingGraphic.svg" css="scale-125" alt="Landing Graphic"/>
+        <div class="text-center">
+            <p class="mt-6 text-lg leading-8 text-gray-600 mb-5">@countdownValue</p>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+@code {
+    int countdownValue = 100;
+    int countDownUntil = 61;
+    int countDownUntilStart = 10;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Countdown();
+    }
+
+   private async Task Countdown()
+{
+    while (countdownValue > countDownUntil)
+    {
+        await Task.Delay(10);
+
+        double scaleFactor = 1.0 - (countdownValue - countDownUntil) / (double)(countdownValue - countDownUntilStart);
+
+        int delay = (int)Math.Round(50 * scaleFactor);
+
+        await Task.Delay(delay);
+
+        countdownValue--;
+        StateHasChanged();
+    }
+}
+}

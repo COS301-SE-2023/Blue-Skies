@@ -1259,6 +1259,10 @@ video {
   margin-top: 20rem;
 }
 
+.mt-12 {
+  margin-top: 3rem;
+}
+
 .block {
   display: block;
 }
@@ -1397,6 +1401,10 @@ video {
 
 .h-\[300px\] {
   height: 300px;
+}
+
+.h-\[30px\] {
+  height: 30px;
 }
 
 .h-\[30rem\] {
@@ -1660,6 +1668,10 @@ video {
   width: 360px;
 }
 
+.w-\[388px\] {
+  width: 388px;
+}
+
 .w-\[420px\] {
   width: 420px;
 }
@@ -1872,6 +1884,11 @@ video {
 
 .translate-x-60 {
   --tw-translate-x: 15rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.translate-x-full {
+  --tw-translate-x: 100%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -2492,11 +2509,6 @@ video {
 .bg-primary-900 {
   --tw-bg-opacity: 1;
   background-color: rgb(31 53 91 / var(--tw-bg-opacity));
-}
-
-.bg-red-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(252 165 165 / var(--tw-bg-opacity));
 }
 
 .bg-red-accent-100 {
@@ -3220,11 +3232,13 @@ video {
 .tooltip {
   position: absolute;
   opacity: 0;
+  display: none;
 }
 
 .has-tooltip:hover .tooltip {
   opacity: 1;
   z-index: 50;
+  display: block ;
 }
 
 j
