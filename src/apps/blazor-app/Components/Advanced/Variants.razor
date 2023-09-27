@@ -44,12 +44,11 @@
                 </div>
             </div>
 
-            @foreach (var item in customAppliancesWithCounts!)
+            @foreach (var item in getCumstomAppliancesList()!)
             {
                 if (item.type == selectedAppliance)
                 {
                     <div class="flex gap-4">
-
                         <div class="flex w-fit justify-center gap-4">
                             <div class="transition-all w-full my-auto duration-300 hover:-translate-y-1" @onclick="@(() => DecrementAppliance(item))">
                                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -127,7 +126,6 @@
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
-        UpdateCustomAppliancesWithCounts();
     }
 
     public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
@@ -170,7 +168,7 @@
         applianceService.UpdateAppliance(appliances);
     }
 
-    public void UpdateAppliances(List<ApplianceModel> applianceGroups)
+    private void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
         Console.WriteLine("Update Appliances");
         // Create a dictionary to store appliance variants by type
@@ -240,17 +238,15 @@
             }
         }
 
-        UpdateCustomAppliancesWithCounts();
         StateHasChanged();
 
         Console.WriteLine(JsonSerializer.Serialize(allAppliances));
     }
-    List<ApplianceModel>? customAppliancesWithCounts;
 
     // Function to update the customAppliancesWithCounts list
-    private void UpdateCustomAppliancesWithCounts()
+    private List<ApplianceModel>? getCumstomAppliancesList()
     {
-        customAppliancesWithCounts = new List<ApplianceModel>();
+        List<ApplianceModel>? customAppliancesWithCounts = new List<ApplianceModel>();
 
         foreach (var appliance in allAppliances!)
         {
@@ -276,6 +272,11 @@
                 });
             }
         }
+
+        Console.WriteLine("All Appliances: " + JsonSerializer.Serialize(allAppliances));    
+        Console.WriteLine("----------------------------------------------------------------------------------------------------");
+        Console.WriteLine("Custom Appliances: " + JsonSerializer.Serialize(customAppliancesWithCounts));
+        return customAppliancesWithCounts;
     }
 
     public void AddVariant(string name, string type, int power)
@@ -295,8 +296,6 @@
             defaultAppliance.name = name;
             defaultAppliance.powerUsage = power;
             defaultAppliance.durationUsed = newDuration;
-
-            UpdateCustomAppliancesWithCounts();
             StateHasChanged();
         }
         else
