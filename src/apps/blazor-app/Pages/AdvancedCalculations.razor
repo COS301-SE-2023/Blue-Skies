@@ -65,19 +65,35 @@
             <TabSkeleton />
             
         } else {
-            <div class="relative flex flex-col justify-evenly items-center w-full mx-auto my-7">
-                <div @onclick="ResetCalculation" class="w-full cursor-pointer">
-                    <Button css="h-14 w-60 mx-auto right-10" style="outline">
-                        <content>
-                            <p>Reset</p>
-                        </content>
-                    </Button>
+            <div class="relative flex flex-col lg:flex-row justify-evenly items-center w-full gap-4 lg:gap-0 mx-auto my-7">
+                <div class="flex flex-col sm:flex-row gap-2 w-full">
+                    <div @onclick="ResetCalculation" class="w-full cursor-pointer">
+                        <Button css="h-14 w-2/3 max-w-xs mx-auto right-10" style="outline">
+                            <content>
+                                <p>Reset</p>
+                            </content>
+                        </Button>
+                    </div>
+                    <div @onclick="SaveCalculation" class="w-full  block lg:hidden cursor-pointer">
+                        <Button css="h-14 max-w-xs w-2/3 mx-auto" style="pill">
+                            <content>
+                                @if (edit)
+                                {
+                                    <p>Update calculation</p>
+                                }
+                                else
+                                {
+                                    <p>Save this calculation</p>
+                                }
+                            </content>
+                        </Button>
+                    </div>
                 </div>
                 <div class="w-full">
                     <Tabs @bind-Items="tabs"></Tabs>
                 </div>
-                <div @onclick="SaveCalculation" class="w-full cursor-pointer">
-                    <Button css="h-14 w-60 mx-auto" style="pill">
+                <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
+                    <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
                         <content>
                             @if (edit)
                             {
