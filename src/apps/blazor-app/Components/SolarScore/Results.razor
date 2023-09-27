@@ -114,8 +114,7 @@
         <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob" />
 
         @* Potential System *@
-        <Card
-            css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
+        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             @if (locationData == null)
             {
                 <PotentialSystemSkeleton />
@@ -128,95 +127,97 @@
                     </div>
                     <h1 class="text-xl text-primary-800 font-semibold mt-3">Potential Solar System with given appliances</h1>
                 </div>
-                <div class="flex gap-4 mt-4">
-                    <div class="grid scale-90 grid-cols-2 gap-2 w-full">
-                        <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges" />
-                        <Appliance name="TV" imageName="TV.svg" count="numTVs" />
-                        <Appliance name="Computer" imageName="Computer.svg" count="numComputers" />
-                        <div class="flex mx-auto has-tooltip" @onclick="showModalAppliancesPopup">
-                            <Tooltip>
-                                <p>@tooltipService.GetTooltip("solar score add button")</p>
-                            </Tooltip>
-                            <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add"
-                                imageName="AddSquare.svg" />
-                        </div>
-                    </div>
-                    <div class="flex flex-col justify-center w-full items-center gap-5">
-                        <div class="flex flex-col gap-1 has-tooltip">
-                            <Tooltip pointer="15">
-                                <p>@tooltipService.GetTooltip("average energy produced")</p>
-                            </Tooltip>
-                            <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
-                            <div class="flex gap-1 mt-3">
-                                @{
-                                    avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels,
-                                    locationData.solarPanelsData) / 365, 2);
-                                }
-                                <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
-                                <p class="text-5xl text-gray-400 font-bold">kwh</p>
-                            </div>
-                        </div>
-                        <DaylightChart hours="@dlh" daylightHours="@daylight" fullDay="true" />
-                        <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
-                            <div class="translate-y-10 w-full">
-                                <Tooltip pointer="45">
-                                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                <div class="flex w-full flex-col md:flex-row gap-10 mt-4">
+                    <div class="flex w-full flex-col sm:flex-row gap-5">
+                        <div class="grid scale-90 grid-cols-2 gap-2 w-full">
+                            <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges" />
+                            <Appliance name="TV" imageName="TV.svg" count="numTVs" />
+                            <Appliance name="Computer" imageName="Computer.svg" count="numComputers" />
+                            <div class="flex mx-auto has-tooltip" @onclick="showModalAppliancesPopup">
+                                <Tooltip>
+                                    <p>@tooltipService.GetTooltip("solar score add button")</p>
                                 </Tooltip>
+                                <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add"
+                                    imageName="AddSquare.svg" />
                             </div>
-                            <div class="flex flex-row gap-1">
-                                @{
-                                    if (dlh == daylight)
-                                    {
-                                        <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
-                                    }
-                                    else
-                                    {
-                                        <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                                    }
-                                }
-                                <p class="text-5xl text-gray-400 font-bold">h</p>
-                            </div>
-                            <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries
-                            </h3>
                         </div>
-                    </div>
-                        <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
-                            <div class="-mt-10 mb-5 w-full flex flex-col">
-                                <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
-                                    count="@numOfPanels" />
-                                <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
-                                    step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit" />
-                            </div>
-                            <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
-                                 <Tooltip pointer="27">
-                                    <p>@tooltipService.GetTooltip("battery utilisation")</p>
+                        <div class="flex flex-col justify-center w-full items-center gap-5">
+                            <div class="flex flex-col gap-1 has-tooltip">
+                                <Tooltip pointer="15">
+                                    <p>@tooltipService.GetTooltip("average energy produced")</p>
                                 </Tooltip>
-                                <div class="flex flex-col gap-2 justify-center items-center w-full">
-                                    <div
-                                        class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
-                                        @{
-                                            var percentage = chargingLimitPercentage + "%";
-                                        }
-                                        <div style="height: @percentage"
-                                            class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
-                                        </div>
-                                        <p
-                                            class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
-                                            @chargingLimitPercentage<span
-                                                class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span>
-                                        </p>
-                                        <div
-                                            class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
-                                        </div>
-                                    </div>
-                                    <p class="text-center">Battery Utilization</p>
+                                <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
+                                <div class="flex gap-1 mt-3">
+                                    @{
+                                        avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels,
+                                        locationData.solarPanelsData) / 365, 2);
+                                    }
+                                    <p class="text-5xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                                    <p class="text-5xl text-gray-400 font-bold">kwh</p>
                                 </div>
-                                <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
-                                    count="@numOfBatteries" />
                             </div>
-                            <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
-                            @bind-value="@numOfBatteries" @oninput="SetRunningHours" />
+                            <DaylightChart hours="@dlh" daylightHours="@daylight" fullDay="true" />
+                            <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
+                                <div class="translate-y-10 w-full">
+                                    <Tooltip pointer="45">
+                                        <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                                    </Tooltip>
+                                </div>
+                                <div class="flex flex-row gap-1">
+                                    @{
+                                        if (dlh == daylight)
+                                        {
+                                            <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                                        }
+                                    }
+                                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                                </div>
+                                <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries
+                                </h3>
+                            </div>
                         </div>
+                    </div>
+                    <div class="flex flex-col w-full md:w-1/2 mt-16 lg:-mt-16 justify-center items-center gap-4">
+                        <div class="-mt-10 mb-5 w-full flex flex-col">
+                            <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
+                                count="@numOfPanels" />
+                            <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
+                                step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit" />
+                        </div>
+                        <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
+                                <Tooltip pointer="27">
+                                <p>@tooltipService.GetTooltip("battery utilisation")</p>
+                            </Tooltip>
+                            <div class="flex flex-col gap-2 justify-center items-center w-full">
+                                <div
+                                    class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                    @{
+                                        var percentage = chargingLimitPercentage + "%";
+                                    }
+                                    <div style="height: @percentage"
+                                        class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
+                                    </div>
+                                    <p
+                                        class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
+                                        @chargingLimitPercentage<span
+                                            class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span>
+                                    </p>
+                                    <div
+                                        class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
+                                    </div>
+                                </div>
+                                <p class="text-center">Battery Utilization</p>
+                            </div>
+                            <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
+                                count="@numOfBatteries" />
+                        </div>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
+                        @bind-value="@numOfBatteries" @oninput="SetRunningHours" />
+                    </div>
 
                 </div>
             }
