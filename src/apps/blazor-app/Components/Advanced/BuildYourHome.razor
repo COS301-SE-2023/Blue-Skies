@@ -1051,7 +1051,14 @@
 
     public async Task UpdateCalculation()
     {
-        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, appliances))
+        var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
+        if (calcName.Value != null)
+        {
+            calculationName = calcName.Value;
+            await ProtectedSessionStore.DeleteAsync("calculationName");
+        }
+        Console.WriteLine("Update Calculation, new name: " + calculationName);
+        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances))
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
             NavigationManager.NavigateTo("/dashboard");

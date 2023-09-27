@@ -644,6 +644,7 @@ public class reportClass
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            Console.WriteLine("Report updated - specificaly the calculation name");
             return true;
         }
         else

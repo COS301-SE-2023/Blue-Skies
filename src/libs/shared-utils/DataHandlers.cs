@@ -1016,6 +1016,7 @@ public class CalculationDataHandler
     // Update Report
     public async Task<bool> UpdateCalculation(
         int reportId,
+        string newReportName,
         List<ApplianceModel> appliances)
     {
         originalAppliances = await applianceClass.GetAllAppliances();
@@ -1027,7 +1028,10 @@ public class CalculationDataHandler
         {
             return false;
         }
-
+        if(await reportClass.UpdateReport(reportId, newReportName, report.userId, report.homeSize!, report.latitude, report.longitude, report.systemId) == false)
+        {
+            return false;
+        }
         if (await reportApplianceClass.DeleteByReportId(reportId) == false)
         {
             return false;
