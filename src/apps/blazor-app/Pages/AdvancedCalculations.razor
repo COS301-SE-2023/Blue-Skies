@@ -142,13 +142,13 @@
         <div class="flex flex-row gap-4 justify-center">
         @if (edit)
         {
-            @* <div @onclick="UpdateCalculation">
+            <div @onclick="UpdateCalculation">
                 <Button>
                     <content>
                     Update
                         </content>
                 </Button>
-            </div> *@
+            </div>
         }
         else
         {
@@ -195,7 +195,6 @@
         new TabItemModel("Finance", false),
         new TabItemModel("Advanced", false)
     };
-    private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
 
     /// <summary>
@@ -265,38 +264,23 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
+            List<ApplianceModel>? tempAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
 
-            Console.WriteLine("Editing a calculation for report id: " + currentReport.reportId);
-            allAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
-            @* Print allAppliances *@
-            Console.WriteLine(JsonSerializer.Serialize(allAppliances));
-            Dictionary<string , int> applianceCountDict = new Dictionary<string, int>();
-            foreach(ApplianceModel app in allAppliances)
-            {
-                if(app.type is not null)
-                {
-                    if(applianceCountDict.ContainsKey(app.type))
-                    {
-                        applianceCountDict[app.type] += 1;
-                    }
-                    else
-                    {
-                        applianceCountDict.Add(app.type, 1);
-                    }
-                }
-                
-            }
+            Console.WriteLine("Temp Appliances: " + JsonSerializer.Serialize(tempAppliances));
 
-            foreach(ApplianceModel app in appliances)
-            {
-                if(app.type is not null)
+            Console.WriteLine("-------------------------------------");
+            if(tempAppliances != null) {
+                foreach (ApplianceModel app in tempAppliances)
                 {
-                    if(applianceCountDict.ContainsKey(app.type))
-                    {
-                        app.quantity = applianceCountDict[app.type];
+                    ApplianceModel? appliance = appliances.Find(x => x.name == app.name && x.type == app.type);
+                    if(appliance != null) {
+                        appliance.quantity = app.quantity;
+                    } else {
+                        appliances.Add(app);
                     }
                 }
             }
+            Console.WriteLine("Appliances: " + JsonSerializer.Serialize(appliances));
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
@@ -336,6 +320,8 @@
                 selectedSystem = i;
             }
         }
+
+        Console.WriteLine("Selected System" + selectedSystem);
 
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();

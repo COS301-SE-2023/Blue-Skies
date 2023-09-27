@@ -92,7 +92,7 @@ export default class ReportController {
 
   public getUserReports = (req: Request, res: Response) => {
     const { userId } = req.params;
-    const query = 'SELECT * FROM [dbo].[reports] WHERE userId = ' + userId;
+    const query = 'SELECT * FROM [dbo].[reports] WHERE userId = ' + userId + ' ORDER BY dateCreated';
     const reports: IReport[] = [];
 
     try {
@@ -188,9 +188,9 @@ export default class ReportController {
     const { reportId } = req.params;
     const { reportName, userId, homeSize, latitude, longitude, systemId } =
       req.body;
-
+    const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const query =
-      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, homeSize = '${homeSize}', latitude = ${latitude}, longitude = ${longitude}, systemId = ${systemId}` +
+      `UPDATE [dbo].[reports] SET reportName = '${reportName}', userId = ${userId}, homeSize = '${homeSize}', latitude = ${latitude}, longitude = ${longitude}, systemId = ${systemId}, dateCreated = '${dateCreated}'` +
       `WHERE reportId = ${reportId}`;
 
     try {
