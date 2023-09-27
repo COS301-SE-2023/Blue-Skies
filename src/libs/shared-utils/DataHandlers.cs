@@ -965,7 +965,9 @@ public class CalculationDataHandler
         string homeSize,
         double latitude,
         double longitude,
-        int systemId, List<ApplianceModel> appliances)
+        int systemId, 
+        List<ApplianceModel> appliances
+    )
     {
         originalAppliances = await applianceClass.GetAllAppliances();
         List<ApplianceModel> newAppliances = GetUniqueAppliances(appliances, originalAppliances);
@@ -1001,24 +1003,11 @@ public class CalculationDataHandler
         List<ApplianceModel> uniqueAppliances = new List<ApplianceModel>();
         foreach (var appliance in appliances)
         {
-
-            if (uniqueAppliances.Any(app => (app.type + app.name).Equals(appliance.type + appliance.name)))
+            var oapp = originalAppliances.Find(app => app != null && app.type != null && app.type.Equals(appliance.type));
+            if (oapp != null && appliance.quantity != 0)
             {
-                var app = uniqueAppliances.Find(app => (app.type + app.name).Equals(appliance.type + appliance.name));
-                if (app != null)
-                {
-                    app.quantity += 1;
-                }
-            }
-            else
-            {
-                var oapp = originalAppliances.Find(app => app != null && app.type != null && app.type.Equals(appliance.type));
-                if (oapp != null)
-                {
-                    appliance.applianceId = oapp.applianceId;
-                    appliance.quantity = 1;
-                    uniqueAppliances.Add(appliance);
-                }
+                appliance.applianceId = oapp.applianceId;
+                uniqueAppliances.Add(appliance);
             }
         }
         return uniqueAppliances;
@@ -1027,6 +1016,7 @@ public class CalculationDataHandler
     // Update Report
     public async Task<bool> UpdateCalculation(
         int reportId,
+        string newReportName,
         List<ApplianceModel> appliances)
     {
         originalAppliances = await applianceClass.GetAllAppliances();
@@ -1038,18 +1028,23 @@ public class CalculationDataHandler
         {
             return false;
         }
-
+        if(await reportClass.UpdateReport(reportId, newReportName, report.userId, report.homeSize!, report.latitude, report.longitude, report.systemId) == false)
+        {
+            return false;
+        }
         if (await reportApplianceClass.DeleteByReportId(reportId) == false)
         {
             return false;
         }
 
-        foreach (var appliance in newAppliances)
+        foreach (ApplianceModel appliance in newAppliances)
         {
-            await reportApplianceClass.CreateReportAppliance(
-                reportId,
-                appliance
-            );
+            if(appliance.quantity != 0) {
+                await reportApplianceClass.CreateReportAppliance(
+                    reportId,
+                    appliance
+                );
+            }
         }
 
 
@@ -1073,9 +1068,9 @@ public class CalculationDataHandler
                     name = reportAllAppliance.applianceModel,
                     powerUsage = reportAllAppliance.powerUsage,
                     durationUsed = reportAllAppliance.durationUsed,
-                    quantity = 0,
+                    quantity = reportAllAppliance.numberOfAppliances,
                     type = reportAllAppliance.type,
-                    applianceId = 0
+                    applianceId = reportAllAppliance.applianceId
                 };
                 allAppliances.Add(appliance);
             }
