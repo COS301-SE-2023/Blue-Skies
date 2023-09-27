@@ -26,39 +26,6 @@
             }
                 
         </div>
-        <div class="flex justify-center">
-            @*
-            @if (systems.Count == 0)
-            {
-                <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <div role="status" class="max-w-sm animate-pulse justify-center">
-                    <div class="h-14 bg-gray-200 rounded-full w-60 mt-6 mx-4"></div>
-                    <span class="sr-only">Loading...</span>
-                </div>
-            } else {
-             <Button css="h-14 w-60 m-4" style="outline">
-                    <content>
-                        <p @onclick="ResetCalculation">Reset</p>
-                    </content>
-                </Button>
-                <Button css="h-14 w-60 m-4" style="pill">
-                    <content>
-                        @if (edit)
-                        {
-                            <p @onclick="SaveCalculation">Update calculation</p>
-                        }
-                        else
-                        {
-                            <p @onclick="SaveCalculation">Save this calculation</p>
-                        }
-                    </content>
-                </Button> 
-            }
-                *@
-        </div>
         @if (systems.Count == 0)
         {
             <div class="relative flex justify-evenly items-center w-full mx-auto  my-7">

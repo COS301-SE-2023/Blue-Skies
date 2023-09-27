@@ -10,13 +10,21 @@
     <Subscript><p class="text-center">All calculations are derived from the monthly bill. Please keep in mind that these calculations are approximate, and costs may vary among different solar installers."</p></Subscript>
 </Heading>
 
-<div class="flex mb-10 flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
-    <p class="text-center text-white font-semibold">Please enter your monthly bill:</p>
-    <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @sliderValue</h1>
-    <input type="range" class="accent-primary-800  cursor-pointer w-2/3 " min="1000" max="7000" step="100" @bind="sliderValue" @oninput="HandleSliderChange" />
+<div class="w-full flex">
+    <div class="flex flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
+        <p class="text-center text-white font-semibold">Select your monthly bill:</p>
+        <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
+        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="HandleBillSliderChange" />
+    </div>
+    <p class="text-2xl text-center text-primary-900 font-black self-center mx-4">OR</p>
+    <div  class="flex flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
+        <p class="text-center text-white font-semibold">Select your monthly electricity usage:</p>
+        <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">@monthlyUsage kWh</h1>
+        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="400" max="2800" step="20" @bind="monthlyUsage" @oninput="HandleUsageSliderChange" />
+    </div>  
 </div>
 
-<div class="flex gap-5 justify-center items-center">
+<div class="flex gap-5 justify-center items-center mt-10">
     <div class="w-1/2 h-1/2 mt-10">
         <Chart Config="barConfig"></Chart>
     </div>
@@ -44,7 +52,8 @@
 
 @code {
     private BarConfig? barConfig;
-    private int sliderValue = 1500;
+    private int monthlyBill = 3500;
+    private int monthlyUsage = 600;
     private BarDataset<double>? dataset;
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
     private double min = 0;
@@ -113,9 +122,9 @@
         dataset.HoverBackgroundColor = "#f2f2f2";
 
         // Example data (replace with your data)
-        var systems = CalculateROI(sliderValue);
+        var systems = CalculateROI(monthlyBill);
         dataset.AddRange(systems.Select(x => x.ROI));
-        sliderValue = 1500;
+        monthlyBill = 1500;
         Highlight();
 
         foreach (var label in labels)
@@ -125,25 +134,41 @@
         barConfig.Data.Datasets.Add(dataset);
     }
 
-    private void HandleSliderChange(ChangeEventArgs e)
+    private void HandleBillSliderChange(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value!.ToString(), out int newValue))
         {
-            sliderValue = newValue;
-            var systems = CalculateROI(sliderValue);
-            dataset!.Clear();
-            dataset!.AddRange(systems.Select(x => x.ROI)); 
-            Highlight();
-            barConfig!.Data.Datasets.Clear();
-            barConfig.Data.Datasets.Add(dataset);
+            monthlyBill = newValue;
+            var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
+            monthlyUsage = (int) round * 10;
+            UpdateGraph();
         }
     }
 
+    private void HandleUsageSliderChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value!.ToString(), out int newValue))
+        {
+            monthlyUsage = newValue;
+            var round = Math.Round((monthlyUsage * 2.5) / 100.0, 0);
+            monthlyBill = (int) round * 100;
+            UpdateGraph();
+        }
+    }
+
+    private void UpdateGraph(){
+        var systems = CalculateROI(monthlyBill);
+        dataset!.Clear();
+        dataset!.AddRange(systems.Select(x => x.ROI)); 
+        Highlight();
+        barConfig!.Data.Datasets.Clear();
+        barConfig.Data.Datasets.Add(dataset);
+    }
 
     private void Highlight(int index = -1)
     {
         //calculate min roi in systems
-        var systems = CalculateROI(sliderValue);
+        var systems = CalculateROI(monthlyBill);
         min = systems.Min(x => x.ROI);
 
         if (index == -1)
