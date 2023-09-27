@@ -9,6 +9,7 @@ namespace BlazorApp.Data
 
         public void UpdateAppliance(List<ApplianceModel> appliances)
         {
+            Console.WriteLine("UpdateAppliance");
             UpdateAppliancesRequested?.Invoke(appliances);
         }
 

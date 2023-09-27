@@ -60,11 +60,11 @@
                         <div class="flex">
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
                                 <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
-                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                             <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
                                 @{
-                                    filteredAppliances = appliances.Where(app => app.type!.ToLower().Contains(applianceSearch.ToLower())).ToList();
+                                    filteredAppliances = getFilteredAppliances(applianceSearch);
                                     if(filteredAppliances.Count <= 8)
                                     {
                                         appliancesPage = 0;
@@ -74,9 +74,14 @@
                                         
                                         @if (filteredAppliances.Count > i + appliancesPage * 8)
                                         {   
+                                            int applianceQuantity = 0;
+                                            foreach (ApplianceModel app in appliances.Where(app => app.type == filteredAppliances[i + appliancesPage * 8].type))
+                                            {
+                                                applianceQuantity += app.quantity;
+                                            }
                                             ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
                                             <div @onclick="@(() => ToggleAppliance(appliance))">
-                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />     
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@applianceQuantity" />     
                                             </div>
                                         }
                                     }
@@ -84,7 +89,7 @@
                             </div>
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
                                 <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
-                                    css="w-16 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                             </div>
                         </div>
                 }
@@ -563,8 +568,6 @@
     public bool edit { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
-    [Parameter]
-    public List<ApplianceModel>? allAppliances { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -630,6 +633,7 @@
         {
             SetGraphicValues();
         }
+        applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
 
     /// <summary>
@@ -838,14 +842,10 @@
 
     private void SetGraphicValues(){
         var appliancePowerUsage = systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) / 1000.0;
-        Console.WriteLine("Appliance Power Usage: " + appliancePowerUsage);
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        Console.WriteLine("Average Energy Production: " + avgEnergyProduction);
         var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
-        Console.WriteLine("Usable Hours: " + usableHours);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        Console.WriteLine("Charging Limit: " + chargingLimit);
         if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
         {
             chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
@@ -862,7 +862,6 @@
         {
             runningHoursPercentage = 100;
         }
-        Console.WriteLine("Running Hours Percentage: " + runningHoursPercentage);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
@@ -876,7 +875,7 @@
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
 
-    private void IncrementApplianceCount(ApplianceModel appliance)
+    @* private void IncrementApplianceCount(ApplianceModel appliance)
     {
         if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) > systems[selectedSystem].inverterOutput * 1000)
         {
@@ -890,9 +889,9 @@
             SetGraphicValues();
             applianceService.UpdateAppliance(appliances);
         }
-    }
+    } *@
 
-    /// <summary>
+    @* /// <summary>
     /// On appliance count changed, update the appliance count and calculate the running hours
     /// </summary>
     private void DecrementApplianceCount(ApplianceModel appliance)
@@ -907,14 +906,30 @@
         StateHasChanged();
         UpdateApplianceStorage();
         applianceService.UpdateAppliance(appliances);
+    } *@
+
+    private void UpdateAppliances(List<ApplianceModel> applianceGroups)
+    {
+        appliances = applianceGroups;
+        SetGraphicValues();
+        StateHasChanged();
     }
 
     private void ToggleAppliance(ApplianceModel appliance)
     {
         Console.WriteLine("Toggling - " + appliance.type);
-        if (appliance.quantity > 0)
+        List<ApplianceModel> groupAppliance = appliances.Where(x => x.type == appliance.type).ToList();
+        if (groupAppliance.FindAll(x => x.quantity > 0).Count > 0)
         {
-            appliance.quantity = 0;
+            foreach (var app in groupAppliance)
+            {
+                if(app.name == "Default") 
+                {
+                    app.quantity = 0;
+                } else {
+                    appliances.Remove(app);
+                }
+            }
         }
         else
         {
@@ -948,6 +963,7 @@
     /// </summary>
     private void ApplyTemplate(ChangeEventArgs e)
     {
+        Console.WriteLine("Applying Templete");
         showCustomSystem = false;
         switch (e.Value)
         {
@@ -1052,8 +1068,8 @@
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
         int reportId = -1;
-        if(allAppliances != null) {
-            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
+        if(appliances != null) {
+            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, appliances);
         }
         if (reportId != -1)
         {
@@ -1089,7 +1105,7 @@
         applianceAnimation = "appliance-slide-out-left";
         StateHasChanged();
         await Task.Delay(100);
-        if(appliancesPage != Math.Ceiling(appliances.Count / 8.0) - 1){
+        if(appliancesPage != Math.Ceiling(getFilteredAppliances(applianceSearch).Count / 8.0) - 1){
             appliancesPage++;
         } else {
             appliancesPage = 0;
@@ -1104,9 +1120,13 @@
         if(appliancesPage != 0){
             appliancesPage--;
         } else {
-            appliancesPage = (int) Math.Ceiling(appliances.Count / 8.0) - 1;
+            appliancesPage = (int) Math.Ceiling(getFilteredAppliances(applianceSearch).Count / 8.0) - 1;
         }
         applianceAnimation = "appliance-slide-in-left";
         StateHasChanged();
+    }
+
+    private List<ApplianceModel> getFilteredAppliances(string search) {
+        return appliances.Where(app => app.type!.ToLower().Contains(search.ToLower()) && app.name == "Default").ToList();
     }
 }
