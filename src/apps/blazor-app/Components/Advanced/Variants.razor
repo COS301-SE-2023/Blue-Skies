@@ -10,11 +10,17 @@
     <div class="flex  gap-20 scale-90 w-full bg-red-300 overflow-hidden justify-center">
         @if (appliances != null)
         {
+            if(appliances.FindAll(x => x.quantity > 0 && x.type == selectedAppliance).Count == 0) {
+                selectedAppliance = "";
+            }
             applianceCount = appliances.Count(x => x.quantity > 0);
             @foreach (var appliance in GetDifferentApplianceGroups())
             {
                 if (appliance.quantity > 0)
                 {
+                    if(selectedAppliance == "" && appliance.type != null) {
+                        selectedAppliance = appliance.type;
+                    }
                     <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100 h-40" : "") p-3 rounded-2xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
                         <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
                     </div>
