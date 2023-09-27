@@ -131,10 +131,13 @@
                                     <div class="flex gap-2">
                                         <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
                                         <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer"
-                            @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
+                                         @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                                     </div>
                                     <div
-                                        class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                                        class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
+                                        <Tooltip>
+                                            <p>@tooltipService.GetTooltip("potential savings")</p>
+                                        </Tooltip>
                                         <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
                                             <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                                             <p class="text-center text-xl font-bold text-primary-200">Savings</p>
@@ -142,9 +145,9 @@
                                         <div
                                             class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
                                             <p class="text-center text-xl font-bold">R </p>
-                                @{
-                                    var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
-                                }
+                                                @{
+                                                    var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
+                                                }
                                             <p class="text-center text-xl font-bold">@savings</p>
                                             <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
                                         </div>
@@ -374,37 +377,50 @@
                                 </div>
                                     <div class="flex flex-col w-full justify-center items-center gap-4 -mt-10">
                                         <div class="-mt-10 mb-2 w-full flex flex-col">
-                                            <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
-                                                count="@numOfPanels" />
+                                            <div class="has-tooltip">
+                                                <Tooltip pointer="45">
+                                                    <p>@tooltipService.GetTooltip("number of panels")</p>
+                                                </Tooltip>
+                                                <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
+                                                    count="@numOfPanels" />
+                                            </div>
                                             <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20"
                                                 step="1" @bind-value="numOfPanels" @oninput="ResetPanelTimer"/>
                                         </div>
-                                        <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
-                                             <Tooltip pointer="27">
-                                                <p>@tooltipService.GetTooltip("battery utilisation")</p>
-                                            </Tooltip>
+                                        <div class="flex gap-2 pr-2 justify-start items-start">
                                             <div class="flex flex-col gap-2 justify-center items-center w-full">
-                                                <div
-                                                    class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
-                                    @{
-                                        var percentage = chargingLimitPercentage + "%";
-                                    }
-                                                    <div style="height: @percentage"
-                                                        class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
-                                                    </div>
-                                                    <p
-                                                        class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
-                                        @chargingLimitPercentage<span
-                                                            class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span>
-                                                    </p>
-                                                    <div
-                                                        class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
+                                                <div class="has-tooltip">
+                                                    <Tooltip pointer="10">
+                                                        <p>@tooltipService.GetTooltip("battery utilisation")</p>
+                                                    </Tooltip>
+                                                    <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                                            @{
+                                                                var percentage = chargingLimitPercentage + "%";
+                                                            }
+                                                        <div style="height: @percentage"
+                                                            class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
+                                                        </div>
+                                                            <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
+                                                            <p
+                                                                class='@(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
+                                                                         @chargingLimitPercentage
+                                                            </p>
+                                                            <p class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</p>
+                                                        </div>
+                                                        <div
+                                                            class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <p class="text-center">Battery Utilization</p>
                                             </div>
-                                            <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
-                                                count="@numOfBatteries" />
+                                            <div class="has-tooltip">
+                                                <Tooltip>
+                                                    <p>@tooltipService.GetTooltip("solarScore")</p>
+                                                </Tooltip>
+                                                <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
+                                                    count="@numOfBatteries" />
+                                            </div>
                                         </div>
                                         <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
                         @bind-value="numOfBatteries" @oninput="ResetBatteryTimer" />

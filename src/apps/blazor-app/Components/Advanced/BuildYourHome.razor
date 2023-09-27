@@ -849,6 +849,9 @@
         {
             chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
             chargingLimitPercentage = 100;
+        } else if (appliancePowerUsage >= avgEnergyProduction) {
+            chargingLimitPercentage = 0;
+            chargingLimit = 0;
         } else
         {
             chargingLimitPercentage = (chargingLimit / (systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)) * 100;

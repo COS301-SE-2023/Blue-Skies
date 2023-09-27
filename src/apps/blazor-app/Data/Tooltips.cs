@@ -11,6 +11,8 @@ namespace BlazorApp.Data {
             tooltips["running hours on batteries"] = "The total time in which you can run the chosen appliances exclusively using battery power.";
             tooltips["battery utilisation"] = "The maximum percentage your batteries can charge, while running the selected appliances.";
             tooltips["solar score add button"] = "Add or remove appliances";
+            tooltips["number of panels"] = "Affects your average energy production and how quickly you can charge your batteries while running appliances.";
+            tooltips["number of batteries"] = "Affects how much energy you can store and how long you can run your appliances.";
         }
 
         public string GetTooltip(string key)
