@@ -19,7 +19,7 @@
         </Subscript>
     </Heading>
 </div>
-<div class="flex w-full flex-nowrap gap-4 flex-row justify-center mt-4 md:mt-20">
+<div class="flex w-full flex-nowrap gap-4 flex-col xl:flex-row items-center justify-center mt-4 md:mt-20">
     @* Map Container *@
     <div class="relative sm:flex-shrink-0 gap-5 items-center flex flex-col justify-center w-full max-w-lg">
         <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-10" alt="Rob" />
@@ -33,25 +33,30 @@
         }
         @if (locationData != null)
         {
-            <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
-            <Button style="pill">
-                <content>
-                    <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                        <p class="my-auto">More Calculations </p>
-                        <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
-                    </div>
-                </content>
-            </Button>
+            <div class="w-full pl-2  -mt-6 mb-6 lg:mb-0">
+                <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
+            </div>
+            <div class="hidden lg:block mb-6">
+                <Button style="pill">
+                    <content>
+                        <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
+                            <p class="my-auto">More Calculations </p>
+                            <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+                        </div>
+                    </content>
+                </Button>
+            </div>
         }
         else
         {
             <LocationSkeleton />
         }
     </div>
-    <div class="relative w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
-        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-16 z-0 h-32" alt="Rob" />
-        <Card
-            css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
+
+    @* Solar Score and Potential Savings *@
+    <div class="relative w-full xl:w-3/5 flex flex-col sm:flex-shrink-0 gap-5 ">
+        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24  -top-11 lg:-top-16 z-0 h-32" alt="Rob" />
+        <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             @if (solarScore == -1)
             {
                 <SolarScoreSkeleton />
@@ -71,16 +76,24 @@
                     <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
                     <p class="text-5xl text-gray-400 font-bold">%</p>
                 </div>
-                <div class="flex gap-2 justify-end absolute top-3 right-5">
-                    <div class="flex gap-3 justify-end items-end flex-col">
-                        <div class="flex gap-2">
+                <div
+                    class="w-full mb-4 relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
+                    @{
+                        var percentage = solarScore + "%";
+                    }
+                    <div style="left: @percentage"
+                        class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 ">
+                    </div>
+                </div>
+                <div class="flex gap-2 w-full md:w-fit justify-end md:absolute md:top-3 md:right-5">
+                    <div class="flex w-full md:w-fit gap-3 justify-end items-end flex-col">
+                        <div class="flex flex-col md:flex-row w-full gap-2">
                             <p class="text-primary-800">Savings Calculations Based on an Average Bill of R4500,</p>
                             <p class="text-orange-accent-600 hover:text-primary-500 cursor-pointer"
                             @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                         </div>
-                        <div
-                            class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
-                            <div class="w-full h-full flex gap-2 justify-center items-center my-auto rounded-2xl">
+                        <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl">
+                            <div class="w-full h-full flex flex-col lg:flex-row gap-2 justify-center items-center my-auto rounded-2xl">
                                 <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                                 <p class="text-center text-xl font-bold text-primary-200">Savings</p>
                             </div>
@@ -96,18 +109,11 @@
                         </div>
                     </div>
                 </div>
-                <div
-                    class="w-full relative h-3 mt-3 rounded-full bg-gradient-to-r from-red-accent-500 via-yellow-accent-500 to-green-500">
-                    @{
-                        var percentage = solarScore + "%";
-                    }
-                    <div style="left: @percentage"
-                        class="h-6 w-2 rounded-full bg-primary-600 absolute top-1/2 -translate-y-1/2 transition-all duration-900 ">
-                    </div>
-                </div>
             }
         </Card>
         <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob" />
+
+        @* Potential System *@
         <Card
             css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             @if (locationData == null)
