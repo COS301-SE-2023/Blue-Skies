@@ -9,7 +9,7 @@
 </div>
 
 <div class="relative fade-active h-full w-full">
-    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Advanced Calculation Page</h1>
+    <h1 class="text-white text-4xl text-center font-bold tracking-wide mt-10">Calculation Page</h1>
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("Appliances"))'>
             <Button css='@(selectedTutorialName == "Appliances" || selectedTutorialName == "Variants"  || selectedTutorialName == "SelectTemplate" || selectedTutorialName == "RunnableHours" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
@@ -28,7 +28,7 @@
         <div @onclick='@(() => SelectTutorial("FancyData"))'>
             <Button css='@(selectedTutorialName == "FancyData" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <content>
-                    <p>Fancy Data</p>
+                    <p>Advanced</p>
                 </content>
             </Button>
         </div>
@@ -152,7 +152,7 @@
         StateHasChanged();
     }
     TypewriterBuilder typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-        .TypeString("Select a specific section of the Advanced Calculation page that you require assistance with, and I will guide you through its functionality step by step.", 10);
+        .TypeString("Select a specific section of the Calculation page that you require assistance with, and I will guide you through its functionality step by step.", 10);
 
     private void GoBack()
     {
