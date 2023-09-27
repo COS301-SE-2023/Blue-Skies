@@ -1436,6 +1436,10 @@ video {
   height: 100vh;
 }
 
+.h-\[36px\] {
+  height: 36px;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -2287,6 +2291,10 @@ video {
 
 .rounded-xl {
   border-radius: 0.75rem;
+}
+
+.rounded-sm {
+  border-radius: 0.125rem;
 }
 
 .rounded-b-3xl {

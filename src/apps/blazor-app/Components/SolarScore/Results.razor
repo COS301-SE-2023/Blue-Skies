@@ -42,14 +42,16 @@
         @if (locationData != null)
         {
                         <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
-                        <Button style="pill">
-                            <content>
-                                <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                                    <p class="my-auto">More Calculations </p>
-                                    <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
-                                </div>
-                            </content>
-                        </Button>
+                            <div @onclick="ShowModalCalculation">
+                            <Button style="pill">
+                                <content>
+                                    <div class="flex gap-4 px-3 py-1">
+                                        <p class="my-auto">More Calculations </p>
+                                        <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+                                    </div>
+                                </content>
+                            </Button>
+                        </div>
         }
         else
         {
@@ -435,16 +437,16 @@
         calculations,
         please log in to our website. Your login helps us tailor our services to your specific needs.</p>
     <div class="flex flex-row gap-4 justify-center">
+        <div @onclick="ModalPopupLogIn.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
         <div @onclick="NavigateToLogin">
             <Button style="pill">
                 <content>
                     Log in
                 </content>
-            </Button>
-        </div>
-        <div @onclick="ModalPopupLogIn.Dismiss">
-            <Button style="outline">
-                <content>Cancel</content>
             </Button>
         </div>
     </div>
@@ -458,8 +460,8 @@
                 <content>Cancel</content>
             </Button>
         </div>
-        <div @onclick="NavigateToAdnavced">
-            <Button style="pill"  css="w-40">
+        <div @onclick="NavigateToAdvanced">
+            <Button style="pill" css="w-40">
                 <content>
                     Calculations
                 </content>
@@ -541,7 +543,6 @@
         await InvokeAsync(StateHasChanged);
     }
 
-
     private async void SetRunningHours(Object? source, ElapsedEventArgs e)
     {
         if (locationData != null)
@@ -595,19 +596,31 @@
         else
         {
             ModalPopupLogIn.Show();
+            StateHasChanged();
         }
     }
 
-    private void showModalAppliancesPopup()
+    private async void showModalAppliancesPopup()
     {
-        ModalPopupAppliances.Show();
+        var logIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        bool isLoggedIn = logIn.Value;
+        if (isLoggedIn)
+        {
+            ModalPopupAppliances.Show();
+        }
+        else
+        {
+            ModalPopupLogIn.Show();
+        }
+        StateHasChanged();
     }
-    private void NavigateToLogin()
+    private async void NavigateToLogin()
     {
+        await ProtectedSessionStore.SetAsync("redirect", "advanced");
         ModalPopupLogIn.Dismiss();
         NavigationManager.NavigateTo("/Login");
     }
-    private void NavigateToAdnavced()
+    private void NavigateToAdvanced()
     {
         ModalPopupAppliances.Dismiss();
         NavigationManager.NavigateTo("/advanced");
