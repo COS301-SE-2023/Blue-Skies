@@ -9,6 +9,7 @@
 @using BlazorApp.Components
 @using BlazorApp.FancyData
 @inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.ApplianceService applianceService;
 
 <PageTitle>Advanced Calculations</PageTitle>
 <div class="fade-in-enter-active overflow-visible">
@@ -179,7 +180,7 @@
     private bool logIn = false;
     private bool isAd = false;
     private bool edit = false;
-    private List<ApplianceModel>? appliances;
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
@@ -224,6 +225,8 @@
         {
             NavigationManager.NavigateTo("/admin/keys");
         }
+
+        applianceService.UpdateAppliancesRequested += UpdateAppliances;
 
         @* Get the current report either half populated from the solarScore page or a fully populated if editing an existing report *@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
@@ -362,5 +365,10 @@
     public void ResetCalculation()
     {
         buildYourHomeComponent!.ResetHome();
+    }
+
+    private void UpdateAppliances(List<ApplianceModel> applianceGroups)
+    {
+        appliances = applianceGroups;
     }
 }
