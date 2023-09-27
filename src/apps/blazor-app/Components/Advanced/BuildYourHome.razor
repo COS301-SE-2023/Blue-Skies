@@ -567,8 +567,6 @@
     public bool edit { get; set; }
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
-    [Parameter]
-    public List<ApplianceModel>? allAppliances { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
@@ -1030,8 +1028,8 @@
             Console.WriteLine("Custom System ID: " + systems[3].systemId);
         }
         int reportId = -1;
-        if(allAppliances != null) {
-            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, allAppliances);
+        if(appliances != null) {
+            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, appliances);
         }
         if (reportId != -1)
         {
