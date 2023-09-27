@@ -1051,11 +1051,9 @@
 
     public async Task UpdateCalculation()
     {
-        if (await reportClass.UpdateReport(currentReport!.reportId, calculationName!, userId, homeSize, currentReport.latitude, currentReport.longitude, systems[selectedSystem].systemId))
-
+        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, appliances))
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
-            await ProtectedSessionStore.SetAsync("currentReport", currentReport!.reportId);
             NavigationManager.NavigateTo("/dashboard");
         }
         else
