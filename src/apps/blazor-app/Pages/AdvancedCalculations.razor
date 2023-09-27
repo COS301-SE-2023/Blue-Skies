@@ -10,6 +10,7 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Advanced.Skeletons
 @inject BlazorApp.Data.ToastService toastService;
+@inject BlazorApp.Data.ApplianceService applianceService;
 
 <PageTitle>Advanced Calculations</PageTitle>
 
@@ -78,8 +79,8 @@
         <div class="w-full">
             @if(tabs[0].active) {
                 <div class="fade-in-active">
-                    <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
-                    <Variants allAppliances="@allAppliances"  @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
+                    <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                 </div>
             }
             else if (tabs[1].active)
@@ -115,13 +116,13 @@
         <div class="flex flex-row gap-4 justify-center">
         @if (edit)
         {
-            @* <div @onclick="UpdateCalculation">
+            <div @onclick="UpdateCalculation">
                 <Button>
                     <content>
                     Update
                         </content>
                 </Button>
-            </div> *@
+            </div>
         }
         else
         {
@@ -153,7 +154,7 @@
     private bool logIn = false;
     private bool isAd = false;
     private bool edit = false;
-    private List<ApplianceModel>? appliances;
+    private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
@@ -168,7 +169,6 @@
         new TabItemModel("Finance", false),
         new TabItemModel("Advanced", false)
     };
-    private List<ApplianceModel> allAppliances = new List<ApplianceModel>();
 
 
     /// <summary>
@@ -198,6 +198,8 @@
         {
             NavigationManager.NavigateTo("/admin/keys");
         }
+
+        applianceService.UpdateAppliancesRequested += UpdateAppliances;
 
         @* Get the current report either half populated from the solarScore page or a fully populated if editing an existing report *@
         var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
@@ -236,38 +238,23 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
+            List<ApplianceModel>? tempAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
 
-            Console.WriteLine("Editing a calculation for report id: " + currentReport.reportId);
-            allAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
-            @* Print allAppliances *@
-            Console.WriteLine(JsonSerializer.Serialize(allAppliances));
-            Dictionary<string , int> applianceCountDict = new Dictionary<string, int>();
-            foreach(ApplianceModel app in allAppliances)
-            {
-                if(app.type is not null)
-                {
-                    if(applianceCountDict.ContainsKey(app.type))
-                    {
-                        applianceCountDict[app.type] += 1;
-                    }
-                    else
-                    {
-                        applianceCountDict.Add(app.type, 1);
-                    }
-                }
-                
-            }
+            Console.WriteLine("Temp Appliances: " + JsonSerializer.Serialize(tempAppliances));
 
-            foreach(ApplianceModel app in appliances)
-            {
-                if(app.type is not null)
+            Console.WriteLine("-------------------------------------");
+            if(tempAppliances != null) {
+                foreach (ApplianceModel app in tempAppliances)
                 {
-                    if(applianceCountDict.ContainsKey(app.type))
-                    {
-                        app.quantity = applianceCountDict[app.type];
+                    ApplianceModel? appliance = appliances.Find(x => x.name == app.name && x.type == app.type);
+                    if(appliance != null) {
+                        appliance.quantity = app.quantity;
+                    } else {
+                        appliances.Add(app);
                     }
                 }
             }
+            Console.WriteLine("Appliances: " + JsonSerializer.Serialize(appliances));
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
@@ -308,6 +295,8 @@
             }
         }
 
+        Console.WriteLine("Selected System" + selectedSystem);
+
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
     }
@@ -336,5 +325,10 @@
     public void ResetCalculation()
     {
         buildYourHomeComponent!.ResetHome();
+    }
+
+    private void UpdateAppliances(List<ApplianceModel> applianceGroups)
+    {
+        appliances = applianceGroups;
     }
 }

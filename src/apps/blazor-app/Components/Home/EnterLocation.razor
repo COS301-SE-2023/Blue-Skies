@@ -105,9 +105,9 @@
                 checkIfLocationDataExists = await locationDataClass.CheckIfLocationDataExists(latitude, longitude);
                 if (checkIfLocationDataExists == false)
                 {
+                    loadingService.ShowLoadingScreen();
                     Console.WriteLine("Location data does not exist, creating the necessary data");
                     currentLocationData = await locationDataClass.CreateLocationData(latitude, longitude, location);
-                    loadingService.ShowLoadingScreen();
                 }
                 else
                 {
@@ -118,6 +118,7 @@
                 {
                     toastService.ShowToast("Could not find data for this location", "Try another location", "error");
                     NavigationManager.NavigateTo("/");
+                    loadingService.HideLoadingScreen();
                 }
                 else
                 {
@@ -142,6 +143,7 @@
             {
                 toastService.ShowToast("Could not make connection to the database", "Try again later", "error");
                 NavigationManager.NavigateTo("/");
+                loadingService.HideLoadingScreen();
             }
         }
     }

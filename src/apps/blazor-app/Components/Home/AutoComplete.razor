@@ -1,6 +1,8 @@
 @using System.Net.Http
 @using System.Net.Http.Json
 @using Microsoft.JSInterop
+@using System.Timers
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject ProtectedSessionStorage ProtectedSessionStorage
 
@@ -21,7 +23,6 @@
         <input
             class="pl-10 md:pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
             type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @oninput="OnSearchInput" @onblur="HideSuggestions" placeholder="Enter your address" />
-
     </div>
     <div class="absolute z-50 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
         <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
@@ -73,6 +74,14 @@
     public EventCallback<string> SearchQueryChanged { get; set; }
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private Timer aTimer = default!;
+
+    protected override void OnInitialized(){
+        aTimer = new Timer(100);
+        aTimer.Elapsed += Search;
+        aTimer.AutoReset = false;
+        aTimer.Enabled = true;
+    }
 
     private async void OnSuggestionClick(LocationSuggestion suggestion)
     {
@@ -93,16 +102,14 @@
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'block';");
     }
 
-    private async Task OnSearchInput(ChangeEventArgs e)
+    private async void Search(Object? source, ElapsedEventArgs e)
     {
         cancellationTokenSource.Cancel();
         
         cancellationTokenSource = new CancellationTokenSource();
 
-        if (e.Value != null && e.Value.ToString() != "")
+        if (!searchQuery.Equals(""))
         {
-            searchQuery = e.Value.ToString()!;
-            await SearchQueryChanged.InvokeAsync(searchQuery);
             try
             {
                 suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery), cancellationTokenSource.Token);
@@ -116,5 +123,14 @@
         {
             suggestions = new List<LocationSuggestion>();
         }
+        await InvokeAsync( StateHasChanged );
+    }
+
+    void IDisposable.Dispose() => aTimer.Dispose();
+
+    private void ResetTimer(KeyboardEventArgs e){
+        SearchQueryChanged.InvokeAsync(searchQuery);
+        aTimer.Stop();
+        aTimer.Start();
     }
 }

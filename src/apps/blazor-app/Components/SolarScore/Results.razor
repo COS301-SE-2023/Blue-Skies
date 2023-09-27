@@ -7,6 +7,8 @@
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TooltipService tooltipService
+@using System.Timers
+@implements IDisposable
 
 
 <div class="mt-24 text-center">
@@ -25,7 +27,7 @@
         <Image ImageName="Robert_Welcoming.png" css="absolute left-20 z-0 h-28 top-10" alt="Rob" />
         @if (satteliteImage != null)
         {
-            <Map css="scale-90 z-10" ImageName="@satteliteImage" />
+                        <Map css="scale-90 z-10" ImageName="@satteliteImage" />
         }
         else
         {
@@ -97,14 +99,9 @@
                                 <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                                 <p class="text-center text-xl font-bold text-primary-200">Savings</p>
                             </div>
-                            <div
-                                class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
-                                <p class="text-center text-xl font-bold">R </p>
-                                @{
-                                    var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
-                                }
-                                <p class="text-center text-xl font-bold">@savings</p>
-                                <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
+                            <div class="flex gap-1 mt-3">
+                                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
+                                <p class="text-5xl text-gray-400 font-bold">%</p>
                             </div>
                         </div>
                     </div>
@@ -229,6 +226,11 @@
         calculations,
         please log in to our website. Your login helps us tailor our services to your specific needs.</p>
     <div class="flex flex-row gap-4 justify-center">
+        <div @onclick="ModalPopupLogIn.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
         <div @onclick="NavigateToLogin">
             <Button style="pill">
                 <content>
@@ -236,29 +238,22 @@
                 </content>
             </Button>
         </div>
-        <div @onclick="ModalPopupLogIn.Dismiss">
-            <Button style="outline">
-                <content>Cancel</content>
-            </Button>
-        </div>
     </div>
 </ModalPopup>
 <ModalPopup @ref="ModalPopupAppliances" Title="Continue with adding appliances?">
-    <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location by
-        continuing.
-        Do you want to continue?
-    </p>
+    <p class="max-w-md">You can add or remove appliances to get more accurate power usages for your location on our calculations page.</p>
+    <p class="max-w-md">Go to calculations page now?</p>
     <div class="flex flex-row gap-4 justify-center">
-        <div @onclick="NavigateToAdnavced">
-            <Button style="pill">
-                <content>
-                    Continue
-                </content>
+        <div @onclick="ModalPopupAppliances.Dismiss">
+            <Button style="outline" css="w-40">
+                <content>Cancel</content>
             </Button>
         </div>
-        <div @onclick="ModalPopupAppliances.Dismiss">
-            <Button style="outline">
-                <content>Cancel</content>
+        <div @onclick="NavigateToAdvanced">
+            <Button style="pill" css="w-40">
+                <content>
+                    Calculations
+                </content>
             </Button>
         </div>
     </div>
@@ -286,6 +281,21 @@
     private int daylight = 24;
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
+    private Timer panelTimer = default!;
+    private Timer batteryTimer = default!;
+
+    protected override void OnInitialized()
+    {
+        panelTimer = new Timer(100);
+        panelTimer.Elapsed += SetChargingLimit;
+        panelTimer.AutoReset = false;
+        panelTimer.Enabled = true;
+
+        batteryTimer = new Timer(100);
+        batteryTimer.Elapsed += SetRunningHours;
+        batteryTimer.AutoReset = false;
+        batteryTimer.Enabled = true;
+    }
 
     protected override void OnParametersSet()
     {
@@ -299,24 +309,42 @@
         }
     }
 
-    private void SetChargingLimit(ChangeEventArgs? e = null)
+    private void ResetPanelTimer(ChangeEventArgs e)
     {
-        if (e != null)
-        {
-            var val = e.Value!.ToString();
-            numOfPanels = int.Parse(val!);
-        }
-        SetGraphicValues();
-
+        numOfPanels = int.Parse(e.Value!.ToString()!);
+        panelTimer.Stop();
+        panelTimer.Start();
     }
-    private void SetRunningHours(ChangeEventArgs? e = null)
+
+    private void ResetBatteryTimer(ChangeEventArgs e)
     {
-        if (e != null)
+        numOfBatteries = int.Parse(e.Value!.ToString()!);
+        batteryTimer.Stop();
+        batteryTimer.Start();
+    }
+
+    private async void SetChargingLimit(Object? source, ElapsedEventArgs e)
+    {
+         if (locationData != null)
         {
-            var val = e.Value!.ToString();
-            numOfBatteries = int.Parse(val!);
+            SetGraphicValues();
         }
-        SetGraphicValues();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async void SetRunningHours(Object? source, ElapsedEventArgs e)
+    {
+        if (locationData != null)
+        {
+            SetGraphicValues();
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    void IDisposable.Dispose()
+    {
+        panelTimer.Dispose();
+        batteryTimer.Dispose();
     }
 
     private void SetGraphicValues()
@@ -357,19 +385,31 @@
         else
         {
             ModalPopupLogIn.Show();
+            StateHasChanged();
         }
     }
 
-    private void showModalAppliancesPopup()
+    private async void showModalAppliancesPopup()
     {
-        ModalPopupAppliances.Show();
+        var logIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
+        bool isLoggedIn = logIn.Value;
+        if (isLoggedIn)
+        {
+            ModalPopupAppliances.Show();
+        }
+        else
+        {
+            ModalPopupLogIn.Show();
+        }
+        StateHasChanged();
     }
-    private void NavigateToLogin()
+    private async void NavigateToLogin()
     {
+        await ProtectedSessionStore.SetAsync("redirect", "advanced");
         ModalPopupLogIn.Dismiss();
         NavigationManager.NavigateTo("/Login");
     }
-    private void NavigateToAdnavced()
+    private void NavigateToAdvanced()
     {
         ModalPopupAppliances.Dismiss();
         NavigationManager.NavigateTo("/advanced");
