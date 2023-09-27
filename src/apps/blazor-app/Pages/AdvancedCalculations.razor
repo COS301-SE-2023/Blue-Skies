@@ -11,10 +11,11 @@
 @inject BlazorApp.Data.ToastService toastService;
 
 <PageTitle>Advanced Calculations</PageTitle>
-<div class="fade-in-enter-active overflow-visible">
-    <Image ImageName="shapes.svg"
-    css="absolute -top-[33%] sm:transform scale-[0.6] -left-[38%] -z-20 w-2/3 h-full -rotate-45" alt="Shapes" />
-    <div class="w-full px-20 ">
+
+<div class="fade-in-enter-active">
+    <Image ImageName="02.svg" css="absolute hidden md:block top-20 lg:-top-2 -left-20 lg:-left-2" />
+    <Image ImageName="shapes.svg" css="absolute -top-1/3 sm:transform scale-[0.6] -left-[45%] -z-20 w-2/3 h-full -rotate-[40]" alt="Shapes" />
+    <div class="w-full px-2 lg:px-20 ">
         <div class="mb-20">
             @* Load data to edit advanced calculations or display active calculation*@
             @if (edit)
@@ -101,7 +102,7 @@
                 </Button>
             </div>
         }
-        <div class="w-full">
+        @* <div class="w-full">
             @if(tabs[0].active) {
                 <div class="fade-in-active">
                     <BuildYourHome allAppliances="@allAppliances" @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
@@ -125,7 +126,7 @@
                     }
                 </div>
             }
-        </div>
+        </div> *@
     </div>   
 </div>
 <ModalPopup @ref="ModalPopup" Title="Save your calculation?">
