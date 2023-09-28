@@ -78,9 +78,11 @@
         }
         <div class="w-full">
             @if(tabs[0].active) {
-                <div class="fade-in-active">
+                <div class="fade-in-active px-2">
                     <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
-                    <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    <div class="px-10 w-full">
+                        <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    </div>
                 </div>
             }
             else if (tabs[1].active)
