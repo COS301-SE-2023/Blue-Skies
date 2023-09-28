@@ -23,11 +23,15 @@
                         <p class="@(item.active ? "" : "-translate-y-20") slide-in-active transition-all duration-300 text-primary-800">@item.content</p>
                     }
                 </div>
-            break;
-            default:
-                <div class="p-4 w-full transition-all duration-300 @(item.active ? "h-80 sm:h-52 md:h-48" : "h-32 sm:h-24 md:h-20") rounded-xl border-1 border-primary-500 flex flex-col gap-4">
-                    <div class="flex justify-between">
-                        <p class="font-bold text-base tracking-wide text-primary-500">@item.title</p>
+                @if (item.active) {
+                    <p class="@(item.active ? "" : "-translate-y-20") slide-in-active transition-all duration-300 text-primary-800">@item.content</p>
+                }
+            </div>
+        break;
+        default:
+            <div class="p-4 w-full transition-all duration-300 @(item.active ? "h-fit sm:h-52 md:h-48" : "h-fit sm:h-24 md:h-20") rounded-xl border-1 border-primary-500 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <p class="font-bold text-base tracking-wide text-primary-500">@item.title</p>
 
                         <svg width="@(item.active ? "30" : "16")" height="@(item.active ? "17" : "30")" viewBox="0 0 @(item.active ? "30 17" : "16 30")" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="@(item.active ? "M1.88733 1.94385L15 15.4438L28.1127 1.94385" : "M1.25 28.125L14.75 15L1.25 1.875")" stroke="#3871C1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
