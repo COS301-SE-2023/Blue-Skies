@@ -55,7 +55,7 @@
             <input
         class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
         type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
-                @if (appliances != null)
+                @if (appliances.Count > 0)
                 {
                         <div class="flex">
                             <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
