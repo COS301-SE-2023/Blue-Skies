@@ -7,47 +7,97 @@
     <Image ImageName="Robert_Confused_Half.png" css="absolute right-20 bottom-0 z-0 h-12" alt="Rob" />
     <div class="w-full md:w-2/3 z-10">
         <Card>
-            <Heading>
-                <Header>
-                    <h1 class="text-xl">Location</h1>
-                </Header>
-            </Heading>
-            <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
-
-                <div class="w-80">
-                    <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
+            @if (currentLocationData != null && displayNewData)
+            {
+                <Heading>
+                    <Header>
+                        <h1 class="text-xl">Location</h1>
+                    </Header>
+                </Heading>
+                    <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+                        <div class="w-80">
+                            <Map scale="scale-[2.6]" imageName="@satteliteImage"/>
+                        </div>
+                        <div class="flex flex-col justify-start gap-10">
+                            @if (systems.Count != 0 && displayNewData)
+                            {
+                                var location = "";
+                                var sScore = "";
+                                var avgEnergyProduction = "";
+                                if (reports != null)
+                                {
+                                    location = currentLocationData!.locationName;
+                                    sScore = solarScore + "%";
+                                    avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
+                                }    
+                                <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
+                                <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
+                                <div class="translate-x-1">
+                                    <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
+                                        Text=@avgEnergyProduction />
+                                </div>
+                            }
+                        </div>  
+                    </div>
+            } else {
+                <div role="status" class="max-w-sm animate-pulse w-32">
+                    <div class="h-6 bg-gray-200 rounded-full w-32"></div>
+                    <span class="sr-only">Loading...</span>
                 </div>
-                <div class="flex flex-col justify-start gap-10">
-                    @{
-                        var location = "";
-                        var sScore = "";
-                        var avgEnergyProduction = "";
-                        if (reports != null)
-                        {
-                            location = currentLocationData!.locationName;
-                            sScore = solarScore + "%";
-                            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2).ToString() + "kwh";
-                        }
-                    }
-                    <LocationItem Title="Address" ImageName="Point On Map.svg" Text=@location />
-                    <LocationItem Title="Solar Score" ImageName="Sale.svg" Text=@sScore />
-                    <div class="translate-x-1">
-                        <LocationItem Title="Avg Daily Energy Production" ImageName="Accumulator.svg"
-                            Text=@avgEnergyProduction />
+                <div class="flex flex-col md:flex-row gap-4 mt-4 my-auto items-center">
+                    <div class="flex items-center justify-center w-80 h-80 bg-gray-300 rounded animate-pulse">
+                        <svg class="w-10 h-10 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div role="status" class="animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
+                            <svg class="w-10 h-10 text-gray-200 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                            </svg>
+                            <div class="w-full">
+                                <div class="h-4 bg-gray-200 rounded-full w-24 mb-3 mt-3"></div>
+                                <div class="h-2.5 bg-gray-200 rounded-full w-80 mb-2"></div>
+                                <div class="h-2.5 bg-gray-200 rounded-full w-12 mb-2"></div>
+                            </div>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div role="status" class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
+                            <svg class="w-10 h-10 text-gray-200 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                            </svg>
+                            <div class="w-full">
+                                <div class="h-4 bg-gray-200 rounded-full w-32 mb-3 mt-3"></div>
+                                <div class="h-2.5 bg-gray-200 rounded-full w-8 mb-2"></div>
+                            </div>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div role="status" class="space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
+                            <svg class="w-10 h-10 text-gray-200 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                            </svg>
+                            <div class="w-full">
+                                <div class="h-4 bg-gray-200 rounded-full w-60 mb-3 mt-3"></div>
+                                <div class="h-2.5 bg-gray-200 rounded-full w-16 mb-2"></div>
+                            </div>
+                            <span class="sr-only">Loading...</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
         </Card>
     </div>
     <div class="w-full md:w-1/3">
         <Card css="h-full">
             <div class="flex flex-col justify-center">
+            @if (systems.Count != 0 && displayNewData)
+            {
                 <Heading>
                     <Header>
                         <h1 class="text-xl text-start">System Size</h1>
                     </Header>
                 </Heading>
-                <div class="flex justify-around gap-4 mt-4 scale-75">
+                <div class="flex justify-around gap-4 mt-16 scale-75">
                     @{
                         var numPanels = 0;
                         var numBatteries = 0;
@@ -69,6 +119,42 @@
                     <p class="text-5xl text-primary-900 font-semibold">@systemSize</p>
                     <p class="text-5xl text-gray-400 font-bold">kw</p>
                 </div>
+            } else {
+                <div role="status" class="max-w-sm animate-pulse w-32">
+                    <div class="h-6 bg-gray-200 rounded-full w-32"></div>
+                    <span class="sr-only">Loading...</span>
+                </div>    
+                <div class="flex justify-around gap-4 mt-16 scale-75">
+                    <div class="justify-center">
+                        <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
+                            <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                            </svg>
+                        </div>
+                        <div role="status" class="max-w-sm animate-pulse mt-3">
+                            <div class="h-2 bg-gray-200 rounded-full w-[125px] mb-2.5"></div>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="justify-center">
+                        <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
+                            <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                            </svg>
+                        </div>
+                        <div role="status" class="max-w-sm animate-pulse mt-3">
+                            <div class="h-2 bg-gray-200 rounded-full w-[125px] mb-2.5"></div>
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex w-full justify-center items-center gap-1 mt-14">
+                    <div role="status" class="max-w-sm animate-pulse w-32">
+                        <div class="h-14 bg-gray-200 rounded-full w-28"></div>
+                        <span class="sr-only">Loading...</span>
+                    </div> 
+                </div>
+            }
             </div>
         </Card>
     </div>
@@ -87,9 +173,11 @@
     [Parameter]
     public LocationDataModel? currentLocationData { get; set; }
     [Parameter]
-    public List<SystemModel>? systems { get; set; }
+    public List<SystemModel> systems { get; set; } = new List<SystemModel>();
     [Parameter]
-    public int solarScore { get; set; } 
+    public int solarScore { get; set; }
+    [Parameter]
+    public bool displayNewData { get; set; }
     public int selectedSystem { get; set; }
 
     protected override void OnParametersSet(){

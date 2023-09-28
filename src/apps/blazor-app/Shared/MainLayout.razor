@@ -1,9 +1,11 @@
 ﻿@inherits LayoutComponentBase
-@inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TutorialService tutorialService
+@inject BlazorApp.Data.ChatBotService chatbotService
+@inject BlazorApp.Data.LoadingService loadingService
 @using BlazorApp.Components
 @using BlazorApp.Components.Tutorial
+@using BlazorApp.Chatbot
 
 <PageTitle>Blue Skies</PageTitle>
 
@@ -59,15 +61,22 @@
             @Body
         </div>
 
-        <div class="mt-20">
+        <div>
             <Footer />
         </div>
+
+        @if (showChatBot) {
+            <div class="fixed bottom-0 z-50 right-0 flex justify-end p-3 @chatbotAnimation">
+                <Chatbot />
+            </div>
+        }
     </main>
 </div>
 
 @code {
     private bool isLoading = false;
     private bool isToastVisible = false;
+    private bool showChatBot = false;
     private string activeTutorial = "Intro";
     private bool isTutorialVisible = false;
     private bool isScrollingDown = false;
@@ -76,25 +85,43 @@
     private string title = "";
     private string message = "";
     private string type = "";
+    private string chatbotAnimation = "chatbot-slide-in";
 
 
 
      protected override void OnInitialized()
     {
         // Subscribe to events
-        loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
-        loadingService.HideLoadingScreenRequested += HideLoadingScreen;
         toastService.ShowToastRequested += ShowToast;
         toastService.HideToastRequested += HideToast;
         tutorialService.ShowTutorialModalRequested += ShowTutorial;
         tutorialService.HideTutorialModalRequested += HideTutorial;
         tutorialService.ToggleTutorialRequested += ToggleTutorial;
+        chatbotService.ShowChatBotRequested += ShowChatBot;
+        chatbotService.HideChatBotRequested += HideChatBot;
+        loadingService.ShowLoadingScreenRequested += ShowLoadingScreen;
+        loadingService.HideLoadingScreenRequested += HideLoadingScreen;
+    }
+
+    private void ShowChatBot() {
+        chatbotAnimation = "chatbot-slide-in";
+        StateHasChanged();
+        showChatBot = true;
+        StateHasChanged();
+    }
+
+    private async void HideChatBot() {
+        chatbotAnimation = "chatbot-slide-out";
+        StateHasChanged();
+        await Task.Delay(300);
+        showChatBot = false;
+        StateHasChanged();
+        
     }
 
 @* Loading Service functions *@
     public void ShowLoadingScreen()
     {
-
         isLoading = true;
         StateHasChanged();
     }
@@ -153,8 +180,6 @@
     /// </summary>
     public void Dispose()
     {
-        loadingService.ShowLoadingScreenRequested -= ShowLoadingScreen;
-        loadingService.HideLoadingScreenRequested -= HideLoadingScreen;
         toastService.ShowToastRequested -= ShowToast;
         toastService.HideToastRequested -= HideToast;
     }

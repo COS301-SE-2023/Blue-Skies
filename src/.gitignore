@@ -41,3 +41,5 @@ Thumbs.db
 # env
 .env
 .env.*
+
+apps/machine-learning/*

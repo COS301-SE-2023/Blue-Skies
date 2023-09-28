@@ -1,4 +1,5 @@
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Advanced.Skeletons
 @inject NavigationManager NavigationManager
 @inject ProtectedSessionStorage ProtectedSessionStore
 
@@ -19,74 +20,79 @@
         </Subscript>
     </Heading>
 </div>
-<div class="relative flex flex-col xl:flex-row w-fit mx-auto gap-4 mt-10">
-    <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-48 top-10 h-72 z-0" alt="Rob" />
-    <Image ImageName="Robert_Behind_Component.png" css="absolute left-48 -top-[31px] z-10 h-10" alt="Rob" />
-    <div class="w-80 mx-auto">
-        <Map scale="scale-[2.6]" imageName="@satteliteImage" />
+<div class="relative flex flex-col xl:flex-row w-fit justify-center items-center mx-auto gap-4 mt-10">
+    @* <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-48 top-10 h-72 z-0" alt="Rob" /> *@
+    @* <Image ImageName="Robert_Behind_Component.png" css="absolute left-48 -top-[31px] z-10 h-10" alt="Rob" /> *@
+    <div class="w-60 md:w-1/3 mx-auto">
+        @if (satteliteImage == null)
+        {
+            <MapSkeleton />
+        } else {
+            <Map scale="scale-[2.6]" imageName="@satteliteImage" />
+        }
     </div>
-    <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20" alt="Rob" />
-    <div class="relative flex mx-auto flex-col px-2 sm:flex-row gap-5 self-center">
-        <div class="" @onclick="ShowSolarScoreModal">
-            <Card
-                css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms]">
-                <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
-                    <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
-                </div>
-                <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
-                <div class="flex gap-1 mt-0">
-                    <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
-                    <p class="text-3xl text-gray-400 font-bold">%</p>
-                </div>
-            </Card>
-        </div>
+    @* <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20" alt="Rob" /> *@
+    <div class="relative w-full flex mx-auto justify-center items-center flex-col px-2 md:flex-row gap-2 md:gap-5">
+        @if (solarScore == -1)
+        {
+            <ScoreSkeleton />
+        } else {
+            <div @onclick="ShowSolarScoreModal" >
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto relative hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
+                    <div class="bg-gray-100 shadow-md rounded-3xl  p-3 w-16 ">
+                        <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
+                    </div>
+                    <h1 class="text-lg text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
+                    <div class="flex gap-1 mt-0">
+                        <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
+                        <p class="text-3xl text-gray-400 font-bold">%</p>
+                    </div>
+                </Card>
+            </div>
+        }
         <div @onclick="ShowHoursModal">
-            <Card
-                css="border-2 border-primary-300 p-4 w-60 h-60 my-auto hover:-translate-y-1 transition-all duration-[300ms]">
-                <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
-                    <Image ImageName="History.svg" alt="Sale" css="scale-150" />
-                </div>
-                <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
-                <div class="flex gap-1 mt-3">
-                    @{
-                        var usableHours = 0.0;
-                        if (currentLocationData != null)
-                        {
-                            usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-                            usableHours = Math.Round(usableHours, 2);
-                        }
-                    }
-                    <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
-                    <p class="text-3xl text-gray-400 font-bold">h</p>
-                </div>
-            </Card>
+            @if (usableHours == -1)
+            {
+                <HoursSkeleton />
+            } else {
+                <Card
+                    css="border-2 border-primary-300 p-4 w-60 h-60 my-auto hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
+                    <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
+                        <Image ImageName="History.svg" alt="Sale" css="scale-150" />
+                    </div>
+                    <h1 class="text-lg w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight per day</h1>
+                    <div class="flex gap-1 mt-3">
+                        <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
+                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                    </div>
+                </Card>
+            }
         </div>
         <div class="z-10" @onclick="ShowAvgModal">
+            @if (avgEnergyProduction == -1)
+            {
+                <EnergySkeleton />
+            } else {
             <Card
-                css="border-2 border-primary-300 p-4 w-60 h-60 my-auto z-10 hover:-translate-y-1 transition-all duration-[300ms]">
+                css="border-2 border-primary-300 p-4 w-60 h-60 my-auto z-10 hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
                 <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16">
                     <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
                 </div>
                 <h1 class="text-lg text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
                 <div class="flex gap-1 mt-3">
-                    @{
-                        var avgEnergyProduction = 0.0;
-                        if (currentLocationData != null && systems != null)
-                        {
-                            avgEnergyProduction =
-                            Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels,
-                            currentLocationData.solarPanelsData) / 365, 2);
-                        }
-                    }
                     <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
                     <p class="text-3xl text-gray-400 font-bold">kwh</p>
                 </div>
             </Card>
+            }
         </div>
     </div>
 </div>
 <ModalPopup @ref="ModalPopupSolarScore" Title="More about your Solar Score">
-    <p class="max-w-md">Solar Score</p>
+    <p class="max-w-lg">A solar score is a representation of how suitable your roof is for solar power. 
+        This is calculated by analysing the amount of sun light that falls on each section of your roof over the past year
+        and evaluating the area of your roof that receives the most sunlight</p>
     <div class="flex flex-row gap-4 justify-end">
         <div @onclick="ModalPopupSolarScore.Dismiss">
             <Button style="outline">
@@ -96,7 +102,7 @@
     </div>
 </ModalPopup>
 <ModalPopup @ref="ModalPopupHours" Title="More about your average usable hours of sunlight">
-    <p>Add a nickname for this calculation:</p>
+    <p class="max-w-lg">The average number of hours per day that enough sunlight falls on your roof to produce 1 KWh of electricity</p>
     <div class="flex flex-row gap-4 justify-end">
         <div @onclick="ModalPopupHours.Dismiss">
             <Button style="outline">
@@ -106,7 +112,8 @@
     </div>
 </ModalPopup>
 <ModalPopup @ref="ModalPopupAvg" Title="More about your Average Energy Production">
-    <p>Add a nickname for this calculation:</p>
+    <p class="max-w-lg">The average energy your solar panels will produce each day, based on the number of solar panels
+        and the amount of sunlight that reaches those solar panels</p>
     <div class="flex flex-row gap-4 justify-end">
         <div @onclick="ModalPopupAvg.Dismiss">
             <Button style="outline">
@@ -129,10 +136,12 @@
     public string? reportName { get; set; }
     [Parameter]
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
-    public int solarScore { get; set; }
+    public int solarScore { get; set; } = -1;
+    public double usableHours { get; set; } = -1;
+    public double avgEnergyProduction { get; set; } = -1;
     public ModalPopup ModalPopupSolarScore { get; set; } = new ModalPopup();
     public ModalPopup ModalPopupHours { get; set; } = new ModalPopup();
-public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
+    public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
 
 
 
@@ -145,11 +154,15 @@ public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
     /// </list>
     /// </summary>
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
-        solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
-        ModalPopupSolarScore = new ModalPopup();
+        if (currentLocationData != null)
+        {
+            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
+            usableHours = Math.Round(solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true), 2);
+            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+        }
     }
 
     private void ShowSolarScoreModal()

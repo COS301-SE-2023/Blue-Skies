@@ -644,6 +644,7 @@ public class reportClass
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            Console.WriteLine("Report updated - specificaly the calculation name");
             return true;
         }
         else
@@ -725,7 +726,7 @@ public class applianceClass
         return appliances;
     }
 
-    public async Task<bool> CreateAppliance(string type, int powerUsage, float durationUsed)
+    public async Task<bool> CreateAppliance(string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Post, API_PORT + "/Appliance/create");
@@ -745,7 +746,7 @@ public class applianceClass
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, float durationUsed)
+    public async Task<bool> UpdateAppliance(int applianceId, string type, int powerUsage, double durationUsed)
     {
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Patch, API_PORT + "/Appliance/update");
@@ -785,14 +786,14 @@ public class applianceClass
 public class otherDataClass
 {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private string mapboxAccessToken = "";
+    private string? mapboxAccessToken = Environment.GetEnvironmentVariable("MAP_BOX_API_KEY");
 
-    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery)
+    public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery, CancellationToken cancellationToken)
     {
-        if (mapboxAccessToken == "")
-        {
-            await GetMapboxAccessToken();
-        }
+        // if (mapboxAccessToken == "")
+        // {
+        //     await GetMapboxAccessToken();
+        // }
 
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
@@ -801,19 +802,20 @@ public class otherDataClass
 
         try
         {
-            HttpClient httpClient = new HttpClient();
-            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
-            List<LocationSuggestion> suggestions =
-                mapResponse?.Features ?? new List<LocationSuggestion>();
-            if (suggestions.Count == 0)
+            using (HttpClient httpClient = new HttpClient())
             {
-                suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
+                var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl, cancellationToken);
+                List<LocationSuggestion> suggestions =
+                    mapResponse?.Features ?? new List<LocationSuggestion>();
+                if (suggestions.Count == 0)
+                {
+                    suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
+                }
+                return suggestions;
             }
-            return suggestions;
         }
         catch (Exception ex)
         {
-            // Handle any errors or exceptions
             Console.WriteLine(ex.Message);
             return new List<LocationSuggestion>();
         }
@@ -821,10 +823,10 @@ public class otherDataClass
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {
-        if (mapboxAccessToken == "")
-        {
-            await GetMapboxAccessToken();
-        }
+        // if (mapboxAccessToken == "")
+        // {
+        //     await GetMapboxAccessToken();
+        // }
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
         string requestUrl =
             $"{baseUrl}{longitude.ToString().Replace(",", ".")},{latitude.ToString().Replace(",", ".")}.json?&access_token={mapboxAccessToken}";
@@ -1058,7 +1060,7 @@ public class reportApplianceClass
             reportId = reportId,
             applianceId = appliance.applianceId,
             numberOfAppliances = appliance.quantity,
-            applianceModel = appliance.type,
+            applianceModel = appliance.name,
             powerUsage = appliance.powerUsage,
             durationUsed = appliance.durationUsed
         };
@@ -1071,7 +1073,7 @@ public class reportApplianceClass
         var response = await client.SendAsync(request);
         if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            Console.WriteLine("Failed to create ReportAppliance - " + response.StatusCode);
+            Console.WriteLine("Failed to create ReportAppliance - " + JsonSerializer.Serialize(postBody));
         }
     }
 
@@ -1122,6 +1124,30 @@ public class reportAllApplianceClass
         List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/ReportAllAppliance/all");
+        var response = await client.SendAsync(request);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var data = await response.Content.ReadAsStringAsync();
+            allReportAllAppliance = JsonSerializer.Deserialize<List<ReportAllApplianceModel>>(
+                data,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+            )!;
+        }
+        else
+        {
+            Console.WriteLine("Failed to get allReportAllAppliance");
+        }
+        return allReportAllAppliance;
+    }
+
+    public async Task<List<ReportAllApplianceModel>> GetReportAllApplianceByReportId(int reportId)
+    {
+        List<ReportAllApplianceModel> allReportAllAppliance = new List<ReportAllApplianceModel>();
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            API_PORT + "/ReportAllAppliance/getByReportId/" + reportId
+        );
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {

@@ -1,14 +1,16 @@
 @using System.Net.Http
 @using System.Net.Http.Json
 @using Microsoft.JSInterop
+@using System.Timers
+@implements IDisposable
 @inject IJSRuntime JSRuntime
 @inject ProtectedSessionStorage ProtectedSessionStorage
 
 
 <div class="mt-20 relative">
     <div class="relative mt-2 z-30 rounded-full shadow-sm border border-primary-500">
-        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span class="text-gray-500 translate-x-5 sm:text-sm">
+        <div class="pointer-events-none absolute top-1/2 -translate-y-1/2 md:-translate-y-[80%] flex justify-center mt-2 md:mt-0 items-center pl-3">
+            <span class="text-gray-500 md:translate-x-5 sm:text-sm w-10 h-10 md:w-fit md:h-fit">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M10.889 19.4174C15.7982 19.4174 19.7778 15.4377 19.7778 10.5285C19.7778 5.61934 15.7982 1.63965 10.889 1.63965C5.97975 1.63965 2.00006 5.61934 2.00006 10.5285C2.00006 15.4377 5.97975 19.4174 10.889 19.4174Z"
@@ -19,9 +21,8 @@
             </span>
         </div>
         <input
-            class="pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
-            type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @oninput="OnSearchInput" @onblur="HideSuggestions" placeholder="Enter your address" />
-
+            class="pl-10 md:pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
+            type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @onkeyup="ResetTimer" @onblur="HideSuggestions" @bind:event="oninput" placeholder="Enter your address" />
     </div>
     <div class="absolute z-50 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
         <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
@@ -67,12 +68,25 @@
 @code {
     private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private string searchQuery = "";
+    [Parameter]
+    public string searchQuery { get; set; } = "";
+    [Parameter]
+    public EventCallback<string> SearchQueryChanged { get; set; }
     private List<LocationSuggestion> suggestions = new List<LocationSuggestion>();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private Timer aTimer = default!;
+
+    protected override void OnInitialized(){
+        aTimer = new Timer(100);
+        aTimer.Elapsed += Search;
+        aTimer.AutoReset = false;
+        aTimer.Enabled = true;
+    }
 
     private async void OnSuggestionClick(LocationSuggestion suggestion)
     {
         searchQuery = suggestion.Place_Name;
+        await SearchQueryChanged.InvokeAsync(searchQuery);
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'none';");
         await ProtectedSessionStorage.SetAsync("location", suggestion);
     }
@@ -88,14 +102,35 @@
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('suggestionList').style.display = 'block';");
     }
 
-    private async Task OnSearchInput(ChangeEventArgs e)
+    private async void Search(Object? source, ElapsedEventArgs e)
     {
-        if(e.Value != null && e.Value.ToString() != "")
+        cancellationTokenSource.Cancel();
+        
+        cancellationTokenSource = new CancellationTokenSource();
+
+        if (!searchQuery.Equals(""))
         {
-            searchQuery = e.Value.ToString()!;
-            suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery));
-        } else {
+            try
+            {
+                suggestions = await otherDataClass.GetLocationSuggestions(System.Net.WebUtility.UrlEncode(searchQuery), cancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Handle cancellation if needed
+            }
+        }
+        else
+        {
             suggestions = new List<LocationSuggestion>();
         }
+        await InvokeAsync( StateHasChanged );
+    }
+
+    void IDisposable.Dispose() => aTimer.Dispose();
+
+    private void ResetTimer(KeyboardEventArgs e){
+        SearchQueryChanged.InvokeAsync(searchQuery);
+        aTimer.Stop();
+        aTimer.Start();
     }
 }

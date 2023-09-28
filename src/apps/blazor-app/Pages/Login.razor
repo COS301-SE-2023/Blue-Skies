@@ -5,16 +5,13 @@
 @using System.Text.Json
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Login</PageTitle>
 
     @if (!isLoaded) {}
     else if (logIn) {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/");
     } else  if (isAd) {
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/admin/keys");
     } else {
         <div class="w-full h-screen overflow-hidden relative">
@@ -22,7 +19,7 @@
                 <Image ImageName="shapes.svg" css="absolute -top-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
                 <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
                 <div class="justify-start -pl-4 xl:pl-20 flex w-full">
-                    <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative z-20">
+                    <a href="/"  class="relative z-20">
                         <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
                     </a>
                 </div>
@@ -47,16 +44,15 @@
                             @if (!emailIsValid)
                             {
                                 <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
-                                <Input css="border-1 border-red-400" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                                <Input css="border-1 border-red-400 rounded-md" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
                             }else {
                                 <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
                             }
                             @if (!passwordIsValid)
                             {
                                 <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
-                                <Input css="border-1 border-red-400" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                            }
-                            else {
+                                <Input css="border-1 border-red-400 rounded-md" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                            } else {
                                 <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
                             }
                             <Button css="mt-10 flex justify-center mx-auto max-w-xs" style="pill">
@@ -96,6 +92,7 @@
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var re = await ProtectedLocalStore.GetAsync<string>("redirect");
         redirect = re.Value;
+        Console.WriteLine("redirect:" + redirect);
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
         isLoaded = true;
@@ -135,17 +132,16 @@ private async Task HandleSubmit()
             await ProtectedLocalStore.SetAsync("userId", result.userId);
             if(result.userRole == 1){
                 await ProtectedLocalStore.SetAsync("isAdmin", true);
-                loadingService.ShowLoadingScreen();
                 NavigationManager.NavigateTo("/admin/keys");              
             }
             else{
+                NavigationManager.NavigateTo("/" + redirect);
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
                 await ProtectedLocalStore.DeleteAsync("redirect");
-                loadingService.ShowLoadingScreen();
-                NavigationManager.NavigateTo("/" + redirect);
             }
         } else {
             Console.WriteLine("Failed");
+            passwordIsValid = false;
             @* string message = await response.Content.ReadAsStringAsync();
             errorMessage = message;
              showError = "block"; *@

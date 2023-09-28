@@ -29,12 +29,20 @@
         {
             Options = new LineOptions
             {
+                Legend = new Legend
+                {
+                    Display = false
+                },
                 Responsive = true,
                 Title = new OptionsTitle
                 {
-                    Display = true,
-                    Text = "Elevation Data",
-                    FontSize = 20,
+                    Display = false,
+                },
+                Hover = new Hover
+                {
+                    Intersect = true,
+                    Axis = ChartJs.Blazor.Common.Enums.AxisDirection.Y,
+                    Mode = ChartJs.Blazor.Common.Enums.InteractionMode.Nearest
                 },
                 Scales = new Scales
                 {
@@ -49,7 +57,21 @@
                             },
                             Ticks = new LinearCartesianTicks
                             {
-                                BeginAtZero = true, // This ensures the y-axis starts at zero
+                                BeginAtZero = true,
+                            }
+                        }
+                    },
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            GridLines = new GridLines
+                            {
+                                Display = false, // Set Display to false to remove X-axis grid lines
+                            },
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
                             }
                         }
                     }
@@ -137,7 +159,6 @@
         }
         xValues[xValues.Length - 1] = 180;
 
-        @* Make the middle dot red *@
         double[] yRedDotValues = new double[dataArr.Length / 2 + 1];
         for(int i = 0; i < yRedDotValues.Length; i++)
         {
@@ -149,16 +170,18 @@
                 yRedDotValues[i] = double.NaN;
             }
         }
+
         
         IDataset<double> redDotDataset = new LineDataset<double>(yRedDotValues)
         {
+            Order = 0,
             Label = "Your location",
             BackgroundColor = "rgba(255, 0, 0, 1)",
             BorderColor = "rgba(255, 0, 0, 1)",
             BorderWidth = 1,
             Fill = FillingMode.Disabled,
-            PointRadius = 5,
-            PointHoverRadius = 5,
+            PointRadius = animated == true ? 8 : 2,
+            PointHoverRadius = 8,
             PointBackgroundColor = "rgba(255, 0, 0, 1)",
             PointBorderColor = "rgba(255, 0, 0, 1)",
             PointBorderWidth = 1,
@@ -186,17 +209,20 @@
 
         IDataset<double> elevationDataset = new LineDataset<double>(yValues)
         {
-            Label = "Elevation",
-            BackgroundColor = "rgba(0,15,82, 1)",
-            BorderColor = "rgba(0,15,82, 1)",
+            Order = 1,
+            Label = "Horizon",
+            BackgroundColor = "rgba(31, 52, 91, 1)",
+            BorderColor = "rgba(31, 52, 91, 1)",
             BorderWidth = 1,
-            Fill = FillingMode.Disabled
+            Fill = FillingMode.Start,
+            PointRadius = 0,
+            PointHoverRadius = 0,
         };
         lineConfig.Data.Datasets.Add(elevationDataset);
 
-        addSunDataSet(35, 60, "June solstice", xValues, yValues, "rgba(246,135,18, 1)");
-        addSunDataSet(55, 90, "Equinox", xValues, yValues, "rgba(255,193,8, 1)");
-        addSunDataSet(80, 120, "December solstice", xValues, yValues, "rgba(0,15,82, 1)");
+        addSunDataSet(35, 60, "Sun - Winter solstice", xValues, yValues, "rgba(0,15,82, 1)", false, 0, true);
+        addSunDataSet(55, 90, "Sun - Spring Equinox", xValues, yValues, "rgba(246,135,18, 1)", false, 0, false);
+        addSunDataSet(80, 120, "Sun - Summer solstice", xValues, yValues, "rgba(0,15,82, 1)", true, 2);
 
         @* Set the max YAxes to 1.25 the max value of the highest elevation point *@
         double maxY = Math.Max(yValues.Max(), 80) * 1.25;
@@ -210,13 +236,14 @@
                     Ticks = new LinearCartesianTicks
                     {
                         Max = maxY 
-                    }
+                    },
                 }
-            }
+            }, 
         };
     }
 
-    private void addSunDataSet(int MaxHeight, int maxLength, string labelName, double[] xValues, double[] yValues, string color = "rgba(255, 255, 0, 1)") {
+
+    private void addSunDataSet(int MaxHeight, int maxLength, string labelName, double[] xValues, double[] yValues, string color = "rgba(255, 255, 0, 1)", bool fill = false, int fillNum = 0, bool makeBottomZero = false) {
         double[] xSunValues = new double[xValues.Length];
         double[] ySunValues = new double[yValues.Length];
 
@@ -225,20 +252,93 @@
             xSunValues[i] = xValues[i];
             ySunValues[i] = double.NaN;
 
-            if(xSunValues[i] >= -maxLength && xSunValues[i] <= maxLength) {
-                ySunValues[i] = Math.Pow((xSunValues[i] / maxLength), 2) * -MaxHeight + MaxHeight;
+            if(makeBottomZero && (xSunValues[i] == -120 || xSunValues[i] == 120)) {
+                ySunValues[i] = 0;
+            }
+
+            if(xSunValues[i] == maxLength || xSunValues[i] == -maxLength) {
+                ySunValues[i] = 0;
+            }
+            
+            if(xSunValues[i] > -maxLength && xSunValues[i] < maxLength) {
+                if(xSunValues[i] % 5 == 0) {
+                    ySunValues[i] = Math.Round(Math.Pow((xSunValues[i] / maxLength), 2) * -MaxHeight + MaxHeight, 2);
+                } else {
+                    ySunValues[i] = double.NaN;
+                }
+
+                if(ySunValues[i] < yValues[i]) {
+                    ySunValues[i] = double.NaN;
+                }
             }
         }
 
-        IDataset<double> sunDataset = new LineDataset<double>(ySunValues)
+        LineDataset<double> sunDataset;
+        if (fill)
         {
-            Label = labelName,
-            BackgroundColor = color,
-            BorderColor = color,
-            BorderWidth = 1,
-            Fill = FillingMode.Disabled
-        };
+            sunDataset = new LineDataset<double>(ySunValues) {    
+                Order = 2,
+                Label = labelName,
+                BackgroundColor = "rgba(255, 208, 0, 0.4)",
+                BorderColor = color,
+                BorderWidth = 0,
+                Fill = FillingMode.Absolute(fillNum),
+                PointHoverRadius = 15,
+                BorderDash = new int[] { 20, 20 },
+                BorderDashOffset = 10,
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(231, 111, 15, 1)",
+                SpanGaps = true,
+            };
+        } 
+        else if(makeBottomZero) 
+        {
+            sunDataset = new LineDataset<double>(ySunValues) {   
+                Order = 2, 
+                Label = labelName,
+                BorderColor = color,
+                BorderWidth = 0,
+                Fill = FillingMode.Disabled,
+                PointHoverRadius = 15,
+                BorderDash = new int[] { 20, 20 },
+                BorderDashOffset = 32,
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(251, 200, 118, 1)",
+                PointBorderWidth = 0,
+                SpanGaps = true,
+            };
+        }
+        else 
+        {
+            sunDataset = new LineDataset<double>(ySunValues) {    
+                Order = 2,
+                Label = labelName,
+                BackgroundColor = color,
+                BorderColor = color,
+                BorderWidth = 1,
+                Fill = FillingMode.Disabled,
+                PointHoverRadius = 15,
+                PointRadius = 5,
+                PointBackgroundColor = "rgba(246, 135, 18, 1)",
+                PointBorderWidth = 0,
+            };
+        }
 
         lineConfig!.Data.Datasets.Add(sunDataset);
     }
 }
+
+@* 
+--ecstasy-50: 255 249 237;
+--ecstasy-100: 254 241 214;
+--ecstasy-200: 253 223 171;
+--ecstasy-300: 251 200 118;
+--ecstasy-400: 249 165 62;
+--ecstasy-500: 246 135 18;
+--ecstasy-600: 231 111 15;
+--ecstasy-700: 192 84 14;
+--ecstasy-800: 152 67 20;
+--ecstasy-900: 123 57 19;
+--ecstasy-950: 66 26 8;
+
+ *@

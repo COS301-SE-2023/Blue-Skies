@@ -45,12 +45,38 @@ else if (logIn)
                     <p class="text-red-600 ">@errorMessage</p>
                 </div>
                 <form @onsubmit="HandleSubmit">
-                    <Input css="mt-8" label="Email" type="email" name="email" placeholder="Enter email address"
-                        @bind-InputValue="email" />
-                    <Input css="mt-8" label="Password" type="password" name="password" placeholder="Enter password"
+                    @if (validEmail)
+                    {
+                        <label for="email" class="block font-light text-sm leading-6 text-gray-900 capitalize mt-8">Email</label>
+                        <Input type="email" name="email" placeholder="Enter email address"
+                            @bind-InputValue="email" />
+                    }
+                    else
+                    {
+                        <p class="mt-8 text-red-600 font-bold">Invalid Email.</p>
+                        <Input css="border-1 border-red-400 rounded-md"  type="email" name="email" placeholder="Enter email address"
+                            @bind-InputValue="email" />
+                    }
+                    @if (validPassword)
+                    {
+                        <label for="password" class="block font-light text-sm leading-6 text-gray-900 capitalize mt-8">Password</label>
+                        <Input type="password" name="password" placeholder="Enter password"   
                         @bind-InputValue="password" />
-                    <Input css="mt-8" label="Re-Enter Password" type="password" name="repassword" placeholder="Password"
-                        @bind-InputValue="repassword" />
+                    } else {
+                        <p class="mt-8 text-red-600 font-bold">Password must be at least 8 characters.</p>
+                        <Input css="border-1 border-red-400 rounded-md"  type="password" name="password" placeholder="Enter password"
+                            @bind-InputValue="password" />
+                    }
+                    @if (matchingPasswords) {
+                        <label for="repassword" class="block font-light text-sm leading-6 text-gray-900 capitalize mt-8">Re-Enter Password</label>
+                        <Input type="password" name="repassword" placeholder="Password"
+                            @bind-InputValue="repassword" />
+                    } else
+                    {
+                        <p class="mt-8 text-red-600 font-bold">Password does not match</p>
+                        <Input css="border-1 border-red-400 rounded-md" type="password" name="repassword" placeholder="Password"
+                            @bind-InputValue="repassword" />
+                    }
                     <Button css="mt-10 flex max-w-xs mx-auto justify-center" style="pill">
                         <content>
                             <input type="submit" value="Register" />
@@ -82,6 +108,9 @@ else if (logIn)
     private bool logIn = false;
     private bool isLoaded = false;
     private string? redirect = "";
+    private bool matchingPasswords = true;
+    private bool validEmail = true;
+    private bool validPassword = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,7 +143,8 @@ private async Task HandleValidSubmit()
     }
     else
     {
-        showError = "";
+        showError = "visible";
+        errorMessage = "Email already exists";
         Console.WriteLine("Not OK");
     }
 }
@@ -167,33 +197,44 @@ private bool ValidateForm()
     if (string.IsNullOrEmpty(email))
     {
         Console.WriteLine("email is empty");
+        validEmail = false;
         return false;
     }
     else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
     {
         Console.WriteLine("email is not valid");
+        validEmail = false;
         return false;
+    } else
+    {
+        validEmail = true;
     }
 
     @* check if password is empty *@
     if (string.IsNullOrEmpty(password))
     {
         Console.WriteLine("password is empty");
+        validPassword = false;
         return false;
-    }
-
-    @* check if password is empty *@
-    if (string.IsNullOrEmpty(repassword))
+    } else if (password.Length < 8)
     {
-        Console.WriteLine("repassword is empty");
+        Console.WriteLine("password is too short");
+        validPassword = false;
         return false;
+    } else
+    {
+        validPassword = true;
     }
 
     @* check if password and repassword are same *@
     if (password != repassword)
     {
         Console.WriteLine("password and repassword are not same");
+        matchingPasswords = false;
         return false;
+    } else
+    {
+        matchingPasswords = true;
     }
 
     return true;
