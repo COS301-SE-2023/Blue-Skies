@@ -172,7 +172,7 @@ export default class LocationDataController {
     }
   };
   
-  //delete deleteLocationData
+  //delete solarIrradiation
   public deleteLocationData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));

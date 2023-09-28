@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @using BlazorApp.Components.Base
+@inject BlazorApp.Data.LoadingService loadingService
 
 
 <PageTitle>Blue Skies</PageTitle>
@@ -36,6 +37,7 @@
     public string reports { get; set; } = "p-3 rounded-xl ";
 
     public void ChangePage(string page) {
+        loadingService.ShowLoadingScreen();
         home = "p-3 rounded-xl";
         solarscore = "p-3 rounded-xl";
         advanced = "p-3 rounded-xl";

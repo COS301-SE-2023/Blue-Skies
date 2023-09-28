@@ -2,11 +2,13 @@
 @using BlazorApp.Components.Base
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies</PageTitle>
 
 @if (!isLoaded) {}
 else if(!isAd){
+    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/unauthorized");
 } else 
 {
@@ -60,10 +62,12 @@ else if(!isAd){
         await ProtectedLocalStore.DeleteAsync("userEmail");
         await ProtectedLocalStore.DeleteAsync("isAdmin");
         await ProtectedLocalStore.DeleteAsync("loggedIn");
+        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/");
     }
 
     public void ChangePage(string page) {
+        loadingService.ShowLoadingScreen();
         keys = "h-28 w-28 rounded-3xl";
         appliances = "h-28 w-28 rounded-3xl";
         products = "h-28 w-28 rounded-3xl";

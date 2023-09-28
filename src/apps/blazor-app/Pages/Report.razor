@@ -4,7 +4,6 @@
 @using BlazorApp.FancyData
 @using BlazorApp.Components.Dashboard
 @using ChartJs.Blazor.PolarAreaChart
-@using ApplianceEnergyConsumption
 
 @layout AuthLayout
 <div class="pageA4 mx-auto">
@@ -65,43 +64,43 @@
                         <p>What do you want to run in a power outage?</p>
                     </Subscript>
                 </Heading>
-                 <div class="flex flex-wrap justify-center gap-2">
-                    @foreach (var item in applianceQuantity)
-                    {
-                        var imageName = item.Key + ".svg";
-                        <Appliance css="scale-75" ImageName="@imageName" Name="@item.Key" Count="@item.Value" />
+                @* <div class="flex flex-wrap justify-center gap-2">
+                    @{
+                    for (int i = 0; i
+                    < reportAllAppliance.Count; i++) { if (reportAllAppliance[i].numberOfAppliances !=0) { var
+                        appliance=reportAllAppliance[i].type; var count=reportAllAppliance[i].numberOfAppliances; string
+                        iconName=appliance + ".svg" ; <Appliance css="scale-75" ImageName="@iconName" Name="@appliance"
+                        Count="@count" />
                     }
-                </div> 
+                    }
+                    if (reportAllAppliance.Count == 0)
+                    {
+                    <p class="text-center">No appliances added</p>
+                    }
+                    }
+                </div> *@
                 <div>
-                   
                     <Image ImageName="@homeSize" alt="House" css="scale-50" />
+                </div>
 
-                </div>
-                <div class="w-full flex justify-between">
-                    <div>
-                        <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours on Batteries</h3>
-                        <Chart Config="pieConfig"></Chart>
-                        <div class="flex w-fit mx-auto">
-                            <p class="text-primary-900 font-semibold">
-                                @{
-                                    if (dlh == (24 - daylight))
-                                    {
-                                        <p>@dlh+</p>
-                                    }
-                                    else
-                                    {
-                                        <p>@dlh</p>
-                                    }
-                                }
-                            </p>
-                            <p class="text-center text-gray-400 font-bold">h</p>
+                @* <div class="w-full flex">
+                    <div class="w-1/2">
+                        <div class="w-full flex flex-col gap-4 justify-start items-center">
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours</h3>
+                            <div class="flex flex-col justify-center w-full">
+                                <Chart Config="pieConfig"></Chart>
+                                <p class="text-center text-base text-primary-900 font-semibold">
+                                    @locationData.daylightHours h</p>
+                            </div>
                         </div>
+
                     </div>
-                    <div>
+
+                    <div class="w-1/2">
                         <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
-                        <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance" animated="false"/>
+                        <Chart Config="polarAreaConfig"></Chart>
                     </div>
-                </div>
+                </div> *@
             </div> @* *@
             @* Fancy Data *@
             <div class="w-full new-page">
@@ -115,10 +114,9 @@
                 </Heading>
                 <div class="w-full">
                     <div>
-                        <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
+                        <h1 class="text-center">Your Solar flux</h1>
                         <Image ImageName="@satteliteImageSrc" alt="Solar Sattelite Image" css="mx-auto" />
                     </div>
-                    <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
                     <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
                 </div>
             </div>
@@ -127,16 +125,12 @@
     }
 </div>
 @code {
-    
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-    private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
-    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
-    
 
     private string? SatteliteImage;
     [Parameter] public string? UserId { get; set; }
@@ -157,15 +151,6 @@
     private string? satteliteImageSrc = "";
     public string solarScore = "";
     public string avgEnergyProduction = "";
-    private double[] solarRadiationPerMonth = new double[12];
-    private float runningHoursPercentage = 0;
-    private float dlh = 0;
-    private float daylight = 0;
-
-
-    private Dictionary<String, int> applianceQuantity = new Dictionary<string, int>();
-
-
     protected override async Task OnInitializedAsync()
     {
         report = await reportClass.GetReport(int.Parse(ReportId!));   
@@ -184,36 +169,20 @@
                 locationData = resultLocationData;
                 SatteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
                 satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(locationData.annualFluxData!, locationData.satteliteImageData!, locationData.maskData!);
-                solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(resultLocationData!.monthlyFluxData!, resultLocationData!.maskData!, true);
-                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(system.numberOfPanels, resultLocationData.solarPanelsData) / 365, 2).ToString() + " kwh";
-                solarScore = solarCalculator.getSolarScore(resultLocationData.solarPanelsData).ToString() + "%";
-                Console.WriteLine("Solar score: " + solarScore);
-
             }
 
             Console.WriteLine("Current location: " + locationData.locationName);
-            reportAllAppliance = await reportAllApplianceClass.GetReportAllApplianceByReportId(int.Parse(ReportId!));
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
-            daylight = 12;
-            dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-            
-
-            foreach (var item in reportAllAppliance)
-            {
-                if (applianceQuantity.ContainsKey(item.type!))
-                {
-                    applianceQuantity[item.type!] += item.numberOfAppliances;
-                }
-                else
-                {
-                    applianceQuantity.Add(item.type!, item.numberOfAppliances);
-                }
-            }
+            reportAllAppliance = await reportAllApplianceClass.GetReportAllAppliance();
+            Console.WriteLine("Appliance length:" + reportAllAppliance.Count);
 
             var systemSize = system.systemSize!;
-            RenderCharts();
 
-           
+            solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData).ToString();
+            //GetAvgEnergyProduction();
+            //renderCharts();
+
+            isLoaded = true;
+            //StateHasChanged();
 
             if (systemSize.Equals("Small"))
             {
@@ -227,76 +196,8 @@
             {
                 homeSize = report.homeSize + "-Home3.svg";
             }
-            isLoaded = true;
-
-            StateHasChanged();
         } else {
             Console.WriteLine("Report not found");
         }
-    }
-
-    @* RenderCharts *@
-    private void RenderCharts(){
-        pieConfig = new PieConfig(true)
-        {
-            Options = new PieOptions
-            {
-                Responsive = true,
-                AspectRatio = 3,
-                Legend = new Legend
-                {
-                    Display = false,
-                },
-                Title = new OptionsTitle
-                {
-                    Display = false,
-                    Text = "Running Hours",
-                    FontSize = 20,
-                    Position = Position.Bottom,
-                    LineHeight = 4,
-                },
-                Circumference = 3,
-                Rotation = -9.341,
-                Animation = new ArcAnimation
-                {
-                    AnimateRotate = true,
-                    Duration = 5,
-
-                },
-                Tooltips = new Tooltips
-                {
-                    Enabled = true,
-                    Mode = InteractionMode.Index,
-                    Intersect = false,
-                },
-                Hover = new Hover
-                {
-                    Mode = InteractionMode.Index,
-                    Intersect = false
-                },
-                CutoutPercentage = 80
-            }
-        };
-
-        pieConfig.Data.Datasets.Clear();
-        pieConfig.Data.Labels.Clear();
-
-        foreach (string label in new[] { "Runnable Hours", "Remaining" })
-        {
-            pieConfig.Data.Labels.Add(label);
-        }
-        float remaining = (24 - daylight) - dlh;
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { dlh, remaining, })
-            {
-                BackgroundColor = new[] {
-                ColorUtil.ColorHexString(56,113,193),
-                ColorUtil.ColorHexString(156,163,175),
-                },
-            };
-        if (pieConfig != null)
-        {
-            pieConfig.Data.Datasets.Add(pieDataset);
-        }
-
     }
 }

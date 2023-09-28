@@ -6,6 +6,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+
 public class BusinessRequestDataController : ControllerBase
 {
     private readonly BusinessRequestDataRepository _businessRequestDataRepository;
@@ -22,13 +23,14 @@ public class BusinessRequestDataController : ControllerBase
     {
         try
         {
-            if(businessRequestData.key == null)
-            {
-                return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
-            }
             List<KeyModel> keys = await _keysRepository.GetAllKeys();
             foreach(KeyModel key in keys)
             {
+                if(businessRequestData.key == null)
+                {
+                    return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
+                }
+
                 if(businessRequestData.key.Equals(key.APIKey))
                 {
                     var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
