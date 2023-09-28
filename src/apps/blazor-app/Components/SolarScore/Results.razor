@@ -183,7 +183,7 @@
                             <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                 count="@numOfPanels" />
                             <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
-                                step="1" @bind-value="@numOfPanels" @oninput="SetChargingLimit" />
+                                step="1" @bind-value="@numOfPanels" @oninput="ResetPanelTimer" />
                         </div>
                         <div class="flex gap-2 pr-2 justify-start items-start has-tooltip">
                                 <Tooltip pointer="27">
@@ -213,7 +213,7 @@
                                 count="@numOfBatteries" />
                         </div>
                         <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
-                        @bind-value="@numOfBatteries" @oninput="SetRunningHours" />
+                        @bind-value="@numOfBatteries" @oninput="ResetBatteryTimer" />
                     </div>
 
                 </div>

@@ -26,7 +26,6 @@
                 @if (item.active) {
                     <p class="@(item.active ? "" : "-translate-y-20") slide-in-active transition-all duration-300 text-primary-800">@item.content</p>
                 }
-            </div>
         break;
         default:
             <div class="p-4 w-full transition-all duration-300 @(item.active ? "h-fit sm:h-52 md:h-48" : "h-fit sm:h-24 md:h-20") rounded-xl border-1 border-primary-500 flex flex-col gap-4">
