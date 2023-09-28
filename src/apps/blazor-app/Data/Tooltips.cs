@@ -34,7 +34,5 @@ namespace BlazorApp.Data {
         {
         return tooltip;
         }
-    }
-
-    
+    }    
 }
