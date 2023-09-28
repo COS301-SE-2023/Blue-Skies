@@ -903,6 +903,22 @@ video {
   top: 100%;
 }
 
+.top-\[235px\] {
+  top: 235px;
+}
+
+.-top-6 {
+  top: -1.5rem;
+}
+
+.-top-8 {
+  top: -2rem;
+}
+
+.-top-14 {
+  top: -3.5rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -4104,6 +4120,10 @@ html {
     margin-left: auto;
     margin-right: auto;
   }
+
+  .max-md\:mb-4 {
+    margin-bottom: 1rem;
+  }
 }
 
 @media (min-width: 640px) {
@@ -4306,6 +4326,14 @@ html {
     margin-top: 18rem;
   }
 
+  .md\:mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .md\:mb-0 {
+    margin-bottom: 0px;
+  }
+
   .md\:block {
     display: block;
   }
@@ -4427,6 +4455,10 @@ html {
 
   .md\:gap-5 {
     gap: 1.25rem;
+  }
+
+  .md\:gap-4 {
+    gap: 1rem;
   }
 
   .md\:space-x-8 > :not([hidden]) ~ :not([hidden]) {
@@ -4610,6 +4642,18 @@ html {
     gap: 1.25rem;
   }
 
+  .lg\:gap-8 {
+    gap: 2rem;
+  }
+
+  .lg\:gap-10 {
+    gap: 2.5rem;
+  }
+
+  .lg\:gap-4 {
+    gap: 1rem;
+  }
+
   .lg\:gap-x-12 {
     -moz-column-gap: 3rem;
          column-gap: 3rem;
@@ -4706,6 +4750,10 @@ html {
     top: 380px;
   }
 
+  .xl\:-top-16 {
+    top: -4rem;
+  }
+
   .xl\:mt-60 {
     margin-top: 15rem;
   }
@@ -4758,6 +4806,10 @@ html {
 
   .xl\:flex-row {
     flex-direction: row;
+  }
+
+  .xl\:gap-10 {
+    gap: 2.5rem;
   }
 
   .xl\:pl-20 {

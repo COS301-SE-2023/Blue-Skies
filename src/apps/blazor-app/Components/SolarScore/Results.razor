@@ -56,8 +56,8 @@
     </div>
 
     @* Solar Score and Potential Savings *@
-    <div class="relative w-full xl:w-3/5 flex flex-col sm:flex-shrink-0 lg:gap-5 ">
-        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24  -top-11 lg:-top-16 z-0 h-32" alt="Rob" />
+    <div class="relative w-full xl:w-3/5 flex flex-col sm:flex-shrink-0 xl:gap-10 md:gap-4">
+        <Image ImageName="Robert_Pointing_Down.png" css="absolute right-24 -top-14 xl:-top-16 z-0 h-32 hidden lg:block" alt="Rob" />
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
             @if (solarScore == -1)
             {
@@ -99,16 +99,21 @@
                                 <p class="text-center text-xl font-bold text-primary-100">Potential</p>
                                 <p class="text-center text-xl font-bold text-primary-200">Savings</p>
                             </div>
-                            <div class="flex gap-1 mt-3">
-                                <p class="text-5xl text-primary-900 font-semibold">@solarScore</p>
-                                <p class="text-5xl text-gray-400 font-bold">%</p>
+                            <div
+                                class="w-1/2 h-full flex gap-2 justify-center p-3 my-auto bg-white items-center rounded-2xl">
+                                <p class="text-center text-xl font-bold">R </p>
+                                    @{
+                                        var savings = Math.Round(avgEnergyProduction * 2.5 * 30, 0);
+                                    }
+                                <p class="text-center text-xl font-bold">@savings</p>
+                                <p class="text-center text-gray-400 text-xl font-bold">p/m </p>
                             </div>
                         </div>
                     </div>
                 </div>
             }
         </Card>
-        <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[215px] z-0 h-32" alt="Rob" />
+        <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[235px] z-0 h-32  hidden lg:block" alt="Rob" />
 
         @* Potential System *@
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
