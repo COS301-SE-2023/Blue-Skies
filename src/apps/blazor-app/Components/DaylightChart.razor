@@ -8,11 +8,12 @@
     public float hours { get; set; } = 10;
     [Parameter]
     public float daylightHours { get; set; } = 12;
+    [Parameter]
+    public bool fullDay { get; set; } = false;
     protected override void OnParametersSet()
     {
         UpdateDataset();
     }
-
     protected override void OnInitialized()
     {
         pieConfig = new PieConfig(true)
@@ -65,13 +66,19 @@
         {
             pieConfig.Data.Labels.Add(label);
         }
-        float remaining = (24 - daylightHours) - hours;
+        float remaining = 0;
+        if (fullDay)
+        {
+            remaining = 24 - hours;
+        } else {
+         remaining = (24 - daylightHours) - hours;
+        }
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
             {
                 BackgroundColor = new[] {
-ColorUtil.ColorHexString(56,113,193),
-ColorUtil.ColorHexString(156,163,175),
-},
+                ColorUtil.ColorHexString(56,113,193),
+                ColorUtil.ColorHexString(156,163,175),
+                },
             };
         if (pieConfig != null)
         {
