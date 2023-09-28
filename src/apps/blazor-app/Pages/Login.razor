@@ -44,16 +44,15 @@
                             @if (!emailIsValid)
                             {
                                 <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
-                                <Input css="border-1 border-red-400" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
+                                <Input css="border-1 border-red-400 rounded-md" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
                             }else {
                                 <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
                             }
                             @if (!passwordIsValid)
                             {
                                 <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
-                                <Input css="border-1 border-red-400" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                            }
-                            else {
+                                <Input css="border-1 border-red-400 rounded-md" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
+                            } else {
                                 <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
                             }
                             <Button css="mt-10 flex justify-center mx-auto max-w-xs" style="pill">
@@ -136,12 +135,13 @@ private async Task HandleSubmit()
                 NavigationManager.NavigateTo("/admin/keys");              
             }
             else{
+                NavigationManager.NavigateTo("/" + redirect);
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
                 await ProtectedLocalStore.DeleteAsync("redirect");
-                NavigationManager.NavigateTo("/" + redirect);
             }
         } else {
             Console.WriteLine("Failed");
+            passwordIsValid = false;
             @* string message = await response.Content.ReadAsStringAsync();
             errorMessage = message;
              showError = "block"; *@

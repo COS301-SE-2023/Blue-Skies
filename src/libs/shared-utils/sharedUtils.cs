@@ -644,6 +644,7 @@ public class reportClass
         var response = await client.SendAsync(request);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
+            Console.WriteLine("Report updated - specificaly the calculation name");
             return true;
         }
         else
@@ -785,47 +786,47 @@ public class applianceClass
 public class otherDataClass
 {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    private string mapboxAccessToken = "";
+    private string? mapboxAccessToken = Environment.GetEnvironmentVariable("MAP_BOX_API_KEY");
 
     public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery, CancellationToken cancellationToken)
-{
-    if (mapboxAccessToken == "")
     {
-        await GetMapboxAccessToken();
-    }
+        // if (mapboxAccessToken == "")
+        // {
+        //     await GetMapboxAccessToken();
+        // }
 
-    string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
-    string requestUrl =
-        $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
+        string requestUrl =
+            $"{baseUrl}{searchQuery}.json?country=za&limit=5&proximity=ip&access_token={mapboxAccessToken}";
 
-    try
-    {
-        using (HttpClient httpClient = new HttpClient())
+        try
         {
-            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl, cancellationToken);
-            List<LocationSuggestion> suggestions =
-                mapResponse?.Features ?? new List<LocationSuggestion>();
-            if (suggestions.Count == 0)
+            using (HttpClient httpClient = new HttpClient())
             {
-                suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
+                var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl, cancellationToken);
+                List<LocationSuggestion> suggestions =
+                    mapResponse?.Features ?? new List<LocationSuggestion>();
+                if (suggestions.Count == 0)
+                {
+                    suggestions.Add(new LocationSuggestion { Place_Name = "No results found" });
+                }
+                return suggestions;
             }
-            return suggestions;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return new List<LocationSuggestion>();
         }
     }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.Message);
-        return new List<LocationSuggestion>();
-    }
-}
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {
-        if (mapboxAccessToken == "")
-        {
-            await GetMapboxAccessToken();
-        }
+        // if (mapboxAccessToken == "")
+        // {
+        //     await GetMapboxAccessToken();
+        // }
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
         string requestUrl =
             $"{baseUrl}{longitude.ToString().Replace(",", ".")},{latitude.ToString().Replace(",", ".")}.json?&access_token={mapboxAccessToken}";

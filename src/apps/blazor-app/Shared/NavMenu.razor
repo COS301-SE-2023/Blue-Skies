@@ -62,7 +62,7 @@
     @* Desktop Floating Buttons *@
     <div class="hidden lg:flex lg:flex-1 lg:justify-end">
       <div class="relative group">
-        <div @onclick="ShowChatBot" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
+        <div @onclick="ModalPopupHelp.Show" class="fixed bottom-10 right-8  flex flex-col justify-end items-end gap-4 z-50">
           <Image ImageName="Robert_Behind_Component.png"
             css="absolute z-10 right-3 h-8 group-hover:-translate-y-[36px] transition-all duration-[400ms]" alt="Rob" />
           <Button style="pill" css="z-20">
@@ -162,6 +162,7 @@
       }
     </div>
   </nav>
+
   @* Mobile menu, show/hide based on menu open state. *@
   @if (collapseNavMenu)
   {
@@ -213,7 +214,31 @@
     </div>
   }
 </header>
-
+<ModalPopup @ref="ModalPopupHelp" Title="Tutorial or Chat?">
+    <p class="max-w-md">Do you want to view the tutorial or chat with our bot?
+    </p>
+    <div class="flex flex-row gap-4 justify-center">
+       <div @onclick="ShowTutorial">
+            <Button style="pill">
+                <content>
+                    Tutorial
+                </content>
+            </Button>
+        </div>
+        <div @onclick="ShowChatBot">
+            <Button style="pill">
+                <content>
+                    Chat
+                </content>
+            </Button>
+        </div>
+        <div @onclick="ModalPopupHelp.Dismiss">
+            <Button style="outline">
+                <content>Cancel</content>
+            </Button>
+        </div>
+    </div>
+</ModalPopup>
 @code {
   [Parameter]
   public bool isDashboard { get; set; } = false;
@@ -227,6 +252,7 @@
   private bool collapseNavMenu = false;
   private string currentPage = "";
   private ReportModel report = new ReportModel();
+  ModalPopup ModalPopupHelp { get; set; } = new ModalPopup();
   private string? navMenuCssClass => collapseNavMenu ? "collapse" : null;
   private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
   private int currentScrollPosition;
@@ -234,12 +260,14 @@
 
   private void ShowTutorial()
   {
+    ModalPopupHelp.Dismiss();
     tutorialService.ToggleTutorial("Intro");
     tutorialService.ShowTutorial();
   }
 
   private void ShowChatBot()
   {
+    ModalPopupHelp.Dismiss();
     chatBotService.ShowChatBot();
   }
   private void ToggleNavMenu()
@@ -260,7 +288,6 @@
     }
     else
     {
-      await ProtectedLocalStore.SetAsync("redirect", "dashboard");
       navigationManager.NavigateTo("/login", true);
     }
   }

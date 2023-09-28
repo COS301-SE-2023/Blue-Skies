@@ -76,6 +76,7 @@
     private readonly string _chatBotKnowledgeScope = "" +
     "Your name is Robert, You are an assistant that help users navigate and use a website called Blue Skies" +
     "When user's question is not related to solar or BlueSkies, reply repond with \"Do you have questions on Blue Skies?\"" + 
+    "Never answer a question that is not related to solar." +
     "When a user then replies with \"No\", reply with \"Sorry, I can only answer questions related to solar.\"" +
     "A solar score measures your property's solar potential based on sunlight availability, shading, and local weather patterns. It estimates of solar panels in generating electricity for your location. "+
     "The appliances you can run on solar depend on system size. Small setups may power lights, fans, laptops, and smartphones. Larger ones can run refrigerators, air conditioners, washers, and EVs."+
@@ -134,13 +135,32 @@
       
     private async Task CreateCompletion()
     {
+        string[] models = { "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-16k", "gpt-3.5-turbo-16k-0613" };
         await Task.Delay(500);
         typing = true;
         StateHasChanged();
         await ScrollToBottom();
+        foreach (string model in models)
+        {
+            if (await SendRequestToChatGPT(model))
+            {
+                typing = false;
+                StateHasChanged();
+                return;
+            }
+        }
+
+        typing = false;
+        _conversationHistory.Add(new Message { role = "assitant", content = "Sorry, I don't know the answer that." });
+        StateHasChanged();
+    }
+
+    private async Task<bool> SendRequestToChatGPT(string model)
+    {
+        Console.WriteLine("SendRequestToChatGPT using model: " + model);
         var postData = new
         {
-        model = "gpt-3.5-turbo",
+        model = model,
         messages = _conversationHistory.ToArray(),
         };
 
@@ -154,16 +174,15 @@
         var response = await client.SendAsync(request);
         if (response.IsSuccessStatusCode)
         {
-        var chatCompletionResponse = await response.Content.ReadFromJsonAsync<ChatbotResponse>();
-        Message? temp = chatCompletionResponse!.choices!.First().message;
-        _conversationHistory.Add(temp!);
+            var chatCompletionResponse = await response.Content.ReadFromJsonAsync<ChatbotResponse>();
+            Message? temp = chatCompletionResponse!.choices!.First().message;
+            _conversationHistory.Add(temp!);
+            return true;
         }
         else
         {
-        _conversationHistory.Add(new Message { role = "assitant", content = "Sorry, I don't know the answer that." });
+            return false;
         }
-        typing = false;
-        StateHasChanged();
     }
 
     private void ClearInput()
