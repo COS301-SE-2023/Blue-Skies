@@ -1,3 +1,4 @@
+
 namespace BlazorApp.Data {
     public class ChatBotService
     {

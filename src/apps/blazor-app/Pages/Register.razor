@@ -4,18 +4,15 @@
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Register</PageTitle>
 
 @if (!isLoaded) {}
 else if (logIn)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/");
 }  else  if (isAd)
 {
-    loadingService.ShowLoadingScreen();
     NavigationManager.NavigateTo("/admin/keys");
 } else {
 <div class="w-full h-screen overflow-hidden relative">
@@ -23,7 +20,7 @@ else if (logIn)
         <Image ImageName="shapes.svg" css="absolute -top-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
         <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
         <div class="justfy-center sm:justify-end -pr-4 xl:pr-20 flex w-full">
-                    <a href="/" @onclick="() => loadingService.ShowLoadingScreen()" class="relative z-20">
+                    <a href="/"  class="relative z-20">
                         <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
                     </a>
                 </div>
@@ -116,7 +113,7 @@ else if (logIn)
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
+        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
         redirect = re.Value;
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
@@ -138,7 +135,6 @@ private async Task HandleValidSubmit()
         }
         await ProtectedLocalStore.SetAsync("isAdmin", false);
         await ProtectedSessionStore.DeleteAsync("redirect");
-        loadingService.ShowLoadingScreen();
         NavigationManager.NavigateTo("/" + redirect);
     }
     else
