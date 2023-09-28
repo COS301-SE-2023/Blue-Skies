@@ -42,37 +42,23 @@
                             </content>
                         </Button>
                     </div>
-                    <div @onclick="SaveCalculation" class="w-full  block lg:hidden cursor-pointer">
-                        <Button css="h-14 max-w-xs w-2/3 mx-auto" style="pill">
+                    <div class="w-full">
+                        <Tabs @bind-Items="tabs"></Tabs>
+                    </div>
+                    <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
+                        <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
                             <content>
                                 @if (edit)
                                 {
-                                    <p class="text-[14px]  sm:text-base">Update calculation</p>
+                                    <p class="text-[12px]  sm:text-base">Update calculation</p>
                                 }
                                 else
                                 {
-                                    <p class="text-[14px]  sm:text-base">Save this calculation</p>
+                                    <p class="text-[12px]  sm:text-base">Save this calculation</p>
                                 }
                             </content>
                         </Button>
                     </div>
-                </div>
-                <div class="w-full">
-                    <Tabs @bind-Items="tabs"></Tabs>
-                </div>
-                <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
-                    <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
-                        <content>
-                            @if (edit)
-                            {
-                                <p class="text-[12px]  sm:text-base">Update calculation</p>
-                            }
-                            else
-                            {
-                                <p class="text-[12px]  sm:text-base">Save this calculation</p>
-                            }
-                        </content>
-                    </Button>
                 </div>
             </div>
         }

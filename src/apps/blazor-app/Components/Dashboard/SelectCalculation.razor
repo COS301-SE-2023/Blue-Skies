@@ -6,24 +6,33 @@
 @inject IJSRuntime JSRuntime
 
 <Card css="flex w-full flex-col md:flex-row justify-center items-center gap-8  md:justify-evenly">
+    @if (userReports!.Count != 0)
+    {    
+    <div class="flex flex-col justify-center items-center">
+        <div class="w-60 my-auto">
+            <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
+            <select @onchange="OnSelectedReportChanged" id="selectReport"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5 hover:cursor-pointer">
+                @for (int i = 0; i < userReports!.Count; i++)
+                {
+                    <option value="@i">@userReports[i].reportName</option>
+                }
+                @if (userReports.Count == 0)
+                {
+                    <option value="0">No reports to select</option>
+                }
+            </select> 
+        </div>
+    </div>
+    } else {
+        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
+            <div class="h-3 bg-gray-200 rounded-full w-40"></div>
+            <div class="h-8 bg-gray-200 rounded-full w-64 mt-2"></div>
+            <span class="sr-only">Loading...</span>
+        </div>
+    }
     @if (userReports!.Count != 0 && displayNewData)
     {
-        <div class="flex flex-col justify-center items-center">
-            <div class="w-60 my-auto">
-                <h2 class="text-sm mb-2 font-medium text-gray-900">Selected Calculation</h2>
-                <select @onchange="OnSelectedReportChanged" id="selectReport"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 w-full p-2.5 hover:cursor-pointer">
-                    @for (int i = 0; i < userReports!.Count; i++)
-                    {
-                        <option value="@i">@userReports[i].reportName</option>
-                    }
-                    @if (userReports.Count == 0)
-                    {
-                        <option value="0">No reports to select</option>
-                    }
-                </select> 
-            </div>
-        </div>
         <Heading>
             <Superscript>Date Saved</Superscript>
             <Header>
@@ -41,11 +50,6 @@
             </Button>
         </div>
     } else {
-        <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
-            <div class="h-3 bg-gray-200 rounded-full w-40"></div>
-            <div class="h-8 bg-gray-200 rounded-full w-64 mt-2"></div>
-            <span class="sr-only">Loading...</span>
-        </div>
         <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
             <div class="h-6 bg-gray-200 rounded-full w-32"></div>
             <div class="h-8 bg-gray-200 rounded-full w-60 mt-2"></div>
