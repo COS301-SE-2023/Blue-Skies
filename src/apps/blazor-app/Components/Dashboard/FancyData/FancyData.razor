@@ -30,8 +30,8 @@
             </Heading>
         }
 
-        <div class="w-full flex justify-center items-center gap-4">
-            <div class="flex w-full flex-col gap-4 p-20">
+        <div class="w-full flex justify-center items-center px-4 gap-2">
+            <div class="flex w-7/12 flex-col gap-4 p-20">
                     <h1 class="text-primary-800 font-semibold text-center text-xl">Annual Flux Map</h1>
                     <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your rooftop.</p>
                     <Image ImageName="@satteliteImageSrc" css="2/3" alt="sattelite Image" />
@@ -47,7 +47,7 @@
                     </div>
             </div>
 
-            <div class="flex flex-col gap-4 justify-center w-full">
+            <div class="flex flex-col gap-4 justify-center w-1/2">
                 <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
 
                 @if(solarPanelsData is not null){
@@ -101,7 +101,7 @@
             </div>
         </div>
 
-        <div class="w-full flex justify-center items-center gap-4 mt-5">
+        <div class="w-full flex justify-center items-center px-4 gap-4 mt-5">
             <div class="flex w-2/3 flex-col justify-center items-center gap-3">
                 <h1 class="text-center text-primary-800 font-semibold text-xl">Monthly Flux Map</h1>
                 @if(monthlyFluxMap is not null) {
@@ -127,7 +127,7 @@
             </div>
         </div>
 
-        <div class="flex w-full justify-center gap-5 items-center mt-32">
+        <div class="flex w-full justify-center gap-5 px-4 items-center mt-32">
             <div class="w-2/3">
                 <h1 class="text-center text-primary-800 font-semibold text-xl">Sun path over the horizon</h1>
                 <p class="text-gray-500 mt-3 mb-4 text-center">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores cupiditate impedit ipsam temporibus, dignissimos nostrum.</p>
