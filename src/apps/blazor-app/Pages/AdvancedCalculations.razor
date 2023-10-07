@@ -15,7 +15,7 @@
 <PageTitle>Advanced Calculations</PageTitle>
 
 <div class="fade-in-enter-active">
-    <Image ImageName="02.svg" css="absolute hidden md:block top-20 lg:-top-2 -left-20 lg:-left-2" />
+    <Image ImageName="02.png" css="absolute hidden md:block top-20 lg:-top-2 -left-20 lg:-left-2" />
     <Image ImageName="shapes.svg" css="absolute -top-1/3 sm:transform scale-[0.6] -left-[45%] -z-20 w-2/3 h-full -rotate-[40]" alt="Shapes" />
     <div class="w-full px-2 lg:px-20 ">
         <div class="mb-20">
@@ -42,45 +42,33 @@
                             </content>
                         </Button>
                     </div>
-                    <div @onclick="SaveCalculation" class="w-full  block lg:hidden cursor-pointer">
-                        <Button css="h-14 max-w-xs w-2/3 mx-auto" style="pill">
+                    <div class="w-full">
+                        <Tabs @bind-Items="tabs"></Tabs>
+                    </div>
+                    <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
+                        <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
                             <content>
                                 @if (edit)
                                 {
-                                    <p class="text-[14px]  sm:text-base">Update calculation</p>
+                                    <p class="text-[12px]  sm:text-base">Update calculation</p>
                                 }
                                 else
                                 {
-                                    <p class="text-[14px]  sm:text-base">Save this calculation</p>
+                                    <p class="text-[12px]  sm:text-base">Save this calculation</p>
                                 }
                             </content>
                         </Button>
                     </div>
                 </div>
-                <div class="w-full">
-                    <Tabs @bind-Items="tabs"></Tabs>
-                </div>
-                <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
-                    <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
-                        <content>
-                            @if (edit)
-                            {
-                                <p class="text-[12px]  sm:text-base">Update calculation</p>
-                            }
-                            else
-                            {
-                                <p class="text-[12px]  sm:text-base">Save this calculation</p>
-                            }
-                        </content>
-                    </Button>
-                </div>
             </div>
         }
         <div class="w-full">
             @if(tabs[0].active) {
-                <div class="fade-in-active">
+                <div class="fade-in-active px-2">
                     <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
-                    <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    <div class="px-10 w-full">
+                        <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                    </div>
                 </div>
             }
             else if (tabs[1].active)
