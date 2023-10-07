@@ -8,7 +8,6 @@
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
 @inject BlazorApp.Data.ToastService toastService;
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Keys</PageTitle>
 
@@ -142,7 +141,6 @@
     protected override async Task OnInitializedAsync()
     {
         await GetKeys();
-        loadingService.HideLoadingScreen();
     }
 
     private async Task GetKeys() {

@@ -6,32 +6,33 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class BusinessRequestDataController : ControllerBase
+public class BusinessBestSolarPanelsController : ControllerBase
 {
-    private readonly BusinessRequestDataRepository _businessRequestDataRepository;
-    private readonly KeysRepository _keysRepository;
+    private readonly BusinessBestSolarPanelsRepository _businessBestSolarPanelsRepository;
+     private readonly KeysRepository _keysRepository;
 
-    public BusinessRequestDataController()
+    public BusinessBestSolarPanelsController()
     {
-        _businessRequestDataRepository = new BusinessRequestDataRepository();
+        _businessBestSolarPanelsRepository = new BusinessBestSolarPanelsRepository();
         _keysRepository = new KeysRepository();
     }
-
+    
     [HttpPost("post")]
-    public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
+    public async Task<IActionResult> CreateBusinessBestSolarPanels([FromBody] BestSolarPanelsInput bestSolarPanelsInput)
     {
         try
         {
-            if(businessRequestData.key == null)
+            if(bestSolarPanelsInput.key == null)
             {
                 return StatusCode((int)HttpStatusCode.Unauthorized, "API key field left blank");
             }
             List<KeyModel> keys = await _keysRepository.GetAllKeys();
+            
             foreach(KeyModel key in keys)
             {
-                if(businessRequestData.key.Equals(key.APIKey))
+                if(bestSolarPanelsInput.key.Equals(key.APIKey))
                 {
-                    var data = await _businessRequestDataRepository.GetProcessedDataAsync(businessRequestData);
+                    var data = await _businessBestSolarPanelsRepository.GetProcessedDataAsync(bestSolarPanelsInput);
                     return Ok(data);
                 }
             }

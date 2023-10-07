@@ -9,7 +9,6 @@
 @using System.Text.Json;
 @inject ProtectedLocalStorage ProtectedLocalStore;
 @inject NavigationManager NavigationManager;
-@inject BlazorApp.Data.LoadingService loadingService
 
 <PageTitle>Blue Skies - Stats</PageTitle>
 
@@ -81,7 +80,6 @@
     protected override void OnInitialized()
     {
         renderCharts();
-        loadingService.HideLoadingScreen();
     }
 
     private void renderCharts()
@@ -199,7 +197,6 @@
         var ans = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         if (!ans.Value)
         {
-            loadingService.ShowLoadingScreen();
             NavigationManager.NavigateTo("/unauthorized");
         }
     }

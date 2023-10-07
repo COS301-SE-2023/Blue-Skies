@@ -53,3 +53,4 @@ window.initializeMouseFollower = (divToMove) => {
   // Add event listeners to div
   grandparent.addEventListener('mouseenter', updatePosition);
 };
+
