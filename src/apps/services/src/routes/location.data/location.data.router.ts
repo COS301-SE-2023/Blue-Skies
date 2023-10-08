@@ -40,6 +40,31 @@ locationDataRouter.get(
   locationDataController.getEssentialData
 );
 
+locationDataRouter.get(
+  '/initialData/:latitude/:longitude',
+  locationDataController.getInitialData
+);
+
+locationDataRouter.get(
+  '/satelliteImageData/:latitude/:longitude',
+  locationDataController.getSatelliteImageData
+);
+
+locationDataRouter.get(
+  '/maskData/:latitude/:longitude',
+  locationDataController.getMaskData
+);
+
+locationDataRouter.get(
+  '/annualFluxData/:latitude/:longitude',
+  locationDataController.getAnnualFluxData
+);
+
+locationDataRouter.get(
+  '/monthlyFluxData/:latitude/:longitude',
+  locationDataController.getMonthlyFluxData
+);
+
 locationDataRouter.delete(
   '/delete/:latitude/:longitude',
   locationDataController.deleteLocationData

@@ -30,7 +30,6 @@ export default class LocationDataController {
     }
   };
 
-
   public createLocationData = async (req: Request, res: Response) => {
     const {
       latitude,
@@ -73,7 +72,6 @@ export default class LocationDataController {
     }
   };
 
-
   public getLocationData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
@@ -86,7 +84,7 @@ export default class LocationDataController {
         query,
         (err: tedious.RequestError, rowCount: number) => {
           if (err) {
-            console.log("express error: " + err.message);
+            console.log('express error: ' + err.message);
             res.status(400).json({
               error: err.message,
             });
@@ -122,7 +120,7 @@ export default class LocationDataController {
     }
   };
 
-  // getInitialLocationData
+  // getEssentialLocationData
   public getEssentialData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
@@ -171,7 +169,257 @@ export default class LocationDataController {
       res.status(500).json({ error: error.message });
     }
   };
-  
+
+  // getInitialLocationData
+  public getInitialData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, locationName, solarPanelsData, dateCreated, horisonElevationData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: columns[2].value,
+          satteliteImageData: null,
+          dateCreated: columns[4].value,
+          annualFluxData: null,
+          monthlyFluxData: null,
+          maskData: null,
+          solarPanelsData: columns[3].value,
+          satteliteImageElevationData: null,
+          horisonElevationData: columns[5].value,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // getSatelliteImageLocationData
+  public getSatelliteImageData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, satteliteImageData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: null,
+          satteliteImageData: columns[2].value,
+          dateCreated: null,
+          annualFluxData: null,
+          monthlyFluxData: null,
+          maskData: null,
+          solarPanelsData: null,
+          satteliteImageElevationData: null,
+          horisonElevationData: null,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // getMaskLocationData
+  public getMaskData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, maskData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: null,
+          satteliteImageData: null,
+          dateCreated: null,
+          annualFluxData: null,
+          monthlyFluxData: null,
+          maskData: columns[2].value,
+          solarPanelsData: null,
+          satteliteImageElevationData: null,
+          horisonElevationData: null,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // getAnnualFluxLocationData
+  public getAnnualFluxData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, annualFluxData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: null,
+          satteliteImageData: null,
+          dateCreated: null,
+          annualFluxData: columns[2].value,
+          monthlyFluxData: null,
+          maskData: null,
+          solarPanelsData: null,
+          satteliteImageElevationData: null,
+          horisonElevationData: null,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // getMonthlyFluxLocationData
+  public getMonthlyFluxData = async (req: Request, res: Response) => {
+    const { latitude, longitude } = req.params;
+    const lat = parseFloat(latitude.replace(',', '.'));
+    const long = parseFloat(longitude.replace(',', '.'));
+
+    const query = `SELECT latitude, longitude, monthlyFluxData FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
+    let solarIrradiation: ILocationData;
+
+    try {
+      const request = new tedious.Request(
+        query,
+        (err: tedious.RequestError, rowCount: number) => {
+          if (err) {
+            res.status(400).json({
+              error: err.message,
+            });
+          } else if (rowCount === 0) {
+            res.status(404).json({
+              message: 'Solar Irradiation not found.',
+            });
+          } else {
+            res.status(200).json(solarIrradiation);
+          }
+        }
+      );
+
+      request.on('row', (columns) => {
+        solarIrradiation = {
+          latitude: columns[0].value,
+          longitude: columns[1].value,
+          locationName: null,
+          satteliteImageData: null,
+          dateCreated: null,
+          annualFluxData: null,
+          monthlyFluxData: columns[2].value,
+          maskData: null,
+          solarPanelsData: null,
+          satteliteImageElevationData: null,
+          horisonElevationData: null,
+        };
+      });
+
+      conn.execSql(request);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
   //delete deleteLocationData
   public deleteLocationData = async (req: Request, res: Response) => {
     const { latitude, longitude } = req.params;
