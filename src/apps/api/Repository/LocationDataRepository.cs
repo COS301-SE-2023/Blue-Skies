@@ -245,6 +245,242 @@ public class LocationDataRepository
         }
     }
 
+    public async Task<LocationDataModel> InitialLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/initialData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = locationDataTemp.locationName,
+                    solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
+                    satteliteImageData = null,
+                    satteliteImageElevationData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = locationDataTemp.dateCreated,
+                    horisonElevationData = locationDataTemp.horisonElevationData
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting LocationData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
+
+
+public async Task<LocationDataModel> SatelliteImageLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/satelliteImageData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
+                    satteliteImageElevationData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting LocationData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
+
+    public async Task<LocationDataModel> MaskLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/maskData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    satteliteImageElevationData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = Convert.FromBase64String(locationDataTemp.maskData!),
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting LocationData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
+
+    public async Task<LocationDataModel> AnnualFluxLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/annualFluxData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    satteliteImageElevationData = null,
+                    annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting LocationData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
+
+    public async Task<LocationDataModel> MonthlyFluxLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/monthlyFluxData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    satteliteImageElevationData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting LocationData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get solar irradiation");
+        }
+    }
+
     //DeleteLocationData
     public async Task<string> DeleteLocationData(double latitude, double longitude)
     {

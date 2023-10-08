@@ -87,10 +87,10 @@ public class LocationDataController : ControllerBase
 
     }
 
-    // GetInitialLocationData
+    // GetEssentialLocationData
     [HttpGet]
     [Route("EssentialData/{latitude}/{longitude}")]
-    public async Task<IActionResult> GetInitialLocationData(
+    public async Task<IActionResult> GetEssentialLocationData(
         [FromRoute] double latitude,
         [FromRoute] double longitude
     )
@@ -100,7 +100,7 @@ public class LocationDataController : ControllerBase
             LocationDataModel data = await _locationDataRepository.EssentialLocationData(latitude, longitude);
             if (data == null)
             {
-                return StatusCode(400, "Could not get essential locatino data");
+                return StatusCode(400, "Could not get essential location data");
             }
             return Ok(data);
         }
@@ -112,6 +112,120 @@ public class LocationDataController : ControllerBase
 
     }
 
+    // GetInitialLocationData
+    [HttpGet]
+    [Route("InitialData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetInitialLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.InitialLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get initial location data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+        // GetSatelliteImageLocationData
+    [HttpGet]
+    [Route("SatelliteImageData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetSatelliteImageLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.SatelliteImageLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get satellite image location data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    // GetMaskLocationData
+    [HttpGet]
+    [Route("MaskData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetMaskLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.MaskLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get mask location data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+        // GetAnnualFluxLocationData
+    [HttpGet]
+    [Route("AnnualFluxData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetAnnualFluxLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.AnnualFluxLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get annual flux location data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    // GetMonthlyFluxLocationData
+    [HttpGet]
+    [Route("MonthlyFluxData/{latitude}/{longitude}")]
+    public async Task<IActionResult> GetMonthlyFluxLocationData(
+        [FromRoute] double latitude,
+        [FromRoute] double longitude
+    )
+    {
+        try
+        {
+            LocationDataModel data = await _locationDataRepository.MonthlyFluxLocationData(latitude, longitude);
+            if (data == null)
+            {
+                return StatusCode(400, "Could not get monthly flux location data");
+            }
+            return Ok(data);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+    }
 
     [HttpPost]
     [Route("create")]
