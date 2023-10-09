@@ -16,6 +16,7 @@ builder.Services.AddScoped<TutorialService>();
 builder.Services.AddScoped<ApplianceService>();
 builder.Services.AddScoped<ChatBotService>();
 builder.Services.AddSingleton<TooltipService>();
+builder.Services.AddScoped<CacheStorageAccessor>();
 
 var app = builder.Build();
 

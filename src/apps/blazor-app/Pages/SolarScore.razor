@@ -7,7 +7,7 @@
 @using System.Text.Json;
 @using BlazorApp.Components.Home;
 @using BlazorApp.Components.SolarScore;
-
+@inject CacheStorageAccessor CacheStorageAccessor
 <PageTitle>Solar Score</PageTitle>
 
 @* Check for admin *@
@@ -23,11 +23,14 @@ else
             @if (!locationIsReceivedAndNull)
             {
                 <div class="mb-20 -mt-10">
-                    <Results locationData="@locationData"/>
+                    <Results locationData="@locationData" />
                 </div>
                 <div class="-mb-80">
-                    <Image ImageName="shapes.svg" css="absolute -top-10 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3" alt="Shapes"/>
-                    <Image ImageName="Robert_Sitting_On_Panel.png" css="-z-10 ml-20 mt-32 mb-60 xl:mt-60 robert-slide-up h-40 xl:h-72" alt="Rob"/>
+                    <Image ImageName="shapes.svg"
+                        css="absolute -top-10 -translate-y-28 md:-translate-y-0  -z-10 -left-1/2  -translate-y-28  md:-translate-y-0 scale-[2] md:scale-100 w-2/3 h-2/3"
+                        alt="Shapes" />
+                    <Image ImageName="Robert_Sitting_On_Panel.png"
+                        css="-z-10 ml-20 mt-32 mb-60 xl:mt-60 robert-slide-up h-40 xl:h-72" alt="Rob" />
                 </div>
             }
             else
@@ -36,11 +39,15 @@ else
             }
             <div class="relative -mb-20">
                 <ScoreInfo />
-                <Image ImageName="shapes.svg" css="absolute rotate-45 -bottom-3/4  mt-10 -right-[55%] scale-150 z-10  w-3/4 h-3/4" alt="Shapes"/>
+                <Image ImageName="shapes.svg"
+                    css="absolute rotate-45 -bottom-3/4  mt-10 -right-[55%] scale-150 z-10  w-3/4 h-3/4" alt="Shapes" />
             </div>
             <div class="relative mt-32 mb-10 ">
-                <Image ImageName="shapes.svg" css="absolute rotate-45 bottom-20 lg:-top-80 -left-1/2 lg:-left-1/3 scale-150 -z-30  w-3/4 h-3/4" alt="Shapes"/>
-                <Image ImageName="Robert_Standing2.png" css="-z-10 hidden lg:block ml-40 mt-80 -mb-96 robert-slide-up h-40 md:h-52 xl:h-72" alt="Rob"/>
+                <Image ImageName="shapes.svg"
+                    css="absolute rotate-45 bottom-20 lg:-top-80 -left-1/2 lg:-left-1/3 scale-150 -z-30  w-3/4 h-3/4"
+                    alt="Shapes" />
+                <Image ImageName="Robert_Standing2.png"
+                    css="-z-10 hidden lg:block ml-40 mt-80 -mb-96 robert-slide-up h-40 md:h-52 xl:h-72" alt="Rob" />
                 <NextSteps />
             </div>
         </div>
@@ -68,20 +75,48 @@ else
         double latitude = tempLatitude.Value;
         double longitude = tempLongitude.Value;
 
-        if(latitude != 0 && longitude != 0)
+        if (latitude != 0 && longitude != 0)
         {
+            @* Try to get from cache *@
+            @* Console.WriteLine("Trying to get from cache");
+var cachedResponse = await CacheStorageAccessor.GetAsync(CreateMessage());
+Console.WriteLine("Cached response: " + cachedResponse); *@
+            @* if (cachedResponse != null)
+{
+Console.WriteLine("Cached response found");
+locationData = JsonSerializer.Deserialize<LocationDataModel>(cachedResponse);
+}
+else
+{
+*@
+
             locationData = await locationDataClass.GetLocationData(latitude, longitude);
-            if(locationData == null)
+            var message = CreateMessage();
+            @*Set the body to locationData *@
+            HttpClient httpClient = new HttpClient();
+            var response = await httpClient.SendAsync(message);
+
+            string temp = JsonSerializer.Serialize(locationData.annualFluxData);
+            @* Console.WriteLine("Location data: " + temp); *@
+            response.Content = new StringContent(temp, null, "application/json");
+            await CacheStorageAccessor.StoreAsync(message, response);
+            @* }
+*@
+            if (locationData == null)
             {
                 locationIsReceivedAndNull = true;
             }
             await ProtectedSessionStore.SetAsync("parent", "solarScore");
             isAd = isAdmin.Value;
-        } else {
+        }
+        else
+        {
             locationIsReceivedAndNull = true;
         }
 
     }
+    public HttpRequestMessage CreateMessage() => new HttpRequestMessage(HttpMethod.Get,
+    "http://localhost:5096/locationData/getLocationData/-25.78097/28.267354");
 
-    
+
 }
