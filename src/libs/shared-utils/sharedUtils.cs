@@ -785,11 +785,6 @@ public class otherDataClass
 
     public async Task<List<LocationSuggestion>> GetLocationSuggestions(string searchQuery, CancellationToken cancellationToken)
     {
-        // if (mapboxAccessToken == "")
-        // {
-        //     await GetMapboxAccessToken();
-        // }
-
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
 
         string requestUrl =
@@ -818,10 +813,6 @@ public class otherDataClass
 
     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
     {
-        // if (mapboxAccessToken == "")
-        // {
-        //     await GetMapboxAccessToken();
-        // }
         string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
         string requestUrl =
             $"{baseUrl}{longitude.ToString().Replace(",", ".")},{latitude.ToString().Replace(",", ".")}.json?&access_token={mapboxAccessToken}";
@@ -838,19 +829,6 @@ public class otherDataClass
             Console.WriteLine(ex.Message);
             return "";
         }
-    }
-
-    private async Task GetMapboxAccessToken()
-    {
-        HttpClient httpClient = new HttpClient();
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + "/locationData/mapboxkey");
-        var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            mapboxAccessToken = await response.Content.ReadAsStringAsync();
-        }
-        mapboxAccessToken = mapboxAccessToken.Trim('"');
     }
 
     public async Task<List<SystemUsage>?> GetAllAdminStats()
