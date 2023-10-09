@@ -44,22 +44,6 @@ public class KeyController : ControllerBase
         }
     }
 
-    //create key
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateKey([FromBody] KeyModel keys)
-    {
-        try
-        {
-            int suspended = keys.suspended;
-            var key = await _keysRepository.CreateKey(keys.owner!, keys.remainingCalls, suspended);
-            return Ok(key);
-        }
-        catch (Exception e)
-        {
-            return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
-        }
-    }
-
     //create business key
     [HttpPost("createBusiness")]
     public async Task<IActionResult> CreateBusinessKey([FromBody] KeyModel keys)

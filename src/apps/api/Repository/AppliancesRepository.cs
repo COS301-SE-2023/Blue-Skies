@@ -97,7 +97,7 @@ public class AppliancesRepository
         }
     }
 
-    public async Task<Appliances> UpdateAppliances(int id, string type, int powerUsage)
+    public async Task<Appliances> UpdateAppliances(int id, string type, int powerUsage, float durationUsed)
     {
         try
         {
@@ -113,6 +113,8 @@ public class AppliancesRepository
                     + "\",\r\n"
                     + "\"powerUsage\" : "
                     + powerUsage
+                    + ",\r\n \"durationUsed\" : "
+                    + durationUsed
                     + "\r\n}",
                 null,
                 "application/json"
@@ -125,6 +127,7 @@ public class AppliancesRepository
                 app.applianceId = id;
                 app.type = type;
                 app.powerUsage = powerUsage;
+                app.durationUsed = durationUsed;
 
                 Console.WriteLine(".NET: update Appliances app");
                 return app;
