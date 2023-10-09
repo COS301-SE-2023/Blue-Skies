@@ -77,41 +77,46 @@ public class locationDataClass
         }
     }
 
-    /// <summary>
-    /// Get's the location data from the database except for the image.
-    /// <paramref name="latitude"/> The latitude of the current location.
-    /// <paramref name="longitude"/> The longitude of the current location.
-    /// </summary>
-    public async Task<LocationDataModel?> GetLocationDataNoImage(double latitude, double longitude)
-    {
-        string url =
-            $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
-        Console.WriteLine("URL: " + url);
+    public async Task<LocationDataModel?> GetInitialLocationData(double latitude, double longitude, LocationDataModel? oldData = null) {
+        Console.WriteLine("Getting initial location data for " + latitude + ", " + longitude);
         var client = new HttpClient();
-        var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            API_PORT
-                + "/locationData/GetLocationDataWithoutImage/"
-                + latitude.ToString().Replace(",", ".")
-                + "/"
-                + longitude.ToString().Replace(",", ".")
-        );
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/InitialData/{latitude}/{longitude}");
         var response = await client.SendAsync(request);
-        if (response.IsSuccessStatusCode)
-        {
+        if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
-            if (data.Equals("Solar Irradiation not found"))
-            {
-                return null;
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            if(oldData == null) {
+                oldData = result;
+            } else {
+                oldData.latitude = result.latitude;
+                oldData.longitude = result.longitude;
+                oldData.solarPanelsData = result.solarPanelsData;
+                oldData.dateCreated = result.dateCreated;
+                oldData.horisonElevationData = result.horisonElevationData;
             }
-            data = response.Content.ReadAsStringAsync().Result;
-            return JsonSerializer.Deserialize<LocationDataModel>(data)!;
+        } else {
+            Console.WriteLine("Failed to get initial location data");
         }
-        else
-        {
-            Console.WriteLine("Location data not found - fetching data instead");
+        return oldData;
+    }
+
+    public async Task<LocationDataModel?> GetSatelliteImageData(double latitude, double longitude, LocationDataModel? oldData = null) {
+        Console.WriteLine("Getting satellite image data for " + latitude + ", " + longitude);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/SatelliteImageData/{latitude}/{longitude}");
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            if(oldData == null) {
+                oldData = result;
+            } else {
+                oldData.satteliteImageData = result.satteliteImageData;
+            }
+        } else {
+            Console.WriteLine("Failed to get satellite image data");
         }
-        return null;
+        return oldData;
     }
 
     /// <summary>
@@ -125,11 +130,7 @@ public class locationDataClass
     /// <paramref name="image"/> The image of the current location.
     /// <paramref name="location"/> The name of the current location.
     /// </summary>
-    public async Task<LocationDataModel?> CreateLocationData(
-        double latitude,
-        double longitude,
-        string locationName
-    )
+    public async Task<LocationDataModel?> CreateLocationData(double latitude, double longitude, string locationName)
     {
         Console.WriteLine("Creating location data for " + latitude + ", " + longitude);
         LocationDataModel result = new LocationDataModel();
@@ -289,10 +290,7 @@ public class locationDataClass
         return null;
     }
 
-    private async Task<RooftopInformationModel?> GetSolarPannelsData(
-        double latitude,
-        double longitude
-    )
+    private async Task<RooftopInformationModel?> GetSolarPannelsData(double latitude, double longitude)
     {
         string requiredQuality = "HIGH";
         string? api_key = Environment.GetEnvironmentVariable("GOOGLE_MAPS_API_KEY");
@@ -329,8 +327,7 @@ public class locationDataClass
     /// </summary>
     public async Task<string?> GetHorisonElevationData(double latitude, double longitude)
     {
-        string url =
-            $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
+        string url = $"https://api.globalsolaratlas.info/data/horizon?loc={latitude.ToString().Replace(",", ".")},{longitude.ToString().Replace(",", ".")}";
         var client = new HttpClient();
         var response = await client.GetAsync(url);
         if (response.IsSuccessStatusCode)
@@ -340,7 +337,6 @@ public class locationDataClass
         }
         return null;
     }
-
     /// <summary>
     /// <para>Fetches the weather data from the visualcrossing api.</para>
     /// <paramref name="client"/> The http client.

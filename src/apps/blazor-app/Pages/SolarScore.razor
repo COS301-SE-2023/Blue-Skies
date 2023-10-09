@@ -70,7 +70,7 @@ else
 
         if(latitude != 0 && longitude != 0)
         {
-            locationData = await locationDataClass.GetLocationData(latitude, longitude);
+            locationData = await locationDataClass.GetInitialLocationData(latitude, longitude);
             if(locationData == null)
             {
                 locationIsReceivedAndNull = true;

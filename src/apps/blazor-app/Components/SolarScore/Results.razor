@@ -281,10 +281,9 @@
 </ModalPopup>
 
 @code {
-    private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-    private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
     [Parameter]
     public LocationDataModel? locationData { get; set; } = null;
     ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
@@ -318,11 +317,22 @@
         batteryTimer.Enabled = true;
     }
 
+    private async Task GetSatteliteImage() {
+        if(locationData != null && locationData.satteliteImageData == null) {
+            locationData = await locationDataClass.GetSatelliteImageData(locationData.latitude, locationData.longitude, locationData);
+            if(locationData != null && locationData.satteliteImageData != null) {
+                Console.WriteLine("Getting sattelite image");
+                satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData);
+                StateHasChanged();
+            }
+        }
+    }
+
     protected override void OnParametersSet()
     {
         if (locationData != null)
         {
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(locationData!.satteliteImageData!);
+            _ = GetSatteliteImage();
             solarScore = solarCalculator.getSolarScore(locationData.solarPanelsData);
             avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData) / 365,
             2);
