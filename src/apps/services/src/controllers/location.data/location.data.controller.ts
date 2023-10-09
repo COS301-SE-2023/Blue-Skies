@@ -78,7 +78,6 @@ export default class LocationDataController {
     const query = `SELECT latitude, longitude, locationName, solarPanelsData, satteliteImageData, annualFluxData, monthlyFluxData, maskData, dateCreated, horisonElevationData  FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
 
     let solarIrradiation: ILocationData;
-    console.log('Getting location data ' + lat + ', ' + long);
     try {
       const request = new tedious.Request(
         query,
@@ -97,8 +96,6 @@ export default class LocationDataController {
           }
         }
       );
-
-      console.log("No error, getting data");
 
       request.on('row', (columns) => {
         solarIrradiation = {

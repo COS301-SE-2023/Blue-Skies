@@ -31,7 +31,6 @@
         @if (systems.Count == 0)
         {
             <TabSkeleton />
-            
         } else {
             <div class="relative flex flex-col lg:flex-row justify-evenly items-center w-full gap-4 lg:gap-0 mx-auto my-7">
                 <div class="flex flex-col sm:flex-row gap-2 w-full">
@@ -84,7 +83,7 @@
                         if(systems != null) {
                             numSolarPanels = systems[selectedSystem].numberOfPanels;
                         }
-                        <FancyData solarPanelsData="@currentLocationData!.solarPanelsData" horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" numSolarPanels="@numSolarPanels"/>
+                        <FancyData currentLocationData="currentLocationData" numSolarPanels="@numSolarPanels"/>
                     }
                 </div>
             }
@@ -210,7 +209,7 @@
         double latitude = lat ?? 0;
         double longitude = lng ?? 0;
         
-        LocationDataModel? result = await locationDataClass.GetLocationData(latitude, longitude);
+        LocationDataModel? result = await locationDataClass.GetInitialLocationData(latitude, longitude, currentLocationData);
         if (result != null)
         {
             currentLocationData = result;
@@ -288,6 +287,14 @@
 
         @* Get custom Appliances *@
         customAppliances = await customApplianceClass.GetAllCustomAppliances();
+        _ = GetSatteliteImage();
+    }
+
+    private async Task GetSatteliteImage() {
+        if(currentLocationData != null && currentLocationData.satteliteImageData == null) {
+            currentLocationData = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+            StateHasChanged();
+        }
     }
 
     public void SaveCalculation()

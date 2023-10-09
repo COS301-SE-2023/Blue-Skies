@@ -158,10 +158,16 @@
     {
         if (currentLocationData != null)
         {
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            if(currentLocationData.satteliteImageData != null && satteliteImage == null) {
+                satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            }
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
             usableHours = Math.Round(solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true), 2);
-            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+            if(systems != null && systems.Count > 0) {
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+            } else {
+                Console.WriteLine("Systems is null");
+            }
         }
     }
 

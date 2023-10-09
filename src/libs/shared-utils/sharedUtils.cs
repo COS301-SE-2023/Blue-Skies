@@ -119,6 +119,63 @@ public class locationDataClass
         return oldData;
     }
 
+    public async Task<LocationDataModel?> GetMaskData(double latitude, double longitude, LocationDataModel? oldData = null) {
+        Console.WriteLine("Getting mask data for " + latitude + ", " + longitude);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/MaskData/{latitude}/{longitude}");
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            if(oldData == null) {
+                oldData = result;
+            } else {
+                oldData.maskData = result.maskData;
+            }
+        } else {
+            Console.WriteLine("Failed to get mask data");
+        }
+        return oldData;
+    }
+
+    public async Task<LocationDataModel?> GetAnnualFluxData(double latitude, double longitude, LocationDataModel? oldData = null) {
+        Console.WriteLine("Getting annual flux data for " + latitude + ", " + longitude);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/AnnualFluxData/{latitude}/{longitude}");
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            if(oldData == null) {
+                oldData = result;
+            } else {
+                oldData.annualFluxData = result.annualFluxData;
+            }
+        } else {
+            Console.WriteLine("Failed to get annual flux data");
+        }
+        return oldData;
+    }
+
+    public async Task<LocationDataModel?> GetMonthlyFluxData(double latitude, double longitude, LocationDataModel? oldData = null) {
+        Console.WriteLine("Getting monthly flux data for " + latitude + ", " + longitude);
+        var client = new HttpClient();
+        var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/MonthlyFluxData/{latitude}/{longitude}");
+        var response = await client.SendAsync(request);
+        if(response.IsSuccessStatusCode) {
+            var data = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
+            if(oldData == null) {
+                oldData = result;
+            } else {
+                oldData.monthlyFluxData = result.monthlyFluxData;
+            }
+        } else {
+            Console.WriteLine("Failed to get monthly flux data");
+        }
+        return oldData;
+    }
+
     /// <summary>
     /// <list type="number">
     ///     <item>Creates a new row in the database for the location data. </item>
