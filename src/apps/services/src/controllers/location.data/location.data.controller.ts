@@ -37,7 +37,6 @@ export default class LocationDataController {
       locationName,
       solarPanelsData,
       satteliteImageData,
-      satteliteImageElevationData,
       annualFluxData,
       monthlyFluxData,
       maskData,
@@ -46,7 +45,7 @@ export default class LocationDataController {
     const dateCreated = new Date().toISOString().slice(0, 19).replace('T', ' ');
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
-    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, satteliteImageElevationData, annualFluxData, monthlyFluxData, maskData, dateCreated, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${satteliteImageElevationData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', '${horisonElevationData}')`;
+    const query = `INSERT INTO [dbo].[locationData] (latitude, longitude, locationName, solarPanelsData, satteliteImageData, annualFluxData, monthlyFluxData, maskData, dateCreated, horisonElevationData) VALUES (${lat}, ${long}, '${locationName}', '${solarPanelsData}', '${satteliteImageData}', '${annualFluxData}', '${monthlyFluxData}', '${maskData}', '${dateCreated}', '${horisonElevationData}')`;
 
     try {
       const request = new tedious.Request(
@@ -76,7 +75,8 @@ export default class LocationDataController {
     const { latitude, longitude } = req.params;
     const lat = parseFloat(latitude.replace(',', '.'));
     const long = parseFloat(longitude.replace(',', '.'));
-    const query = `SELECT * FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+    const query = `SELECT latitude, longitude, locationName, solarPanelsData, satteliteImageData, annualFluxData, monthlyFluxData, maskData, dateCreated, horisonElevationData  FROM [dbo].[locationData] WHERE latitude = ${lat} AND longitude = ${long}`;
+
     let solarIrradiation: ILocationData;
     console.log('Getting location data ' + lat + ', ' + long);
     try {
@@ -98,6 +98,8 @@ export default class LocationDataController {
         }
       );
 
+      console.log("No error, getting data");
+
       request.on('row', (columns) => {
         solarIrradiation = {
           latitude: columns[0].value,
@@ -105,12 +107,11 @@ export default class LocationDataController {
           locationName: columns[2].value,
           solarPanelsData: columns[3].value,
           satteliteImageData: columns[4].value,
-          satteliteImageElevationData: columns[5].value,
-          annualFluxData: columns[6].value,
-          monthlyFluxData: columns[7].value,
-          maskData: columns[8].value,
-          dateCreated: columns[9].value,
-          horisonElevationData: columns[10].value,
+          annualFluxData: columns[5].value,
+          monthlyFluxData: columns[6].value,
+          maskData: columns[7].value,
+          dateCreated: columns[8].value,
+          horisonElevationData: columns[9].value,
         };
       });
 
@@ -159,7 +160,6 @@ export default class LocationDataController {
           monthlyFluxData: null,
           maskData: null,
           solarPanelsData: null,
-          satteliteImageElevationData: null,
           horisonElevationData: null,
         };
       });
@@ -209,7 +209,6 @@ export default class LocationDataController {
           monthlyFluxData: null,
           maskData: null,
           solarPanelsData: columns[3].value,
-          satteliteImageElevationData: null,
           horisonElevationData: columns[5].value,
         };
       });
@@ -259,7 +258,6 @@ export default class LocationDataController {
           monthlyFluxData: null,
           maskData: null,
           solarPanelsData: null,
-          satteliteImageElevationData: null,
           horisonElevationData: null,
         };
       });
@@ -309,7 +307,6 @@ export default class LocationDataController {
           monthlyFluxData: null,
           maskData: columns[2].value,
           solarPanelsData: null,
-          satteliteImageElevationData: null,
           horisonElevationData: null,
         };
       });
@@ -359,7 +356,6 @@ export default class LocationDataController {
           monthlyFluxData: null,
           maskData: null,
           solarPanelsData: null,
-          satteliteImageElevationData: null,
           horisonElevationData: null,
         };
       });
@@ -409,7 +405,6 @@ export default class LocationDataController {
           monthlyFluxData: columns[2].value,
           maskData: null,
           solarPanelsData: null,
-          satteliteImageElevationData: null,
           horisonElevationData: null,
         };
       });

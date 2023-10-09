@@ -239,7 +239,6 @@ public class LocationDataController : ControllerBase
                 locationData.locationName!,
                 JsonSerializer.Serialize(locationData.solarPanelsData!),
                 locationData.satteliteImageData!,
-                locationData.satteliteImageElevationData!,
                 locationData.annualFluxData!,
                 locationData.monthlyFluxData!,
                 locationData.maskData!,

@@ -82,7 +82,6 @@ public class LocationDataRepository
         string locationName,
         string solarPanelsData,
         byte[] satteliteImageData,
-        byte[] satteliteImageElevationData,
         byte[] annualFluxData,
         byte[] monthlyFluxData,
         byte[] maskData,
@@ -97,7 +96,6 @@ public class LocationDataRepository
                 express + "/api/locationData/create"
             );
             string satteliteImageDataBase64 = Convert.ToBase64String(satteliteImageData);
-            string satteliteImageElevationDataBase64 = Convert.ToBase64String(satteliteImageElevationData);
             string annualFluxDataBase64 = Convert.ToBase64String(annualFluxData);
             string monthlyFluxDataBase64 = Convert.ToBase64String(monthlyFluxData);
             string maskDataBase64 = Convert.ToBase64String(maskData);
@@ -109,7 +107,6 @@ public class LocationDataRepository
                 locationName = locationName,
                 solarPanelsData = solarPanelsData,
                 satteliteImageData = satteliteImageDataBase64,
-                satteliteImageElevationData = satteliteImageElevationDataBase64,
                 annualFluxData = annualFluxDataBase64,
                 monthlyFluxData = monthlyFluxDataBase64,
                 maskData = maskDataBase64,
@@ -160,7 +157,6 @@ public class LocationDataRepository
 
             if (response.IsSuccessStatusCode)
             {
-                // Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
                 LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
                 LocationDataModel locationData = new LocationDataModel()
@@ -170,7 +166,6 @@ public class LocationDataRepository
                     locationName = locationDataTemp.locationName,
                     solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
-                    satteliteImageElevationData = Convert.FromBase64String(locationDataTemp.satteliteImageElevationData!),
                     annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
                     monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
                     maskData = Convert.FromBase64String(locationDataTemp.maskData!),
@@ -220,7 +215,6 @@ public class LocationDataRepository
                     locationName = locationDataTemp.locationName,
                     solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = null,
                     maskData = null,
@@ -267,7 +261,6 @@ public class LocationDataRepository
                     locationName = locationDataTemp.locationName,
                     solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = null,
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = null,
                     maskData = null,
@@ -315,7 +308,6 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
                     locationName = null,
                     solarPanelsData = null,
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = null,
                     maskData = null,
@@ -362,7 +354,6 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
                     locationName = null,
                     solarPanelsData = null,
                     satteliteImageData = null,
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = null,
                     maskData = Convert.FromBase64String(locationDataTemp.maskData!),
@@ -409,7 +400,6 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
                     locationName = null,
                     solarPanelsData = null,
                     satteliteImageData = null,
-                    satteliteImageElevationData = null,
                     annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
                     monthlyFluxData = null,
                     maskData = null,
@@ -456,7 +446,6 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
                     locationName = null,
                     solarPanelsData = null,
                     satteliteImageData = null,
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
                     maskData = null,
@@ -553,7 +542,6 @@ public class LocationDataModelTemp
     public string? locationName { get; set; }
     public string? solarPanelsData { get; set; }
     public string? satteliteImageData { get; set; }
-    public string? satteliteImageElevationData { get; set; }
     public string? annualFluxData { get; set; }
     public string? monthlyFluxData { get; set; }
     public string? maskData { get; set; }

@@ -154,7 +154,6 @@ public class locationDataClass
 
         result.solarPanelsData = locationData.solarPanelsData;
         result.satteliteImageData = locationData.satteliteImageData;
-        result.satteliteImageElevationData = locationData.satteliteImageElevationData;
         result.annualFluxData = locationData.annualFluxData;
         result.monthlyFluxData = locationData.monthlyFluxData;
         result.maskData = locationData.maskData;
@@ -200,18 +199,16 @@ public class locationDataClass
             return null;
         }
 
-        var byteDataTask1 = GetLocationDataFromDataLayerUrl(locationDataLayer.dsmUrl!);
-        var byteDataTask2 = GetLocationDataFromDataLayerUrl(locationDataLayer.rgbUrl!);
-        var byteDataTask3 = GetLocationDataFromDataLayerUrl(locationDataLayer.maskUrl!);
-        var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
-        var byteDataTask5 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
+        var byteDataTask1 = GetLocationDataFromDataLayerUrl(locationDataLayer.rgbUrl!);
+        var byteDataTask2 = GetLocationDataFromDataLayerUrl(locationDataLayer.maskUrl!);
+        var byteDataTask3 = GetLocationDataFromDataLayerUrl(locationDataLayer.annualFluxUrl!);
+        var byteDataTask4 = GetLocationDataFromDataLayerUrl(locationDataLayer.monthlyFluxUrl!);
 
         await Task.WhenAll(
             byteDataTask1,
             byteDataTask2,
             byteDataTask3,
-            byteDataTask4,
-            byteDataTask5
+            byteDataTask4
         );
 
         if (
@@ -219,18 +216,16 @@ public class locationDataClass
             || byteDataTask2.Result == null
             || byteDataTask3.Result == null
             || byteDataTask4.Result == null
-            || byteDataTask5.Result == null
         )
         {
             Console.WriteLine("One or more data requests failed");
             return null;
         }
 
-        result.satteliteImageElevationData = byteDataTask1.Result;
-        result.satteliteImageData = byteDataTask2.Result;
-        result.maskData = byteDataTask3.Result;
-        result.annualFluxData = byteDataTask4.Result;
-        result.monthlyFluxData = byteDataTask5.Result;
+        result.satteliteImageData = byteDataTask1.Result;
+        result.maskData = byteDataTask2.Result;
+        result.annualFluxData = byteDataTask3.Result;
+        result.monthlyFluxData = byteDataTask4.Result;
         result.dateCreated = DateTime.Now;
 
         return result;

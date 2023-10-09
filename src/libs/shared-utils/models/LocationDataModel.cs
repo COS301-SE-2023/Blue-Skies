@@ -5,7 +5,6 @@ public class LocationDataModel
     public string? locationName { get; set; }
     public RooftopInformationModel? solarPanelsData { get; set; }
     public byte[]? satteliteImageData { get; set; }
-    public byte[]? satteliteImageElevationData { get; set; }
     public byte[]? annualFluxData { get; set; }
     public byte[]? monthlyFluxData { get; set; }
     public byte[]? maskData { get; set; }

@@ -4,7 +4,6 @@ export default class ILocationData {
   locationName: string | null | undefined;
   solarPanelsData: string | null | undefined;
   satteliteImageData: string | null | undefined;
-  satteliteImageElevationData: string | null | undefined;
   annualFluxData: string | null | undefined;
   monthlyFluxData: string | null | undefined;
   maskData: string | null | undefined;
