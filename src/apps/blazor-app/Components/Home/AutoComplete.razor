@@ -18,8 +18,8 @@
             class="pl-14 md:pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
             type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @onkeyup="ResetTimer" @onblur="HideSuggestions" @bind:event="oninput" placeholder="Enter your address" />
     </div>
-    <div class="absolute z-50 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
-        <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
+    <div class="absolute z-50 transition-all bg-transparent duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
+        <ul id="suggestionList" class="flex flex-col bg-white mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {
