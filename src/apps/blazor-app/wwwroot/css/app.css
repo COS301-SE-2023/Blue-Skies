@@ -3381,6 +3381,18 @@ html {
   animation-fill-mode: forwards;
 }
 
+/* Navigation Slides */
+
+.nav-slide-in {
+  animation: navSlideIn .3s;
+  animation-fill-mode: forwards;
+}
+
+.nav-slide-out {
+  animation: navSlideOut .3s;
+  animation-fill-mode: forwards;
+}
+
 /* Wipe transitions */
 
 .wipe-down {
@@ -3423,6 +3435,30 @@ html {
 .appliance-slide-in-right {
   animation: slideRightIn .2s;
   animation-fill-mode: forwards;
+}
+
+/* Navigation Slide In */
+
+@keyframes navSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Navigation Slide Out */
+
+@keyframes navSlideOut {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
 }
 
 /* Slide Left Out Transition */

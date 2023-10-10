@@ -27,7 +27,7 @@
   class="fixed top-0 left-0 shadow-sm bg-white transition-all duration-300 delay-[250ms] w-full z-20 @(isScrollingDown ? "h-0" : "h-24") ">
 </div>
 <header
-  class="fixed h-20 left-0 bg-transparent w-full z-20 transition-all duration-300 delay-[250ms] @(isScrollingDown ? "-top-20" : "top-0")">
+  class="fixed h-20 left-0 bg-transparent w-full z-40 transition-all duration-300 delay-[250ms] @(isScrollingDown ? "-top-20" : "top-0")">
   <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
     <div class="flex lg:flex-1">
       @* BlueSkies Logo *@
@@ -165,7 +165,7 @@
   @* Mobile menu, show/hide based on menu open state. *@
   @if (collapseNavMenu)
   {
-    <div class="lg:hidden" role="dialog" aria-modal="true">
+    <div class="lg:hidden shadow @navAnimation z-50  fixed top-0 right-0 h-full max-w-sm  w-full" role="dialog" aria-modal="true">
       @* Background backdrop, show/hide based on slide-over state. *@
       <div class="fixed inset-0 z-10"></div>
       <div
@@ -186,27 +186,31 @@
             </button>
           </div>
           @* Mobile Menu Links *@
-          <div class="flex flex-col w-full mt-5">
-            <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/");ToggleNavMenu();})'>Home</a>
-            <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/solarScore");ToggleNavMenu();})'>Solar
-              Score</a>
-            <a href="" class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300"
-            @onclick='(() => {forceNavigate("/advanced");ToggleNavMenu();})'>Advanced</a>
+          <div class="flex flex-col gap-4 w-full mt-5">
+            @* Home *@
+            <a href="/" class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {forceNavigate("/");ToggleNavMenu();})'>Home</a>
+            @* Solar Score *@
+            <a href="/solarScore" class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {forceNavigate("/solarScore");ToggleNavMenu();})'>Solar Score</a>
+            @* Calculations *@
+            <a href="/advanced" class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" @onclick='(() => {forceNavigate("/advanced");ToggleNavMenu();})'>Calculations</a>
+            @* Get In Touch *@
+            <a @onclick="ToggleNavMenu" href="/getintouch" class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">Get In Touch</a>
+
             @if (loggedIn == true)
             {
-              <p @onclick="ToggleNavMenu"
-                class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">@userEmail</p>
+              @* Dashboard *@
+              <a @onclick="ToggleNavMenu" href="/dashboard"
+                class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">Dashboard</a>
+              @* Log Out *@
+              <a class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" 
+                @onclick="Logout">Logout</a>
             }
             else
             {
-              <p @onclick="ToggleNavMenu"
-                class="transition-all duration-300 group-hover:delay-200 delay-100 group-hover:translate-x-0 @(isScrollingDown ? "translate-x-20" : "")">
-                Log In</p>
+              @* Log In *@
+              <a @onclick="ToggleNavMenu" href="/login"
+                class="p-3 shadow-sm w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300">Log In</a>
             }
-            <a class="p-3 w-full text-left hover:bg-primary-100 rounded-xl transition-all duration-300" href=""
-              onclick="@(() => Logout())">Logout</a>
           </div>
         </div>
       </div>
@@ -239,6 +243,7 @@
     </div>
 </ModalPopup>
 @code {
+  public string navAnimation { get; set; } = "nav-slide-in";
   [Parameter]
   public bool isDashboard { get; set; } = false;
   [Parameter]
@@ -269,9 +274,23 @@
     ModalPopupHelp.Dismiss();
     chatBotService.ShowChatBot();
   }
-  private void ToggleNavMenu()
+  private async void ToggleNavMenu()
   {
-    collapseNavMenu = !collapseNavMenu;
+    if (collapseNavMenu)
+    {
+      navAnimation = "nav-slide-out";
+      StateHasChanged();
+      await Task.Delay(300);
+      collapseNavMenu = false;
+      StateHasChanged();
+    }
+    else
+    {
+      navAnimation = "nav-slide-in";
+      StateHasChanged();
+      collapseNavMenu = true;
+      StateHasChanged();
+    }
   }
 
   private void forceNavigate(string url)
@@ -358,6 +377,8 @@
 
     loggedIn = false;
     userEmail = "";
+    forceNavigate("/");
+    ToggleNavMenu();
   }
 
   private void Edit()
