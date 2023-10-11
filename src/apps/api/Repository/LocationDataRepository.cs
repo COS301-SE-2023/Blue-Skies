@@ -138,7 +138,7 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not create solar irradiation");
+            throw new Exception("Could not create locationData");
         }
     }
 
@@ -187,7 +187,7 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get LocationData");
         }
     }
 
@@ -229,13 +229,13 @@ public class LocationDataRepository
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting essentialData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get essentialData");
         }
     }
 
@@ -275,13 +275,13 @@ public class LocationDataRepository
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting initialData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get initialData");
         }
     }
 
@@ -322,13 +322,13 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting satelliteImageData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get satelliteImageData");
         }
     }
 
@@ -368,13 +368,13 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting maskData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get maskData");
         }
     }
 
@@ -414,13 +414,13 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting annualFluxData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get annualFluxData");
         }
     }
 
@@ -460,13 +460,13 @@ public async Task<LocationDataModel> SatelliteImageLocationData(double latitude,
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting monthlyFluxData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get monthlyFluxData");
         }
     }
 

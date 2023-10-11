@@ -162,6 +162,7 @@
 
 @code {
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private string? satteliteImage;
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     [Parameter]
@@ -190,9 +191,10 @@
         }
 
         if(currentLocationData != null) {
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            if(currentLocationData.satteliteImageData != null) {
+                satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData!.satteliteImageData!);
+                StateHasChanged();
+            }
         }
-
-
     }
 }

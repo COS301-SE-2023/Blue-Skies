@@ -167,6 +167,8 @@
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     [Parameter]
     public int numSolarPanels { get; set; }
+    [Parameter]
+    public CancellationTokenSource? cancellationTokenSource { get; set; }
     public byte[]? monthlyFluxData = null;
     public byte[]? maskData = null;
     public string? horisonElevationData = null;
@@ -207,10 +209,16 @@
     private async Task GetMontlyFluxData() {
         if(currentLocationData != null) {
             if(currentLocationData.monthlyFluxData == null) {
-                LocationDataModel? result = await locationDataClass.GetMonthlyFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                LocationDataModel? result = null;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetMonthlyFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetMonthlyFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
                 if(result != null) {
                     currentLocationData = result;
                 }
+                Console.WriteLine("Done retrieving monthly flux data");
             }
             monthlyFluxData = currentLocationData.monthlyFluxData;
             SetAllVariables();
@@ -220,10 +228,16 @@
     private async Task GetAnnualFluxData() {
         if(currentLocationData != null) {
             if(currentLocationData.annualFluxData == null) {
-                LocationDataModel? result = await locationDataClass.GetAnnualFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                LocationDataModel? result;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetAnnualFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetAnnualFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
                 if(result != null) {
                     currentLocationData = result;
                 }
+                Console.WriteLine("Done retrieving annual flux data");
             }
             annualFluxData = currentLocationData.annualFluxData;
             SetAllVariables();
@@ -231,27 +245,30 @@
         }
     }
 
-    private async Task GetSatteliteImageData() {
+    private Task GetSatteliteImageData() {
         if(currentLocationData != null) {
-            if(currentLocationData.satteliteImageData == null) {
-                LocationDataModel? result = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
-                if(result != null) {
-                    currentLocationData = result;
-                }
+            if(currentLocationData.satteliteImageData != null) {
+                satteliteImageData = currentLocationData.satteliteImageData;
+                SetAllVariables();
+                _ = GetMaskData();
             }
-            satteliteImageData = currentLocationData.satteliteImageData;
-            SetAllVariables();
-            _ = GetMaskData();
         }
+        return Task.CompletedTask;
     }
 
     private async Task GetMaskData() {
         if(currentLocationData != null) {
             if(currentLocationData.maskData == null) {
-                LocationDataModel? result = await locationDataClass.GetMaskData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                LocationDataModel? result;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetMaskData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetMaskData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
                 if(result != null) {
                     currentLocationData = result;
                 }
+                Console.WriteLine("Done retrieving mask data");
             }
             maskData = currentLocationData.maskData;
             SetAllVariables();
@@ -260,7 +277,6 @@
     }
 
     private void SetAllVariables() {
-        Console.WriteLine("Setting all variables");
         if(satteliteImageData != null && maskData != null) {
             if(annualFluxData != null && satteliteImageSrc == "") {
                 satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);

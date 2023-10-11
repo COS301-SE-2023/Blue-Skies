@@ -77,11 +77,11 @@ public class locationDataClass
         }
     }
 
-    public async Task<LocationDataModel?> GetInitialLocationData(double latitude, double longitude, LocationDataModel? oldData = null) {
+    public async Task<LocationDataModel?> GetInitialLocationData(double latitude, double longitude, LocationDataModel? oldData = null, CancellationToken cancellationToken = default) {
         Console.WriteLine("Getting initial location data for " + latitude + ", " + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/InitialData/{latitude}/{longitude}");
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, cancellationToken);
         if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -100,11 +100,11 @@ public class locationDataClass
         return oldData;
     }
 
-    public async Task<LocationDataModel?> GetSatelliteImageData(double latitude, double longitude, LocationDataModel? oldData = null) {
+    public async Task<LocationDataModel?> GetSatelliteImageData(double latitude, double longitude, LocationDataModel? oldData = null, CancellationToken cancellationToken = default) {
         Console.WriteLine("Getting satellite image data for " + latitude + ", " + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/SatelliteImageData/{latitude}/{longitude}");
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, cancellationToken);  
         if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -119,11 +119,11 @@ public class locationDataClass
         return oldData;
     }
 
-    public async Task<LocationDataModel?> GetMaskData(double latitude, double longitude, LocationDataModel? oldData = null) {
+    public async Task<LocationDataModel?> GetMaskData(double latitude, double longitude, LocationDataModel? oldData = null, CancellationToken cancellationToken = default) {
         Console.WriteLine("Getting mask data for " + latitude + ", " + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/MaskData/{latitude}/{longitude}");
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, cancellationToken);
         if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -138,11 +138,11 @@ public class locationDataClass
         return oldData;
     }
 
-    public async Task<LocationDataModel?> GetAnnualFluxData(double latitude, double longitude, LocationDataModel? oldData = null) {
+    public async Task<LocationDataModel?> GetAnnualFluxData(double latitude, double longitude, LocationDataModel? oldData = null, CancellationToken cancellationToken = default) {
         Console.WriteLine("Getting annual flux data for " + latitude + ", " + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/AnnualFluxData/{latitude}/{longitude}");
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, cancellationToken);
         if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -157,11 +157,11 @@ public class locationDataClass
         return oldData;
     }
 
-    public async Task<LocationDataModel?> GetMonthlyFluxData(double latitude, double longitude, LocationDataModel? oldData = null) {
+    public async Task<LocationDataModel?> GetMonthlyFluxData(double latitude, double longitude, LocationDataModel? oldData = null, CancellationToken cancellationToken = default) {
         Console.WriteLine("Getting monthly flux data for " + latitude + ", " + longitude);
         var client = new HttpClient();
         var request = new HttpRequestMessage(HttpMethod.Get, API_PORT + $"/locationData/MonthlyFluxData/{latitude}/{longitude}");
-        var response = await client.SendAsync(request);
+        var response = await client.SendAsync(request, cancellationToken);  
         if(response.IsSuccessStatusCode) {
             var data = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<LocationDataModel>(data)!;
@@ -565,9 +565,9 @@ public class reportClass
 {
     private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
 
-    public async Task<List<ReportModel>> GetUserReports(int userId)
+    public async Task<List<ReportModel>?> GetUserReports(int userId)
     {
-        List<ReportModel> reports = new List<ReportModel>();
+        List<ReportModel>? reports = null;
         var client = new HttpClient();
         var request = new HttpRequestMessage(
             HttpMethod.Get,
