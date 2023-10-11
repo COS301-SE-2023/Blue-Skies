@@ -423,7 +423,16 @@
             NavigationManager.NavigateTo("/admin/keys");
         }
 
-        var result = await reportClass.GetUserReports(userId);
+        Console.WriteLine("Getting Reports ------------------------------------------");
+
+        int counter = 0;
+        List<ReportModel>? result = null;
+        while(result == null && counter < 10) {
+            result = await reportClass.GetUserReports(userId);
+            counter++;
+            await Task.Delay(1000);
+        }
+
         if (result != null) {
             reports = result;
             if(reports.Count > 0) {
@@ -436,7 +445,6 @@
 
         var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
         int createdReport = cReport.Value;
-
         if (reports.Count > 0)
         {
             if (createdReport != 0)

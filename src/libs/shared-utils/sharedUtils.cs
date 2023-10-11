@@ -574,7 +574,7 @@ public class reportClass
             API_PORT + "/Report/getUserReports/" + userId
         );
         var response = await client.SendAsync(request);
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        if (response.IsSuccessStatusCode)
         {
             var data = await response.Content.ReadAsStringAsync();
             reports = JsonSerializer.Deserialize<List<ReportModel>>(

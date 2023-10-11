@@ -207,7 +207,7 @@
     }
 
     private async Task GetMontlyFluxData() {
-        if(currentLocationData != null) {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
             if(currentLocationData.monthlyFluxData == null) {
                 LocationDataModel? result = null;
                 if(cancellationTokenSource == null) {
@@ -226,7 +226,7 @@
     }
 
     private async Task GetAnnualFluxData() {
-        if(currentLocationData != null) {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
             if(currentLocationData.annualFluxData == null) {
                 LocationDataModel? result;
                 if(cancellationTokenSource == null) {
@@ -246,7 +246,7 @@
     }
 
     private Task GetSatteliteImageData() {
-        if(currentLocationData != null) {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
             if(currentLocationData.satteliteImageData != null) {
                 satteliteImageData = currentLocationData.satteliteImageData;
                 SetAllVariables();
@@ -257,7 +257,7 @@
     }
 
     private async Task GetMaskData() {
-        if(currentLocationData != null) {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
             if(currentLocationData.maskData == null) {
                 LocationDataModel? result;
                 if(cancellationTokenSource == null) {
@@ -277,6 +277,9 @@
     }
 
     private void SetAllVariables() {
+        if(cancellationTokenSource != null && cancellationTokenSource.Token.IsCancellationRequested == true) {
+            return;
+        }
         if(satteliteImageData != null && maskData != null) {
             if(annualFluxData != null && satteliteImageSrc == "") {
                 satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
