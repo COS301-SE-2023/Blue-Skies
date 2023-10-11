@@ -65,9 +65,7 @@
           <Image ImageName="Robert_Behind_Component.png"
             css="absolute z-10 right-3 h-8 group-hover:-translate-y-[36px] transition-all duration-[400ms]" alt="Rob" />
           <Button style="pill" css="z-20">
-            <content>
               <p>Help?</p>
-            </content>
           </Button>
         </div>
       </div>
@@ -223,21 +221,17 @@
     <div class="flex flex-row gap-4 justify-center">
        <div @onclick="ShowTutorial">
             <Button style="pill">
-                <content>
-                    Tutorial
-                </content>
+                <p>Tutorial</p>
             </Button>
         </div>
         <div @onclick="ShowChatBot">
             <Button style="pill">
-                <content>
-                    Chat
-                </content>
+                <p>Chat</p>
             </Button>
         </div>
         <div @onclick="ModalPopupHelp.Dismiss">
             <Button style="outline">
-                <content>Cancel</content>
+                <p>Cancel</p>
             </Button>
         </div>
     </div>

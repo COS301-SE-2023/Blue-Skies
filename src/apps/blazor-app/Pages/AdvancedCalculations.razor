@@ -33,12 +33,22 @@
             <TabSkeleton />
         } else {
             <div class="relative flex flex-col lg:flex-row justify-evenly items-center w-full gap-4 lg:gap-0 mx-auto my-7">
-                <div class="flex flex-col sm:flex-row gap-2 w-full">
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
                     <div @onclick="ResetCalculation" class="w-full cursor-pointer">
                         <Button css="h-14 bg-white rounded-full w-2/3 max-w-xs mx-auto right-10" style="outline">
-                            <content>
-                                <p class="text-[14px] sm:text-base">Reset</p>
-                            </content>
+                            <p class="text-[14px] sm:text-base">Reset</p>
+                        </Button>
+                    </div>
+                    <div @onclick="SaveCalculation" class="w-full block lg:hidden mb-4 cursor-pointer">
+                        <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
+                            @if (edit)
+                            {
+                                <p class="text-[14px]  sm:text-base">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p class="text-[14px]  sm:text-base">Save this calculation</p>
+                            }
                         </Button>
                     </div>
                     <div class="w-full">
@@ -46,16 +56,14 @@
                     </div>
                     <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
                         <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
-                            <content>
-                                @if (edit)
-                                {
-                                    <p class="text-[12px]  sm:text-base">Update calculation</p>
-                                }
-                                else
-                                {
-                                    <p class="text-[12px]  sm:text-base">Save this calculation</p>
-                                }
-                            </content>
+                            @if (edit)
+                            {
+                                <p class="text-[12px]  sm:text-base">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p class="text-[12px]  sm:text-base">Save this calculation</p>
+                            }
                         </Button>
                     </div>
                 </div>
@@ -66,7 +74,7 @@
                 <div class="fade-in-active px-2">
                     <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
                     <div class="px-10 w-full">
-                        <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
+                        @* <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/> *@
                     </div>
                 </div>
             }
@@ -106,9 +114,7 @@
         {
             <div @onclick="UpdateCalculation">
                 <Button>
-                    <content>
-                    Update
-                        </content>
+                    <p>Update</p>
                 </Button>
             </div>
         }
@@ -116,15 +122,13 @@
         {
             <div @onclick="CallSaveCalculation">
                 <Button>
-                    <content>
-                        Save
-                    </content>
+                    <p>Save</p>
                 </Button>
             </div>
         }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
-                    <content>Cancel</content>
+                    <p>Cancel</p>
                 </Button>
             </div>
         </div>

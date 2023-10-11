@@ -13,30 +13,22 @@
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("Appliances"))'>
             <Button css='@(selectedTutorialName == "Appliances" || selectedTutorialName == "Variants"  || selectedTutorialName == "SelectTemplate" || selectedTutorialName == "RunnableHours" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Appliances</p>
-                </content>
+                <p>Appliances</p>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("Finances"))'>
             <Button css='@(selectedTutorialName == "Finances" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Finances</p>
-                </content>
+                <p>Finances</p>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("FancyData"))'>
             <Button css='@(selectedTutorialName == "FancyData" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Advanced</p>
-                </content>
+                <p>Advanced</p>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("Rooftop"))'>
             <Button css='@(selectedTutorialName == "Rooftop" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Rooftop Analysis</p>
-                </content>
+                <p>Rooftop Analysis</p>
             </Button>
         </div>
     </div>
@@ -58,9 +50,7 @@
             @if(selectedTutorialName == "Appliances" || selectedTutorialName == "SelectTemplate" || selectedTutorialName == "RunnableHours") {
                 <div @onclick='@(selectedTutorialName == "Appliances" ? () => SelectTutorial("SelectTemplate") : selectedTutorialName == "SelectTemplate" ? () => SelectTutorial("RunnableHours") : () => SelectTutorial("Variants") )' class="max-w-md">
                     <Button style="pill">
-                        <content>
-                            <p>Next</p>
-                        </content>
+                        <p>Next</p>
                     </Button>
                 </div>
             }
