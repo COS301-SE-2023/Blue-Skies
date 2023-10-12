@@ -11,7 +11,6 @@
     string[] segments = uri.Segments;
     currentPage = segments[segments.Length - 1];
 }
-
     <div class="w-full">
         @if (currentPage == "dashboard") {
             <Heading>
@@ -50,7 +49,7 @@
             <div class="flex flex-col gap-4 justify-center w-1/2">
                 <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
 
-                @if(solarPanelsData is not null){
+                @if(solarPanelsData != null){
                     <Card css="w-full flex flex-col gap-10">
                         <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
                         <div class="grid grid-cols-2 justify-center items-center gap-2">
@@ -96,7 +95,7 @@
                     </Card>
                 }
                 else{
-                <p>Solar Panels Data is not available</p>
+                <p>Solar Panels Data != available</p>
                 }
             </div>
         </div>
@@ -104,7 +103,7 @@
         <div class="w-full flex justify-center items-center px-4 gap-4 mt-5">
             <div class="flex w-2/3 flex-col justify-center items-center gap-3">
                 <h1 class="text-center text-primary-800 font-semibold text-xl">Monthly Flux Map</h1>
-                @if(monthlyFluxMap is not null) {
+                @if(monthlyFluxMap != null) {
                     <p class="text-center text-lg">@monthNames[@currentImageIndex]</p>
                     
                     <div class="flex justify-center gap-1 items-center w-full">
@@ -118,7 +117,7 @@
                     </div>
                 }
                 else{
-                    <p>Monthly Flux Map is not available</p>
+                    <p>Monthly Flux Map != available</p>
                 } 
             </div>
             <div class="w-full">
@@ -161,25 +160,20 @@
 
 
 @code {
-    [Parameter]
-    public byte[]? monthlyFluxData { get; set; }
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
 
     [Parameter]
-    public byte[]? maskData { get; set; }
-
-    [Parameter]
-    public string? horisonElevationData { get; set; }
-
-    [Parameter]
-    public byte[]? satteliteImageData { get; set; }
-
-    [Parameter]
-    public byte[]? annualFluxData { get; set; }
+    public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
     [Parameter]
     public int numSolarPanels { get; set; }
-
     [Parameter]
-    public RooftopInformationModel? solarPanelsData { get; set; }
+    public CancellationTokenSource? cancellationTokenSource { get; set; }
+    public byte[]? monthlyFluxData = null;
+    public byte[]? maskData = null;
+    public string? horisonElevationData = null;
+    public byte[]? satteliteImageData = null;
+    public byte[]? annualFluxData = null;
+    public RooftopInformationModel? solarPanelsData = null;
     public string? currentPage { get; set; }
 
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
@@ -196,18 +190,111 @@
     private Wholeroofstats? wholeroofstats = null;
     private List<Solarpanel?> solarPanels = new List<Solarpanel?>();
 
+
     protected override void OnParametersSet()
-    {   
-        if(annualFluxData is not null && satteliteImageData is not null && maskData is not null && monthlyFluxData is not null) {
-            satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
-            monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
-            solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
-            solarPanels = solarDataHandler.getBestSolarPanels(numSolarPanels, solarPanelsData);
+    {
+        if(currentLocationData != null) {
+            if(currentLocationData.horisonElevationData != null) {
+                horisonElevationData = currentLocationData.horisonElevationData;
+            }
+            if(currentLocationData.solarPanelsData != null) {
+                solarPanelsData = currentLocationData.solarPanelsData;
+            }
+            SetAllVariables();
+            _ = GetSatteliteImageData();
         }
-        if(solarPanelsData is not null){
+    }
+
+    private async Task GetMontlyFluxData() {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
+            if(currentLocationData.monthlyFluxData == null) {
+                LocationDataModel? result = null;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetMonthlyFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetMonthlyFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
+                if(result != null) {
+                    currentLocationData = result;
+                }
+                Console.WriteLine("Done retrieving monthly flux data");
+            }
+            monthlyFluxData = currentLocationData.monthlyFluxData;
+            SetAllVariables();
+        }
+    }
+
+    private async Task GetAnnualFluxData() {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
+            if(currentLocationData.annualFluxData == null) {
+                LocationDataModel? result;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetAnnualFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetAnnualFluxData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
+                if(result != null) {
+                    currentLocationData = result;
+                }
+                Console.WriteLine("Done retrieving annual flux data");
+            }
+            annualFluxData = currentLocationData.annualFluxData;
+            SetAllVariables();
+            _ = GetMontlyFluxData();
+        }
+    }
+
+    private Task GetSatteliteImageData() {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
+            if(currentLocationData.satteliteImageData != null) {
+                satteliteImageData = currentLocationData.satteliteImageData;
+                SetAllVariables();
+                _ = GetMaskData();
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private async Task GetMaskData() {
+        if(currentLocationData != null && (cancellationTokenSource == null || cancellationTokenSource.Token.IsCancellationRequested == false)) {
+            if(currentLocationData.maskData == null) {
+                LocationDataModel? result;
+                if(cancellationTokenSource == null) {
+                    result = await locationDataClass.GetMaskData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                } else {
+                    result = await locationDataClass.GetMaskData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
+                if(result != null) {
+                    currentLocationData = result;
+                }
+                Console.WriteLine("Done retrieving mask data");
+            }
+            maskData = currentLocationData.maskData;
+            SetAllVariables();
+            _ = GetAnnualFluxData();
+        }
+    }
+
+    private void SetAllVariables() {
+        if(cancellationTokenSource != null && cancellationTokenSource.Token.IsCancellationRequested == true) {
+            return;
+        }
+        if(satteliteImageData != null && maskData != null) {
+            if(annualFluxData != null && satteliteImageSrc == "") {
+                satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(annualFluxData, satteliteImageData, maskData);
+            }
+            if(monthlyFluxData != null && monthlyFluxMap![0] == null) {
+                monthlyFluxMap = rooftopDataHandler.GetMonthlyFluxMap(monthlyFluxData, satteliteImageData, maskData);
+                solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(monthlyFluxData, maskData, true);
+            }
+        }
+
+        if(solarPanelsData != null && solarPanels.Count == 0) {
+            solarPanels = solarDataHandler.getBestSolarPanels(numSolarPanels, solarPanelsData);
             wholeroofstats = solarPanelsData!.solarPotential!.wholeRoofStats;
             annualKWGenerated = solarDataHandler.getAnnualKwGenerated(numSolarPanels, solarPanelsData);
         }
+        StateHasChanged();
     }
 
     private void IncreamentMonthImage(){

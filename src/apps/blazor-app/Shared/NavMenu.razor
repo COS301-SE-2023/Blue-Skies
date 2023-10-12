@@ -14,7 +14,6 @@
   Uri uri = new Uri(navigationManager.Uri);
   string[] segments = uri.Segments;
   currentPage = segments[segments.Length - 1];
-
   @* Change navbar styling based on scroll position *@
   if (isScrollingDown)
     width = loggedIn ? "shadow w-14 h-14 hover:w-44" : "shadow w-14 h-14 hover:w-36";
@@ -280,7 +279,7 @@
     navigationManager.NavigateTo(url, true);
   }
 
-  private async void forceNavigate(bool loggedIn)
+  private void forceNavigate(bool loggedIn)
   {
     if (loggedIn)
     {

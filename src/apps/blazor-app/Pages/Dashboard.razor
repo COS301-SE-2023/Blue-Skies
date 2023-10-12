@@ -313,7 +313,7 @@
                             @if (appliancesLoaded)
                             {    
                                 <Card css="w-full mb-5">
-                                    <FancyData horisonElevationData="@currentLocationData!.horisonElevationData" monthlyFluxData="@currentLocationData.monthlyFluxData" maskData="@currentLocationData.maskData" satteliteImageData="@currentLocationData.satteliteImageData" annualFluxData="@currentLocationData.annualFluxData" solarPanelsData="@currentLocationData.solarPanelsData" numSolarPanels="@numSolarPanels"/>`
+                                    <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
                                 </Card>
                             }
                         }
@@ -340,7 +340,6 @@
                 </div>
         }
         </div>
-
             <ModalPopup @ref="modalPopup" Title="Delete Record?">
                 <ChildContent>
                     <p>Are you sure that you want to delete this record?</p>
@@ -394,8 +393,7 @@
     private string imageName = "";
     private bool receivedReports = false;
     private bool appliancesLoaded = false;
-
-
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     Dictionary<String, List<ApplianceModel>> allAppliances = new Dictionary<String, List<ApplianceModel>>();
 
 
@@ -404,13 +402,17 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("Dashboard Initialized");
+        cancellationTokenSource = new CancellationTokenSource();
         selectedReport = 0;
+
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
         var usId = await ProtectedLocalStore.GetAsync<int>("userId");
         logIn = loggedIn.Value;
         isAd = isAdmin.Value;
         userId = usId.Value;
+
         if (!logIn)
         {
             await ProtectedLocalStore.SetAsync("redirect", "dashboard");
@@ -421,16 +423,28 @@
             NavigationManager.NavigateTo("/admin/keys");
         }
 
-        reports = await reportClass.GetUserReports(userId);
-        if (reports.Count > 0)
-        {
-            await ProtectedSessionStore.SetAsync("userReports", reports);
+        Console.WriteLine("Getting Reports ------------------------------------------");
+
+        int counter = 0;
+        List<ReportModel>? result = null;
+        while(result == null && counter < 10) {
+            result = await reportClass.GetUserReports(userId);
+            counter++;
+            await Task.Delay(1000);
+        }
+
+        if (result != null) {
+            reports = result;
+            if(reports.Count > 0) {
+                await ProtectedSessionStore.SetAsync("userReports", reports);
+            }
+        } else {
+            toastService.ShowToast("Error getting your reports", "Please try again later", "error");
         }
         receivedReports = true;
 
         var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
         int createdReport = cReport.Value;
-
         if (reports.Count > 0)
         {
             if (createdReport != 0)
@@ -446,7 +460,7 @@
             await ProtectedSessionStore.DeleteAsync("createdReport");
             allSystems = await systemClass.GetAllSystems();
             await SetSelectedSystem();
-            currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
+            currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
             if (currentLocationData != null)
             {
                 await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
@@ -455,12 +469,20 @@
             }
 
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
-            updateAppliances();
+            await updateAppliances();
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
         isLoaded = true;
 
+        _ = GetSatteliteImage();
+    }
+
+    private async Task GetSatteliteImage() {
+        if(currentLocationData != null && currentLocationData.satteliteImageData == null) {
+            currentLocationData = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+            StateHasChanged();
+        }
     }
 
     public void SelectAppliance(string appliance)
@@ -505,20 +527,32 @@
 
     public async Task SwitchReport()
     {
+        Console.WriteLine("-----------------------------------------------------------");
+        Console.WriteLine("Switching Report");
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource = new CancellationTokenSource();
         appliancesLoaded = false;
         imageName = "";
-        Console.WriteLine("Switching Report");
+        selectedAppliance = "";
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
+        int numTries = 0;
 
-        currentLocationData = await locationDataClass.GetLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude);
+        currentLocationData = null;
+        while(currentLocationData == null && numTries < 10) {
+            currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
+            numTries++;
+            await Task.Delay(1000);
+        }
+
         if (currentLocationData != null)
         {
             await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
             await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
-        updateAppliances();
+        await updateAppliances();
+        _ = GetSatteliteImage();
     }
 
     private void Dispose()
@@ -527,7 +561,7 @@
         reportManager.DeleteReportRequested -= ShowModal;
     }
 
-    private async void updateAppliances()
+    private async Task updateAppliances()
     {
         reportAllAppliance.Clear();
         reportAllAppliance = await reportAllApplianceClass.GetReportAllApplianceByReportId(reports[selectedReport].reportId);
@@ -544,7 +578,6 @@
             }
         }
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
-
         if (system != null && reportAllAppliance != null)
         {
             runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
@@ -552,6 +585,7 @@
         else
         {
             runningHoursPercentage = 100;
+            toastService.ShowToast("Error getting all the data for this report", "Please try again later", "error");
         }
         appliancesLoaded = true;
         StateHasChanged();

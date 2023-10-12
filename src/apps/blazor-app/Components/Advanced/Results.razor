@@ -124,10 +124,6 @@
 </ModalPopup>
 
 @code {
-    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
-    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-    private string? satteliteImage;
-
     [Parameter]
     public List<SystemModel>? systems { get; set; }
     [Parameter]
@@ -136,15 +132,15 @@
     public string? reportName { get; set; }
     [Parameter]
     public LocationDataModel currentLocationData { get; set; } = new LocationDataModel();
+    private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private string? satteliteImage;
     public int solarScore { get; set; } = -1;
     public double usableHours { get; set; } = -1;
     public double avgEnergyProduction { get; set; } = -1;
     public ModalPopup ModalPopupSolarScore { get; set; } = new ModalPopup();
     public ModalPopup ModalPopupHours { get; set; } = new ModalPopup();
     public ModalPopup ModalPopupAvg { get; set; } = new ModalPopup();
-
-
-
 
     /// <summary>
     /// <list type="bullet">
@@ -158,10 +154,16 @@
     {
         if (currentLocationData != null)
         {
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            if(currentLocationData.satteliteImageData != null && satteliteImage == null) {
+                satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            }
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData!);
             usableHours = Math.Round(solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true), 2);
-            avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems![selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+            if(systems != null && systems.Count > 0) {
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData.solarPanelsData) / 365, 2);
+            } else {
+                Console.WriteLine("Systems is null");
+            }
         }
     }
 

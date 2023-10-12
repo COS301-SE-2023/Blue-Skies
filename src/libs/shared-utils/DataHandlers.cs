@@ -1113,8 +1113,6 @@ public class CalculationDataHandler
             }
         }
 
-
         return allAppliances;
-
     }
 }

@@ -82,7 +82,6 @@ public class LocationDataRepository
         string locationName,
         string solarPanelsData,
         byte[] satteliteImageData,
-        byte[] satteliteImageElevationData,
         byte[] annualFluxData,
         byte[] monthlyFluxData,
         byte[] maskData,
@@ -97,7 +96,6 @@ public class LocationDataRepository
                 express + "/api/locationData/create"
             );
             string satteliteImageDataBase64 = Convert.ToBase64String(satteliteImageData);
-            string satteliteImageElevationDataBase64 = Convert.ToBase64String(satteliteImageElevationData);
             string annualFluxDataBase64 = Convert.ToBase64String(annualFluxData);
             string monthlyFluxDataBase64 = Convert.ToBase64String(monthlyFluxData);
             string maskDataBase64 = Convert.ToBase64String(maskData);
@@ -109,7 +107,6 @@ public class LocationDataRepository
                 locationName = locationName,
                 solarPanelsData = solarPanelsData,
                 satteliteImageData = satteliteImageDataBase64,
-                satteliteImageElevationData = satteliteImageElevationDataBase64,
                 annualFluxData = annualFluxDataBase64,
                 monthlyFluxData = monthlyFluxDataBase64,
                 maskData = maskDataBase64,
@@ -141,7 +138,7 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not create solar irradiation");
+            throw new Exception("Could not create locationData");
         }
     }
 
@@ -160,7 +157,6 @@ public class LocationDataRepository
 
             if (response.IsSuccessStatusCode)
             {
-                // Console.WriteLine("Success");
                 string data = response.Content.ReadAsStringAsync().Result;
                 LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
                 LocationDataModel locationData = new LocationDataModel()
@@ -170,7 +166,6 @@ public class LocationDataRepository
                     locationName = locationDataTemp.locationName,
                     solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
-                    satteliteImageElevationData = Convert.FromBase64String(locationDataTemp.satteliteImageElevationData!),
                     annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
                     monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
                     maskData = Convert.FromBase64String(locationDataTemp.maskData!),
@@ -192,7 +187,7 @@ public class LocationDataRepository
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get LocationData");
         }
     }
 
@@ -220,7 +215,6 @@ public class LocationDataRepository
                     locationName = locationDataTemp.locationName,
                     solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
                     satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
-                    satteliteImageElevationData = null,
                     annualFluxData = null,
                     monthlyFluxData = null,
                     maskData = null,
@@ -235,13 +229,244 @@ public class LocationDataRepository
             }
             else
             {
-                throw new Exception("Error getting LocationData");
+                throw new Exception("Error getting essentialData");
             }
 
         }
         catch (System.Exception)
         {
-            throw new Exception("Could not get solar irradiation");
+            throw new Exception("Could not get essentialData");
+        }
+    }
+
+    public async Task<LocationDataModel> InitialLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/initialData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = locationDataTemp.locationName,
+                    solarPanelsData = JsonSerializer.Deserialize<RooftopInformationModel>(locationDataTemp.solarPanelsData!),
+                    satteliteImageData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = locationDataTemp.dateCreated,
+                    horisonElevationData = locationDataTemp.horisonElevationData
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting initialData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get initialData");
+        }
+    }
+
+
+public async Task<LocationDataModel> SatelliteImageLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/satelliteImageData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = Convert.FromBase64String(locationDataTemp.satteliteImageData!),
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting satelliteImageData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get satelliteImageData");
+        }
+    }
+
+    public async Task<LocationDataModel> MaskLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/maskData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = null,
+                    maskData = Convert.FromBase64String(locationDataTemp.maskData!),
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting maskData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get maskData");
+        }
+    }
+
+    public async Task<LocationDataModel> AnnualFluxLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/annualFluxData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    annualFluxData = Convert.FromBase64String(locationDataTemp.annualFluxData!),
+                    monthlyFluxData = null,
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting annualFluxData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get annualFluxData");
+        }
+    }
+
+    public async Task<LocationDataModel> MonthlyFluxLocationData(double latitude, double longitude)
+    {
+        try
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                express + "/api/locationData/monthlyFluxData/" + latitude + "/" + longitude
+            );
+            var response = await client.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = response.Content.ReadAsStringAsync().Result;
+                LocationDataModelTemp locationDataTemp = JsonSerializer.Deserialize<LocationDataModelTemp>(data)!;
+                LocationDataModel locationData = new LocationDataModel()
+                {
+                    latitude = locationDataTemp.latitude,
+                    longitude = locationDataTemp.longitude,
+                    locationName = null,
+                    solarPanelsData = null,
+                    satteliteImageData = null,
+                    annualFluxData = null,
+                    monthlyFluxData = Convert.FromBase64String(locationDataTemp.monthlyFluxData!),
+                    maskData = null,
+                    dateCreated = null,
+                    horisonElevationData = null
+                };
+                return locationData!;
+            }
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null!;
+            }
+            else
+            {
+                throw new Exception("Error getting monthlyFluxData");
+            }
+
+        }
+        catch (System.Exception)
+        {
+            throw new Exception("Could not get monthlyFluxData");
         }
     }
 
@@ -317,7 +542,6 @@ public class LocationDataModelTemp
     public string? locationName { get; set; }
     public string? solarPanelsData { get; set; }
     public string? satteliteImageData { get; set; }
-    public string? satteliteImageElevationData { get; set; }
     public string? annualFluxData { get; set; }
     public string? monthlyFluxData { get; set; }
     public string? maskData { get; set; }

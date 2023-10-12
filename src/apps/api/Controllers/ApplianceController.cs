@@ -59,7 +59,8 @@ public class ApplianceController : ControllerBase
             var data = await _appliancesRepository.UpdateAppliances(
                 appliance.applianceId,
                 appliance.type!,
-                appliance.powerUsage
+                appliance.powerUsage,
+                appliance.durationUsed
             );
             return Ok(data);
         }
