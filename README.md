@@ -6,11 +6,11 @@
 
 # Blue Skies
 ## Debuggers Anonymous - Blue Skies - Project Description
-The goal of this project is to create a solar power calculation tool.
+Blue Skies equip homeowners with the essential tools to assess the solar potential of their property. 
 
-Users will be able to securely register and login, enter their address, and receive an evaluation of the solar potential of their property. 
+First we analyse the amount of sunlight received over a period of time and provide users with a solar score based on our calculations. 
 
-The evaluation will incorporate a trained AI model to detect the average sunlight in the area and estimate the amount of energy that could be generated based on different types of solar installations.
+Users can then use our advanced calculation tool where they can customise the calculation to their specific needs. Additionally, we provide users with a comprehensive report that offers insights into the financial, environmental, and practical aspects of transitioning to solar energy.
 
 ## Demo recordings
  <a href="https://drive.google.com/file/d/1Xgv28BjxR3WmmBX1pDHfHS8kiyigUfJt/view?usp=share_link">Debuggers Anonymous - Demo 1</a><br>
