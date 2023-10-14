@@ -17,7 +17,7 @@ public class BusinessRequestDataController : ControllerBase
         _keysRepository = new KeysRepository();
     }
 
-    [HttpPost("post")]
+    [HttpGet("get")]
     public async Task<IActionResult> CreateBusinessRequestData([FromBody] BusinessRequestData businessRequestData)
     {
         try
