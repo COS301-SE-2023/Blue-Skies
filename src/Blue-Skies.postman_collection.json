@@ -1,0 +1,819 @@
+{
+	"info": {
+		"_postman_id": "e99e34b4-7b66-4175-806b-d7b3a232a43f",
+		"name": "Blue-Skies",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26399949",
+		"_collection_link": "https://blue-skies.postman.co/workspace/Team-Workspace~d592cb1b-140c-497b-827c-44819d92650b/collection/20820830-e99e34b4-7b66-4175-806b-d7b3a232a43f?action=share&source=collection_link&creator=26399949"
+	},
+	"item": [
+		{
+			"name": ".NET API",
+			"item": [
+				{
+					"name": "Authentication",
+					"item": [
+						{
+							"name": "register",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"user25@gmail.com\",\r\n    \"password\" : \"poiuytre\",\r\n    \"repassword\" : \"poiuytre\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{net}}/auth/register",
+									"host": [
+										"{{net}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "login",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\" : \"jasondutton@gmail.com\",\r\n    \"password\" : \"123456789\",\r\n    \"repassword\" : \"123456789\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/auth/login"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Systems",
+					"item": [
+						{
+							"name": "Get All Systems",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/System/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Create System",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"systemSize\": \"string\",\r\n  \"inverterOutput\": 0,\r\n  \"numberOfPanels\": 0,\r\n  \"batterySize\": 0,\r\n  \"numberOfBatteries\": 0,\r\n  \"solarInput\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/System/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update a System",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"systemId\": 37,\r\n  \"inverterOutput\": 0,\r\n  \"numberOfPanels\": 0,\r\n  \"batterySize\": 50,\r\n  \"numberOfBatteries\": 0,\r\n  \"solarInput\": 0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/System/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Get system by Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/System/get/2"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Appliances",
+					"item": [
+						{
+							"name": "Get All Appliances",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Appliance/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Appliance",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"Tumble Dryer\",\r\n    \"powerUsage\": 4150,\r\n    \"durationUsed\": 0.5\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Appliance/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Appliance",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"applianceId\": \"75\",\r\n    \"type\": \"Geyser\",\r\n    \"powerUsage\": 600,\r\n    \"durationUsed\": 24\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Appliance/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Appliance",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"applianceId\": 75\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/appliance/delete"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appliance",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Appliance/get/10"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Keys",
+					"item": [
+						{
+							"name": "Get All Keys",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Key/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Business Keys",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Key/allBusiness"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Business Key",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"owner\": \"SolarPowa\",\r\n    \"APIKey\" : \"ad988Ff89Jiydasdf6DflkUG\",\r\n    \"remainingCalls\" : \"12\",\r\n    \"isBusiness\": 1,\r\n    \"description\": \"A small solar company that prides itself of user experience\",\r\n    \"location\": \"123 driveway\",\r\n    \"website\": \"https://google.com\",\r\n    \"phoneNumber\": \"123456789\",\r\n    \"email\": \"solar106@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Key/createBusiness"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Key",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"keyId\": \"7\",\r\n    \"owner\": \"Solar 102\",\r\n    \"APIKey\" : \"JasdgAS0685^&d0876DFdfO6DflkUG\",\r\n    \"remainingCalls\" : \"7\",\r\n    \"suspended\" : \"1\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Key/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Business Key",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"keyId\": 42,\r\n    \"owner\": \"SolarPowa\",\r\n    \"APIKey\" : \"ad988Ff89Jiydasdf6DflkUG\",\r\n    \"remainingCalls\" : \"45\",\r\n    \"isBusiness\": 1,\r\n    \"suspended\": 0,\r\n    \"description\": \"A small solar company that prides itself of user experience\",\r\n    \"location\": \"123 driveway\",\r\n    \"website\": \"https://google.com\",\r\n    \"phoneNumber\": \"123456789\",\r\n    \"email\": \"solar106@gmail.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Key/updateBusiness"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Key",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Key/delete/53"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Location Data",
+					"item": [
+						{
+							"name": "Get map box api key",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/mapboxkey"
+							},
+							"response": []
+						},
+						{
+							"name": "Create Location Data",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"latitude\": -25.7810362,\r\n    \"longitude\": 28.354123563,\r\n    \"locationName\": \"This is your house\",\r\n    \"solarPanelsData\": \"This is gonna be json data\",\r\n    \"satteliteImageData\": \"SGVsbG8gd29ybGQh\",\r\n    \"satteliteImageElevationData\": \"SGVsbG8gd29ybGQh\",\r\n    \"annualFluxData\": \"SGVsbG8gd29ybGQh\",\r\n    \"monthlyFluxData\": \"SGVsbG8gd29ybGQh\",\r\n    \"maskData\": \"SGVsbG8gd29ybGQh\",\r\n    \"horisonElevationData\": \"The elevation data\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/locationData/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Location Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/getLocationData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Solar Score",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{net}}/locationData/delete/-25.71/28.357"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Essential Location Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/essentialData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Check if location data exists",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/checkIfLocationDataExists/-25.834223/28.29341"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Initial Location Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/InitialData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Satellite Image location data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/SatelliteImageData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Mask Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/MaskData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Annual Flux Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/AnnualFluxData/-25.78097/28.267354"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Monthly Flux Data",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/locationData/MonthlyFluxData/-25.78097/28.267354"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Admin Stats",
+					"item": [
+						{
+							"name": "System Usage",
+							"item": [
+								{
+									"name": "Get System Usage",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{net}}/adminstats/all"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Reports",
+					"item": [
+						{
+							"name": "Create Report",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reportName\" : \"Ruan wants to navigate to the newest report\",\r\n    \"userId\" : 69,\r\n    \"homeSize\": \"Small\",\r\n    \"latitude\" : \"-25.78097\",\r\n    \"longitude\" : \"28.267354\",\r\n    \"systemId\" : 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Report/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Reports",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Report/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Get User Reports",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Report/getUserReports/69"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/Report/get/123"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Report",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reportId\" : 123,\r\n    \"reportName\" : \"Is update working\",\r\n    \"userId\" : 69,\r\n    \"homeSize\": \"Large\",\r\n    \"latitude\" : \"-25.816669\",\r\n    \"longitude\" : \"28.154035\",\r\n    \"systemId\" : 3\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Report/update"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Report",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reportId\": 123\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/Report/delete"
+							},
+							"response": []
+						},
+						{
+							"name": "Download Report",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/pdf",
+										"type": "text"
+									}
+								],
+								"url": "{{net}}/Report/downloadReport/69/123"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Report All Appliances",
+					"item": [
+						{
+							"name": "Get All Appliance Report",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/ReportAllAppliance/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Report By Report Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/ReportAllAppliance/getByReportId/91"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Report Appliance",
+					"item": [
+						{
+							"name": "Create Report Appliance",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reportId\": 41,\r\n    \"applianceId\": 1,\r\n    \"numberOfAppliances\": 1,\r\n    \"applianceModel\": \"Samsung TV\",\r\n    \"powerUsage\": 200,\r\n    \"durationUsed\": 123.2356\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/ReportAppliance/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Get All Report Appliances",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Appliances in Report",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/ReportAppliance/getAppliancesInReport/91"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Reports With Appliance",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/getReportsWithAppliance/11"
+							},
+							"response": []
+						},
+						{
+							"name": "Update Number of Appliances",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"reportId\": 41,\r\n    \"applianceId\": 1,\r\n    \"numberOfAppliances\": 20\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/ReportAppliance/updateNumberOfAppliances"
+							},
+							"response": []
+						},
+						{
+							"name": "Update ReportId",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/ReportAppliance/updateReportId/16/21"
+							},
+							"response": []
+						},
+						{
+							"name": "Update ApplianceId",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/updateApplianceId/14/31"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete ReportId",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/deleteReportId/41"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete ApplianceId",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/deleteApplianceId/31"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Report Appliance",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{net}}/ReportAppliance/deleteReportAppliance/13/1"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Business API",
+					"item": [
+						{
+							"name": "Business API Request Data",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"key\": \"ad988Ff89Jiyd0876DFdfO6DflkUG\",\r\n  \"data\": \"solar score\",\r\n  \"latitude\": -25.78097,\r\n  \"longitude\": 28.267354\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://dot-net-api.azurewebsites.net/BusinessRequestData/post"
+							},
+							"response": []
+						},
+						{
+							"name": "Get Solar Panels Layout",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"key\": \"ad988Ff89Jiyd0876DFdfO6DflkUG\",\r\n    \"total_panels\": 10,\r\n  \"latitude\": -25.78097,\r\n  \"longitude\": 28.267354\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/BusinessBestSolarPanels/post"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "customAppliance",
+					"item": [
+						{
+							"name": "Create Custom Appliance",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"Other\",\r\n    \"model\": \"Canon - PIXMA MG2545S A4 3in1 Multifunction Inkjet Printer\",\r\n    \"powerUsage\": 30\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{net}}/customAppliance/create"
+							},
+							"response": []
+						},
+						{
+							"name": "Get all custom appliances",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{net}}/customAppliance/all"
+							},
+							"response": []
+						},
+						{
+							"name": "Delete",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{net}}/customAppliance/delete/121"
+							},
+							"response": []
+						}
+					],
+					"description": "The custom appliances"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "express",
+			"value": "http://localhost:3333"
+		},
+		{
+			"key": "net",
+			"value": "http://localhost:5096"
+		}
+	]
+}
