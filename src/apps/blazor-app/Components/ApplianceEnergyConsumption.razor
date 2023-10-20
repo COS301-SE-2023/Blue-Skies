@@ -3,7 +3,7 @@
 
 <Chart Config="polarAreaConfig"></Chart>
 
-@code{
+@code {
 
     [Parameter]
     public List<ReportAllApplianceModel>? reportAllAppliance { get; set; }
@@ -12,60 +12,55 @@
     public bool animated { get; set; } = true;
     private PolarAreaConfig polarAreaConfig = new PolarAreaConfig();
 
-    string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",  "rgba(255,193,8, 1)", "rgba(246,135,18, 1)" };
+    string[] backgroundColors = new string[] { "rgba(255,193,8, 1)", "rgba(246,135,18, 1)", "rgba(0,15,82, 1)",
+"rgba(255,193,8, 1)", "rgba(246,135,18, 1)" };
 
     @* OnInitialized *@
     protected override void OnInitialized()
     {
         polarAreaConfig = new PolarAreaConfig()
-        {
-            Options = new PolarAreaOptions
             {
-                Responsive = true,
-                AspectRatio = 1.5,
-                Legend = new Legend
+                Options = new PolarAreaOptions
                 {
-                    Display = false,
-                },
-                Animation = new ArcAnimation
-                {
-                    AnimateRotate = animated,
-                    Duration = animated == true ? 2000 : 0,
-
-                },
-                Tooltips = new Tooltips
-                {
-                    Enabled = true,
-                    Mode = InteractionMode.Index,
-                    Intersect = false
-                },
-                Hover = new Hover
-                {
-                    Mode = InteractionMode.Index,
-                    Intersect = false
-                },
-                Scale = new LinearRadialAxis
-                {
-                    Ticks = new LinearRadialTicks
+                    Responsive = true,
+                    AspectRatio = 1.5,
+                    Legend = new Legend
                     {
                         Display = false,
+                    },
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = animated,
+                        Duration = animated == true ? 2000 : 0,
+
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    Scale = new LinearRadialAxis
+                    {
+                        Ticks = new LinearRadialTicks
+                        {
+                            Display = false,
+                        }
                     }
+
                 }
-
-            }
-        };
-        RenderCharts();
-    }
-
-    @* OnParametersSet *@
-    protected override void OnParametersSet()
-    {
+            };
         RenderCharts();
     }
 
     public void RenderCharts()
     {
-        if(reportAllAppliance is not null)
+        if (reportAllAppliance is not null)
         {
             polarAreaConfig.Data.Labels.Clear();
             polarAreaConfig.Data.Datasets.Clear();
@@ -73,23 +68,25 @@
             for (int i = 0; i < reportAllAppliance.Count; i++)
             {
                 powerUsageData[i] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
-                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);                
+                polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);
             }
             string[] backgroundColor = new string[reportAllAppliance.Count];
             for (int i = 0; i < reportAllAppliance.Count; i++)
             {
                 backgroundColor[i] = backgroundColors[i % backgroundColors.Length];
-    
+
             }
             PolarAreaDataset<int> polarDataset = new PolarAreaDataset<int>(powerUsageData)
-            {
-                BackgroundColor = backgroundColor,
-                BorderWidth = 0,
-            };
+                {
+                    BackgroundColor = backgroundColor,
+                    BorderWidth = 0,
+                };
 
             polarAreaConfig.Data.Datasets.Add(polarDataset);
             StateHasChanged();
-        }else{
+        }
+        else
+        {
             Console.WriteLine("reportAllAppliance is null");
         }
     }

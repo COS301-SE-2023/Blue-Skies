@@ -17,7 +17,7 @@ public class BusinessBestSolarPanelsController : ControllerBase
         _keysRepository = new KeysRepository();
     }
     
-    [HttpPost("post")]
+    [HttpGet("get")]
     public async Task<IActionResult> CreateBusinessBestSolarPanels([FromBody] BestSolarPanelsInput bestSolarPanelsInput)
     {
         try

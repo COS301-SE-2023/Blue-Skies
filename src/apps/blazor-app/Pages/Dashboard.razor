@@ -309,13 +309,10 @@
                                         }
                                     }
                                 }
-                            }
-                            @if (appliancesLoaded)
-                            {    
-                                <Card css="w-full mb-5">
-                                    <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
-                                </Card>
-                            }
+                            }  
+                            <Card css="w-full mb-5">
+                                <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
+                            </Card>
                         }
                             </div>
                 }
@@ -373,7 +370,6 @@
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
     private List<SystemModel> systems = new List<SystemModel>();
     private List<SystemModel> allSystems = new List<SystemModel>();
-    private bool isLoaded = false;
     private bool logIn = false;
     private bool isAd = false;
     private int userId = -1;
@@ -473,7 +469,6 @@
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
-        isLoaded = true;
 
         _ = GetSatteliteImage();
     }
@@ -490,12 +485,10 @@
         if (appliance == selectedAppliance)
         {
             selectedAppliance = "";
-            StateHasChanged();
         }
         else
         {
             selectedAppliance = appliance;
-            StateHasChanged();
         }
     }
 

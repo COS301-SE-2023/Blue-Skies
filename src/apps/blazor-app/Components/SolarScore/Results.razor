@@ -306,12 +306,12 @@
 
     protected override void OnInitialized()
     {
-        panelTimer = new Timer(100);
+        panelTimer = new Timer(200);
         panelTimer.Elapsed += SetChargingLimit;
         panelTimer.AutoReset = false;
         panelTimer.Enabled = true;
 
-        batteryTimer = new Timer(100);
+        batteryTimer = new Timer(200);
         batteryTimer.Elapsed += SetRunningHours;
         batteryTimer.AutoReset = false;
         batteryTimer.Enabled = true;

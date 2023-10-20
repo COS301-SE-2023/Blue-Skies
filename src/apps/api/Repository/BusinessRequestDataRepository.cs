@@ -40,18 +40,17 @@ public class BusinessRequestDataRepository
             var data = requestData.data;
             double latitude = requestData.latitude;
             double longitude = requestData.longitude;
-            
-            //create data if not created yet
 
             var client = new HttpClient();
             var dataTypeResponse = new HttpResponseMessage();
-           
+
             LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
             locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
             if (locationData == null)
             {                
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);
             }
+            
             typeOfData = data!;
             switch(data!.ToLower()){
                 case DataType.SOLAR_SCORE : 
