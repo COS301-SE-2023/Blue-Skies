@@ -263,7 +263,7 @@
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="40" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
@@ -284,7 +284,7 @@
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
                         </div>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="10" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
                 </div>
             }
             else
@@ -523,12 +523,12 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        panelTimer = new Timer(100);
+        panelTimer = new Timer(200);
         panelTimer.Elapsed += SetNumberPanels;
         panelTimer.AutoReset = false;
         panelTimer.Enabled = true;
 
-        batteryTimer = new Timer(100);
+        batteryTimer = new Timer(200);
         batteryTimer.Elapsed += SetNumberOfBatteries;
         batteryTimer.AutoReset = false;
         batteryTimer.Enabled = true;
