@@ -309,13 +309,10 @@
                                         }
                                     }
                                 }
-                            }
-                            @if (appliancesLoaded)
-                            {    
-                                <Card css="w-full mb-5">
-                                    <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
-                                </Card>
-                            }
+                            }  
+                            <Card css="w-full mb-5">
+                                <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
+                            </Card>
                         }
                             </div>
                 }
