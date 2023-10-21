@@ -67,7 +67,7 @@
             int[] powerUsageData = new int[reportAllAppliance.Count];
             for (int i = 0; i < reportAllAppliance.Count; i++)
             {
-                powerUsageData[i] = reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].defaultPowerUsage;
+                powerUsageData[i] = (int)(reportAllAppliance[i].numberOfAppliances * reportAllAppliance[i].powerUsage * reportAllAppliance[i].durationUsed);
                 polarAreaConfig.Data.Labels.Add(reportAllAppliance[i].type + " - " + reportAllAppliance[i].applianceModel);
             }
             string[] backgroundColor = new string[reportAllAppliance.Count];
