@@ -39,6 +39,8 @@
         </div>
     </div>
 </div>
+
+
 @* Add Appliances *@
 <div class="hidden lg:flex w-full h-full px-4 mb-20">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
@@ -274,6 +276,8 @@
     </div>
 </div>
 
+<MobileBuildHome @bind-homeImage="homeImage" />
+
 
 
 <ModalPopup @ref="SystemModalPopup" Title=@customModalTitle>
@@ -357,8 +361,6 @@
         </div>
 </ModalPopup>
 
-
-@* Mobile View Port *@
 
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
