@@ -212,9 +212,9 @@
                                                 <DaylightChart hours="@dlh" daylightHours="@daylight" />
                                                 <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                                                 @{
-                                                    if (dlh == (24 - daylight))
+                                                    if (float.IsInfinity(dlh))
                                                     {
-                                                        <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                                        <p class="text-5xl text-primary-900 font-semibold">@12+</p>
                                                     }
                                                     else
                                                     {

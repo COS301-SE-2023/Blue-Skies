@@ -60,6 +60,11 @@
     }
     public void UpdateDataset()
     {
+        if(float.IsInfinity(hours))
+        {
+            hours = 12;
+        }
+
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
 
