@@ -51,24 +51,41 @@
 
                                 <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
                                     <div class="grid grid-cols-2 md:flex gap-4 justify-center">
+                                        
                                     @{
 
                                         @* Loop over allAppliances *@
                                         if (appliancesLoaded)
                                         {
-                                           foreach (KeyValuePair<String, List<ApplianceModel>> app in allAppliances)
-                                            {
-                                                string iconName = app.Key + ".svg";
-                                                int count = 0;
-                                                List<ApplianceModel> tempAppliances = app.Value;
-                                                for (int i = 0; i < tempAppliances.Count; i++)
-                                                {
-                                                    count += tempAppliances[i].quantity;
-                                                }
-                                                <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
-                                                    <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
-                                                </div>                            
-                                            }
+                                            <div class='flex rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
+                                                <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                                                    <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                                        css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                                </div>
+                                                <div class="flex justify-center w-1/2 @applianceAnimation">
+                                                    @{
+                                                        applianceNumberOfPage = (int)Math.Ceiling((double)allAppliances.Count / 5);
+                                                    }
+                                                    @for (int j = 0; j < 5 && j + appliancesPage*5 < allAppliances.Count; j++)
+                                                    {
+                                                    KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*5);
+                                                    string iconName = app.Key + ".svg";
+                                                    int count = 0;
+                                                    List<ApplianceModel> tempAppliances = app.Value;
+                                                    for (int i = 0; i < tempAppliances.Count; i++)
+                                                    {
+                                                        count += tempAppliances[i].quantity;
+                                                    }
+                                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
+                                                        <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
+                                                    </div>   
+                                                    }
+                                                </div>
+                                                <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+                                                    <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                                        css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                                                </div>
+                                            </div>
                                         } else if (allAppliances.Count == 0 && appliancesLoaded)
                                         {
                                             <p class="text-center">No appliances added</p>
@@ -391,7 +408,9 @@
     private bool appliancesLoaded = false;
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
     Dictionary<String, List<ApplianceModel>> allAppliances = new Dictionary<String, List<ApplianceModel>>();
-
+    private int appliancesPage = 0;
+    private int applianceNumberOfPage = 0;
+    private string applianceAnimation = "";
 
     /// <summary>
     /// Load the user's reports and all appliances
@@ -473,6 +492,30 @@
         _ = GetSatteliteImage();
     }
 
+    private async void IncrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-left";
+        StateHasChanged();
+        await Task.Delay(100);
+        if(appliancesPage != applianceNumberOfPage - 1){
+            appliancesPage++;
+        } else {
+            appliancesPage = 0;
+        }
+        applianceAnimation = "appliance-slide-in-right";
+        StateHasChanged();
+    }
+    private async void DecrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-right";
+        StateHasChanged();
+        await Task.Delay(100);
+        if(appliancesPage != 0){
+            appliancesPage--;
+        } else {
+            appliancesPage = applianceNumberOfPage - 1;
+        }
+        applianceAnimation = "appliance-slide-in-left";
+        StateHasChanged();
+    }
     private async Task GetSatteliteImage() {
         if(currentLocationData != null && currentLocationData.satteliteImageData == null) {
             currentLocationData = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
