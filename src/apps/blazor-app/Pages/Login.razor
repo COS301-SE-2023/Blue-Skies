@@ -5,69 +5,87 @@
 @using System.Text.Json
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Login</PageTitle>
 
-    @if (!isLoaded) {}
-    else if (logIn) {
-        NavigationManager.NavigateTo("/");
-    } else  if (isAd) {
-        NavigationManager.NavigateTo("/admin/keys");
-    } else {
-        <div class="w-full h-screen overflow-hidden relative">
-            <div class="flex fade-in-enter-active px-10 py-4 gap-20 flex-col w-full justify-center z-10 mt-10  items-center overflow-hidden">
-                <Image ImageName="shapes.svg" css="absolute -top-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
-                <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
-                <div class="justify-start -pl-4 xl:pl-20 flex w-full">
-                    <a href="/"  class="relative z-20">
-                        <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo"/>
-                    </a>
-                </div>
-                <Image ImageName="Sun.svg" css="absolute top-0 -right-10 lg:right-0 z-0 w-52 lg:w-fit" alt="Sun"/>
-                <Image ImageName="Panels_Trees.svg" css="absolute bottom-0 left-0 z-0" alt="UI Elements"/>
-                <Image ImageName="Robert_Waving.png" css="absolute robert-slide-in-right translate-x-1/2 top-20 lg:bottom-10  -right-20 sm:-right-[100px] lg:-right-[180px]  xl:-right-[200px] h-[300px] md:h-[400px] lg:h-[600px] xl:h-[800px] " alt="Rob"/>
+@if (!isLoaded) { }
+else if (logIn)
+{
+    NavigationManager.NavigateTo("/");
+}
+else if (isAd)
+{
+    NavigationManager.NavigateTo("/admin/keys");
+}
+else
+{
+    <div class="w-full h-screen overflow-hidden relative">
+        <div
+            class="flex fade-in-enter-active px-10 py-4 gap-20 flex-col w-full justify-center z-10 mt-10  items-center overflow-hidden">
+            <Image ImageName="shapes.svg" css="absolute -top-1/2 -right-1/2 w-full h-full" alt="Shapes" />
+            <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -left-1/2 w-full h-full" alt="Shapes" />
+            <div class="justify-start -pl-4 xl:pl-20 flex w-full">
+                <a href="/" class="relative z-20">
+                    <Image ImageName="Logo.svg" css="h-16 md:h-20 xl:h-24" alt="Logo" />
+                </a>
+            </div>
+            <Image ImageName="Sun.svg" css="absolute top-0 -right-10 lg:right-0 z-0 w-52 lg:w-fit" alt="Sun" />
+            <Image ImageName="Panels_Trees.svg" css="absolute bottom-0 left-0 z-0" alt="UI Elements" />
+            <Image ImageName="Robert_Waving.png"
+                css="absolute robert-slide-in-right translate-x-1/2 top-20 lg:bottom-10  -right-20 sm:-right-[100px] lg:-right-[180px]  xl:-right-[200px] h-[300px] md:h-[400px] lg:h-[600px] xl:h-[800px] "
+                alt="Rob" />
 
-                <div class="flex mx-auto my-auto  items-center justify-center w-full z-20">
-                    <div class="my-auto mx-auto max-w-lg w-full text-left">
-                        <Heading >
-                            <Superscript>
-                                <p>Welcome Back</p>
-                            </Superscript>
-                            <Header>
-                                <h1>Log In</h1>
-                            </Header>
-                        </Heading>
-                        <div class="@showError">
-                            <p class="text-red-600 ">@errorMessage</p>
-                        </div>
-                        <form @onsubmit="HandleSubmit">
-                            @if (!emailIsValid)
-                            {
-                                <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
-                                <Input css="border-1 border-red-400 rounded-md" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
-                            }else {
-                                <Input css="mt-8" type="email" name="email" placeholder="Enter email address" @bind-InputValue="email"/>
-                            }
-                            @if (!passwordIsValid)
-                            {
-                                <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
-                                <Input css="border-1 border-red-400 rounded-md" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                            } else {
-                                <Input css="mt-8" type="password" name="password" placeholder="Enter password" @bind-InputValue="password"/>
-                            }
-                            <Button css="mt-10 flex justify-center mx-auto max-w-xs" style="pill">
-                                <content>
-                                    <input type="submit" value="Log In" />
-                                </content>
-                            </Button>
-                            <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
-                        </form>
+            <div class="flex mx-auto my-auto  items-center justify-center w-full z-20">
+                <div class="my-auto mx-auto max-w-lg w-full text-left">
+                    <Heading>
+                        <Superscript>
+                            <p>Welcome Back</p>
+                        </Superscript>
+                        <Header>
+                            <h1>Log In</h1>
+                        </Header>
+                    </Heading>
+                    <div class="@showError">
+                        <p class="text-red-600 ">@errorMessage</p>
                     </div>
+                    <form @onsubmit="HandleSubmit">
+                        @if (!emailIsValid)
+                        {
+                            <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
+                            <Input css="border-1 border-red-400 rounded-md" type="email" name="email"
+                                placeholder="Enter email address" @bind-InputValue="email" />
+                        }
+                        else
+                        {
+                            <Input css="mt-8" type="email" name="email" placeholder="Enter email address"
+                                @bind-InputValue="email" />
+                        }
+                        @if (!passwordIsValid)
+                        {
+                            <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
+                            <Input css="border-1 border-red-400 rounded-md" type="password" name="password"
+                                placeholder="Enter password" @bind-InputValue="password" />
+                        }
+                        else
+                        {
+                            <Input css="mt-8" type="password" name="password" placeholder="Enter password"
+                                @bind-InputValue="password" />
+                        }
+                        <Button css="mt-10 flex justify-center mx-auto max-w-xs" style="pill">
+                            <content>
+                                <input type="submit" value="Log In" />
+                            </content>
+                        </Button>
+                        <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register"
+                                class="text-primary-500 ml-2">Register for free</a></p>
+                    </form>
                 </div>
             </div>
-
         </div>
-    }
+
+    </div>
+}
 
 @code {
     private SharedUtils.userClass userClass = new SharedUtils.userClass();
@@ -86,11 +104,11 @@
     private bool isLoaded = false;
     private string? redirect = "";
 
-     protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
         redirect = re.Value;
         Console.WriteLine("redirect:" + redirect);
         isAd = isAdmin.Value;
@@ -98,53 +116,61 @@
         isLoaded = true;
     }
 
-private async Task HandleSubmit()
-{
-    Console.WriteLine("OnSubmit");
-
-
-    var isValid = ValidateForm();
-
-    if (isValid)
+    private async Task HandleSubmit()
     {
-        await HandleValidSubmit();
+        Console.WriteLine("OnSubmit");
+
+
+        var isValid = ValidateForm();
+
+        if (isValid)
+        {
+            await HandleValidSubmit();
+        }
+        else
+        {
+            HandleInvalidSubmit();
+        }
     }
-    else
-    {
-        HandleInvalidSubmit();
-    }
-}
 
     public async Task HandleValidSubmit()
     {
         UserModel? result = await userClass.Login(email!, password!, password!);
-        if(result != null) {
+        if (result != null)
+        {
             showError = "hidden";
 
             await ProtectedLocalStore.SetAsync("loggedIn", true);
 
-            if (email != null) {
+            if (email != null)
+            {
                 await ProtectedLocalStore.SetAsync("userEmail", email);
-            } else {
+            }
+            else
+            {
                 await ProtectedLocalStore.SetAsync("userEmail", "");
             }
-            
+
             await ProtectedLocalStore.SetAsync("userId", result.userId);
-            if(result.userRole == 1){
+            if (result.userRole == 1)
+            {
                 await ProtectedLocalStore.SetAsync("isAdmin", true);
-                NavigationManager.NavigateTo("/admin/keys");              
+                NavigationManager.NavigateTo("/admin/keys");
             }
-            else{
-                NavigationManager.NavigateTo("/" + redirect);
+            else
+            {
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
-                await ProtectedLocalStore.DeleteAsync("redirect");
+                await ProtectedSessionStore.DeleteAsync("redirect");
+                NavigationManager.NavigateTo("/" + redirect);
             }
-        } else {
+        }
+        else
+        {
             Console.WriteLine("Failed");
             passwordIsValid = false;
             @* string message = await response.Content.ReadAsStringAsync();
-            errorMessage = message;
-             showError = "block"; *@
+errorMessage = message;
+showError = "block"; *@
         }
     }
 
@@ -153,43 +179,43 @@ private async Task HandleSubmit()
         Console.WriteLine("OnInvalidSubmit");
     }
 
-private bool ValidateForm()
-{
-    emailIsValid = true;
-    @* check email using regex *@
-    if (string.IsNullOrEmpty(email))
+    private bool ValidateForm()
     {
-        Console.WriteLine("email is empty");
-        return false;
+        emailIsValid = true;
+        @* check email using regex *@
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("email is empty");
+            return false;
+        }
+        else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        {
+            Console.WriteLine("email is not valid");
+            @* Add Toast *@
+            emailIsValid = false;
+            return false;
+        }
+
+        @* check if password is empty *@
+        if (string.IsNullOrEmpty(password))
+        {
+            Console.WriteLine("password is empty");
+
+            passwordIsValid = false;
+
+            return false;
+        }
+
+        return true;
     }
-    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+
+    private void HandleEmailChanged(string value)
     {
-        Console.WriteLine("email is not valid");
-        @* Add Toast *@
-        emailIsValid = false;
-        return false;
+        email = value;
     }
 
-    @* check if password is empty *@
-    if (string.IsNullOrEmpty(password))
+    private void HandlePasswordChanged(string value)
     {
-        Console.WriteLine("password is empty");
-        
-        passwordIsValid = false;
-        
-        return false;
+        password = value;
     }
-
-    return true;
-}
-
-private void HandleEmailChanged(string value)
-{
-    email = value;
-}
-
-private void HandlePasswordChanged(string value)
-{
-    password = value;
-}
 }

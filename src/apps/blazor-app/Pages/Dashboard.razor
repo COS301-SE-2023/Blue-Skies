@@ -411,7 +411,7 @@
 
         if (!logIn)
         {
-            await ProtectedLocalStore.SetAsync("redirect", "dashboard");
+            await ProtectedSessionStore.SetAsync("redirect", "dashboard");
             NavigationManager.NavigateTo("/login");
         }
         else if (isAd)
