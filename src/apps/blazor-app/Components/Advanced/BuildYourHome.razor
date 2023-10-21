@@ -54,9 +54,7 @@
                     </div>
                 </div>
             </div>
-            <input
-        class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
+            <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
                 @if (appliances.Count > 0)
                 {
                         <div class="flex">
@@ -108,7 +106,34 @@
     </div>
     <div class="w-full flex flex-col justify-center items-center pl-64">
         @* Home images *@
-        x
+        <div class="flex pjustify-center items-center h-full">
+        @switch (selectedSystem)
+        {
+            case 0:
+                homeType = "-Home1.svg";
+            break;
+            case 1:
+                homeType = "-Home2.svg";
+            break;
+            case 2:
+                homeType = "-Home3.svg";
+            break;
+            case 3:
+                if (systems[3].inverterOutput <= 5) { 
+                    homeType="-Home1.svg" ; 
+                } else if (systems[3].inverterOutput <=8) { 
+                    homeType="-Home2.svg" ; 
+                } else {
+                    homeType="-Home3.svg" ;
+                } 
+                break; 
+            default: 
+                homeType="-Home1.svg" ; 
+            break; 
+        } 
+        @{ homeImage=homeSize + homeType; }
+        <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full" />
+    </div>
     </div>
     <div class="w-6/12 px-1 flex flex-col justify-center items-center gap-4 -mt-4">
     @* Select System Size *@
@@ -132,57 +157,57 @@
                         var medium = systems[1].inverterOutput + "kw";
                         var large = systems[2].inverterOutput + "kw";
                     }
-                                <div onclick="@(() => SetSystemSize(0))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class=" font-semibold">@small</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(1))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@medium</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(2))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@large</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-center h-24">
+                        <div onclick="@(() => SetSystemSize(0))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class=" font-semibold">@small</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(1))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@medium</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(2))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@large</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center h-24">
                     @if (showCustomSystem)
                     {
                         if (displayCreatedCustomSystem)
                         {
                             var customSize = systems[3].inverterOutput + "kw";
-                                        <div @onclick="CreateCustomSystem"
-                                            class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
-                                            <p class="font-semibold">@customSize</p>
-                                        </div>
+                            <div @onclick="CreateCustomSystem"
+                                class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                                <p class="font-semibold">@customSize</p>
+                            </div>
                         }
                         else
                         {
-                                        <div>
-                                            <div class="gap-2 px-6">
-                                                <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
-                                            </div>
-                                            <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
-                                                <Button style="pill" >
-                                                    <p  class="font-semibold">Create</p>
-                                                </Button>
-                                            </div>
-                                        </div>
+                            <div>
+                                <div class="gap-2 px-6">
+                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                                </div>
+                                <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                                    <Button style="pill" >
+                                        <p  class="font-semibold">Create</p>
+                                    </Button>
+                                </div>
+                            </div>
                         }
                     }
                     else
                     {
-                                <div @onclick="CustomSystemSelected">
-                                    <Button style="pill" >
-                                        <p  class="font-semibold">Custom</p>
-                                    </Button>
-                                </div>
+                        <div @onclick="CustomSystemSelected">
+                            <Button style="pill" >
+                                <p  class="font-semibold">Custom</p>
+                            </Button>
+                        </div>
                     }
                         </div>
             }
             else
             {
-                    <SystemSizeSkeleton />
+                <SystemSizeSkeleton />
             }
 
         </div>
@@ -207,7 +232,7 @@
                                     var percentage = chargingLimitPercentage + "%";
                                 }
                                 <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
-                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                    <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
                                 <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                             </div>
                             <p class="text-center">Battery Utilization</p>
@@ -366,7 +391,8 @@
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
-        new TabItemModel("Add", true),
+        new TabItemModel("Toggle", true),
+        new TabItemModel("Add", false),
         new TabItemModel("Remove", false)
     };
     private List<TabItemModel> categories = new List<TabItemModel>
@@ -379,9 +405,6 @@
     float dlh = 0f;
     float daylight = 12f;
     DaylightChart daylightChart = new DaylightChart();
-    private string homeSize = "Small";
-    private string homeType = "";
-    private string homeImage = "";
     private bool showCustomSystem = false;
     private bool displayCreatedCustomSystem = false;
     private string customPanels = "";
@@ -398,6 +421,10 @@
     private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
     private Timer panelTimer = default!;
     private Timer batteryTimer = default!;
+    private string homeSize = "Small";
+    private string homeType = "";
+    private string homeImage = "";
+
 
     /// <summary>
     /// On initialisation, get the user id from local storage
