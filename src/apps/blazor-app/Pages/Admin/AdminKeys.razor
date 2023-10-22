@@ -26,12 +26,12 @@
         <div class="flex  gap-10 items-center">
           <div @onclick="ModalPopup.Show">
               <Button style="outline">
-                  <content>Delete</content>
+                  <p>Delete</p>
              </Button>
             </div>
             <div @onclick="AddKey">
                 <Button style="pill">
-                   <content>Add</content>
+                   <p>Add</p>
                 </Button>
             </div>
         </div>
@@ -43,14 +43,12 @@
             <div class="flex flex-row gap-4 justify-center">
                 <div @onclick="DeleteKeys">
                     <Button style="danger">
-                        <content>
-                            delete
-                        </content>
+                        <p>delete</p>
                     </Button>
                 </div>
                 <div @onclick="ModalPopup.Dismiss">
                     <Button style="outline-danger">
-                        <content>Cancel</content>
+                        <p>Cancel</p>
                     </Button>
                 </div>
             </div>

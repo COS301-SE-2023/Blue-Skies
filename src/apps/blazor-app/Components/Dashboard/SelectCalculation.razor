@@ -42,13 +42,12 @@
                 <h1 class="text-lg">@date</h1>
             </Header>
         </Heading>
+
         @if (isReportGenerated)
         {
             <div @onclick="CancelGenerateReport">
                 <Button style="pill" css="h-14 max-w-sm">
-                    <content>
                         <a class="text-sm font-semibold hover:text-white">Cancel</a>
-                    </content>
                 </Button>
             </div>
         }
@@ -56,9 +55,7 @@
         {
             <div @onclick="GenerateReport">
                 <Button style="pill" css="h-14 max-w-sm">
-                    <content>
                         <a class="text-sm font-semibold hover:text-white">Generate Report</a>
-                    </content>
                 </Button>
             </div>
         }

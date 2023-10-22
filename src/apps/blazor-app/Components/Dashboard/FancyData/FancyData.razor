@@ -12,62 +12,50 @@
     string[] segments = uri.Segments;
     currentPage = segments[segments.Length - 1];
 }
-<div class="w-full">
-    @if (currentPage == "dashboard")
-    {
-        <Heading>
-            <Header>
-                <h1 class="text-xl">Advanced Calculations</h1>
-            </Header>
-            <Subscript>
-                <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
-            </Subscript>
-        </Heading>
-    }
-    else
-    {
-        <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
-            <Superscript>
-                <h1 class="text-center">Fancy Data and</h1>
-            </Superscript>
-            <Header>
-                <h1 class="text-center">Advanced Calculations</h1>
-            </Header>
-            <Subscript>
-                <p class="text-center">More information about your location. The flux map shows the your roof's sunlight
-                    exposure."</p>
-            </Subscript>
-        </Heading>
-    }
-    <div class="w-full flex justify-center items-center px-4 gap-2">
-    @if (annualFluxDataReceived)
-    {
-        <div class="flex w-7/12 flex-col gap-4 p-20">
-            <h1 class="text-primary-800 font-semibold text-center text-xl">Annual Flux Map</h1>
-            <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your
-                rooftop.</p>
-            <Image ImageName="@satteliteImageSrc" css="2/3" alt="sattelite Image" />
-            <div class="flex justify-between w-full">
-                <div class="flex gap-2">
-                    <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-red-accent-500"></div>
-                    <p class="text-primary-800 my-auto">High sunlight exposure</p>
-                </div>
-                <div class="flex gap-2">
-                    <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-yellow-accent-500"></div>
-                    <p class="text-primary-800 my-auto">Low sunlight exposure</p>
-                </div>
+
+    <div class="w-full">
+        @if (currentPage == "dashboard") {
+            <Heading>
+                <Header>
+                    <h1 class="text-xl">Advanced Calculations</h1>
+                </Header>
+                <Subscript>
+                    <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
+                </Subscript>
+            </Heading>
+        } else {
+            <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
+                <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
+                <Header><h1 class="text-center">Advanced Calculations</h1></Header>
+                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
+            </Heading>
+        }
+
+        <div class="w-full md:flex justify-center items-center md:px-4 md:gap-2">
+            <div class="flex md:w-1/2 flex-col gap-4 p-20">
+                    <h1 class="text-primary-800 font-semibold text-center text-xl">Annual Flux Map</h1>
+                    <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your rooftop.</p>
+                    <Image ImageName="@satteliteImageSrc" css="w-full sm:w-3/4 mx-auto md:w-full" alt="sattelite Image" />
+                    <div class="flex justify-between w-full">
+                        <div class="flex gap-2">
+                            <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-red-accent-500"></div>
+                            <p class="text-primary-800 my-auto">High sunlight exposure</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="w-5 h-5 my-auto border border-primary-200 rounded-lg bg-yellow-accent-500"></div>
+                            <p class="text-primary-800 my-auto">Low sunlight exposure</p>
+                        </div>
+                    </div>
             </div>
         </div>
     } else {
         <AnnualFluxSkeleton />
     }
 
-        <div class="flex flex-col gap-4 justify-center w-1/2">
-            @if (solarPanelsDataReceived)
-            {
-                @if (solarPanelsData != null)
-                {
-                    <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+            <div class="flex flex-col gap-4 justify-center md:w-1/2">
+                <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+
+                @if(solarPanelsData != null){
                     <Card css="w-full flex flex-col gap-10">
                         <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
                         <div class="grid grid-cols-2 justify-center items-center gap-2">
@@ -123,11 +111,8 @@
             }
         </div>
     </div>
-
-    <div class="w-full flex justify-center items-center px-4 gap-4 mt-5">
-        @if (monthlyFluxDataReceived)
-        {
-            <div class="flex w-2/3 flex-col justify-center items-center gap-3">
+        <div class="w-full lg:flex justify-center items-center px-4 gap-4 mt-5">
+            <div class="flex md:w-1/2 md:mx-auto lg:w-1/3 flex-col justify-center items-center gap-3">
                 <h1 class="text-center text-primary-800 font-semibold text-xl">Monthly Flux Map</h1>
                 @if (monthlyFluxMap != null)
                 {
@@ -138,7 +123,7 @@
                             <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                                 css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
                         </div>
-                        <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="w-3/4" />
+                            <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="w-3/4 mx-auto md:w-full" />
                         <div class="my-auto" @onclick="IncreamentMonthImage">
                             <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                                 css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
@@ -148,7 +133,11 @@
                 else
                 {
                     <p>Monthly Flux Map != available</p>
-                }
+                } 
+            </div>
+            <div class="lg:w-2/3">
+                    <h1 class="text-center text-primary-800 font-semibold text-xl">Solar Irradiance Per Month</h1>
+                    <SolarIrradiationPerMonth currentMonth="@currentImageIndex" monthlySolarRadiation="@solarRadiationPerMonth" animated="true" />
             </div>
         } else {
             <MonthlyFluxSkeleton />
@@ -160,35 +149,33 @@
         </div>
     </div>
 
-    <div class="flex w-full justify-center gap-5 px-4 items-center mt-32">
-        <div class="w-2/3">
-            <h1 class="text-center text-primary-800 font-semibold text-xl">Sun path over the horizon</h1>
-            <p class="text-gray-500 mt-3 mb-4 text-center">This is a graph showing the path of the sun as it travels
-                 over the address during different times of the year.
-                 The red dot in the center represents the address you typed in.</p>
-            <ElevationGraph elevationValues="@horisonElevationData" />
-        </div>
-        <Card css="w-1/3 flex flex-col gap-10">
-            <div class="flex gap-3">
-                <div class="w-5 h-5 border border-primary-200 rounded-lg bg-red-accent-500 my-auto"></div>
-                <p class="text-base text-primary-800 my-auto">Your location</p>
+        <div class="md:flex w-full justify-center gap-5 px-4 items-center mt-32">
+            <div class="md:w-2/3">
+                <h1 class="text-center text-primary-800 font-semibold text-xl">Sun path over the horizon</h1>
+                <p class="text-gray-500 mt-3 mb-4 text-center">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores cupiditate impedit ipsam temporibus, dignissimos nostrum.</p>
+                <ElevationGraph elevationValues="@horisonElevationData" />
             </div>
-            <div class="flex gap-3">
-                <div class="w-5 h-5 border border-primary-200 rounded-lg bg-primary-900 my-auto"></div>
-                <p class="text-base text-primary-800 my-auto">Horizon</p>
-            </div>
-            <div class="flex gap-3">
-                <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-200 my-auto"></div>
-                <p class="text-base text-primary-800 my-auto">Sun - Winter Solstice</p>
-            </div>
-            <div class="flex gap-3">
-                <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-500 my-auto"></div>
-                <p class="text-base text-primary-800 my-auto">Sun - Spring Equinox</p>
-            </div>
-            <div class="flex gap-3">
-                <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-600 my-auto"></div>
-                <p class="text-base text-primary-800 my-auto">Sun - Summer Solstice</p>
-            </div>
+            <Card css="md:w-1/3 flex flex-col gap-10">
+                <div class="flex gap-3">
+                    <div class="w-5 h-5 border border-primary-200 rounded-lg bg-red-accent-500 my-auto"></div>
+                    <p class="text-base text-primary-800 my-auto">Your location</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-5 h-5 border border-primary-200 rounded-lg bg-primary-900 my-auto"></div>
+                    <p class="text-base text-primary-800 my-auto">Horizon</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-200 my-auto"></div>
+                    <p class="text-base text-primary-800 my-auto">Sun - Winter Solstice</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-500 my-auto"></div>
+                    <p class="text-base text-primary-800 my-auto">Sun - Spring Equinox</p>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-600 my-auto"></div>
+                    <p class="text-base text-primary-800 my-auto">Sun - Summer Solstice</p>
+                </div>
 
         </Card>
     </div>

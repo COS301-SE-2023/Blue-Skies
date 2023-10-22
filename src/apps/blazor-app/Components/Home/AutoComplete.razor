@@ -10,22 +10,16 @@
 <div class="mt-20 relative">
     <div class="relative mt-2 z-30 rounded-full shadow-sm border border-primary-500">
         <div class="pointer-events-none absolute top-1/2 -translate-y-1/2 md:-translate-y-[80%] flex justify-center mt-2 md:mt-0 items-center pl-3">
-            <span class="text-gray-500 md:translate-x-5 sm:text-sm w-10 h-10 md:w-fit md:h-fit">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M10.889 19.4174C15.7982 19.4174 19.7778 15.4377 19.7778 10.5285C19.7778 5.61934 15.7982 1.63965 10.889 1.63965C5.97975 1.63965 2.00006 5.61934 2.00006 10.5285C2.00006 15.4377 5.97975 19.4174 10.889 19.4174Z"
-                        stroke="#000F52" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M22.0004 21.6395L17.1671 16.8062" stroke="#000F52" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+            <span class="text-gray-500 md:translate-x-5 scale-90 sm:text-sm w-10 h-10 md:w-fit md:h-fit">
+                <Image ImageName="Search.svg" />
             </span>
         </div>
         <input
-            class="pl-10 md:pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
+            class="pl-14 md:pl-20 w-full rounded-full h-16 py-1.5 text-gray-900 placeholder:text-gray-400  sm:text-sm sm:leading-6 focus:border-none focus:ring-0 focus:outline-none focus:bg-primary-50"
             type="text" @bind="searchQuery" @onfocus="ShowSuggestions" @onkeyup="ResetTimer" @onblur="HideSuggestions" @bind:event="oninput" placeholder="Enter your address" />
     </div>
-    <div class="absolute z-50 transition-all duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
-        <ul id="suggestionList" class="flex flex-col mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
+    <div class="absolute z-50 transition-all bg-transparent duration-200  @(suggestions.Count == 0 ? "opacity-0 h-0 -translate-y-10" : "opacity-100") w-full bg-white top-full left-0">
+        <ul id="suggestionList" class="flex flex-col bg-white mx-auto gap-2 mt-4 shadow p-2 rounded-xl w-full z-40">
             @{int i = 100;}
             @foreach (var suggestion in suggestions)
             {

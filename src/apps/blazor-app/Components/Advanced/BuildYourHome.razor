@@ -1,5 +1,6 @@
 @using BlazorApp.Components
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Advanced.Skeletons
 @using BlazorApp.Models
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -13,8 +14,9 @@
 @implements IDisposable
 
 
-<div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center px-4">
+<div class="flex flex-col gap-5 lg:flex-row w-full h-full  items-center mb-20 px-4">
     <div class="w-full flex flex-col justify-center items-center ">
+        <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 lg:hidden text-center text-3xl mb-5 ">Build your home</h1>
         @* Home Template Dropdown *@
         <div class="w-60 text-center my-auto translate-y-10">
             @if (systems.Count == 0)
@@ -37,6 +39,8 @@
         </div>
     </div>
 </div>
+
+
 @* Add Appliances *@
 <div class="hidden lg:flex w-full h-full px-4 mb-20">
     <div class="w-4/12 grid grid-cols-2 justify-center scale-90 gap-4 -mt-4">
@@ -52,9 +56,7 @@
                     </div>
                 </div>
             </div>
-            <input
-        class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-        type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
+            <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
                 @if (appliances.Count > 0)
                 {
                         <div class="flex">
@@ -98,17 +100,7 @@
                 <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
                     @for (int i = 0; i < 8; i++)
                     {
-                        <div class="justify-center">
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse">
-                                <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                    <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                </svg>
-                            </div>
-                            <div role="status" class="max-w-sm animate-pulse mt-3">
-                                <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
+                        <AppliancesSkeleton />
                     }
                 </div>
                 }
@@ -117,40 +109,33 @@
     <div class="w-full flex flex-col justify-center items-center pl-64">
         @* Home images *@
         <div class="flex pjustify-center items-center h-full">
-            @switch (selectedSystem)
-            {
-                case 0:
-                    homeType = "-Home1.svg";
-                    break;
-                case 1:
-                    homeType = "-Home2.svg";
-                    break;
-                case 2:
-                    homeType = "-Home3.svg";
-                    break;
-                case 3:
-                    if (systems[3].inverterOutput <= 5)
-                    {
-                        homeType = "-Home1.svg";
-                    }
-                    else if (systems[3].inverterOutput <= 8)
-                    {
-                        homeType = "-Home2.svg";
-                    }
-                    else
-                    {
-                        homeType = "-Home3.svg";
-                    }
-                    break;
-                default:
-                    homeType = "-Home1.svg";
-                    break;
-            }
-            @{
-                homeImage = homeSize + homeType;
-            }
-            <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full" />
-        </div>
+        @switch (selectedSystem)
+        {
+            case 0:
+                homeType = "-Home1.svg";
+            break;
+            case 1:
+                homeType = "-Home2.svg";
+            break;
+            case 2:
+                homeType = "-Home3.svg";
+            break;
+            case 3:
+                if (systems[3].inverterOutput <= 5) { 
+                    homeType="-Home1.svg" ; 
+                } else if (systems[3].inverterOutput <=8) { 
+                    homeType="-Home2.svg" ; 
+                } else {
+                    homeType="-Home3.svg" ;
+                } 
+                break; 
+            default: 
+                homeType="-Home1.svg" ; 
+            break; 
+        } 
+        @{ homeImage=homeSize + homeType; }
+        <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full" />
+    </div>
     </div>
     <div class="w-6/12 px-1 flex flex-col justify-center items-center gap-4 -mt-4">
     @* Select System Size *@
@@ -174,88 +159,62 @@
                         var medium = systems[1].inverterOutput + "kw";
                         var large = systems[2].inverterOutput + "kw";
                     }
-                                <div onclick="@(() => SetSystemSize(0))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class=" font-semibold">@small</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(1))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@medium</p>
-                                </div>
-                                <div onclick="@(() => SetSystemSize(2))"
-                                    class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
-                                    <p class="font-semibold">@large</p>
-                                </div>
-                            </div>
-                            <div class="flex justify-center h-24">
+                        <div onclick="@(() => SetSystemSize(0))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class=" font-semibold">@small</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(1))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@medium</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(2))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@large</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center h-24">
                     @if (showCustomSystem)
                     {
                         if (displayCreatedCustomSystem)
                         {
                             var customSize = systems[3].inverterOutput + "kw";
-                                        <div @onclick="CreateCustomSystem"
-                                            class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
-                                            <p class="font-semibold">@customSize</p>
-                                        </div>
+                            <div @onclick="CreateCustomSystem"
+                                class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                                <p class="font-semibold">@customSize</p>
+                            </div>
                         }
                         else
                         {
-                                        <div>
-                                            <div class="gap-2 px-6">
-                                                <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
-                                            </div>
-                                            <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
-                                                <Button style="pill" >
-                                                    <content>
-                                                        <p  class="font-semibold">Create</p>
-                                                    </content>
-                                                </Button>
-                                            </div>
-                                        </div>
+                            <div>
+                                <div class="gap-2 px-6">
+                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                                </div>
+                                <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                                    <Button style="pill" >
+                                        <p  class="font-semibold">Create</p>
+                                    </Button>
+                                </div>
+                            </div>
                         }
                     }
                     else
                     {
-                                <div @onclick="CustomSystemSelected">
-                                    <Button style="pill" >
-                                        <content>
-                                            <p  class="font-semibold">Custom</p>
-                                        </content>
-                                    </Button>
-                                </div>
+                        <div @onclick="CustomSystemSelected">
+                            <Button style="pill" >
+                                <p  class="font-semibold">Custom</p>
+                            </Button>
+                        </div>
                     }
                         </div>
             }
             else
             {
-                    <div class="flex space-x-9">
-                        <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                        <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                            <div class="flex bg-gray-100 shadow-md rounded-3xl  p-3 w-[65px] h-[65px] animate-pulse">
-                            <svg class="w-9 h-9 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="flex justify-center h-24">
-                        <div role="status" class="max-w-sm animate-pulse">
-                            <div class="h-8 bg-gray-200 rounded-full w-[105px] mb-2.5"></div>
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
+                <SystemSizeSkeleton />
             }
 
         </div>
     @* System details *@
-        <div class="flex justify-between gap-4 scale-75">
+        <div class="flex justify-between gap-4 w-full scale-75">
             @if (systems.Count > 0)
             {
                 <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
@@ -275,7 +234,7 @@
                                     var percentage = chargingLimitPercentage + "%";
                                 }
                                 <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
-                                <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                    <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
                                 <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                             </div>
                             <p class="text-center">Battery Utilization</p>
@@ -289,50 +248,7 @@
             }
             else
             {
-                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
-                        <div class="mb-2 w-full flex flex-col">
-                            <div class="justify-center">
-                                <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center mt-3">
-                                    <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                        <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                    </svg>
-                                </div>
-                                <div role="status" class="max-w-sm animate-pulse mt-3">
-                                    <div class="h-3 bg-gray-200 rounded-full w-[120px] mb-2 mx-auto"></div>
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mb-2.5 mx-auto animate-pulse mt-2"></div>
-                        </div>
-                        <div class="justify-start items-start">
-                            <div class="flex">
-                                <div class="flex flex-col gap-2 justify-center items-center w-full">
-                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[120px] animate-pulse items-center justify-center">
-                                        <svg class="self-center w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                        </svg>
-                                    </div>
-                                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                                        <div class="h-3 bg-gray-200 rounded-full w-[140px] mb-2.5"></div>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                                <div class="mx-auto">
-                                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto w-[80px] h-[80px] animate-pulse items-center justify-center">
-                                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                                        </svg>
-                                    </div>
-                                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                                        <div class="h-3 bg-gray-200 rounded-full w-[110px] mb-2.5 mx-auto"></div>
-                                        <div class="h-3 bg-gray-200 rounded-full w-[80px] mb-2 mx-auto"></div>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="h-2 bg-gray-200 rounded-full w-[325px] mt-2.5 animate-pulse"></div>
-                        </div>
-                    </div>
+                <BatterySkeleton />
             }
         </div>
         <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
@@ -351,6 +267,218 @@
                 }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
+        </div>
+    </div>
+</div>
+
+
+@* Mobile Viewport *@
+<div class="flex flex-col lg:hidden w-full px-3 mx-auto justify-center items-center">
+    <Image ImageName="@homeImage" alt="Home" css="w-10/12 h-full mt-10 mb-20" />
+
+    <div class="w-full px-1 flex flex-col justify-center items-center gap-4 -mt-4">
+    @* Select System Size *@
+        <div class="text-center mt-2 space-y-5">
+            <h1 class="text-blue-950 translate-y-8 font-semibold text-center text-3xl mb-5 ">Solar System</h1>
+            <div class="flex gap-3 w-full relative justify-center">
+                <h1 class="text-base font-medium text-center mb-2  text-primary-900">Inverter size</h1>
+                <div class="group">
+                    <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                    <div
+                        class=" transform -scale-x-100 absolute hidden fade-in-active w-full -top-[70px] -translate-x-64 max-w-md group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                        <p class="text-gray-900 transform -scale-x-100">Your inverter determines how many appliances you can run at once</p>
+                    </div>
+                </div>
+            </div>
+            @if (systems.Count > 2)
+            {  
+                <div class="flex space-x-9">
+                    @{
+                        var small = systems[0].inverterOutput + "kw";
+                        var medium = systems[1].inverterOutput + "kw";
+                        var large = systems[2].inverterOutput + "kw";
+                    }
+                        <div onclick="@(() => SetSystemSize(0))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 0 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class=" font-semibold">@small</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(1))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 1 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@medium</p>
+                        </div>
+                        <div onclick="@(() => SetSystemSize(2))"
+                            class="flex shadow-md transition-all duration-500 hover:cursor-pointer @(selectedSystem == 2 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-16 h-16">
+                            <p class="font-semibold">@large</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-center h-24">
+                    @if (showCustomSystem)
+                    {
+                        if (displayCreatedCustomSystem)
+                        {
+                            var customSize = systems[3].inverterOutput + "kw";
+                            <div @onclick="CreateCustomSystem"
+                                class="flex shadow-md transition-all duration-500 @(selectedSystem == 3 ? "bg-primary-500 scale-110 text-gray-100 " : "bg-gray-100 text-primary-900 hover:scale-110 ") rounded-2xl justify-center items-center w-24 h-16">
+                                <p class="font-semibold">@customSize</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div>
+                                <div class="gap-2 px-6">
+                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                                </div>
+                                <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
+                                    <Button style="pill" >
+                                        <p  class="font-semibold">Create</p>
+                                    </Button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div @onclick="CustomSystemSelected">
+                            <Button style="pill" >
+                                <p  class="font-semibold">Custom</p>
+                            </Button>
+                        </div>
+                    }
+                        </div>
+            }
+            else
+            {
+                <SystemSizeSkeleton />
+            }
+
+        </div>
+        @* System details *@
+        <div class="flex justify-between gap-4 mt-20 w-full">
+            @if (systems.Count > 0)
+            {
+                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-20">
+                    <div class="mb-2 w-full flex flex-col justify-center items-center">
+                        <div @onclick='@(() => CustomSystemModal("Panels"))'>
+                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
+                        </div>
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3 cursor-pointer mt-3" min="4" max="20" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
+                    </div>
+                    <div class="flex flex-col gap-4 w-full justify-center items-center">
+                        <div class="flex gap-2 pr-2 justify-start items-start">
+                            <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
+                                <Tooltip pointer="50">
+                                    <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                                </Tooltip>
+                                <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
+                                    @{
+                                        var percentage = chargingLimitPercentage + "%";
+                                    }
+                                    <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
+                                        <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                    <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                                </div>
+                                <p class="text-center">Battery Utilization</p>
+                            </div>
+                            <div @onclick='@(() => CustomSystemModal("Batteries"))'>
+                                <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
+                            </div>
+                        </div>
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3 custom-range cursor-pointer " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <BatterySkeleton />
+            }
+        </div>
+        <div class="flex flex-col w-full mt-10 justify-center items-center gap-4 mb-20">
+            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
+            <div class="flex relative flex-col justify-center w-full has-tooltip">
+                <div>
+                    <Tooltip pointer="48">
+                        <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                    </Tooltip>
+                </div>
+                <DaylightChart hours="@dlh" daylightHours="@daylight" />
+                <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
+                        @{
+                            if (dlh == (24 - daylight))
+                            {
+                                <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                            }
+                            else
+                            {
+                                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                            }
+                        }
+                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    @* Add Appliances *@
+    <div class="w-[100vw]  grid grid-cols-2 justify-center gap-4 mt-20">
+        <div class="flex mx-auto flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-full">
+            <div class="flex gap-3 w-full relative justify-center">
+                <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
+                <div class="group">
+                    <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                    <div
+                        class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                        <p class="text-gray-900">Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below</p>
+                    </div>
+                </div>
+            </div>
+            <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
+                @if (appliances.Count > 0)
+                {
+                        <div class="flex">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
+                                @{
+                                    filteredAppliances = getFilteredAppliances(applianceSearch);
+                                    if(filteredAppliances.Count <= 8)
+                                    {
+                                        appliancesPage = 0;
+                                    }
+                                    @for (int i = 0; i < 8 && filteredAppliances.Count > 0; i++)
+                                    {
+                                        
+                                        @if (filteredAppliances.Count > i + appliancesPage * 8)
+                                        {   
+                                            int applianceQuantity = 0;
+                                            foreach (ApplianceModel app in appliances.Where(app => app.type == filteredAppliances[i + appliancesPage * 8].type))
+                                            {
+                                                applianceQuantity += app.quantity;
+                                            }
+                                            ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
+                                            <div @onclick="@(() => ToggleAppliance(appliance))">
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@applianceQuantity" />     
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                        </div>
+                }
+                else
+                {
+                <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+                    @for (int i = 0; i < 8; i++)
+                    {
+                        <AppliancesSkeleton />
+                    }
+                </div>
+                }
         </div>
     </div>
 </div>
@@ -383,9 +511,7 @@
         {
             <div @onclick="SetPanels">
                 <Button>
-                    <content>
-                        Save
-                    </content>
+                    <p>Save</p>
                 </Button>
             </div>
         }
@@ -393,15 +519,13 @@
         {
             <div @onclick="SetBatteries">
                 <Button>
-                    <content>
-                        Save
-                    </content>
+                    <p>Save</p>
                 </Button>
             </div>
         }
             <div @onclick="SystemModalPopup.Dismiss">
                 <Button style="outline">
-                    <content>Cancel</content>
+                    <p>Cancel</p>
                 </Button>
             </div>
         </div>
@@ -422,9 +546,7 @@
         {
                 <div @onclick="UpdateCalculation">
                     <Button>
-                        <content>
-                        Update
-                            </content>
+                        <p>Update</p>
                     </Button>
                 </div>
         }
@@ -432,22 +554,18 @@
         {
                 <div @onclick="SaveCalculation">
                     <Button>
-                        <content>
-                            Save
-                        </content>
+                        <p>Save</p>
                     </Button>
                 </div>
         }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
-                    <content>Cancel</content>
+                    <p>Cancel</p>
                 </Button>
             </div>
         </div>
 </ModalPopup>
 
-
-@* Mobile View Port *@
 
 @code {
     private SharedUtils.reportClass reportClass = new SharedUtils.reportClass();
@@ -480,7 +598,8 @@
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
-        new TabItemModel("Add", true),
+        new TabItemModel("Toggle", true),
+        new TabItemModel("Add", false),
         new TabItemModel("Remove", false)
     };
     private List<TabItemModel> categories = new List<TabItemModel>
@@ -493,9 +612,6 @@
     float dlh = 0f;
     float daylight = 12f;
     DaylightChart daylightChart = new DaylightChart();
-    private string homeSize = "Small";
-    private string homeType = "";
-    private string homeImage = "";
     private bool showCustomSystem = false;
     private bool displayCreatedCustomSystem = false;
     private string customPanels = "";
@@ -512,6 +628,10 @@
     private List<ApplianceModel> filteredAppliances = new List<ApplianceModel>();
     private Timer panelTimer = default!;
     private Timer batteryTimer = default!;
+    private string homeSize = "Small";
+    private string homeType = "";
+    private string homeImage = "";
+
 
     /// <summary>
     /// On initialisation, get the user id from local storage

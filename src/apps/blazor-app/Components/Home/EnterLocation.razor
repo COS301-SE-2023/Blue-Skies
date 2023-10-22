@@ -13,7 +13,7 @@
 @inject BlazorApp.Data.LoadingService loadingService
 @inject BlazorApp.Data.ToastService toastService
 
-<div class="mx-auto max-w-2xl px-10  py-32 sm:py-20 lg:py-28 relative">
+<div class="mx-auto max-w-2xl px-5 sm:px-10  py-32 sm:py-20 lg:py-28 relative">
     <div class="text-center">
         <Heading>
             <Header>
@@ -31,9 +31,7 @@
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
             <div @onclick="generateLocationData">
                 <Button style="pill" css="h-14">
-                    <content>
-                        <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
-                    </content>
+                    <p class="text-sm font-semibold hover:text-white">Get Solar Score</p>
                 </Button>
             </div>
             <a href="/dashboard" class="text-sm font-normal leading-6 text-orange-accent-500">Dashboard<span
