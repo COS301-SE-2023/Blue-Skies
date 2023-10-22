@@ -8,18 +8,10 @@ public class BusinessBestSolarPanelsRepository
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
-    private SharedUtils.otherDataClass otherDataClass = new SharedUtils.otherDataClass();
     private string locationName = "";
-    private string express = "http://localhost:3333";
-    private string? API_PORT = Environment.GetEnvironmentVariable("API_PORT");
-    public BusinessBestSolarPanelsRepository()
-    {
-        var backendexpress = Environment.GetEnvironmentVariable("EXPRESS_BACKEND");
-        if (backendexpress != null)
-        {
-            express = backendexpress;
-        }
-    }
+    private string? mapboxAccessToken = Environment.GetEnvironmentVariable("MAP_BOX_API_KEY");
+
+   
     public async Task<string> GetProcessedDataAsync(BestSolarPanelsInput bestSolarPanelsInput)
     {
         LocationDataModel? currentLocationData = new LocationDataModel();
@@ -41,7 +33,7 @@ public class BusinessBestSolarPanelsRepository
             }
 
             LocationDataModel? locationData = await locationDataClass.GetLocationData(latitude, longitude);
-            locationName = await otherDataClass.GetLocationNameFromCoordinates(latitude, longitude);
+            locationName = await GetLocationNameFromCoordinates(latitude, longitude);
             if (locationData == null)
             {                
                 await locationDataClass.CreateLocationData(latitude, longitude, locationName);
@@ -90,5 +82,29 @@ public class BusinessBestSolarPanelsRepository
             locationData = await locationDataClass.CreateLocationData(latitude, longitude, locationName);
         }
         return locationData!;
+    }
+     public async Task<string> GetLocationNameFromCoordinates(double latitude, double longitude)
+    {
+        string baseUrl = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
+        string requestUrl =
+            $"{baseUrl}{longitude.ToString().Replace(",", ".")},{latitude.ToString().Replace(",", ".")}.json?&access_token={mapboxAccessToken}";
+
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            var mapResponse = await httpClient.GetFromJsonAsync<GeocodingResponse>(requestUrl);
+            return mapResponse?.Features[0].Place_Name ?? "";
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors or exceptions
+            Console.WriteLine(ex.Message);
+            return "";
+        }
+        
+    }
+    private class GeocodingResponse
+    {
+        public List<LocationSuggestion> Features { get; set; } = new List<LocationSuggestion>();
     }
 }

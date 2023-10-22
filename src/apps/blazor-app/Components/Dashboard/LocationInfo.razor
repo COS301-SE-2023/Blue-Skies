@@ -7,7 +7,7 @@
     <Image ImageName="Robert_Confused_Half.png" css="absolute right-20 bottom-0 z-0 h-12" alt="Rob" />
     <div class="w-full md:w-2/3 z-10">
         <Card>
-            @if (currentLocationData != null && displayNewData)
+            @if (currentLocationData != null && displayNewData && displayImage)
             {
                 <Heading>
                     <Header>
@@ -162,6 +162,7 @@
 
 @code {
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
+    private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private string? satteliteImage;
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     [Parameter]
@@ -179,6 +180,7 @@
     [Parameter]
     public bool displayNewData { get; set; }
     public int selectedSystem { get; set; }
+    private bool displayImage = false;
 
     protected override void OnParametersSet(){
         for (int i = 0; i < systems!.Count; i++)
@@ -190,9 +192,10 @@
         }
 
         if(currentLocationData != null) {
-            satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData.satteliteImageData!);
+            if(currentLocationData.satteliteImageData != null) {
+                satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData!.satteliteImageData!);
+                displayImage = true;
+            }
         }
-
-
     }
 }

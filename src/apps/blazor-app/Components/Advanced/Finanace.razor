@@ -3,6 +3,8 @@
 @using ChartJs.Blazor.BarChart
 @using BlazorApp.Models
 @using BlazorApp.Components.Base
+@using System.Timers
+@implements IDisposable
 
 <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
     <Superscript><h1 class="text-center">Potential Savings and</h1></Superscript >
@@ -31,7 +33,7 @@
     <div class="w-1/2 h-1/2 mt-10">
         <Chart Config="barConfig"></Chart>
     </div>
-    <div class="flex w-1/2 flex-col gap-4 p-2 justify-center">
+    <div class="flex w-2/5 flex-col gap-4 p-2 justify-center">
         <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
             <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
                 <p class="text-center text-xl font-bold text-primary-100">Potential Payback</p>
@@ -56,15 +58,19 @@
 @code {
     private BarConfig? barConfig;
     private int monthlyBill = 3500;
-    private int monthlyUsage = 600;
     private BarDataset<double>? dataset;
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
     private double min = 0;
     private SystemInfo? activeSystem;
-
+    Timer timer = default!;
 
 
     protected override  void OnInitialized() {
+        timer = new Timer(10);
+        timer.Elapsed += HandleBillSliderChange;
+        timer.AutoReset = true;
+        timer.Enabled = true;
+
         barConfig = new BarConfig
         {
             Options = new BarOptions
@@ -137,27 +143,22 @@
         barConfig.Data.Datasets.Add(dataset);
     }
 
-    private void HandleBillSliderChange(ChangeEventArgs e)
+    private void ResetTimer(ChangeEventArgs e)
     {
-
-        if (int.TryParse(e.Value!.ToString(), out int newValue))
-        {
-            monthlyBill = newValue;
-            var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
-            monthlyUsage = (int) round * 10;
-            UpdateGraph();
-        }
+        timer.Stop();
+        int.TryParse(e.Value!.ToString(), out monthlyBill);
+        timer.Start();
     }
 
-    private void HandleUsageSliderChange(ChangeEventArgs e)
+    private void HandleBillSliderChange(Object? source, ElapsedEventArgs e)
     {
-        if (int.TryParse(e.Value!.ToString(), out int newValue))
-        {
-            monthlyUsage = newValue;
-            var round = Math.Round((monthlyUsage * 2.5) / 100.0, 0);
-            monthlyBill = (int) round * 100;
-            UpdateGraph();
-        }
+        var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
+        UpdateGraph();
+    }
+
+    void IDisposable.Dispose()
+    {
+        timer.Dispose();
     }
 
     private void UpdateGraph(){

@@ -53,7 +53,7 @@ public class ReportsRepository
         }
     }
 
-    public async Task<List<Reports>> GetUserReports(int userId)
+    public async Task<List<Reports>?> GetUserReports(int userId)
     {
         try
         {
@@ -79,9 +79,8 @@ public class ReportsRepository
             }
             else
             {
-                //return empty list
                 Console.WriteLine(".NET: Database Connection Error in function GetAllReports");
-                return new List<Reports>();
+                return null;
             }
         }
         catch (Exception e)

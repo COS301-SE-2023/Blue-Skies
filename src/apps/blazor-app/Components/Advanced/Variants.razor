@@ -1,5 +1,7 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 @using System.Text.Json;
+@inject BlazorApp.Data.ToastService toastService
+
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
     <Heading css="mb-12 max-w-4xl mx-auto">
@@ -8,34 +10,42 @@
         <Subscript><p class="text-center max-w-4xl">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance</p></Subscript>
     </Heading>
 
-    <div class='flex overflow-scroll  rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-center'>
-        @if (appliances != null)
-        {
-            if(appliances.FindAll(x => x.quantity > 0 && x.type == selectedAppliance).Count == 0) {
-                selectedAppliance = "";
-            }
-                applianceCount = appliances.Count(x => x.quantity > 0);
-                    var i = 0;
-
-                        @foreach (var appliance in GetDifferentApplianceGroups())
-                        {
-                            if (appliance.quantity > 0)
-                            {
-                                if(selectedAppliance == "" && appliance.type != null) {
-                                    selectedAppliance = appliance.type;
-                                }
-                                <div  class='@(selectedAppliance == appliance.type ? "bg-primary-100 h-40" : "") @(applianceCount > 5 && i == 0 ? "ml-44" : "") p-3 rounded-2xl' @onclick='(() => appliance.type != null ? SelectAppliance(appliance.type) : SelectAppliance(""))'>
-                                    <Appliance fade="@appliance.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@appliance.quantity" />
-                                </div>
-                            }
-                            i++;
-                        }
-
-            @if (applianceCount == 0)
+    <div class='flex rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
+        <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+            <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+        </div>
+        <div class="flex justify-center w-1/2 @applianceAnimation">
+            @if (appliances != null)
             {
-                <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
+                if(appliances.FindAll(x => x.quantity > 0 && x.type == selectedAppliance).Count == 0) {
+                    selectedAppliance = "";
+                }
+                    applianceCount = appliances.Count(x => x.quantity > 0);
+                        var i = 0;
+                        var selectedAppliances = GetDifferentApplianceGroups().FindAll(x => x.quantity > 0);
+                        applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / 5);
+                            @for (int j = 0; j < 5 && j + appliancesPage*5 < selectedAppliances.Count; j++)
+                            {
+                                    if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*5].type != null) {
+                                        selectedAppliance = selectedAppliances[j + appliancesPage*5].type!;
+                                    }
+                                    ApplianceModel? appl = selectedAppliances[j + appliancesPage*5];
+                                    <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
+                                        <Appliance fade="@appl.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appl.type + ".svg")" name="@appl.type" count="@appl.quantity" />
+                                    </div>
+                                i++;
+                            }
+                @if (applianceCount == 0)
+                {
+                    <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
+                }
             }
-        }
+        </div>
+        <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+            <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+        </div>
     </div>
 
     @if (selectedAppliance != "" && appliances != null && appliances.Where(x => x.type == selectedAppliance)?.LastOrDefault()?.quantity != 0) {
@@ -131,11 +141,40 @@
     [Parameter]
     public List<CustomApplianceModel>? customAppliances { get; set; }
     private DataHandlers.SystemsDataHandler systemsDataHandler = new DataHandlers.SystemsDataHandler();
-    @inject BlazorApp.Data.ToastService toastService
+
+    private int appliancesPage = 0;
+    private int applianceNumberOfPage = 0;
+    private string applianceAnimation = "";
+
 
     protected override void OnInitialized()
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
+    }
+
+private async void IncrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-left";
+        StateHasChanged();
+        await Task.Delay(100);
+        if(appliancesPage != applianceNumberOfPage - 1){
+            appliancesPage++;
+        } else {
+            appliancesPage = 0;
+        }
+        applianceAnimation = "appliance-slide-in-right";
+        StateHasChanged();
+    }
+    private async void DecrementAppliancePage(){
+        applianceAnimation = "appliance-slide-out-right";
+        StateHasChanged();
+        await Task.Delay(100);
+        if(appliancesPage != 0){
+            appliancesPage--;
+        } else {
+            appliancesPage = applianceNumberOfPage - 1;
+        }
+        applianceAnimation = "appliance-slide-in-left";
+        StateHasChanged();
     }
 
     public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
@@ -272,6 +311,7 @@
 
     public Task SelectAppliance (string appliance)
     {
+        Console.WriteLine("Selected Appliance: " + appliance);
         if (appliance == selectedAppliance)
         {
             selectedAppliance = "";

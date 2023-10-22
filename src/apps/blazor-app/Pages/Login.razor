@@ -5,6 +5,7 @@
 @using System.Text.Json
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage ProtectedLocalStore
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Login</PageTitle>
 
@@ -61,11 +62,43 @@
                             <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register" class="text-primary-500 ml-2">Register for free</a></p>
                         </form>
                     </div>
+                    <form @onsubmit="HandleSubmit">
+                        @if (!emailIsValid)
+                        {
+                            <p class="mt-8 text-red-600 font-bold">The email is invalid.</p>
+                            <Input css="border-1 border-red-400 rounded-md" type="email" name="email"
+                                placeholder="Enter email address" @bind-InputValue="email" />
+                        }
+                        else
+                        {
+                            <Input css="mt-8" type="email" name="email" placeholder="Enter email address"
+                                @bind-InputValue="email" />
+                        }
+                        @if (!passwordIsValid)
+                        {
+                            <p class="mt-8 text-red-600 font-bold">Incorrect Password.</p>
+                            <Input css="border-1 border-red-400 rounded-md" type="password" name="password"
+                                placeholder="Enter password" @bind-InputValue="password" />
+                        }
+                        else
+                        {
+                            <Input css="mt-8" type="password" name="password" placeholder="Enter password"
+                                @bind-InputValue="password" />
+                        }
+                        <Button css="mt-10 flex justify-center mx-auto max-w-xs" style="pill">
+                            <content>
+                                <input type="submit" value="Log In" />
+                            </content>
+                        </Button>
+                        <p class="text-primary-900 text-center mt-8 text-sm">Don't have an account yet? <a href="/register"
+                                class="text-primary-500 ml-2">Register for free</a></p>
+                    </form>
                 </div>
             </div>
-
         </div>
-    }
+
+    </div>
+}
 
 @code {
     private SharedUtils.userClass userClass = new SharedUtils.userClass();
@@ -84,11 +117,11 @@
     private bool isLoaded = false;
     private string? redirect = "";
 
-     protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
         redirect = re.Value;
         Console.WriteLine("redirect:" + redirect);
         isAd = isAdmin.Value;
@@ -96,53 +129,61 @@
         isLoaded = true;
     }
 
-private async Task HandleSubmit()
-{
-    Console.WriteLine("OnSubmit");
-
-
-    var isValid = ValidateForm();
-
-    if (isValid)
+    private async Task HandleSubmit()
     {
-        await HandleValidSubmit();
+        Console.WriteLine("OnSubmit");
+
+
+        var isValid = ValidateForm();
+
+        if (isValid)
+        {
+            await HandleValidSubmit();
+        }
+        else
+        {
+            HandleInvalidSubmit();
+        }
     }
-    else
-    {
-        HandleInvalidSubmit();
-    }
-}
 
     public async Task HandleValidSubmit()
     {
         UserModel? result = await userClass.Login(email!, password!, password!);
-        if(result != null) {
+        if (result != null)
+        {
             showError = "hidden";
 
             await ProtectedLocalStore.SetAsync("loggedIn", true);
 
-            if (email != null) {
+            if (email != null)
+            {
                 await ProtectedLocalStore.SetAsync("userEmail", email);
-            } else {
+            }
+            else
+            {
                 await ProtectedLocalStore.SetAsync("userEmail", "");
             }
-            
+
             await ProtectedLocalStore.SetAsync("userId", result.userId);
-            if(result.userRole == 1){
+            if (result.userRole == 1)
+            {
                 await ProtectedLocalStore.SetAsync("isAdmin", true);
-                NavigationManager.NavigateTo("/admin/keys");              
+                NavigationManager.NavigateTo("/admin/keys");
             }
-            else{
-                NavigationManager.NavigateTo("/" + redirect);
+            else
+            {
                 await ProtectedLocalStore.SetAsync("isAdmin", false);
-                await ProtectedLocalStore.DeleteAsync("redirect");
+                await ProtectedSessionStore.DeleteAsync("redirect");
+                NavigationManager.NavigateTo("/" + redirect);
             }
-        } else {
+        }
+        else
+        {
             Console.WriteLine("Failed");
             passwordIsValid = false;
             @* string message = await response.Content.ReadAsStringAsync();
-            errorMessage = message;
-             showError = "block"; *@
+errorMessage = message;
+showError = "block"; *@
         }
     }
 
@@ -151,43 +192,43 @@ private async Task HandleSubmit()
         Console.WriteLine("OnInvalidSubmit");
     }
 
-private bool ValidateForm()
-{
-    emailIsValid = true;
-    @* check email using regex *@
-    if (string.IsNullOrEmpty(email))
+    private bool ValidateForm()
     {
-        Console.WriteLine("email is empty");
-        return false;
+        emailIsValid = true;
+        @* check email using regex *@
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.WriteLine("email is empty");
+            return false;
+        }
+        else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        {
+            Console.WriteLine("email is not valid");
+            @* Add Toast *@
+            emailIsValid = false;
+            return false;
+        }
+
+        @* check if password is empty *@
+        if (string.IsNullOrEmpty(password))
+        {
+            Console.WriteLine("password is empty");
+
+            passwordIsValid = false;
+
+            return false;
+        }
+
+        return true;
     }
-    else if (!Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+
+    private void HandleEmailChanged(string value)
     {
-        Console.WriteLine("email is not valid");
-        @* Add Toast *@
-        emailIsValid = false;
-        return false;
+        email = value;
     }
 
-    @* check if password is empty *@
-    if (string.IsNullOrEmpty(password))
+    private void HandlePasswordChanged(string value)
     {
-        Console.WriteLine("password is empty");
-        
-        passwordIsValid = false;
-        
-        return false;
+        password = value;
     }
-
-    return true;
-}
-
-private void HandleEmailChanged(string value)
-{
-    email = value;
-}
-
-private void HandlePasswordChanged(string value)
-{
-    password = value;
-}
 }

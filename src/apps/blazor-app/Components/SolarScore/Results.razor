@@ -134,8 +134,8 @@
                     <div class="flex w-full flex-col sm:flex-row gap-5">
                         <div class="grid scale-90 grid-cols-2 gap-2 w-full">
                             <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges" />
-                            <Appliance name="TV" imageName="TV.svg" count="numTVs" />
-                            <Appliance name="Computer" imageName="Computer.svg" count="numComputers" />
+                            <Appliance name="Stove" imageName="Stove.svg" count="numStove" />
+                            <Appliance name="TV" imageName="TV.svg" count="numTV" />
                             <div class="flex mx-auto has-tooltip" @onclick="showModalAppliancesPopup">
                                 <Tooltip>
                                     <p>@tooltipService.GetTooltip("solar score add button")</p>
@@ -159,7 +159,7 @@
                                     <p class="text-5xl text-gray-400 font-bold">kwh</p>
                                 </div>
                             </div>
-                            <DaylightChart hours="@dlh" daylightHours="@daylight" fullDay="true" />
+                            <DaylightChart hours="@dlh" daylightHours="@daylight" fullDay="false" />
                             <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
                                 <div class="translate-y-10 w-full">
                                     <Tooltip pointer="45">
@@ -168,19 +168,11 @@
                                 </div>
                                 <div class="flex flex-row gap-1">
                                     @{
-                                        if (dlh == daylight)
-                                        {
-                                            <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
-                                        }
-                                        else
-                                        {
-                                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                                        }
+                                        <p class='text-green-600" text-5xl  font-semibold'>@dlh</p>
                                     }
                                     <p class="text-5xl text-gray-400 font-bold">h</p>
                                 </div>
-                                <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries
-                                </h3>
+                                <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                             </div>
                         </div>
                     </div>
@@ -212,7 +204,7 @@
                                             <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
                                             <p
                                                 class='@(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
-                                                            @chargingLimitPercentage
+                                                @chargingLimitPercentage
                                             </p>
                                             <p class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</p>
                                         </div>
@@ -221,7 +213,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <p class="text-center">Battery Utilization</p>
+                                <p class="text-center">Battery Utilisation</p>
                             </div>
                             <div class="has-tooltip">
                                 <Tooltip pointer="45">
@@ -289,10 +281,10 @@
     public int numOfBatteries = 3;
     public double appliancePowerUsage = 0.0;
     public int numFridges = 2;
-    public int numTVs = 2;
-    public int numComputers = 3;
+    public int numStove = 1;
+    public int numTV = 1;
     float dlh = 0f;
-    private int daylight = 24;
+    private int daylight = 12;
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
     private Timer panelTimer = default!;
@@ -300,12 +292,12 @@
 
     protected override void OnInitialized()
     {
-        panelTimer = new Timer(100);
+        panelTimer = new Timer(200);
         panelTimer.Elapsed += SetChargingLimit;
         panelTimer.AutoReset = false;
         panelTimer.Enabled = true;
 
-        batteryTimer = new Timer(100);
+        batteryTimer = new Timer(200);
         batteryTimer.Elapsed += SetRunningHours;
         batteryTimer.AutoReset = false;
         batteryTimer.Enabled = true;
@@ -374,7 +366,7 @@
 
     private void SetGraphicValues()
     {
-        appliancePowerUsage = ((numFridges * 250) + (numTVs * 70) + (numComputers * 400)) / 1000.0;
+        appliancePowerUsage = ((numFridges * 250) + (numStove * 2000) + (numTV * 180)) / 1000.0;
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
@@ -392,10 +384,7 @@
 
         double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage);
         dlh = (float)Math.Round(daylight * (runningHoursPercentage / 100), 2);
     }
 
