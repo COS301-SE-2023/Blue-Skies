@@ -38,13 +38,13 @@
             <div class="w-full pl-2  -mt-6 mb-6 lg:mb-0">
                 <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
             </div>
-            <div class="hidden lg:block mb-6">
-                <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                    <Button style="pill">
+            <div class="hidden lg:block mb-6" @onclick="ShowModalCalculation">
+                <Button style="pill">
+                    <div class="flex gap-4 px-3 py-1">
                         <p class="my-auto">More Calculations </p>
                         <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
-                    </Button>
-                </div>
+                    </div>
+                </Button>
             </div>
         }
         else
@@ -185,7 +185,7 @@
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
                             </div>
-                            <input type="range" class="accent-primary-800 scale-150 w-2/3  cursor-pointer " min="4" max="20"
+                            <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full  cursor-pointer " min="4" max="20"
                                 step="1" @bind-value="@numOfPanels" @oninput="ResetPanelTimer" />
                         </div>
                         <div class="flex gap-2 pr-2 justify-start items-start">
@@ -223,7 +223,7 @@
                                     count="@numOfBatteries" />
                             </div>
                         </div>
-                        <input type="range" class="accent-primary-800 scale-150 w-2/3  cursor-pointer " min="1" max="6" step="1"
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full cursor-pointer " min="1" max="6" step="1"
                         @bind-value="@numOfBatteries" @oninput="ResetBatteryTimer" />
                     </div>
 

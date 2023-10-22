@@ -25,7 +25,7 @@
                 <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">@monthlyUsage kWh</h1>
             </div>
         </div>
-        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="HandleBillSliderChange" />
+        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="ResetTimer"/>
     </div>
 </div>
 
@@ -58,6 +58,7 @@
 @code {
     private BarConfig? barConfig;
     private int monthlyBill = 3500;
+    private int monthlyUsage = 200;
     private BarDataset<double>? dataset;
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
     private double min = 0;
