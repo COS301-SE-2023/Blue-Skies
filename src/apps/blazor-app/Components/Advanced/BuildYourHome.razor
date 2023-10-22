@@ -344,16 +344,11 @@
             </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                    @{
-                        if (dlh == (24 - daylight))
-                        {
-                            <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
-                        }
-                        else
-                        {
-                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                        }
-                    }
+                @if(float.IsInfinity(dlh)) {
+                    <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                } else {
+                    <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
         </div>
@@ -769,10 +764,6 @@
 
         double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 

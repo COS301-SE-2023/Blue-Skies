@@ -60,6 +60,11 @@
     }
     public void UpdateDataset()
     {
+        if(float.IsInfinity(hours))
+        {
+            hours = 12;
+        }
+
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
 
@@ -72,19 +77,63 @@
         {
             remaining = 24 - hours;
         } else {
-         remaining = (24 - daylightHours) - hours;
+            remaining = (24 - daylightHours) - hours;
         }
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining, })
-            {
-                BackgroundColor = new[] {
-                ColorUtil.ColorHexString(56,113,193),
-                ColorUtil.ColorHexString(156,163,175),
-                },
-            };
+
+        if(remaining < 0)
+        {
+            remaining = 0;
+        }
+
+        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining })
+        {
+            BackgroundColor = GetColorGradient(hours),
+        };
+
         if (pieConfig != null)
         {
             pieConfig.Data.Datasets.Add(pieDataset);
             StateHasChanged();
         }
     }
+
+    private string[] GetColorGradient(float hours)
+    {
+        byte greenR = 45, greenG = 189, yellowR = 255, yellowG = 193, redR = 255, redG = 0;
+
+        byte redValue, greenValue;
+
+        if (hours <= 3)
+        {
+            redValue = redR;
+            greenValue = redG;
+        }
+        else if (hours >= 12)
+        {
+            redValue = greenR;
+            greenValue = greenG;
+        }
+        else if (hours < 6)
+        {
+            float t = hours / 6; 
+            redValue = yellowR; 
+            greenValue = (byte)(t * yellowG);
+        }
+        else
+        {
+            float t = (hours - 6) / 6;
+            redValue = (byte)(t * greenR + (1 - t) * yellowR); // Decreasing red component
+            greenValue = (byte)(t * greenG + (1 - t) * yellowG); // Increasing green component
+        }
+
+        string[] colors = {
+            ColorUtil.ColorHexString(redValue, greenValue, 0),
+            ColorUtil.ColorHexString(156, 163, 175)
+        };
+
+        return colors;
+    }
+
+
+
 }

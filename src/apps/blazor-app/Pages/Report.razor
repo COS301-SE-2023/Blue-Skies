@@ -5,129 +5,204 @@
 @using BlazorApp.Components.Dashboard
 @using ChartJs.Blazor.PolarAreaChart
 @using ApplianceEnergyConsumption
+@using BlazorApp.EnviromentImpact
 
 @layout AuthLayout
 <div class="pageA4 mx-auto">
     @if (isLoaded)
     {
-    <div id="report">
-        <div class="mx-auto w-fit">
-            <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
-        </div>
-        <div class="space-y-2">
-            <div class="w-full">
-                <div class="">
+        <div id="report">
+            <div class="mx-auto w-fit">
+                <Image ImageName="Logo.svg" css="h-14 w-auto" alt="BlueSkies logo" />
+            </div>
+            <div class="space-y-2">
+                <div class="w-full">
+                    <div class="">
+                        <Heading>
+                            <Header>
+                                <h1 class="text-xl">Location</h1>
+                            </Header>
+                        </Heading>
+                        <div class="flex-col space-y-6">
+                            <div class="h-[8cm] w-[8cm] mx-auto">
+                                <Map imageName="@SatteliteImage" />
+                            </div>
+                            <div class="w-fit mx-auto">
+                                <LocationItem Title="Address" ImageName="Point On Map.svg"
+                                    Text=@locationData.locationName />
+                            </div>
+                            <div class="flex w-fit mx-auto space-x-4">
+                                <Card
+                                    css="border-2 border-primary-300 p-4 w-48 h-56 my-auto relative hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
+                                    <div class="bg-gray-100 shadow-md rounded-3xl w-fit h-fit p-3 ">
+                                        <Image ImageName="Sale.svg" alt="Sale" />
+                                    </div>
+                                    <h1 class="text-sm text-primary-800 font-semibold mt-3">Solar Score</h1> <br />
+                                    <div class="flex gap-1 mt-0">
+                                        <p class="text-3xl text-primary-900 font-semibold">@solarScore</p>
+                                        <p class="text-3xl text-gray-400 font-bold">%</p>
+                                    </div>
+                                </Card>
+                                <Card
+                                    css="border-2 border-primary-300 p-4 w-48 h-56 my-auto z-10 hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
+                                    <div class="bg-gray-100 shadow-md rounded-3xl w-fit h-fit p-3 ">
+                                        <Image ImageName="Accumulator.svg" alt="Sale" />
+                                    </div>
+                                    <h1 class="text-sm text-primary-800 font-semibold mt-3">Avg Daily Energy Production</h1>
+                                    <div class="flex gap-1 mt-3">
+                                        <p class="text-3xl text-primary-900 font-semibold">@avgEnergyProduction</p>
+                                        <p class="text-3xl text-gray-400 font-bold">kwh</p>
+                                    </div>
+                                </Card>
+                                <Card
+                                    css="border-2 border-primary-300 p-4 w-48 h-56 my-auto hover:-translate-y-1 transition-all duration-[300ms] hover:cursor-pointer">
+                                    <div class="bg-gray-100 shadow-md rounded-3xl w-fit h-fit p-3  ">
+                                        <Image ImageName="History.svg" alt="Sale" />
+                                    </div>
+                                    <h1 class="text-sm w-full text-primary-800 font-semibold mt-3">Usable hours of sunlight
+                                        per day</h1>
+                                    <div class="flex gap-1 mt-3">
+                                        <p class="text-3xl text-primary-900 font-semibold">@usableHours</p>
+                                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                                    </div>
+                                </Card>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <div class="w-full">
                     <Heading>
                         <Header>
-                            <h1 class="text-xl">Location</h1>
+                            <h1 class=" text-xl text-start">System Size</h1>
                         </Header>
                     </Heading>
-                    <div class="flex-col">
-                        <div class="h-[8cm] w-[8cm] mx-auto">
-                            <Map imageName="@SatteliteImage" />
-                        </div>
-                        <div class="flex flex-col w-fit mx-auto space-y-2">
-                            <LocationItem Title="Address" ImageName="Point On Map.svg"
-                                Text=@locationData.locationName />
-                            <LocationItem Title="Solar Score" ImageName="Sale.svg" Text="@solarScore" />
-                            <div class="translate-x-1">
-                                <LocationItem Title="Avg Energy Production" ImageName="Accumulator.svg"
-                                    Text="@avgEnergyProduction" />
+                    <div class="w-fit mx-auto flex space-x-3">
+                        <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
+                            Count="@system.numberOfPanels" />
+                        <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
+                            Count="@system.numberOfBatteries" />
+                    </div>
+                    <div class="flex w-full justify-center items-center gap-1 mt-4">
+                        <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
+                        <p class="text-5xl text-gray-400 font-bold">kw</p>
+                    </div>
+                </div>
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Appliances</h1>
+                        </Header>
+                        <Subscript>
+                            <p>What do you want to run in a power outage?</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        @foreach (var item in applianceQuantity)
+                        {
+                            var imageName = item.Key + ".svg";
+                            <Appliance css="scale-75" ImageName="@imageName" Name="@item.Key" Count="@item.Value" />
+                        }
+                    </div>
+                    <div>
+
+                        <Image ImageName="@homeSize" alt="House" css="scale-50" />
+
+                    </div>
+                    <div class="w-full flex justify-between">
+                        <div>
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours on Batteries</h3>
+                            <Chart Config="pieConfig"></Chart>
+                            <div class="flex w-fit mx-auto">
+                                <p class="text-primary-900 font-semibold">
+                                    @{
+                                        if (dlh == (24 - daylight))
+                                        {
+                                        <p>@dlh+</p>
+                                        }
+                                        else
+                                        {
+                                        <p>@dlh</p>
+                                        }
+                                    }
+                                </p>
+                                <p class="text-center text-gray-400 font-bold">h</p>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="w-full">
-                <Heading>
-                    <Header>
-                        <h1 class=" text-xl text-start">System Size</h1>
-                    </Header>
-                </Heading>
-                <div class="w-fit mx-auto flex space-x-3">
-                    <Appliance css="scale-75" ImageName="SolarPanels.svg" Name="Number of Panels"
-                        Count="@system.numberOfPanels" />
-                    <Appliance css="scale-75" ImageName="Batteries.svg" Name="Number of Batteries"
-                        Count="@system.numberOfBatteries" />
-                </div>
-                <div class="flex w-full justify-center items-center gap-1 mt-4">
-                    <p class="text-5xl text-primary-900 font-semibold">@system.inverterOutput</p>
-                    <p class="text-5xl text-gray-400 font-bold">kw</p>
-                </div>
-            </div>
-            <div class="w-full new-page">
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl">Appliances</h1>
-                    </Header>
-                    <Subscript>
-                        <p>What do you want to run in a power outage?</p>
-                    </Subscript>
-                </Heading>
-                 <div class="flex flex-wrap justify-center gap-2">
-                    @foreach (var item in applianceQuantity)
-                    {
-                        var imageName = item.Key + ".svg";
-                        <Appliance css="scale-75" ImageName="@imageName" Name="@item.Key" Count="@item.Value" />
-                    }
-                </div> 
-                <div>
-                   
-                    <Image ImageName="@homeSize" alt="House" css="scale-50" />
-
-                </div>
-                <div class="w-full flex justify-between">
-                    <div>
-                        <h3 class="font-medium text-lg text-primary-900 text-center">Running Hours on Batteries</h3>
-                        <Chart Config="pieConfig"></Chart>
-                        <div class="flex w-fit mx-auto">
-                            <p class="text-primary-900 font-semibold">
-                                @{
-                                    if (dlh == (24 - daylight))
-                                    {
-                                        <p>@dlh+</p>
-                                    }
-                                    else
-                                    {
-                                        <p>@dlh</p>
-                                    }
-                                }
-                            </p>
-                            <p class="text-center text-gray-400 font-bold">h</p>
+                        <div>
+                            <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
+                            <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance" animated="false" />
                         </div>
                     </div>
-                    <div>
-                        <h3 class="font-medium text-lg text-primary-900 text-center">Appliance Energy Consumption</h3>
-                        <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance" animated="false"/>
+                </div> @* *@
+                @* Fancy Data *@
+                <div class="w-full new-page">
+                    <Heading>
+                        <Header>
+                            <h1 class="text-xl">Fancy Data</h1>
+                        </Header>
+                        <Subscript>
+                            <p>More information about your area</p>
+                        </Subscript>
+                    </Heading>
+                    <div class="w-full space-y-9">
+                        <div>
+                            <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
+                            <Image ImageName="@satteliteImageSrc" alt="Solar Sattelite Image" css="mx-auto" />
+                        </div>
+                        <div>
+                            <h1 class="text-primary-950 font-semibold text-center text-xl">Monthly Solar Irradiation</h1>
+                            <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
+                        </div>
+                        <div class="new-page">
+                            <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
+                        </div>
+                        <div>
+                            <Card css="w-full flex flex-col gap-10">
+                        <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
+                        <div class="grid grid-cols-2 justify-center items-center gap-2">
+                            @{
+                                double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
+                                double maxArraArea = Math.Round(resultLocationData.solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                                double maxHoursSunlightPerDay =
+                                Math.Round(resultLocationData.solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
+                            }
+
+                            <div class="flex w-full gap-4 has-tooltip">
+                                <Image ImageName="Home.svg" alt="Home Icon" css="w-8 h-8" />
+                                <p class="my-auto">@squaredArea m&sup2;</p>
+                            </div>
+
+                            <div class="flex w-full gap-4 has-tooltip">
+                                <Image ImageName="SolarPanels.svg" alt="Solar Panels Icon" css="w-8 h-8" />
+                                <p class="my-auto">@resultLocationData.solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
+                            </div>
+
+                            <div class="flex w-full gap-4 has-tooltip">
+                                <Image ImageName="Area.svg" alt="Area Icon" css="w-8 h-8" />
+                                <p class="my-auto">@maxArraArea m&sup2;</p>
+                            </div>
+
+                            <div class="flex w-full gap-4 has-tooltip">
+                                <Image ImageName="Sun-outline.svg" alt="Sun Icon" css="w-8 h-8" />
+                                <p class="my-auto">@maxHoursSunlightPerDay h</p>
+                            </div>
+                        </div>
+                    </Card>
+                        </div>
+                        <div>
+                            <h1 class="text-primary-950 font-semibold text-center text-xl">Elevation Graph</h1>
+                            <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
+                        </div>
                     </div>
-                </div>
-            </div> @* *@
-            @* Fancy Data *@
-            <div class="w-full new-page">
-                <Heading>
-                    <Header>
-                        <h1 class="text-xl">Fancy Data</h1>
-                    </Header>
-                    <Subscript>
-                        <p>More information about your area</p>
-                    </Subscript>
-                </Heading>
-                <div class="w-full">
-                    <div>
-                        <h1 class="text-primary-950 font-semibold text-center text-xl">Annual Flux Map</h1>
-                        <Image ImageName="@satteliteImageSrc" alt="Solar Sattelite Image" css="mx-auto" />
-                    </div>
-                    <SolarIrradiationPerMonth monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
-                    <ElevationGraph elevationValues="@locationData.horisonElevationData" animated="false" />
                 </div>
             </div>
         </div>
-    </div>
     }
 </div>
 @code {
-    
+
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
     private DataHandlers.SolarDataHandler solarDataHandler = new DataHandlers.SolarDataHandler();
@@ -136,7 +211,7 @@
     private SharedUtils.reportAllApplianceClass reportAllApplianceClass = new SharedUtils.reportAllApplianceClass();
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private SharedUtils.systemClass systemClass = new SharedUtils.systemClass();
-    
+
 
     private string? SatteliteImage;
     [Parameter] public string? UserId { get; set; }
@@ -161,42 +236,49 @@
     private float runningHoursPercentage = 0;
     private float dlh = 0;
     private float daylight = 0;
-
-
+    public double usableHours { get; set; } = -1;
+    private double annualKWGenerated = 0;
+    private Wholeroofstats? wholeroofstats = null;
+    LocationDataModel? resultLocationData = null;
     private Dictionary<String, int> applianceQuantity = new Dictionary<string, int>();
 
 
     protected override async Task OnInitializedAsync()
     {
-        report = await reportClass.GetReport(int.Parse(ReportId!));   
+        report = await reportClass.GetReport(int.Parse(ReportId!));
         if (report != null)
         {
             latitude = report.latitude;
             longitude = report.longitude;
             Console.WriteLine("Current report: " + report.reportId);
             var result = await systemClass.GetSystem(report.systemId);
-            if(result != null) {
+            if (result != null)
+            {
                 system = result;
             }
 
-            LocationDataModel? resultLocationData = await locationDataClass.GetLocationData(latitude, longitude);
-            if(resultLocationData != null) {
+            resultLocationData = await locationDataClass.GetLocationData(latitude, longitude);
+            if (resultLocationData != null)
+            {
                 locationData = resultLocationData;
                 SatteliteImage = rooftopDataHandler.GetSatelliteImage(locationData.satteliteImageData!);
-                satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(locationData.annualFluxData!, locationData.satteliteImageData!, locationData.maskData!);
-                solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(resultLocationData!.monthlyFluxData!, resultLocationData!.maskData!, true);
-                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(system.numberOfPanels, resultLocationData.solarPanelsData) / 365, 2).ToString() + " kwh";
-                solarScore = solarCalculator.getSolarScore(resultLocationData.solarPanelsData).ToString() + "%";
-                Console.WriteLine("Solar score: " + solarScore);
-
+                satteliteImageSrc = rooftopDataHandler.GetAnnualFluxMap(locationData.annualFluxData!, locationData.satteliteImageData!,
+                locationData.maskData!);
+                solarRadiationPerMonth = solarDataHandler.getMontlySolarRadiation(resultLocationData!.monthlyFluxData!,
+                resultLocationData!.maskData!, true);
+                avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(system.numberOfPanels,
+                resultLocationData.solarPanelsData) / 365, 2).ToString();
+                solarScore = solarCalculator.getSolarScore(resultLocationData.solarPanelsData).ToString();
+                usableHours = Math.Round(solarCalculator.getSunlightHours(resultLocationData!.solarPanelsData, true), 2);
+                annualKWGenerated = solarDataHandler.getAnnualKwGenerated(system.numberOfPanels, resultLocationData.solarPanelsData);
+                wholeroofstats = resultLocationData.solarPanelsData!.solarPotential!.wholeRoofStats;
             }
-
-            Console.WriteLine("Current location: " + locationData.locationName);
             reportAllAppliance = await reportAllApplianceClass.GetReportAllApplianceByReportId(int.Parse(ReportId!));
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000,
+            reportAllAppliance);
             daylight = 12;
             dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-            
+
 
             foreach (var item in reportAllAppliance)
             {
@@ -213,7 +295,7 @@
             var systemSize = system.systemSize!;
             RenderCharts();
 
-           
+
 
             if (systemSize.Equals("Small"))
             {
@@ -230,53 +312,56 @@
             isLoaded = true;
 
             StateHasChanged();
-        } else {
+        }
+        else
+        {
             Console.WriteLine("Report not found");
         }
     }
 
     @* RenderCharts *@
-    private void RenderCharts(){
+    private void RenderCharts()
+    {
         pieConfig = new PieConfig(true)
-        {
-            Options = new PieOptions
             {
-                Responsive = true,
-                AspectRatio = 3,
-                Legend = new Legend
+                Options = new PieOptions
                 {
-                    Display = false,
-                },
-                Title = new OptionsTitle
-                {
-                    Display = false,
-                    Text = "Running Hours",
-                    FontSize = 20,
-                    Position = Position.Bottom,
-                    LineHeight = 4,
-                },
-                Circumference = 3,
-                Rotation = -9.341,
-                Animation = new ArcAnimation
-                {
-                    AnimateRotate = true,
-                    Duration = 5,
+                    Responsive = true,
+                    AspectRatio = 3,
+                    Legend = new Legend
+                    {
+                        Display = false,
+                    },
+                    Title = new OptionsTitle
+                    {
+                        Display = false,
+                        Text = "Running Hours",
+                        FontSize = 20,
+                        Position = Position.Bottom,
+                        LineHeight = 4,
+                    },
+                    Circumference = 3,
+                    Rotation = -9.341,
+                    Animation = new ArcAnimation
+                    {
+                        AnimateRotate = true,
+                        Duration = 5,
 
-                },
-                Tooltips = new Tooltips
-                {
-                    Enabled = true,
-                    Mode = InteractionMode.Index,
-                    Intersect = false,
-                },
-                Hover = new Hover
-                {
-                    Mode = InteractionMode.Index,
-                    Intersect = false
-                },
-                CutoutPercentage = 80
-            }
-        };
+                    },
+                    Tooltips = new Tooltips
+                    {
+                        Enabled = true,
+                        Mode = InteractionMode.Index,
+                        Intersect = false,
+                    },
+                    Hover = new Hover
+                    {
+                        Mode = InteractionMode.Index,
+                        Intersect = false
+                    },
+                    CutoutPercentage = 80
+                }
+            };
 
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
@@ -289,9 +374,9 @@
         PieDataset<float> pieDataset = new PieDataset<float>(new[] { dlh, remaining, })
             {
                 BackgroundColor = new[] {
-                ColorUtil.ColorHexString(56,113,193),
-                ColorUtil.ColorHexString(156,163,175),
-                },
+ColorUtil.ColorHexString(56,113,193),
+ColorUtil.ColorHexString(156,163,175),
+},
             };
         if (pieConfig != null)
         {
