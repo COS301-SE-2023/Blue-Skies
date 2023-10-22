@@ -10,18 +10,21 @@
     <Subscript><p class="text-center">All calculations are derived from the monthly bill. Please keep in mind that these calculations are approximate, and costs may vary among different solar installers."</p></Subscript>
 </Heading>
 
-<div class="w-full flex">
-    <div class="flex flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
-        <p class="text-center text-white font-semibold">Select your monthly bill:</p>
-        <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
+<div class="w-full flex px-20">
+    <div class="flex flex-col gap-4 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
+        <div class="flex justify-center items-center">
+            <div class="flex flex-col gap-2 items-center justify-center">
+                <p class="text-center text-white font-semibold">Select your monthly bill:</p>
+                <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
+            </div>
+            <p class="text-2xl text-center text-primary-900 font-black self-center mx-4">OR</p>
+            <div class="flex flex-col gap-2 items-center justify-center">
+                <p class="text-center text-white font-semibold">Select your monthly electricity usage:</p>
+                <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">@monthlyUsage kWh</h1>
+            </div>
+        </div>
         <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="HandleBillSliderChange" />
     </div>
-    <p class="text-2xl text-center text-primary-900 font-black self-center mx-4">OR</p>
-    <div  class="flex flex-col gap-2 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
-        <p class="text-center text-white font-semibold">Select your monthly electricity usage:</p>
-        <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">@monthlyUsage kWh</h1>
-        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="400" max="2800" step="20" @bind="monthlyUsage" @oninput="HandleUsageSliderChange" />
-    </div>  
 </div>
 
 <div class="flex gap-5 justify-center items-center mt-10">
@@ -136,6 +139,7 @@
 
     private void HandleBillSliderChange(ChangeEventArgs e)
     {
+
         if (int.TryParse(e.Value!.ToString(), out int newValue))
         {
             monthlyBill = newValue;
