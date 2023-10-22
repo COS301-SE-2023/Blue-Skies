@@ -288,7 +288,7 @@
     public double appliancePowerUsage = 0.0;
     public int numFridges = 2;
     public int numStove = 1;
-    public int numTV = 3;
+    public int numTV = 1;
     float dlh = 0f;
     private int daylight = 12;
     private double chargingLimit = 0.0;
@@ -372,7 +372,7 @@
 
     private void SetGraphicValues()
     {
-        appliancePowerUsage = ((numFridges * 250) + (numStove * 2000) + (numTV * 60)) / 1000.0;
+        appliancePowerUsage = ((numFridges * 250) + (numStove * 2000) + (numTV * 180)) / 1000.0;
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
