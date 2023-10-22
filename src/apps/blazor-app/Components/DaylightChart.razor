@@ -99,9 +99,10 @@
 
     private string[] GetColorGradient(float hours)
     {
-        byte greenR = 45, greenG = 189, yellowR = 255, yellowG = 193, redR = 255, redG = 0;
+        byte greenR = 5, greenG = 156, greenB = 148, yellowR = 255, yellowG = 193, redR = 255, redG = 0;
 
-        byte redValue, greenValue;
+        byte redValue, greenValue, blueValue = 0;
+
 
         if (hours <= 3)
         {
@@ -112,6 +113,7 @@
         {
             redValue = greenR;
             greenValue = greenG;
+            blueValue = greenB;
         }
         else if (hours < 6)
         {
@@ -124,10 +126,11 @@
             float t = (hours - 6) / 6;
             redValue = (byte)(t * greenR + (1 - t) * yellowR); // Decreasing red component
             greenValue = (byte)(t * greenG + (1 - t) * yellowG); // Increasing green component
+            blueValue = (byte)(t * greenB); // Increasing blue component
         }
 
         string[] colors = {
-            ColorUtil.ColorHexString(redValue, greenValue, 0),
+            ColorUtil.ColorHexString(redValue, greenValue, blueValue),
             ColorUtil.ColorHexString(156, 163, 175)
         };
 
