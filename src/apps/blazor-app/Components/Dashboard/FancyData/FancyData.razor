@@ -144,7 +144,7 @@
             }
             <div class="lg:w-2/3">
                     <h1 class="text-center text-primary-800 font-semibold text-xl">Solar Irradiance Per Month</h1>
-                    <SolarIrradiationPerMonth currentMonth="@currentImageIndex" monthlySolarRadiation="@solarRadiationPerMonth" animated="true" />
+                    <SolarIrradiationPerMonth currentMonth="@currentImageIndex" monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
             </div>
     </div>
 
@@ -222,6 +222,12 @@
 
     protected override void OnParametersSet()
     {
+        satteliteImageSrc = "";
+        monthlyFluxMap = new string[12];
+        annualFluxData = null;
+        monthlyFluxData = null;
+        annualFluxDataReceived = false;
+        monthlyFluxDataReceived = false;
         if (currentLocationData != null)
         {
             if (currentLocationData.horisonElevationData != null)
