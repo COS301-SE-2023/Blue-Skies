@@ -185,7 +185,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col w-full md:w-1/2 mt-16 lg:-mt-16 justify-center items-center gap-4">
-                        <div class="-mt-10 mb-5 w-full flex flex-col">
+                        <div class="-mt-10 mb-5 w-full flex flex-col justify-center items-center gap-4">
                             <div class="has-tooltip">
                                 <Tooltip pointer="45">
                                         <p>@tooltipService.GetTooltip("number of panels")</p>
@@ -193,7 +193,7 @@
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
                             </div>
-                            <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
+                            <input type="range" class="accent-primary-800 scale-150 w-2/3  cursor-pointer " min="4" max="20"
                                 step="1" @bind-value="@numOfPanels" @oninput="ResetPanelTimer" />
                         </div>
                         <div class="flex gap-2 pr-2 justify-start items-start">
@@ -231,7 +231,7 @@
                                     count="@numOfBatteries" />
                             </div>
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3  cursor-pointer " min="1" max="6" step="1"
                         @bind-value="@numOfBatteries" @oninput="ResetBatteryTimer" />
                     </div>
 

@@ -357,7 +357,7 @@
             }
 
         </div>
-    @* System details *@
+        @* System details *@
         <div class="flex justify-between gap-4 mt-20 w-full">
             @if (systems.Count > 0)
             {
@@ -423,6 +423,69 @@
         </div>
     </div>
     
+    @* Add Appliances *@
+    <div class="w-[100vw]  grid grid-cols-2 justify-center gap-4 mt-20">
+        <div class="flex mx-auto flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-full">
+            <div class="flex gap-3 w-full relative justify-center">
+                <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
+                <div class="group">
+                    <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
+                    <div
+                        class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
+                        <p class="text-gray-900">Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below</p>
+                    </div>
+                </div>
+            </div>
+            <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
+                @if (appliances.Count > 0)
+                {
+                        <div class="flex">
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                                <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                            <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center w-[245px] @applianceAnimation">
+                                @{
+                                    filteredAppliances = getFilteredAppliances(applianceSearch);
+                                    if(filteredAppliances.Count <= 8)
+                                    {
+                                        appliancesPage = 0;
+                                    }
+                                    @for (int i = 0; i < 8 && filteredAppliances.Count > 0; i++)
+                                    {
+                                        
+                                        @if (filteredAppliances.Count > i + appliancesPage * 8)
+                                        {   
+                                            int applianceQuantity = 0;
+                                            foreach (ApplianceModel app in appliances.Where(app => app.type == filteredAppliances[i + appliancesPage * 8].type))
+                                            {
+                                                applianceQuantity += app.quantity;
+                                            }
+                                            ApplianceModel appliance = filteredAppliances[i + appliancesPage * 8];
+                                            <div @onclick="@(() => ToggleAppliance(appliance))">
+                                                <Appliance css="hover:shadow hover:cursor-pointer transition-all duration-300 hover:-translate-y-1 scale-1.7" imageName="@(appliance.type + ".svg")" name="@appliance.type" count="@applianceQuantity" />     
+                                            </div>
+                                        }
+                                    }
+                                }
+                            </div>
+                            <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+                                <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
+                                    css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
+                            </div>
+                        </div>
+                }
+                else
+                {
+                <div class="grid mx-auto gap-4 space-y-2 grid-cols-2 mt-2 justify-center">
+                    @for (int i = 0; i < 8; i++)
+                    {
+                        <AppliancesSkeleton />
+                    }
+                </div>
+                }
+        </div>
+    </div>
 </div>
 
 
