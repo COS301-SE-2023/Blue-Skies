@@ -596,6 +596,7 @@
     private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
     private string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
+    private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Toggle", true),
@@ -989,8 +990,10 @@
     /// <summary>
     /// On template changed, update the selected system and appliance quantities
     /// </summary>
-    private void ApplyTemplate(ChangeEventArgs e)
+    private async void ApplyTemplate(ChangeEventArgs e)
     {
+
+        appliances = await applianceDataClass.GetAllAppliances();
         Console.WriteLine("Applying Templete");
         showCustomSystem = false;
         switch (e.Value)
@@ -1068,12 +1071,10 @@
 
     public async void ResetHome()
     {
+        appliances = await applianceDataClass.GetAllAppliances();
+        applianceService.UpdateAppliance(appliances);
         Console.WriteLine("Resetting");
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('selectHome').value = 1;");
-        foreach (var appliance in appliances)
-        {
-            appliance.quantity = 0;
-        }
         showCustomSystem = false;
         selectedSystem = 0;
         await selectedSystemChanged.InvokeAsync(selectedSystem);
