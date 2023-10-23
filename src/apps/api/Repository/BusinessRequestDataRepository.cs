@@ -31,7 +31,7 @@ public class BusinessRequestDataRepository
         }
     }
 
-    public async Task<string> GetProcessedDataAsync(BusinessRequestData requestData)
+    public async Task<object> GetProcessedDataAsync(BusinessRequestData requestData)
     {
         string typeOfData = "Solar Irradiance";
         LocationDataModel? currentLocationData = new LocationDataModel();
@@ -42,48 +42,49 @@ public class BusinessRequestDataRepository
             double longitude = requestData.longitude;
 
             var client = new HttpClient();
-            var dataTypeResponse = new HttpResponseMessage();
+            var request = new HttpRequestMessage(HttpMethod.Get, express + "/api/locationData/" + latitude + "/" + longitude);
 
-            LocationDataModel? locationData = await GetLocationData(latitude, longitude);
             locationName = await GetLocationNameFromCoordinates(latitude, longitude);
-            if (locationData == null)
-            {                
-                await CreateLocationData(latitude, longitude, locationName);
+            if (locationName == "")
+            {
+                throw new Exception("Invalid coordinates");
             }
-            
+
+            var returnDataJson = new object();
             typeOfData = data!;
             switch(data!.ToLower()){
                 case DataType.SOLAR_SCORE : 
                     var solarScore = await GetSolarScore(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarScore));
+                    returnDataJson = System.Text.Json.JsonSerializer.Deserialize<SolarScore>(JsonConvert.SerializeObject(solarScore));
                     break;
                 case DataType.SOLAR_ARRAY : 
                     var solarArray = await GetSolarRadiationList(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(solarArray));
+                    returnDataJson = System.Text.Json.JsonSerializer.Deserialize<List<DateRadiationModel>>(JsonConvert.SerializeObject(solarArray));
                     break;
                 case DataType.SATELLITE_IMAGE : 
                     var satelliteImage = await GetSatelliteImage(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(satelliteImage));
+                    returnDataJson = System.Text.Json.JsonSerializer.Deserialize<Base64Image>(JsonConvert.SerializeObject(satelliteImage));
                     break;
                 case DataType.ADDRESS :
                     var address = getAddress();
-                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(address));
+                    returnDataJson = System.Text.Json.JsonSerializer.Deserialize<Address>(JsonConvert.SerializeObject(address));
                     break;
                 case DataType.SUNLIGHT_HOURS :
                     var sunlightHours = GetSunlightHours(latitude, longitude);
-                    dataTypeResponse.Content = new StringContent(JsonConvert.SerializeObject(sunlightHours));
+                    returnDataJson = System.Text.Json.JsonSerializer.Deserialize<SunlightHours>(JsonConvert.SerializeObject(sunlightHours));
                     break;
                 default : 
-                    dataTypeResponse.Content = new StringContent("ERROR: Invalid data type");
+                    returnDataJson = "Invalid data type";
                     break;
             }
-            
-           return await dataTypeResponse.Content.ReadAsStringAsync();
+           
+            return returnDataJson!;
            
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            throw new Exception("Could not create " + typeOfData!.ToLower() + ". NOTE that a valid address should be used.");
+            Console.WriteLine(e);
+            throw e;
         }
     }
 
@@ -129,6 +130,7 @@ public class BusinessRequestDataRepository
     {
         LocationDataModel? locationData = await GetLocationData(latitude, longitude);
         if(locationData==null){
+            Console.WriteLine("Creating LocationData");
             await CreateLocationData(latitude, longitude, locationName);
             locationData = await GetLocationData(latitude, longitude);
         }
@@ -146,7 +148,6 @@ public class BusinessRequestDataRepository
             );
             Console.WriteLine("Getting LocationData for " + latitude + ", " + longitude);
             var response = await client.SendAsync(request);
-
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
@@ -187,7 +188,6 @@ public class BusinessRequestDataRepository
         double latitude,
         double longitude,
         string locationName
-      
     )
     {
 

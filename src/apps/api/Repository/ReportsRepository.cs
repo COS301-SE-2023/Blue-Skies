@@ -30,6 +30,8 @@ public class ReportsRepository
             {
                 var data = await response.Content.ReadAsStringAsync();
                 var reports = JsonSerializer.Deserialize<List<Reports>>(data);
+                Console.WriteLine("data: " + data);
+                Console.WriteLine("reports: " + reports);
                 if (reports != null)
                 {
                     Console.WriteLine(".NET: get all reports success");
