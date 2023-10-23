@@ -473,20 +473,9 @@
         }
         receivedReports = true;
 
-        var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
-        int createdReport = cReport.Value;
         if (reports.Count > 0)
         {
-            if (createdReport != 0)
-            {
-                for (int i = 0; i < reports.Count; i++)
-                {
-                    if (reports[i].reportId == createdReport)
-                    {
-                        selectedReport = i;
-                    }
-                }
-            }
+            selectedReport = 0;
             await ProtectedSessionStore.DeleteAsync("createdReport");
             allSystems = await systemClass.GetAllSystems();
             await SetSelectedSystem();

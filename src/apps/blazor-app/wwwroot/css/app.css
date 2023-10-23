@@ -4076,6 +4076,22 @@ html {
   --tw-ring-color: rgb(220 38 38 / var(--tw-ring-opacity));
 }
 
+.enabled\:opacity-100:enabled {
+  opacity: 1;
+}
+
+.disabled\:opacity-90:disabled {
+  opacity: 0.9;
+}
+
+.disabled\:opacity-80:disabled {
+  opacity: 0.8;
+}
+
+.disabled\:opacity-10:disabled {
+  opacity: 0.1;
+}
+
 .group:hover .group-hover\:block {
   display: block;
 }
