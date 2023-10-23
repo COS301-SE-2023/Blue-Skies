@@ -385,7 +385,7 @@
         double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
         Console.WriteLine("Running hours percentage: " + runningHoursPercentage);
-        dlh = (float)Math.Round(daylight * (runningHoursPercentage / 100), 2);
+        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
     private async void ShowModalCalculation()
