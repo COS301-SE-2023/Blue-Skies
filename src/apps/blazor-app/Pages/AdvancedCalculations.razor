@@ -212,11 +212,23 @@
         }
         double latitude = lat ?? 0;
         double longitude = lng ?? 0;
-        
-        LocationDataModel? result = await locationDataClass.GetInitialLocationData(latitude, longitude, currentLocationData);
-        if (result != null)
+
+        int numTries = 0;
+        currentLocationData = null;
+        while(currentLocationData == null && numTries < 10) {
+            currentLocationData = await locationDataClass.GetInitialLocationData(latitude, longitude, currentLocationData);
+            numTries++;
+            await Task.Delay(1000);
+        }
+
+        if (currentLocationData != null)
         {
-            currentLocationData = result;
+            await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData);
+        }
+        else
+        {
+            toastService.ShowToast("Location Data not Found", "Location data could not be found", "error");
+            NavigationManager.NavigateTo("/");
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
