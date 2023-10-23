@@ -195,6 +195,7 @@ private async void IncrementAppliancePage(){
     public async void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
     {
         if(e.Value == null || e.Value.ToString() == "" || Convert.ToDouble(e.Value) < 0 || Convert.ToDouble(e.Value) > 24) {
+            toastService.ShowToast("Error", "The inserted value is not valid.", "error");
             return;
         }
         string uniqueName = "duration" + item.name + item.type + item.GetHashCode();
@@ -232,6 +233,7 @@ private async void IncrementAppliancePage(){
     public async void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
     {
         if(e.Value == null || e.Value.ToString() == "" || Convert.ToInt32(e.Value) < 0) {
+            toastService.ShowToast("Error", "The inserted value is not valid.", "error");
             return;
         }
         string uniqueName = "power" + item.name + item.type + item.GetHashCode();
