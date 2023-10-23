@@ -11,6 +11,7 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
         <div class="fade-in-active px-1 md:px-5">
@@ -251,30 +252,20 @@
                                         </div>
                                     </div>
                                     @* Battery Utilisation *@
-                                    <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                         <h3 class="font-medium text-lg text-primary-900 text-center">Battery Utilisation</h3>
-                                        <div class="h-fit my-auto">
-                                            <div class="w-16 h-4 -z-10 bg-gray-300 rounded-md mx-auto -top-2 translate-y-4"></div>
-                                            <div class="h-48 shadow flex-col-reverse flex w-36 p-1 bg-gray-300 relative  rounded-lg">
+                                    <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-center align-middle items-center">
+                                        <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
+                                        <div class="flex flex-col gap-2 justify-center items-center w-full">
+                                            <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">
                                                 @{
                                                     var percentage = chargingLimitPercentage + "%";
                                                 }
-                                                <div style="height: @percentage"
-                                                    class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
-                                                </div>
-                                                <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
-                                                    <p
-                                                        class='@(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
-                                                        @chargingLimitPercentage
-                                                    </p>
-                                                    <p class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</p>
-
-                                                </div>
-                                                
+                                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800") z-20'></div>
+                                                    <p class='z-30 absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                                <div class="w-16 h-4 z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="hidden md:block w-full h-full justify-center">
+                                    <div class="md:block w-full justify-center align-middle items-center my-auto md:pl-32">
                                     @{
                                         if (reports.Count > selectedReport)
                                         {
@@ -321,15 +312,15 @@
                                     @if (appliancesLoaded)
                                     {
                                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                            <h3 class="font-medium text-lg text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                            <div class="flex relative flex-col justify-center w-full">
+                                            <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
+                                            <div class="flex relative flex-col justify-center w-full max-w-md">
                                                 <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                                             </div>
                                         </div> 
                                     } else {
                                         <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
                                             <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
-                                            <div class="flex relative flex-col justify-center w-full">
+                                            <div class="flex relative flex-col justify-center w-full max-w-md">
                                                 <ApplianceEnergyConsumption/>
                                             </div>
                                         </div> 
