@@ -569,8 +569,8 @@
         selectedAppliance = "";
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
+        
         int numTries = 0;
-
         currentLocationData = null;
         while(currentLocationData == null && numTries < 10) {
             currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
