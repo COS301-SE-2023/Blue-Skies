@@ -254,6 +254,7 @@
                                     <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
                                          <h3 class="font-medium text-lg text-primary-900 text-center">Battery Utilisation</h3>
                                         <div class="h-fit my-auto">
+                                            <div class="w-16 h-4 -z-10 bg-gray-300 rounded-md mx-auto -top-2 translate-y-4"></div>
                                             <div class="h-48 shadow flex-col-reverse flex w-36 p-1 bg-gray-300 relative  rounded-lg">
                                                 @{
                                                     var percentage = chargingLimitPercentage + "%";
@@ -261,20 +262,19 @@
                                                 <div style="height: @percentage"
                                                     class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
                                                 </div>
-                                                    <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
+                                                <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
                                                     <p
                                                         class='@(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
                                                         @chargingLimitPercentage
                                                     </p>
                                                     <p class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</p>
+
                                                 </div>
-                                                <div
-                                                    class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="hidden md:block w-full">
+                                    <div class="hidden md:block w-full h-full justify-center">
                                     @{
                                         if (reports.Count > selectedReport)
                                         {

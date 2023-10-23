@@ -375,7 +375,7 @@
                                     }
                                     <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'></div>
                                         <p class='absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
-                                    <div class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                                    
                                 </div>
                                 <p class="text-center">Battery Utilization</p>
                             </div>
