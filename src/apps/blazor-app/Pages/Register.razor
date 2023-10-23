@@ -111,7 +111,7 @@ else if (logIn)
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
         redirect = re.Value;
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;
