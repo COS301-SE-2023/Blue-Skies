@@ -24,7 +24,16 @@
                     applianceCount = appliances.Count(x => x.quantity > 0);
                         var i = 0;
                         var selectedAppliances = GetDifferentApplianceGroups().FindAll(x => x.quantity > 0);
+
                         applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / noOfAppliancesInView);
+                        if(selectedAppliances.Count % noOfAppliancesInView == 0)
+                        {
+                            if(appliancesPage + 1 > (selectedAppliances.Count / noOfAppliancesInView))
+                            {
+                                appliancesPage = 0;
+                            }
+                        }
+                        
                             @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < selectedAppliances.Count; j++)
                             {
                                     if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*noOfAppliancesInView].type != null) {
