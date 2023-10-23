@@ -694,9 +694,9 @@
     public void CreateCustomSystem()
     {
         SetGraphicValues();
-        if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) > systems[selectedSystem].inverterOutput * 1000)
+        if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 24) > systems[selectedSystem].inverterOutput * 1000)
         {
-            toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
+            toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
         }
         else if (displayCreatedCustomSystem)
         {
@@ -717,9 +717,9 @@
         selectedSystemChanged.InvokeAsync(selectedSystem);
         if (showCustomSystem)
         {
-            if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) > systems[selectedSystem].inverterOutput * 1000)
+            if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 24) > systems[selectedSystem].inverterOutput * 1000)
             {
-                toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
+                toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
             }
             else
             {
@@ -730,6 +730,10 @@
         {
             showCustomSystem = true;
             runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+            Console.WriteLine("-------------------------------");
+            Console.WriteLine("Running Hours Percentage: "  + runningHoursPercentage);
+            Console.WriteLine("Number of Batteries: "  + systems[selectedSystem].numberOfBatteries + " Battery Size: " + systems[selectedSystem].batterySize);
+            Console.WriteLine("-------------------------------");
         }
     }
 
@@ -864,26 +868,11 @@
     }
 
     private void SetGraphicValues(){
-        var appliancePowerUsage = systemsDataHandler.CalculateAppliancePowerUsage(appliances, null) / 1000.0;
-        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-        usableHours = Math.Round(usableHours, 2);
-        chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
-        {
-            chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
-            chargingLimitPercentage = 100;
-        } else if (appliancePowerUsage >= avgEnergyProduction) {
-            chargingLimitPercentage = 0;
-            chargingLimit = 0;
-        } else
-        {
-            chargingLimitPercentage = (chargingLimit / (systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)) * 100;
-        }
-        chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
-
-        double runningHours = chargingLimit / appliancePowerUsage;
-        double runningHoursPercentage = (runningHours / daylight) * 100;
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        Console.WriteLine("-------------------------------");
+        Console.WriteLine("Running Hours Percentage: "  + runningHoursPercentage);
+        Console.WriteLine("Number of Batteries: "  + systems[selectedSystem].numberOfBatteries + " Battery Size: " + systems[selectedSystem].batterySize);
+        Console.WriteLine("-------------------------------");
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
@@ -899,9 +888,9 @@
 
     @* private void IncrementApplianceCount(ApplianceModel appliance)
     {
-        if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) > systems[selectedSystem].inverterOutput * 1000)
+        if ((systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) / 24) > systems[selectedSystem].inverterOutput * 1000)
         {
-            toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
+            toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
         }
         else
         {

@@ -880,24 +880,22 @@ public class SystemsDataHandler
 {
     public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ApplianceModel> appliances)
     {
-        float sumOfAppliances = CalculateAppliancePowerUsage(appliances, null);
+        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
 
         if (sumOfAppliances == 0)
         {
             return 100;
         }
 
+        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
+
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
         return runningHoursPercentage;
     }
 
-    public float CalculateAppliancePowerUsage(
+    public float CalculateApplianceDailyPowerUsage(
         List<ApplianceModel> appliances,
         ApplianceModel? appliance
     )
@@ -907,12 +905,12 @@ public class SystemsDataHandler
         {
             if (app.quantity > 0)
             {
-                sumOfAppliances += app.quantity * app.powerUsage;
+                sumOfAppliances += app.quantity * app.powerUsage * (float)app.durationUsed;
             }
         }
         if (appliance != null)
         {
-            sumOfAppliances += appliance.powerUsage;
+            sumOfAppliances += appliance.powerUsage * (float)appliance.durationUsed;
         }
 
         return sumOfAppliances;
@@ -926,14 +924,21 @@ public class SystemsDataHandler
         {
             if (appliance.numberOfAppliances > 0)
             {
-                sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage!;
-            }
-            else
-            {
-                sumOfAppliances +=
-                    (float)(appliance.numberOfAppliances!) * (float)appliance.defaultPowerUsage!;
+                if (appliance.powerUsage != 0)
+                    sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage! * (float)appliance.durationUsed;
+                else {
+                    sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.defaultPowerUsage! * (float)appliance.durationUsed;
+                }
             }
         }
+
+        if (sumOfAppliances == 0)
+        {
+            return 100;
+        }
+
+        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
+
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;

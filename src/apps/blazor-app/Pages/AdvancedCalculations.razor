@@ -231,10 +231,7 @@
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
             List<ApplianceModel>? tempAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
-
-            Console.WriteLine("Temp Appliances: " + JsonSerializer.Serialize(tempAppliances));
-
-            Console.WriteLine("-------------------------------------");
+                
             if(tempAppliances != null) {
                 foreach (ApplianceModel app in tempAppliances)
                 {
@@ -246,7 +243,6 @@
                     }
                 }
             }
-            Console.WriteLine("Appliances: " + JsonSerializer.Serialize(appliances));
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
