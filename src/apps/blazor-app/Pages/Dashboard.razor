@@ -210,8 +210,8 @@
                                 </div>
                                 <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
                                     <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-                                        <div class="flex relative flex-col justify-center w-full">
+                                        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
+                                        <div class="flex relative flex-col justify-center w-full h-fit my-auto">
                                             @if (runningHoursPercentage != 0)
                                             {
                                                 dlh = 0;
@@ -249,6 +249,30 @@
                                             }
                                         </div>
                                     </div>
+                                    @* Battery Utilisation *@
+                                    <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+                                         <h3 class="font-medium text-lg text-primary-900 text-center">Battery Utilisation</h3>
+                                        <div class="h-fit my-auto">
+                                            <div class="h-48 shadow flex-col-reverse flex w-36 p-1 bg-gray-300 relative  rounded-lg">
+                                                @{
+                                                    var percentage = chargingLimitPercentage + "%";
+                                                }
+                                                <div style="height: @percentage"
+                                                    class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800")'>
+                                                </div>
+                                                    <div class="flex gap-1 absolute bottom-2 left-1/2 -translate-x-1/2 ">
+                                                    <p
+                                                        class='@(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>
+                                                        @chargingLimitPercentage
+                                                    </p>
+                                                    <p class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</p>
+                                                </div>
+                                                <div
+                                                    class="w-8 h-4 -z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="hidden md:block w-full">
                                     @{
                                         if (reports.Count > selectedReport)
@@ -281,7 +305,7 @@
                                     }
                                     @if (!imageName.Equals(""))
                                     {
-                                        <Image ImageName=@imageName alt="House" css="scale-90" />
+                                        <Image ImageName=@imageName alt="House" css="scale-90 h-fit my-auto w-fit mx-auto" />
                                     } else {
                                             <div class="z-10 flex items-center justify-center w-[388px] h-[330px] bg-gray-300 rounded mx-auto">
                                                 <svg class="animate-pulse w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
@@ -292,17 +316,18 @@
                                             </div>
                                     }
                                     </div>
+                                    
                                     @if (appliancesLoaded)
                                     {
                                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                                            <h3 class="font-medium text-lg text-primary-900 text-left">Appliance Energy Consumption</h3>
                                             <div class="flex relative flex-col justify-center w-full">
                                                 <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                                             </div>
                                         </div> 
                                     } else {
                                         <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
+                                            <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
                                             <div class="flex relative flex-col justify-center w-full">
                                                 <ApplianceEnergyConsumption/>
                                             </div>
@@ -408,6 +433,8 @@
     private int applianceNumberOfPage = 0;
     private string applianceAnimation = "";
 
+    private double chargingLimitPercentage= 0.0;
+
     /// <summary>
     /// Load the user's reports and all appliances
     /// </summary>
@@ -481,11 +508,53 @@
 
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             await updateAppliances();
+            CalculateBatteryUtilisation();
+
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
 
         _ = GetSatteliteImage();
+    }
+
+    private void CalculateBatteryUtilisation()
+    {
+        if(reportAllAppliance is not null)
+        {
+            double appliancePowerUsage = 0.0;
+            foreach(ReportAllApplianceModel appliance in reportAllAppliance)
+            {
+                appliancePowerUsage += appliance.numberOfAppliances * appliance.powerUsage;
+            }
+            appliancePowerUsage = appliancePowerUsage / 1000;
+            int numOfPanels = systems[selectedSystem].numberOfPanels;
+            int numOfBatteries = systems[selectedSystem].numberOfBatteries;
+            int batterySize = systems[selectedSystem].batterySize;
+            int solarInput = systems[selectedSystem].solarInput;
+
+            var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, currentLocationData!.solarPanelsData, true, solarInput) / 365;
+            var usableHours = solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true);
+            usableHours = Math.Round(usableHours, 2);
+            double chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
+            chargingLimitPercentage = 0.0;
+            if (chargingLimit > numOfBatteries * batterySize)
+            {
+                chargingLimit = numOfBatteries * batterySize;
+                chargingLimitPercentage = 100;
+            }
+            else
+            {
+                chargingLimitPercentage = (chargingLimit / (numOfBatteries * batterySize)) * 100;
+            }
+            chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
+
+        }
+        else
+        {
+            Console.WriteLine("reportAllAppliance is null when calculating Battery Utilisation");
+        }
+        
+
     }
 
     private async void IncrementAppliancePage(){
@@ -559,6 +628,7 @@
 
     public async Task SwitchReport()
     {
+        chargingLimitPercentage = 0.0;
         currentLocationData = new LocationDataModel();
         Console.WriteLine("-----------------------------------------------------------");
         Console.WriteLine("Switching Report");
@@ -585,6 +655,7 @@
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         await updateAppliances();
+        CalculateBatteryUtilisation();
         _ = GetSatteliteImage();
     }
 
