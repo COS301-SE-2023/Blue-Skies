@@ -4076,22 +4076,6 @@ html {
   --tw-ring-color: rgb(220 38 38 / var(--tw-ring-opacity));
 }
 
-.enabled\:opacity-100:enabled {
-  opacity: 1;
-}
-
-.disabled\:opacity-90:disabled {
-  opacity: 0.9;
-}
-
-.disabled\:opacity-80:disabled {
-  opacity: 0.8;
-}
-
-.disabled\:opacity-10:disabled {
-  opacity: 0.1;
-}
-
 .group:hover .group-hover\:block {
   display: block;
 }
@@ -4451,6 +4435,10 @@ html {
     height: fit-content;
   }
 
+  .md\:h-1\/2 {
+    height: 50%;
+  }
+
   .md\:w-1\/2 {
     width: 50%;
   }
@@ -4474,6 +4462,10 @@ html {
 
   .md\:w-full {
     width: 100%;
+  }
+
+  .md\:w-2\/5 {
+    width: 40%;
   }
 
   .md\:flex-shrink-0 {
@@ -4554,6 +4546,11 @@ html {
   .md\:px-5 {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+  }
+
+  .md\:px-20 {
+    padding-left: 5rem;
+    padding-right: 5rem;
   }
 
   .md\:pl-20 {

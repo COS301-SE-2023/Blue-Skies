@@ -10,9 +10,9 @@
     <Subscript><p class="text-center">All calculations are derived from the monthly bill. Please keep in mind that these calculations are approximate, and costs may vary among different solar installers."</p></Subscript>
 </Heading>
 
-<div class="w-full flex px-20">
+<div class="w-full flex md:px-20">
     <div class="flex flex-col gap-4 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
-        <div class="flex justify-center items-center">
+        <div class="md:flex justify-center items-center">
             <div class="flex flex-col gap-2 items-center justify-center">
                 <p class="text-center text-white font-semibold">Select your monthly bill:</p>
                 <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
@@ -27,12 +27,12 @@
     </div>
 </div>
 
-<div class="flex gap-5 justify-center items-center mt-10">
-    <div class="w-1/2 h-1/2 mt-10">
+<div class="md:flex gap-5 justify-center items-center mt-10">
+    <div class="md:w-1/2 md:h-1/2 mt-10">
         <Chart Config="barConfig"></Chart>
     </div>
-    <div class="flex w-2/5 flex-col gap-4 p-2 justify-center">
-        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+    <div class="flex md:w-2/5 flex-col gap-4 p-2 justify-center">
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow md:w-2/3 h-1/2 rounded-2xl">
             <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
                 <p class="text-center text-xl font-bold text-primary-100">Potential Payback</p>
                 <p class="text-center text-xl font-bold text-primary-200">in years</p>
@@ -41,7 +41,7 @@
                 <p class="text-center text-xl font-bold">@min</p>
             </div>
         </div>
-        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow md:w-2/3 h-1/2 rounded-2xl">
             <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
                 <p class="text-center text-xl font-bold text-primary-100">Savings</p>
                 <p class="text-center text-xl font-bold text-primary-200">per month</p>
