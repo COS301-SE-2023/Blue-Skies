@@ -489,17 +489,17 @@
 
     @if (@customModalTitle == "Number of Solar Panels")
     {
-            <p>Number of solar panels:</p>
-            <Input  @bind-InputValue="customPanels" placeholder="8" type="number" min="4"/>
-            <p>Solar panel power output (W/h): </p>
-            <Input  @bind-InputValue="customPanelsInput" placeholder="500" type="number" min="300"/>
+        <p>Number of solar panels:</p>
+        <Input  @bind-InputValue="customPanels" type="number" min="4" max="40"/>
+        <p>Solar panel power output (W/h): </p>
+        <Input  @bind-InputValue="customPanelsInput" type="number" min="100" max = "2000"/>
     }
     else
     {
-            <p>Number of batteries: </p>
-            <Input  @bind-InputValue="customBatteries" placeholder="1" type="number" min="1"/>    
-            <p>Battery Size (kW): </p>
-            <Input  @bind-InputValue="customBatteriesSize" placeholder="10" type="number" min="4"/>
+        <p>Number of batteries: </p>
+        <Input  @bind-InputValue="customBatteries" type="number" min="1" max="10"/>    
+        <p>Battery Size (kW): </p>
+        <Input  @bind-InputValue="customBatteriesSize" type="number" min="4" max="20"/>
     }
     @if (!isNumericValue)
     {
@@ -746,6 +746,14 @@
         else
         {
             customModalTitle = "Number of Batteries";
+        }
+
+        if (systems.Count > 0)
+        {
+            customPanels = systems[selectedSystem].numberOfPanels.ToString();
+            customPanelsInput = systems[selectedSystem].solarInput.ToString();
+            customBatteries = systems[selectedSystem].numberOfBatteries.ToString();
+            customBatteriesSize = systems[selectedSystem].batterySize.ToString();
         }
         SystemModalPopup.Show();
     }
