@@ -24,13 +24,13 @@
                     applianceCount = appliances.Count(x => x.quantity > 0);
                         var i = 0;
                         var selectedAppliances = GetDifferentApplianceGroups().FindAll(x => x.quantity > 0);
-                        applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / 5);
-                            @for (int j = 0; j < 5 && j + appliancesPage*5 < selectedAppliances.Count; j++)
+                        applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / noOfAppliancesInView);
+                            @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < selectedAppliances.Count; j++)
                             {
-                                    if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*5].type != null) {
-                                        selectedAppliance = selectedAppliances[j + appliancesPage*5].type!;
+                                    if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*noOfAppliancesInView].type != null) {
+                                        selectedAppliance = selectedAppliances[j + appliancesPage*noOfAppliancesInView].type!;
                                     }
-                                    ApplianceModel? appl = selectedAppliances[j + appliancesPage*5];
+                                    ApplianceModel? appl = selectedAppliances[j + appliancesPage*noOfAppliancesInView];
                                     <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
                                         <Appliance fade="@appl.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appl.type + ".svg")" name="@appl.type" count="@appl.quantity" />
                                     </div>
@@ -114,6 +114,7 @@
 
 @code {
     private string? value = "";
+    private int noOfAppliancesInView = 5;
     private int powerUsage = 0;
     private double durationUsed = 0;
     private string selectedAppliance = "";
