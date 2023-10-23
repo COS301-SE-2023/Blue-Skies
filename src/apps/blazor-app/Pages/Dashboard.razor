@@ -666,10 +666,6 @@
         if (system != null && reportAllAppliance != null)
         {
             runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Running Hours Percentage: "  + runningHoursPercentage);
-            Console.WriteLine("Number of Batteries: "  + systems[selectedSystem].numberOfBatteries + " Battery Size: " + systems[selectedSystem].batterySize);
-            Console.WriteLine("-------------------------------");
         }
         else
         {

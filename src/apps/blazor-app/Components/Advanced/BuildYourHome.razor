@@ -260,7 +260,7 @@
             </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                @if(float.IsInfinity(dlh)) {
+                @if(float.IsInfinity(dlh) || dlh == 12) {
                     <p class="text-5xl text-primary-900 font-semibold">12+</p>
                 } else {
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
@@ -403,9 +403,9 @@
                 <DaylightChart hours="@dlh" daylightHours="@daylight" />
                 <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                         @{
-                            if (dlh == (24 - daylight))
+                            if (float.IsInfinity(dlh) || dlh == 12)
                             {
-                                <p class="text-5xl text-primary-900 font-semibold">@dlh+</p>
+                                <p class="text-5xl text-primary-900 font-semibold">12+</p>
                             }
                             else
                             {
@@ -700,7 +700,6 @@
         }
         else if (displayCreatedCustomSystem)
         {
-
             displayCreatedCustomSystem = false;
         }
         else
@@ -730,10 +729,6 @@
         {
             showCustomSystem = true;
             runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
-            Console.WriteLine("-------------------------------");
-            Console.WriteLine("Running Hours Percentage: "  + runningHoursPercentage);
-            Console.WriteLine("Number of Batteries: "  + systems[selectedSystem].numberOfBatteries + " Battery Size: " + systems[selectedSystem].batterySize);
-            Console.WriteLine("-------------------------------");
         }
     }
 
@@ -876,11 +871,6 @@
     }
 
     private void SetGraphicValues(){
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
-        Console.WriteLine("-------------------------------");
-        Console.WriteLine("Running Hours Percentage: "  + runningHoursPercentage);
-        Console.WriteLine("Number of Batteries: "  + systems[selectedSystem].numberOfBatteries + " Battery Size: " + systems[selectedSystem].batterySize);
-        Console.WriteLine("-------------------------------");
         var appliancePowerUsage = systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 1000.0;
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
         var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
@@ -899,9 +889,8 @@
         }
         chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
 
-        double runningHours = chargingLimit / appliancePowerUsage;
-        double runningHoursPercentageDlh = (runningHours / daylight) * 100;
-        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentageDlh / 100), 2);
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
     /// <summary>

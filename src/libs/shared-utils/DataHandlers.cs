@@ -889,7 +889,7 @@ public class SystemsDataHandler
 
         Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
 
-        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float runningHours = (numBatteries * batteryStorage) / (sumOfAppliances / 24);
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         return runningHoursPercentage;
@@ -939,7 +939,7 @@ public class SystemsDataHandler
 
         Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
 
-        float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
+        float runningHours = (numBatteries * batteryStorage) / (sumOfAppliances / 24);
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         return runningHoursPercentage;
