@@ -937,10 +937,6 @@ public class SystemsDataHandler
         float runningHours = (numBatteries * batteryStorage) / sumOfAppliances;
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        if (runningHoursPercentage > 100)
-        {
-            runningHoursPercentage = 100;
-        }
         return runningHoursPercentage;
     }
 }
