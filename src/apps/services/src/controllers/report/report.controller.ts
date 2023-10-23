@@ -92,7 +92,10 @@ export default class ReportController {
 
   public getUserReports = (req: Request, res: Response) => {
     const { userId } = req.params;
-    const query = 'SELECT * FROM [dbo].[reports] WHERE userId = ' + userId + ' ORDER BY dateCreated';
+    const query =
+      'SELECT * FROM [dbo].[reports] WHERE userId = ' +
+      userId +
+      ' ORDER BY dateCreated DESC';
     const reports: IReport[] = [];
 
     try {

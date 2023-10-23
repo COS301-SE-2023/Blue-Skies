@@ -38,14 +38,12 @@
             <div class="w-full pl-2  -mt-6 mb-6 lg:mb-0">
                 <LocationItem Title="Address" ImageName="Point On Map.svg" Text="@locationData!.locationName" />
             </div>
-            <div class="hidden lg:block mb-6">
+            <div class="hidden lg:block mb-6" @onclick="ShowModalCalculation">
                 <Button style="pill">
-                    <content>
-                        <div class="flex gap-4 px-3 py-1" @onclick="ShowModalCalculation">
-                            <p class="my-auto">More Calculations </p>
-                            <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
-                        </div>
-                    </content>
+                    <div class="flex gap-4 px-3 py-1">
+                        <p class="my-auto">More Calculations </p>
+                        <Image css="w-8 h-8" ImageName="ArrowRight.svg" alt="Arrow" />
+                    </div>
                 </Button>
             </div>
         }
@@ -179,7 +177,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col w-full md:w-1/2 mt-16 lg:-mt-16 justify-center items-center gap-4">
-                        <div class="-mt-10 mb-5 w-full flex flex-col">
+                        <div class="-mt-10 mb-5 w-full flex flex-col justify-center items-center gap-4">
                             <div class="has-tooltip">
                                 <Tooltip pointer="45">
                                         <p>@tooltipService.GetTooltip("number of panels")</p>
@@ -187,7 +185,7 @@
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
                             </div>
-                            <input type="range" class="accent-primary-800  cursor-pointer w-full " min="4" max="20"
+                            <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full  cursor-pointer " min="4" max="20"
                                 step="1" @bind-value="@numOfPanels" @oninput="ResetPanelTimer" />
                         </div>
                         <div class="flex gap-2 pr-2 justify-start items-start">
@@ -225,7 +223,7 @@
                                     count="@numOfBatteries" />
                             </div>
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1"
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full cursor-pointer " min="1" max="6" step="1"
                         @bind-value="@numOfBatteries" @oninput="ResetBatteryTimer" />
                     </div>
 
@@ -241,14 +239,12 @@
     <div class="flex flex-row gap-4 justify-center">
         <div @onclick="ModalPopupLogIn.Dismiss">
             <Button style="outline">
-                <content>Cancel</content>
+                <p>Cancel</p>
             </Button>
         </div>
         <div @onclick="NavigateToLogin">
             <Button style="pill">
-                <content>
-                    Log in
-                </content>
+                <p>Log in</p>
             </Button>
         </div>
     </div>
@@ -259,14 +255,12 @@
     <div class="flex flex-row gap-4 justify-center">
         <div @onclick="ModalPopupAppliances.Dismiss">
             <Button style="outline" css="w-40">
-                <content>Cancel</content>
+                <p>Cancel</p>
             </Button>
         </div>
         <div @onclick="NavigateToAdvanced">
             <Button style="pill" css="w-40">
-                <content>
-                    Calculations
-                </content>
+                <p>Calculations</p>
             </Button>
         </div>
     </div>
@@ -288,7 +282,7 @@
     public double appliancePowerUsage = 0.0;
     public int numFridges = 2;
     public int numStove = 1;
-    public int numTV = 3;
+    public int numTV = 1;
     float dlh = 0f;
     private int daylight = 12;
     private double chargingLimit = 0.0;
@@ -372,7 +366,7 @@
 
     private void SetGraphicValues()
     {
-        appliancePowerUsage = ((numFridges * 250) + (numStove * 2000) + (numTV * 60)) / 1000.0;
+        appliancePowerUsage = ((numFridges * 250) + (numStove * 2500) + (numTV * 180)) / 1000.0;
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
@@ -390,8 +384,7 @@
 
         double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage);
-        dlh = (float)Math.Round(daylight * (runningHoursPercentage / 100), 2);
+        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
     private async void ShowModalCalculation()

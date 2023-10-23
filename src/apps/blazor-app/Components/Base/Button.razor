@@ -1,6 +1,6 @@
 <div class="@css">
     <button class="@GetDynamicClasses() h-full w-full hover:shadow-md hover:-translate-y-1 transition-all duration-300 ease-in-out">
-        @content
+        @ChildContent
     </button>
 </div>
 
@@ -9,7 +9,7 @@
     public string? style { get; set; }
 
     [Parameter]
-    public RenderFragment? content { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
     public string? css { get; set; }

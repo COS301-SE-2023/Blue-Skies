@@ -1,6 +1,7 @@
 @inject  BlazorApp.Data.ApplianceService applianceService
 @using System.Text.Json;
 @inject BlazorApp.Data.ToastService toastService
+@inject IJSRuntime JSRuntime
 
 
 <div class="border-primary-500 transition-all duration-200 border-1 p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
@@ -24,13 +25,22 @@
                     applianceCount = appliances.Count(x => x.quantity > 0);
                         var i = 0;
                         var selectedAppliances = GetDifferentApplianceGroups().FindAll(x => x.quantity > 0);
-                        applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / 5);
-                            @for (int j = 0; j < 5 && j + appliancesPage*5 < selectedAppliances.Count; j++)
+
+                        applianceNumberOfPage = (int)Math.Ceiling((double)selectedAppliances.Count / noOfAppliancesInView);
+                        if(selectedAppliances.Count % noOfAppliancesInView == 0)
+                        {
+                            if(appliancesPage + 1 > (selectedAppliances.Count / noOfAppliancesInView))
                             {
-                                    if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*5].type != null) {
-                                        selectedAppliance = selectedAppliances[j + appliancesPage*5].type!;
+                                appliancesPage = 0;
+                            }
+                        }
+                        
+                            @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < selectedAppliances.Count; j++)
+                            {
+                                    if(selectedAppliance == "" && selectedAppliances[j + appliancesPage*noOfAppliancesInView].type != null) {
+                                        selectedAppliance = selectedAppliances[j + appliancesPage*noOfAppliancesInView].type!;
                                     }
-                                    ApplianceModel? appl = selectedAppliances[j + appliancesPage*5];
+                                    ApplianceModel? appl = selectedAppliances[j + appliancesPage*noOfAppliancesInView];
                                     <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
                                         <Appliance fade="@appl.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appl.type + ".svg")" name="@appl.type" count="@appl.quantity" />
                                     </div>
@@ -59,9 +69,7 @@
                     </div>
                 <div class="my-auto translate-y-2"  @onclick='@(() => AddVariant(value!, selectedAppliance, powerUsage ))'>
                     <Button style="pill">
-                        <content>
                             <p>Add Variant</p>
-                        </content>
                     </Button>
                 </div>
             </div>
@@ -70,6 +78,8 @@
             {
                 if (item.type == selectedAppliance && item.quantity > 0)
                 {
+                    string durationUniqueName = "duration" + item.name + item.type + item.GetHashCode();
+                    string powerUniqueName = "power" + item.name + item.type + item.GetHashCode();
                     <div class="flex gap-4">
                         <div class="flex w-fit justify-center gap-4">
                             <div class="transition-all w-full my-auto duration-300 hover:-translate-y-1 hover:cursor-pointer" @onclick="@(() => DecrementAppliance(item))">
@@ -90,21 +100,21 @@
 
                         <div class="w-full">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceName">Appliance Name:</label>
-                            <input name="applianceName" id="applianceName" tyžpe="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
+                            <input name="applianceName" id="applianceName" type="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
 
                         <div class="w-1/4">
                             <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0" max="24" name="applianceDuration" id="applianceDuration" value="@item.durationUsed" type="number" @onchange="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
-                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> hrs</span>
+                                <input min="0" max="24" name="applianceDuration" id="@durationUniqueName" @bind="@item.durationUsed" type="number" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md">hrs</span>
                             </div>
                         </div>
                         <div>
                             <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
                             <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0"  name="@item.name" id="appliancePower" type="number" value="@item.powerUsage" @onchange="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
-                                <span class="text-gray-400 text-end w-full p-3 rounded-md"> kwh</span>
+                                <input min="0"  name="@item.name" id="@powerUniqueName" type="number" value="@item.powerUsage" @onchange="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
+                                <span class="text-gray-400 text-end w-full p-3 rounded-md">W/h</span>
                             </div>
                         </div>
                     </div>
@@ -116,6 +126,7 @@
 
 @code {
     private string? value = "";
+    private int noOfAppliancesInView = 5;
     private int powerUsage = 0;
     private double durationUsed = 0;
     private string selectedAppliance = "";
@@ -148,6 +159,8 @@
     private int applianceNumberOfPage = 0;
     private string applianceAnimation = "";
 
+    private ElementReference durationInput;
+
 
     protected override void OnInitialized()
     {
@@ -179,25 +192,87 @@ private async void IncrementAppliancePage(){
         StateHasChanged();
     }
 
-    public void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
+    public async void UpdateApplianceDuration(ApplianceModel item, ChangeEventArgs e)
     {
-        item.durationUsed = Convert.ToDouble(e.Value);
-        Console.WriteLine("Update Appliance Duration: " + item.durationUsed);
+        if(e.Value == null || e.Value.ToString() == "" || Convert.ToDouble(e.Value) < 0 || Convert.ToDouble(e.Value) > 24) {
+            toastService.ShowToast("Error", "The inserted value is not valid.", "error");
+            return;
+        }
+        string uniqueName = "duration" + item.name + item.type + item.GetHashCode();
+
+        if(item.name == "Default") {
+            ApplianceModel newAppliance = new ApplianceModel();
+            newAppliance.type = item.type;
+            newAppliance.quantity = item.quantity;
+            newAppliance.durationUsed = Convert.ToDouble(e.Value);
+            newAppliance.fade = item.fade;
+            newAppliance.powerUsage = item.powerUsage;
+            newAppliance.name = "Custom";
+            item.quantity = 0;
+            if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, newAppliance) / 24) > systems[selectedSystem].inverterOutput * 1000)
+            {
+                toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
+                item.quantity = newAppliance.quantity;
+                await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{uniqueName}').value = {item.durationUsed};");
+            } else {
+                appliances.Insert(appliances.IndexOf(item) + 1, newAppliance);
+            }
+        } else {
+            double oldDuration = item.durationUsed;
+            item.durationUsed = Convert.ToDouble(e.Value);
+            if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 24) > systems[selectedSystem].inverterOutput * 1000)
+            {
+                toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
+                item.durationUsed = oldDuration;
+                await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{uniqueName}').value = {oldDuration};");
+            }
+        }
         applianceService.UpdateAppliance(appliances);
     }
 
-    public void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
+    public async void UpdateAppliancePower(ApplianceModel item, ChangeEventArgs e)
     {
-        item.powerUsage = Convert.ToInt32(e.Value);
-        Console.WriteLine("Update Appliance Power: " + item.powerUsage);
+        if(e.Value == null || e.Value.ToString() == "" || Convert.ToInt32(e.Value) < 0) {
+            toastService.ShowToast("Error", "The inserted value is not valid.", "error");
+            return;
+        }
+        string uniqueName = "power" + item.name + item.type + item.GetHashCode();
+
+        if(item.name == "Default") {
+            ApplianceModel newAppliance = new ApplianceModel();
+            newAppliance.type = item.type;
+            newAppliance.quantity = item.quantity;
+            newAppliance.durationUsed = item.durationUsed;
+            newAppliance.fade = item.fade;
+            newAppliance.powerUsage = Convert.ToInt32(e.Value);
+            newAppliance.name = "Custom";
+            item.quantity = 0;
+            if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, newAppliance) / 24) > systems[selectedSystem].inverterOutput * 1000)
+            {
+                toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
+                item.quantity = newAppliance.quantity;
+                await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{uniqueName}').value = {item.powerUsage};");
+            } else {
+                appliances.Insert(appliances.IndexOf(item) + 1, newAppliance);
+            }
+        } else {
+            int oldPowerUsage = item.powerUsage;
+            item.powerUsage = Convert.ToInt32(e.Value);
+            if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 24) > systems[selectedSystem].inverterOutput * 1000)
+            {
+                toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
+                item.powerUsage = oldPowerUsage;
+                await JSRuntime.InvokeVoidAsync("eval", $"document.getElementById('{uniqueName}').value = {oldPowerUsage};");
+            }
+        }
         applianceService.UpdateAppliance(appliances);
     }
 
     public void IncrementAppliance(ApplianceModel item)
     {
-        if (systemsDataHandler.CalculateAppliancePowerUsage(appliances, item) > systems[selectedSystem].inverterOutput * 1000)
+        if ((systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, item) / 24) > systems[selectedSystem].inverterOutput * 1000)
         {
-            toastService.ShowToast("Error", "The total power usage of your appliances is greater than the inverter output of your system.", "error");
+            toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
         } else {
             item.quantity++;
             applianceService.UpdateAppliance(appliances);

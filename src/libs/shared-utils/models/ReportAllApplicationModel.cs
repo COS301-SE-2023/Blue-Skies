@@ -13,5 +13,4 @@ public class ReportAllApplianceModel
     public int defaultPowerUsage { get; set; }
     // defaultDurationUsed
     public float defaultDurationUsed { get; set; }
-
 }

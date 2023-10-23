@@ -16,6 +16,7 @@ else if (logIn)
     NavigationManager.NavigateTo("/admin/keys");
 } else {
 <div class="w-full h-screen overflow-hidden relative">
+    <Image ImageName="02.png" css="absolute hidden md:block top-20 lg:top-0 -right-20 lg:-right-2" />
     <div class="flex fade-in-enter-active p-4 gap-10 md:gap-20 flex-col w-full justify-center z-10 mt-10  items-center">
         <Image ImageName="shapes.svg" css="absolute -top-1/2 -left-1/2 w-full h-full" alt="Shapes"/>
         <Image ImageName="shapes.svg" css="absolute -bottom-1/2 -right-1/2 w-full h-full" alt="Shapes"/>
@@ -75,9 +76,7 @@ else if (logIn)
                             @bind-InputValue="repassword" />
                     }
                     <Button css="mt-10 flex max-w-xs mx-auto justify-center" style="pill">
-                        <content>
-                            <input type="submit" value="Register" />
-                        </content>
+                        <input type="submit" value="Register" />
                     </Button>
                     <p class="text-primary-900 text-center mt-8 text-sm">Already have an account? <a href="/login"
                             class="text-primary-500 ml-2">Login</a></p>
@@ -113,7 +112,7 @@ else if (logIn)
     {
         var loggedIn = await ProtectedLocalStore.GetAsync<bool>("loggedIn");
         var isAdmin = await ProtectedLocalStore.GetAsync<bool>("isAdmin");
-        var re = await ProtectedLocalStore.GetAsync<string>("redirect");
+        var re = await ProtectedSessionStore.GetAsync<string>("redirect");
         redirect = re.Value;
         isAd = isAdmin.Value;
         logIn = loggedIn.Value;

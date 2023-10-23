@@ -11,9 +11,11 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
         <div class="fade-in-active px-1 md:px-5">
+            <Image ImageName="04.png" css="absolute hidden md:block top-20 lg:-top-10 -right-20 lg:-right-5" />
         @if (reports.Count > 0 || !receivedReports)
         {
                 <div class="flex flex-col justify-center items-center px-10">
@@ -36,7 +38,7 @@
                                         <h1 class="text-xl">Appliances</h1>
                                     </Header>
                                     <Subscript>
-                                        <p>What do you want to run in a power outage?</p>
+                                        <p>What appliances do you want to run on solar power?</p>
                                     </Subscript>
                                 </Heading>
                             }
@@ -76,7 +78,7 @@
                                                     {
                                                         count += tempAppliances[i].quantity;
                                                     }
-                                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-40 p-3 rounded-2xl rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
+                                                    <div  class='@(selectedAppliance == app.Key ? "bg-primary-100" : "") h-48 p-3 rounded-2xl rounded-b-none' @onclick='(() =>  SelectAppliance(app.Key))'>
                                                         <Appliance  css="hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="@iconName" Name="@app.Key" Count="@count" />
                                                     </div>   
                                                     }
@@ -158,7 +160,7 @@
                                         if (tempAppliances is not null)
                                         {
                                             double dU = Math.Round(tempAppliances[0].durationUsed, 3);
-                                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-primary-100 p-2">
+                                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-primary-100 p-2 -mt-6">
                                                 <table class="w-full text-sm text-left text-gray-500 ">
                                                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                                         <tr>
@@ -190,7 +192,7 @@
                                                                     @dU h
                                                                 </td>
                                                                 <td class="px-6 py-4">
-                                                                    @appliance.powerUsage kW/h
+                                                                    @appliance.powerUsage W/h
                                                                 </td>
                                                             </tr>
                                                         }
@@ -210,8 +212,8 @@
                                 </div>
                                 <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
                                     <div class="w-full flex flex-col gap-4 justify-start items-center">
-                                        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-                                        <div class="flex relative flex-col justify-center w-full">
+                                        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
+                                        <div class="flex relative flex-col justify-center w-full h-fit my-auto">
                                             @if (runningHoursPercentage != 0)
                                             {
                                                 dlh = 0;
@@ -249,7 +251,21 @@
                                             }
                                         </div>
                                     </div>
-                                    <div class="hidden md:block w-full">
+                                    @* Battery Utilisation *@
+                                    <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-center align-middle items-center">
+                                        <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
+                                        <div class="flex flex-col gap-2 justify-center items-center w-full">
+                                            <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">
+                                                @{
+                                                    var percentage = chargingLimitPercentage + "%";
+                                                }
+                                                <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800") z-20'></div>
+                                                    <p class='z-30 absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                                                <div class="w-16 h-4 z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="md:block w-full justify-center align-middle items-center my-auto md:pl-32">
                                     @{
                                         if (reports.Count > selectedReport)
                                         {
@@ -281,7 +297,7 @@
                                     }
                                     @if (!imageName.Equals(""))
                                     {
-                                        <Image ImageName=@imageName alt="House" css="scale-90" />
+                                        <Image ImageName=@imageName alt="House" css="scale-90 h-fit my-auto w-fit mx-auto" />
                                     } else {
                                             <div class="z-10 flex items-center justify-center w-[388px] h-[330px] bg-gray-300 rounded mx-auto">
                                                 <svg class="animate-pulse w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
@@ -292,18 +308,19 @@
                                             </div>
                                     }
                                     </div>
+                                    
                                     @if (appliancesLoaded)
                                     {
                                        <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                            <div class="flex relative flex-col justify-center w-full">
+                                            <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
+                                            <div class="flex relative flex-col justify-center w-full max-w-md">
                                                 <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                                             </div>
                                         </div> 
                                     } else {
                                         <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
-                                            <h3 class="font-medium text-md text-primary-900 text-left">Appliance Energy Consumption</h3>
-                                            <div class="flex relative flex-col justify-center w-full">
+                                            <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
+                                            <div class="flex relative flex-col justify-center w-full max-w-md">
                                                 <ApplianceEnergyConsumption/>
                                             </div>
                                         </div> 
@@ -345,9 +362,7 @@
                     <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6">
                         <div @onclick='() => CreateReport()'>
                             <Button style="pill" css="h-14">
-                                <content>
-                                    <p class="text-sm font-semibold hover:text-white">Create a Report </p>
-                                </content>
+                                <p class="text-sm font-semibold hover:text-white">Create a Report </p>
                             </Button>
                         </div>
                     </div>
@@ -360,14 +375,12 @@
                     <div class="flex flex-row gap-4 justify-center">
                         <div @onclick="Delete">
                             <Button style="danger">
-                                <content>
-                                    delete
-                                </content>
+                                <p>delete</p>
                             </Button>
                         </div>
                         <div @onclick="modalPopup.Dismiss">
                             <Button style="outline-danger">
-                                <content>Cancel</content>
+                                <p>Cancel</p>
                             </Button>
                         </div>
                     </div>
@@ -411,6 +424,8 @@
     private int appliancesPage = 0;
     private int applianceNumberOfPage = 0;
     private string applianceAnimation = "";
+
+    private double chargingLimitPercentage= 0.0;
 
     /// <summary>
     /// Load the user's reports and all appliances
@@ -458,20 +473,9 @@
         }
         receivedReports = true;
 
-        var cReport = await ProtectedSessionStore.GetAsync<int>("createdReport");
-        int createdReport = cReport.Value;
         if (reports.Count > 0)
         {
-            if (createdReport != 0)
-            {
-                for (int i = 0; i < reports.Count; i++)
-                {
-                    if (reports[i].reportId == createdReport)
-                    {
-                        selectedReport = i;
-                    }
-                }
-            }
+            selectedReport = 0;
             await ProtectedSessionStore.DeleteAsync("createdReport");
             allSystems = await systemClass.GetAllSystems();
             await SetSelectedSystem();
@@ -485,11 +489,53 @@
 
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             await updateAppliances();
+            CalculateBatteryUtilisation();
+
         }
         reportManager.EditReportRequested += Edit;
         reportManager.DeleteReportRequested += ShowModal;
 
         _ = GetSatteliteImage();
+    }
+
+    private void CalculateBatteryUtilisation()
+    {
+        if(reportAllAppliance is not null)
+        {
+            double appliancePowerUsage = 0.0;
+            foreach(ReportAllApplianceModel appliance in reportAllAppliance)
+            {
+                appliancePowerUsage += appliance.numberOfAppliances * appliance.powerUsage;
+            }
+            appliancePowerUsage = appliancePowerUsage / 1000;
+            int numOfPanels = systems[selectedSystem].numberOfPanels;
+            int numOfBatteries = systems[selectedSystem].numberOfBatteries;
+            int batterySize = systems[selectedSystem].batterySize;
+            int solarInput = systems[selectedSystem].solarInput;
+
+            var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, currentLocationData!.solarPanelsData, true, solarInput) / 365;
+            var usableHours = solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true);
+            usableHours = Math.Round(usableHours, 2);
+            double chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
+            chargingLimitPercentage = 0.0;
+            if (chargingLimit > numOfBatteries * batterySize)
+            {
+                chargingLimit = numOfBatteries * batterySize;
+                chargingLimitPercentage = 100;
+            }
+            else
+            {
+                chargingLimitPercentage = (chargingLimit / (numOfBatteries * batterySize)) * 100;
+            }
+            chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
+
+        }
+        else
+        {
+            Console.WriteLine("reportAllAppliance is null when calculating Battery Utilisation");
+        }
+        
+
     }
 
     private async void IncrementAppliancePage(){
@@ -563,6 +609,8 @@
 
     public async Task SwitchReport()
     {
+        chargingLimitPercentage = 0.0;
+        currentLocationData = new LocationDataModel();
         Console.WriteLine("-----------------------------------------------------------");
         Console.WriteLine("Switching Report");
         cancellationTokenSource.Cancel();
@@ -572,8 +620,8 @@
         selectedAppliance = "";
         await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
         await SetSelectedSystem();
+        
         int numTries = 0;
-
         currentLocationData = null;
         while(currentLocationData == null && numTries < 10) {
             currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
@@ -588,6 +636,7 @@
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         await updateAppliances();
+        CalculateBatteryUtilisation();
         _ = GetSatteliteImage();
     }
 

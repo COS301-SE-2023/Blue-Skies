@@ -13,23 +13,17 @@
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("SelectCalculation"))'>
             <Button css='@(selectedTutorialName == "SelectCalculation" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
                     <p>Select Calculations</p>
-                </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("GenerateReport"))'>
             <Button css='@(selectedTutorialName == "GenerateReport" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
                     <p>Generate Report</p>
-                </content>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("EditDelete"))'>
             <Button css='@(selectedTutorialName == "EditDelete" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
                     <p>Edit and Delete</p>
-                </content>
             </Button>
         </div>
     </div>

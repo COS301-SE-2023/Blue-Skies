@@ -3,8 +3,6 @@
 @using ChartJs.Blazor.BarChart
 @using BlazorApp.Models
 @using BlazorApp.Components.Base
-@using System.Timers
-@implements IDisposable
 
 <Heading css="mb-16 mt-16 max-w-3xl mx-auto">
     <Superscript><h1 class="text-center">Potential Savings and</h1></Superscript >
@@ -12,20 +10,29 @@
     <Subscript><p class="text-center">All calculations are derived from the monthly bill. Please keep in mind that these calculations are approximate, and costs may vary among different solar installers."</p></Subscript>
 </Heading>
 
-<div class="w-full flex justify-center">
-    <div class="flex flex-col gap-2 items-center justify-center p-4 w-11/12 rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
-        <p class="text-center text-white font-semibold">Select your monthly bill:</p>
-        <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
-        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="ResetTimer" />
+<div class="w-full flex md:px-20">
+    <div class="flex flex-col gap-4 items-center justify-center p-4 w-full rounded-3xl bg-gradient-to-tr from-primary-400 to-primary-500">
+        <div class="md:flex justify-center items-center">
+            <div class="flex flex-col gap-2 items-center justify-center">
+                <p class="text-center text-white font-semibold">Select your monthly bill:</p>
+                <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">R @monthlyBill</h1>
+            </div>
+            <p class="text-2xl text-center text-primary-900 font-black self-center mx-4">OR</p>
+            <div class="flex flex-col gap-2 items-center justify-center">
+                <p class="text-center text-white font-semibold">Select your monthly electricity usage:</p>
+                <h1 class="text-center text-4xl font-black w-fit text-transparent bg-clip-text bg-gradient-to-l from-primary-100 to-primary-200">@monthlyUsage kWh</h1>
+            </div>
+        </div>
+        <input type="range" class="accent-primary-800  cursor-pointer w-3/4" min="1000" max="7000" step="100" @bind="monthlyBill" @oninput="HandleBillSliderChange"/>
     </div>
 </div>
 
-<div class="flex gap-5 justify-center items-center mt-10">
-    <div class="w-1/2 h-1/2 mt-10">
+<div class="md:flex gap-5 justify-center items-center mt-10">
+    <div class="md:w-1/2 md:h-1/2 mt-10">
         <Chart Config="barConfig"></Chart>
     </div>
-    <div class="flex w-2/5 flex-col gap-4 p-2 justify-center">
-        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+    <div class="flex md:w-2/5 flex-col gap-4 p-2 justify-center">
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow md:w-2/3 h-1/2 rounded-2xl">
             <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
                 <p class="text-center text-xl font-bold text-primary-100">Potential Payback</p>
                 <p class="text-center text-xl font-bold text-primary-200">in years</p>
@@ -34,7 +41,7 @@
                 <p class="text-center text-xl font-bold">@min</p>
             </div>
         </div>
-        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow w-2/3 h-1/2 rounded-2xl">
+        <div class="bg-gradient-to-r p-4 flex gap-2 from-primary-400 to-primary-300 shadow md:w-2/3 h-1/2 rounded-2xl">
             <div class="w-full h-full flex flex-col gap-2 justify-center items-center  rounded-2xl">
                 <p class="text-center text-xl font-bold text-primary-100">Savings</p>
                 <p class="text-center text-xl font-bold text-primary-200">per month</p>
@@ -48,20 +55,18 @@
 
 @code {
     private BarConfig? barConfig;
-    private int monthlyBill = 3500;
+    private int monthlyBill = 1500;
+    private int monthlyUsage = 200;
     private BarDataset<double>? dataset;
     private string[] colors = { "#d2d2d2", "#d2d2d2", "#d2d2d2", "#d2d2d2" };
     private double min = 0;
     private SystemInfo? activeSystem;
-    Timer timer = default!;
 
 
     protected override  void OnInitialized() {
-        timer = new Timer(10);
-        timer.Elapsed += HandleBillSliderChange;
-        timer.AutoReset = true;
-        timer.Enabled = true;
-
+        var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
+        monthlyUsage = (int) round * 10;
+        
         barConfig = new BarConfig
         {
             Options = new BarOptions
@@ -134,22 +139,15 @@
         barConfig.Data.Datasets.Add(dataset);
     }
 
-    private void ResetTimer(ChangeEventArgs e)
+   private void HandleBillSliderChange(ChangeEventArgs e)
     {
-        timer.Stop();
-        int.TryParse(e.Value!.ToString(), out monthlyBill);
-        timer.Start();
-    }
-
-    private void HandleBillSliderChange(Object? source, ElapsedEventArgs e)
-    {
-        var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
-        UpdateGraph();
-    }
-
-    void IDisposable.Dispose()
-    {
-        timer.Dispose();
+        if (int.TryParse(e.Value!.ToString(), out int newValue))
+        {
+            monthlyBill = newValue;
+            var round = Math.Round((monthlyBill / 2.5) / 10.0, 0);
+            monthlyUsage = (int) round * 10;
+            UpdateGraph();
+        }
     }
 
     private void UpdateGraph(){

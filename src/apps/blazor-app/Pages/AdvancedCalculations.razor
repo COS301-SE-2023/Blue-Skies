@@ -15,7 +15,7 @@
 <PageTitle>Advanced Calculations</PageTitle>
 
 <div class="fade-in-enter-active">
-    <Image ImageName="02.png" css="absolute hidden md:block top-20 lg:-top-2 -left-20 lg:-left-2" />
+    <Image ImageName="03.png" css="absolute hidden md:block top-20 lg:-top-2 -left-20 lg:-left-2" />
     <Image ImageName="shapes.svg" css="absolute -top-1/3 sm:transform scale-[0.6] -left-[45%] -z-20 w-2/3 h-full -rotate-[40]" alt="Shapes" />
     <div class="w-full px-2 lg:px-20 ">
         <div class="mb-20">
@@ -33,12 +33,22 @@
             <TabSkeleton />
         } else {
             <div class="relative flex flex-col lg:flex-row justify-evenly items-center w-full gap-4 lg:gap-0 mx-auto my-7">
-                <div class="flex flex-col sm:flex-row gap-2 w-full">
+                <div class="flex flex-col lg:flex-row gap-4 w-full">
                     <div @onclick="ResetCalculation" class="w-full cursor-pointer">
                         <Button css="h-14 bg-white rounded-full w-2/3 max-w-xs mx-auto right-10" style="outline">
-                            <content>
-                                <p class="text-[14px] sm:text-base">Reset</p>
-                            </content>
+                            <p class="text-[14px] sm:text-base">Reset</p>
+                        </Button>
+                    </div>
+                    <div @onclick="SaveCalculation" class="w-full block lg:hidden mb-4 cursor-pointer">
+                        <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
+                            @if (edit)
+                            {
+                                <p class="text-[14px]  sm:text-base">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p class="text-[14px]  sm:text-base">Save this calculation</p>
+                            }
                         </Button>
                     </div>
                     <div class="w-full">
@@ -46,16 +56,14 @@
                     </div>
                     <div @onclick="SaveCalculation" class="w-full hidden lg:block cursor-pointer">
                         <Button css="h-14 w-2/3 max-w-xs mx-auto" style="pill">
-                            <content>
-                                @if (edit)
-                                {
-                                    <p class="text-[12px]  sm:text-base">Update calculation</p>
-                                }
-                                else
-                                {
-                                    <p class="text-[12px]  sm:text-base">Save this calculation</p>
-                                }
-                            </content>
+                            @if (edit)
+                            {
+                                <p class="text-[12px]  sm:text-base">Update calculation</p>
+                            }
+                            else
+                            {
+                                <p class="text-[12px]  sm:text-base">Save this calculation</p>
+                            }
                         </Button>
                     </div>
                 </div>
@@ -106,9 +114,7 @@
         {
             <div @onclick="UpdateCalculation">
                 <Button>
-                    <content>
-                    Update
-                        </content>
+                    <p>Update</p>
                 </Button>
             </div>
         }
@@ -116,15 +122,13 @@
         {
             <div @onclick="CallSaveCalculation">
                 <Button>
-                    <content>
-                        Save
-                    </content>
+                    <p>Save</p>
                 </Button>
             </div>
         }
             <div @onclick="ModalPopup.Dismiss">
                 <Button style="outline">
-                    <content>Cancel</content>
+                    <p>Cancel</p>
                 </Button>
             </div>
         </div>
@@ -208,11 +212,23 @@
         }
         double latitude = lat ?? 0;
         double longitude = lng ?? 0;
-        
-        LocationDataModel? result = await locationDataClass.GetInitialLocationData(latitude, longitude, currentLocationData);
-        if (result != null)
+
+        int numTries = 0;
+        currentLocationData = null;
+        while(currentLocationData == null && numTries < 10) {
+            currentLocationData = await locationDataClass.GetInitialLocationData(latitude, longitude, currentLocationData);
+            numTries++;
+            await Task.Delay(1000);
+        }
+
+        if (currentLocationData != null)
         {
-            currentLocationData = result;
+            await ProtectedSessionStore.SetAsync("currentLocationData", currentLocationData);
+        }
+        else
+        {
+            toastService.ShowToast("Location Data not Found", "Location data could not be found", "error");
+            NavigationManager.NavigateTo("/");
         }
 
         appliances = await applianceDataClass.GetAllAppliances();
@@ -222,15 +238,18 @@
             await ProtectedSessionStore.SetAsync("reportAppliances", appliances);
         }
 
+        systems = await systemDataClass.GetAllSystems();
+        if (systems.Count > 0)
+        {
+            await ProtectedSessionStore.SetAsync("systems", systems);
+        }
+
         if (edit)
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
             List<ApplianceModel>? tempAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
-
-            Console.WriteLine("Temp Appliances: " + JsonSerializer.Serialize(tempAppliances));
-
-            Console.WriteLine("-------------------------------------");
+                
             if(tempAppliances != null) {
                 foreach (ApplianceModel app in tempAppliances)
                 {
@@ -242,7 +261,16 @@
                     }
                 }
             }
-            Console.WriteLine("Appliances: " + JsonSerializer.Serialize(appliances));
+
+            for (int i = systems.Count - 1; i > 2; i--)
+            {
+                if (currentReport.systemId == systems[i].systemId)
+                {
+                    selectedSystem = 3;
+                } else {
+                    systems.RemoveAt(i);
+                }
+            }
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
@@ -266,21 +294,6 @@
             system.inverterOutput = -1;
             system.solarInput = -1;
             systems.Add(system);
-        }
-
-
-        systems = await systemDataClass.GetAllSystems();
-        if (systems.Count > 0)
-        {
-            await ProtectedSessionStore.SetAsync("systems", systems);
-        }
-
-        for (int i = 0; i < systems.Count; i++)
-        {
-            if (currentReport.systemId == systems[i].systemId)
-            {
-                selectedSystem = i;
-            }
         }
 
         Console.WriteLine("Selected System" + selectedSystem);

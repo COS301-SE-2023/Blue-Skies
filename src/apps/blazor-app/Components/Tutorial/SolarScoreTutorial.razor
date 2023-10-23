@@ -13,23 +13,17 @@
     <div class="w-full mt-10 flex gap-6 justify-center">
         <div @onclick='@(() => SelectTutorial("ScoreExplained"))'>
             <Button css='@(selectedTutorialName == "ScoreExplained" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Score Explained</p>
-                </content>
+                <p>Score Explained</p>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("SolarScore"))'>
             <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Results</p>
-                </content>
+                <p>Results</p>
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("NextSteps"))'>
             <Button  css='@(selectedTutorialName == "NextSteps" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <content>
-                    <p>Next Steps</p>
-                </content>
+                <p>Next Steps</p>
             </Button>
         </div>
     </div>
@@ -51,9 +45,7 @@
             @if(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" ) {
                 <div @onclick='@(selectedTutorialName == "SolarScore" ? () => SelectTutorial("UsableSunlight")  : () => SelectTutorial("AvgProduction") )' class="max-w-md">
                     <Button style="pill">
-                        <content>
-                            <p>Next</p>
-                        </content>
+                        <p>Next</p>
                     </Button>
                 </div>
             }
