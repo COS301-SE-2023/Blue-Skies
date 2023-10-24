@@ -45,7 +45,7 @@
 
         @if (isReportGenerated)
         {
-            <div @onclick="CancelGenerateReport">
+            <div @onclick="CancelGenerateReport" class="z-10">
                 <Button style="pill" css="h-14 max-w-sm">
                         <a class="text-sm font-semibold hover:text-white">Cancel</a>
                 </Button>
@@ -53,7 +53,7 @@
         }
         else
         {
-            <div @onclick="GenerateReport">
+            <div @onclick="GenerateReport" class="z-10">
                 <Button style="pill" css="h-14 max-w-sm">
                         <a class="text-sm font-semibold hover:text-white">Generate Report</a>
                 </Button>
@@ -75,12 +75,12 @@
 
 @if (isReportGenerated)
 {
-    <div class="h-screen w-full">
+    <div class="h-screen w-full z-10 mt-20">
         @if(pdfUrl != "")
         {   
             @try
             {
-                <iframe src="@pdfUrl" class="w-4/5 mx-auto h-full mt-10">
+                <iframe src="@pdfUrl" class="w-4/5 mx-auto h-full">
             </iframe>
             } catch{
                 <h1>Report Could not be generated</h1>
