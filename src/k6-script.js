@@ -6,7 +6,7 @@ import { group } from 'k6';
 
 export const options = {
   vus: 10,
-  duration: '30s',
+  duration: '600s',
   ext: {
     loadimpact: {
       // Project: blueskies
@@ -35,13 +35,6 @@ export default function () {
         method: 'GET',
         address: '{{net}}/System/all',
       });
-
-      postman[Request]({
-        name: 'Get system by Id',
-        id: '423ad1a5-53ee-412e-abac-ff20b3685a3f',
-        method: 'GET',
-        address: '{{net}}/System/get/2',
-      });
     });
 
     group('Appliances', function () {
@@ -50,13 +43,6 @@ export default function () {
         id: '8bbdd23b-6c07-4d30-9020-5f21505b97cb',
         method: 'GET',
         address: '{{net}}/Appliance/all',
-      });
-
-      postman[Request]({
-        name: 'Get Appliance',
-        id: '82f805ae-7e65-4ac3-902b-9c67a2fc70de',
-        method: 'GET',
-        address: '{{net}}/Appliance/get/10',
       });
     });
 
@@ -110,20 +96,6 @@ export default function () {
         method: 'GET',
         address: '{{net}}/Report/all',
       });
-
-      postman[Request]({
-        name: 'Get User Reports',
-        id: 'e4399509-9714-4ca3-922b-76d137bb5d44',
-        method: 'GET',
-        address: '{{net}}/Report/getUserReports/69',
-      });
-
-      postman[Request]({
-        name: 'Get Report',
-        id: 'e46ccdc5-b53d-4c82-b7a4-ed1c06e9cc8d',
-        method: 'GET',
-        address: '{{net}}/Report/get/122',
-      });
     });
 
     group('Report All Appliances', function () {
@@ -162,15 +134,6 @@ export default function () {
         id: 'ca1c958d-3a3d-4ea9-a59d-bd46d63d745e',
         method: 'GET',
         address: '{{net}}/ReportAppliance/getReportsWithAppliance/11',
-      });
-    });
-
-    group('customAppliance', function () {
-      postman[Request]({
-        name: 'Get all custom appliances',
-        id: 'f8635cf0-eaea-49c5-8d8b-16df60a9b445',
-        method: 'GET',
-        address: '{{net}}/customAppliance/all',
       });
     });
   });
