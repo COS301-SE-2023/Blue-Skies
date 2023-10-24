@@ -1529,10 +1529,6 @@ video {
   width: 66.666667%;
 }
 
-.w-2\/5 {
-  width: 40%;
-}
-
 .w-20 {
   width: 5rem;
 }
@@ -2734,11 +2730,6 @@ video {
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-}
-
-.px-20 {
-  padding-left: 5rem;
-  padding-right: 5rem;
 }
 
 .px-3 {
@@ -4394,6 +4385,10 @@ html {
     display: flex;
   }
 
+  .md\:h-1\/2 {
+    height: 50%;
+  }
+
   .md\:h-20 {
     height: 5rem;
   }
@@ -4435,10 +4430,6 @@ html {
     height: fit-content;
   }
 
-  .md\:h-1\/2 {
-    height: 50%;
-  }
-
   .md\:w-1\/2 {
     width: 50%;
   }
@@ -4449,6 +4440,10 @@ html {
 
   .md\:w-2\/3 {
     width: 66.666667%;
+  }
+
+  .md\:w-2\/5 {
+    width: 40%;
   }
 
   .md\:w-\[45\%\] {
@@ -4462,10 +4457,6 @@ html {
 
   .md\:w-full {
     width: 100%;
-  }
-
-  .md\:w-2\/5 {
-    width: 40%;
   }
 
   .md\:flex-shrink-0 {
@@ -4538,6 +4529,11 @@ html {
     margin-bottom: calc(0px * var(--tw-space-y-reverse));
   }
 
+  .md\:px-20 {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+
   .md\:px-4 {
     padding-left: 1rem;
     padding-right: 1rem;
@@ -4546,11 +4542,6 @@ html {
   .md\:px-5 {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
-  }
-
-  .md\:px-20 {
-    padding-left: 5rem;
-    padding-right: 5rem;
   }
 
   .md\:pl-20 {
