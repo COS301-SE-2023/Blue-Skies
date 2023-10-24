@@ -24,6 +24,7 @@ Users can then use our advanced calculation tool where they can customise the ca
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Coding%20Standards.pdf">Coding Standards</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/User%20Manual.pdf">User Manual</a><br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Technical%20Installation%20Manual.pdf">Technical Installation Manual</a><br>
+<a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Testing%20Policy.pdf">Testing Policy</a><br>
 
 ## Github Project Board
 <a href="https://github.com/orgs/COS301-SE-2023/projects/10">Project board</a><br>
