@@ -231,9 +231,9 @@
                                                 <DaylightChart hours="@dlh" daylightHours="@daylight" />
                                                 <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                                                 @{
-                                                    if (float.IsInfinity(dlh))
+                                                    if (float.IsInfinity(dlh) || dlh == 12 || dlh == 99)
                                                     {
-                                                        <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                                                        <p class="text-5xl text-primary-900 font-semibold">99+</p>
                                                     }
                                                     else
                                                     {
@@ -348,7 +348,7 @@
                                 <FancyData currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
                             </Card>
                         }
-                            </div>
+                        </div>
                 }
                 </div>
         }
@@ -489,7 +489,6 @@
 
             await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
             await updateAppliances();
-            CalculateBatteryUtilisation();
 
         }
         reportManager.EditReportRequested += Edit;
@@ -500,42 +499,28 @@
 
     private void CalculateBatteryUtilisation()
     {
-        if(reportAllAppliance is not null)
-        {
-            double appliancePowerUsage = 0.0;
-            foreach(ReportAllApplianceModel appliance in reportAllAppliance)
-            {
-                appliancePowerUsage += appliance.numberOfAppliances * appliance.powerUsage;
-            }
-            appliancePowerUsage = appliancePowerUsage / 1000;
-            int numOfPanels = systems[selectedSystem].numberOfPanels;
-            int numOfBatteries = systems[selectedSystem].numberOfBatteries;
-            int batterySize = systems[selectedSystem].batterySize;
-            int solarInput = systems[selectedSystem].solarInput;
-
-            var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, currentLocationData!.solarPanelsData, true, solarInput) / 365;
             var usableHours = solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true);
-            usableHours = Math.Round(usableHours, 2);
-            double chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-            chargingLimitPercentage = 0.0;
-            if (chargingLimit > numOfBatteries * batterySize)
+            var appliancePowerUsage = (systemsDataHandler.CalculateApplianceDailyPowerUsage(reportAllAppliance, null) / 1000.0) / (24 / usableHours);
+            var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
+            var chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
+            if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
             {
-                chargingLimit = numOfBatteries * batterySize;
+                chargingLimit = systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize;
                 chargingLimitPercentage = 100;
-            }
-            else
+            } else if (appliancePowerUsage >= avgEnergyProduction) {
+                chargingLimitPercentage = 0;
+                chargingLimit = 0;
+            } else
             {
-                chargingLimitPercentage = (chargingLimit / (numOfBatteries * batterySize)) * 100;
+                chargingLimitPercentage = (chargingLimit / (systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)) * 100;
             }
             chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
 
-        }
-        else
-        {
-            Console.WriteLine("reportAllAppliance is null when calculating Battery Utilisation");
-        }
-        
-
+            if(chargingLimitPercentage > 100) {
+                chargingLimitPercentage = 100;
+            } else if (chargingLimitPercentage < 0) {
+                chargingLimitPercentage = 0;
+            }
     }
 
     private async void IncrementAppliancePage(){
@@ -636,7 +621,6 @@
             solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
         }
         await updateAppliances();
-        CalculateBatteryUtilisation();
         _ = GetSatteliteImage();
     }
 
@@ -663,9 +647,10 @@
             }
         }
         SystemModel? system = await systemClass.GetSystem(reports[selectedReport].systemId);
+        CalculateBatteryUtilisation();
         if (system != null && reportAllAppliance != null)
         {
-            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
+            runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, (system.batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
         }
         else
         {
