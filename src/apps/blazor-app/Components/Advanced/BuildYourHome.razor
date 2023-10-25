@@ -175,7 +175,7 @@
                     <div class="flex justify-center h-24">
                     @if (showCustomSystem)
                     {
-                        if (displayCreatedCustomSystem)
+                        if (displayCreatedCustomSystem && systems[3].inverterOutput > 0)
                         {
                             var customSize = systems[3].inverterOutput + "kw";
                             <div @onclick="CreateCustomSystem"
@@ -185,9 +185,13 @@
                         }
                         else
                         {
+                            if (systems[3].inverterOutput == -1)
+                            {
+                                systems[3].inverterOutput = 5;
+                            } 
                             <div>
                                 <div class="gap-2 px-6">
-                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput" min="2" max="20"/>
                                 </div>
                                 <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
                                     <Button style="pill" >
@@ -713,6 +717,13 @@
 
     public void CustomSystemSelected()
     {
+        if (selectedSystem < 3)
+        {
+            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+            systems[3].batterySize = systems[selectedSystem].batterySize;
+            systems[3].solarInput = systems[selectedSystem].solarInput;
+            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+        }
         selectedSystem = 3;
         selectedSystemChanged.InvokeAsync(selectedSystem);
         if (showCustomSystem)
@@ -763,6 +774,7 @@
 
     }
     private async void SetNumberOfBatteries(Object? source, ElapsedEventArgs e){
+        
         if (currentLocationData != null)
         {
             SetGraphicValues();
@@ -789,6 +801,9 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
         }
+        selectedSystem = 3;
+        showCustomSystem = true;
+        displayCreatedCustomSystem = true;
         systems[3].numberOfPanels =  int.Parse(val!);
         panelTimer.Start();
     }
@@ -806,6 +821,9 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
         }
+        selectedSystem = 3;
+        showCustomSystem = true;
+        displayCreatedCustomSystem = true;
         systems[3].numberOfBatteries =  int.Parse(val!);
         batteryTimer.Start();
     }
@@ -903,39 +921,6 @@
         SetGraphicValues();
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
-
-    @* private void IncrementApplianceCount(ApplianceModel appliance)
-    {
-        if ((systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) / 24) > systems[selectedSystem].inverterOutput * 1000)
-        {
-            toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
-        }
-        else
-        {
-            appliance.fade = "fade-in-active";
-            appliance.quantity++;
-            UpdateApplianceStorage();
-            SetGraphicValues();
-            applianceService.UpdateAppliance(appliances);
-        }
-    } *@
-
-    @* /// <summary>
-    /// On appliance count changed, update the appliance count and calculate the running hours
-    /// </summary>
-    private void DecrementApplianceCount(ApplianceModel appliance)
-    {
-        appliance.quantity--;
-        if (appliance.quantity < 0)
-        {
-            appliance.quantity = 0;
-        }
-        SetGraphicValues();
-
-        StateHasChanged();
-        UpdateApplianceStorage();
-        applianceService.UpdateAppliance(appliances);
-    } *@
 
     private void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
