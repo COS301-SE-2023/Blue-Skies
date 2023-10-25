@@ -121,9 +121,9 @@
                 homeType = "-Home3.svg";
             break;
             case 3:
-                if (systems[3].inverterOutput <= 5) { 
+                if (systems[3].numberOfPanels <= 12) { 
                     homeType="-Home1.svg" ; 
-                } else if (systems[3].inverterOutput <=8) { 
+                } else if (systems[3].numberOfPanels <= 18) { 
                     homeType="-Home2.svg" ; 
                 } else {
                     homeType="-Home3.svg" ;
@@ -226,7 +226,7 @@
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="40" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="30" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
@@ -247,7 +247,7 @@
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
                         </div>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="10" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
                 </div>
             }
             else
@@ -506,14 +506,14 @@
     @if (@customModalTitle == "Number of Solar Panels")
     {
         <p>Number of solar panels:</p>
-        <Input  @bind-InputValue="customPanels" type="number" min="4" max="40"/>
+        <Input  @bind-InputValue="customPanels" type="number" min="4" max="30"/>
         <p>Solar panel power output (W/h): </p>
         <Input  @bind-InputValue="customPanelsInput" type="number" min="100" max = "2000"/>
     }
     else
     {
         <p>Number of batteries: </p>
-        <Input  @bind-InputValue="customBatteries" type="number" min="1" max="10"/>    
+        <Input  @bind-InputValue="customBatteries" type="number" min="1" max="6"/>    
         <p>Battery Size (kW): </p>
         <Input  @bind-InputValue="customBatteriesSize" type="number" min="4" max="20"/>
     }

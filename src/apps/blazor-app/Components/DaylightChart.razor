@@ -10,8 +10,6 @@
     public float daylightHours { get; set; } = 12;
     [Parameter]
     public float? concurrent { get; set; }
-    [Parameter]
-    public bool showLegend { get; set; } = true;
     protected override void OnParametersSet()
     {
         UpdateDataset();
@@ -29,7 +27,7 @@
                 AspectRatio = 3,
                 Legend = new Legend
                 {
-                    Display = showLegend,
+                    Display = false,
                 },
                 Title = new OptionsTitle
                 {
@@ -49,9 +47,7 @@
                 },
                 Tooltips = new Tooltips
                 {
-                    Enabled = true,
-                    Mode = InteractionMode.Index,
-                    Intersect = false,
+                    Enabled = false,
                 },
                 Hover = new Hover
                 {
