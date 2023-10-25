@@ -264,7 +264,7 @@
         <div class="flex relative flex-col justify-center w-full has-tooltip">
             <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                @if(float.IsInfinity(dlh) || dlh == 12 || dlh == 99) {
+                @if(float.IsInfinity(dlh) || dlh == 99) {
                     <p class="text-5xl text-primary-900 font-semibold">99+</p>
                 } else {
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
@@ -407,7 +407,7 @@
                 <DaylightChart hours="@dlh" daylightHours="@daylight" />
                 <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                         @{
-                            if (float.IsInfinity(dlh) || dlh == 12 || dlh == 99)
+                            if (float.IsInfinity(dlh) || dlh == 99)
                             {
                                 <p class="text-5xl text-primary-900 font-semibold">99+</p>
                             }
