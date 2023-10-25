@@ -4523,6 +4523,18 @@ html {
     width: 20rem;
   }
 
+  .md\:w-24 {
+    width: 6rem;
+  }
+
+  .md\:w-\[360px\] {
+    width: 360px;
+  }
+
+  .md\:w-\[470px\] {
+    width: 470px;
+  }
+
   .md\:flex-shrink-0 {
     flex-shrink: 0;
   }
