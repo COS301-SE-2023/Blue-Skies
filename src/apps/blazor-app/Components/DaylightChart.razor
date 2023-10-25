@@ -73,8 +73,6 @@
             pieConfig.Data.Labels.Add(label);
         }
         float remaining = (24 - daylightHours) - hours;
-
-
         if(remaining < 0)
         {
             remaining = 0;
@@ -85,14 +83,14 @@
             BackgroundColor = GetColorGradient(hours),
         };
         if (concurrent != null) {
-            float concurrentRemaining = (24 - daylightHours) - (float) concurrent;
+            float concurrentRemaining = 4 - (float) concurrent;
             if(concurrentRemaining < 0)
             {
                 concurrentRemaining = 0;
             }
-            PieDataset<float> pieDataset2 = new PieDataset<float>(new[] { (float) concurrent, concurrentRemaining })
+            PieDataset<float> pieDataset2 = new PieDataset<float>(new[] { (float)concurrent, concurrentRemaining })
             {
-                BackgroundColor = GetColorGradient(12 - hours),
+                BackgroundColor = GetColorGradient((float)concurrent, 4),
             };
             if (pieConfig != null)
             {
@@ -109,7 +107,7 @@
         }
     }
 
-    private string[] GetColorGradient(float hours)
+    private string[] GetColorGradient(float hours, float range = 12)
     { 
         @* middle top : 46,90,155 
         middle bottom: 255,193,8 
@@ -123,20 +121,20 @@
         
         byte redValue, greenValue, blueValue = 0;
 
-        if (hours <= 3)
+        if (hours <= range / 4)
         {
             redValue = bottomR;
             greenValue = bottomG;
             blueValue = bottomB;
         }
-        else if (hours >= 12)
+        else if (hours >= range)
         {
             redValue = topR;
             greenValue = topG;
             blueValue = topB;
         } 
-        else if(hours < 8 && hours >= 6) {
-            @* float t = (hours - 6) / 2;
+        else if(hours < (range * 2 / 3) && hours >= (range / 2)) {
+            @* float t = (hours - (range / 2)) / ((range * 2 / 3 - (range / 2)));
             redValue = (byte)(t * middleTopR + (1 - t) * middleBottomR); // Decreasing red component
             greenValue = (byte)(t * middleTopG + (1 - t) * middleBottomG); // Increasing green component
             blueValue = (byte)(t * middleTopB + (1 - t) * middleBottomB); // Increasing blue component *@
@@ -144,16 +142,18 @@
             greenValue = middleBottomG;
             blueValue = middleBottomB;
         } 
-        else if (hours < 6)
+        else if (hours < (range / 2))
         {
-            float t = (hours - 3) / 3; 
+            Console.WriteLine("Here 1");
+            float t = (hours - (range / 4)) / ((range / 2) - (range / 4)); 
             redValue = (byte)((t * middleBottomR) + (1 - t) * bottomR); // Decreasing red component
             greenValue = (byte)(t * middleBottomG + (1 - t) * bottomG); // Increasing green component
             blueValue = (byte)(t * middleBottomB + (1 - t) * bottomB); // Increasing blue component
         }
         else
         {
-            float t = (hours - 8) / 4;
+            Console.WriteLine("Here 2");
+            float t = (hours - (range * 2 / 3)) / (range - (range * 2 / 3));
             redValue = (byte)(t * topR + (1 - t) * middleTopR); // Decreasing red component
             greenValue = (byte)(t * topG + (1 - t) * middleTopG); // Increasing green component
             blueValue = (byte)(t * topB + (1 - t) * middleTopB); // Increasing blue component
