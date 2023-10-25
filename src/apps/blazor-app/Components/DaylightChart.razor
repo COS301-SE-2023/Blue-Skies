@@ -18,45 +18,45 @@
     protected override void OnInitialized()
     {
         pieConfig = new PieConfig(true)
+        {
+            Options = new PieOptions
             {
-                Options = new PieOptions
+                Responsive = true,
+                AspectRatio = 3,
+                Legend = new Legend
                 {
-                    Responsive = true,
-                    AspectRatio = 3,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = false,
-                        Text = "Running Hours",
-                        FontSize = 20,
-                        Position = Position.Bottom,
-                        LineHeight = 4,
-                    },
-                    Circumference = 3,
-                    Rotation = -9.341,
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = true,
-                        Duration = 5,
-
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false,
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    CutoutPercentage = 70
+                    Display = true,
                 },
-            };
+                Title = new OptionsTitle
+                {
+                    Display = false,
+                    Text = "Running Hours",
+                    FontSize = 20,
+                    Position = Position.Bottom,
+                    LineHeight = 4,
+                },
+                Circumference = 3,
+                Rotation = -9.341,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    Duration = 5,
+
+                },
+                Tooltips = new Tooltips
+                {
+                    Enabled = true,
+                    Mode = InteractionMode.Index,
+                    Intersect = false,
+                },
+                Hover = new Hover
+                {
+                    Mode = InteractionMode.Index,
+                    Intersect = false
+                },
+                CutoutPercentage = 70
+            }
+        };
     }
     public void UpdateDataset()
     {
@@ -68,7 +68,7 @@
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
 
-        foreach (string label in new[] { "Runnable Hours", "Remaining"})
+        foreach (string label in new[] { "Runnable Hours", "Concurrent Hours", "Remaining"})
         {
             pieConfig.Data.Labels.Add(label);
         }
@@ -78,20 +78,28 @@
             remaining = 0;
         }
 
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining })
-        {
-            BackgroundColor = GetColorGradient(hours),
-        };
         if (concurrent != null) {
             float concurrentRemaining = 4 - (float) concurrent;
             if(concurrentRemaining < 0)
             {
                 concurrentRemaining = 0;
             }
-            PieDataset<float> pieDataset2 = new PieDataset<float>(new[] { (float)concurrent, concurrentRemaining })
-            {
-                BackgroundColor = GetColorGradient((float)concurrent, 4),
+
+            string[] colors = new[] {
+                GetColorGradient(hours),
+                GetColorGradient((float)concurrent, 4),
+                ColorUtil.ColorHexString(156, 163, 175)
             };
+
+            PieDataset<float?> pieDataset = new PieDataset<float?>(new float?[] {hours, null, remaining })
+            {
+                BackgroundColor = colors,
+            };
+            PieDataset<float?> pieDataset2 = new PieDataset<float?> (new float?[] { null, (float) concurrent, concurrentRemaining })
+            {
+                BackgroundColor = colors,
+            };
+
             if (pieConfig != null)
             {
                 pieConfig.Data.Datasets.Add(pieDataset);
@@ -99,6 +107,17 @@
                 StateHasChanged();
             }
         } else {
+            string[] colors = {
+                GetColorGradient(hours),
+                ColorUtil.ColorHexString(156, 163, 175)
+            };
+
+            PieDataset<float?> pieDataset = new PieDataset<float?>(new float?[] {hours, null, remaining })
+            {
+                BackgroundColor = GetColorGradient(hours),
+            };
+
+
             if (pieConfig != null)
             {
                 pieConfig.Data.Datasets.Add(pieDataset);
@@ -107,7 +126,7 @@
         }
     }
 
-    private string[] GetColorGradient(float hours, float range = 12)
+    private string GetColorGradient(float hours, float range = 12)
     { 
         @* middle top : 46,90,155 
         middle bottom: 255,193,8 
@@ -159,12 +178,7 @@
             blueValue = (byte)(t * topB + (1 - t) * middleTopB); // Increasing blue component
         }
 
-        string[] colors = {
-            ColorUtil.ColorHexString(redValue, greenValue, blueValue),
-            ColorUtil.ColorHexString(156, 163, 175)
-        };
-
-        return colors;
+        return ColorUtil.ColorHexString(redValue, greenValue, blueValue);
     }
 
 

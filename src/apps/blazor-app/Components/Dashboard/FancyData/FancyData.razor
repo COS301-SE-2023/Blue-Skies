@@ -14,27 +14,17 @@
 }
 
     <div class="w-full">
-        @if (currentPage == "dashboard") {
-            <Heading>
-                <Header>
-                    <h1 class="text-xl">Advanced Calculations</h1>
-                </Header>
-                <Subscript>
-                    <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
-                </Subscript>
-            </Heading>
-        } else {
+        
             <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
                 <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
                 <Header><h1 class="text-center">Advanced Calculations</h1></Header>
-                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
+                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure.</p></Subscript>
             </Heading>
-        }
 
         <div class="w-full md:flex justify-center items-center md:px-4 md:gap-2">
             @if (annualFluxDataReceived)
             {
-            <div class="flex md:w-1/2 flex-col gap-4 p-20">
+            <div class="flex md:w-1/2 flex-col gap-4 md:p-20">
                     <h1 class="text-primary-800 font-semibold text-center text-xl">Annual Flux Map</h1>
                     <p class="text-lg text-center text-gray-500">Visual representation of the annual sunlight exposure on your rooftop.</p>
                     <Image ImageName="@satteliteImageSrc" css="w-full sm:w-3/4 mx-auto md:w-full" alt="sattelite Image" />
@@ -53,13 +43,13 @@
                 <AnnualFluxSkeleton />
             }
 
-            <div class="flex flex-col gap-4 justify-center md:w-1/2">
+            <div class="flex flex-col gap-4 justify-center md:w-1/2 text-sm md:text-xl">
             @if (solarPanelsDataReceived)
             {
                 <EnviromentImpact annualKWGenerated="@annualKWGenerated" />
                 @if(solarPanelsData != null){
                     <Card css="w-full flex flex-col gap-10">
-                        <h1 class="text-primary-950 font-semibold text-start text-xl">Rooftop Stats</h1>
+                        <h1 class="text-primary-950 font-semibold text-start">Rooftop Stats</h1>
                         <div class="grid grid-cols-2 justify-center items-center gap-2">
                             @{
                                 double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
@@ -72,7 +62,7 @@
                                 <Tooltip>
                                     <p>@tooltipService.SetCustomTooltip("Rooftop area")</p>
                                 </Tooltip>
-                                <Image ImageName="Home.svg" alt="Home Icon" css="w-8 h-8" />
+                                <Image ImageName="Home.svg" alt="Home Icon" css="w-5 h-5 md:w-8 md:h-8" />
                                 <p class="my-auto">@squaredArea m&sup2;</p>
                             </div>
 
@@ -80,7 +70,7 @@
                                 <Tooltip>
                                     <p>@tooltipService.SetCustomTooltip("Max solar panels that will fit")</p>
                                 </Tooltip>
-                                <Image ImageName="SolarPanels.svg" alt="Solar Panels Icon" css="w-8 h-8" />
+                                <Image ImageName="SolarPanels.svg" alt="Solar Panels Icon" css="w-5 h-5 md:w-8 md:h-8" />
                                 <p class="my-auto">@solarPanelsData!.solarPotential!.maxArrayPanelsCount</p>
                             </div>
 
@@ -88,7 +78,7 @@
                                 <Tooltip>
                                     <p>@tooltipService.SetCustomTooltip("Area of the roof, suitable for solar panels")</p>
                                 </Tooltip>
-                                <Image ImageName="Area.svg" alt="Area Icon" css="w-8 h-8" />
+                                <Image ImageName="Area.svg" alt="Area Icon" css="w-5 h-5 md:w-8 md:h-8" />
                                 <p class="my-auto">@maxArraArea m&sup2;</p>
                             </div>
 
@@ -96,7 +86,7 @@
                                 <Tooltip>
                                     <p>@tooltipService.SetCustomTooltip("Total usable sunlight times per day")</p>
                                 </Tooltip>
-                                <Image ImageName="Sun-outline.svg" alt="Sun Icon" css="w-8 h-8" />
+                                <Image ImageName="Sun-outline.svg" alt="Sun Icon" css="w-5 h-5 md:w-8 md:h-8" />
                                 <p class="my-auto">@maxHoursSunlightPerDay h</p>
                             </div>
                         </div>
@@ -113,7 +103,7 @@
             }
         </div>
     </div>
-        <div class="w-full lg:flex justify-center items-center px-4 gap-4 mt-5">
+        <div class="w-full lg:flex justify-center items-center md:px-4 gap-4 mt-5">
             @if (monthlyFluxDataReceived)
             {
                 <div class="flex md:w-1/2 md:mx-auto lg:w-1/3 flex-col justify-center items-center gap-3">
@@ -142,7 +132,7 @@
             } else {
                 <MonthlyFluxSkeleton />
             }
-            <div class="lg:w-2/3">
+            <div class="w-full sm:w-auto lg:w-2/3">
                     <h1 class="text-center text-primary-800 font-semibold text-xl">Solar Irradiance Per Month</h1>
                     <SolarIrradiationPerMonth currentMonth="@currentImageIndex" monthlySolarRadiation="@solarRadiationPerMonth" animated="false" />
             </div>
