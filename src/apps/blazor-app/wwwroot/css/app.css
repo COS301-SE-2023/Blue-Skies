@@ -903,6 +903,22 @@ video {
   top: 100%;
 }
 
+.bottom-12 {
+  bottom: 3rem;
+}
+
+.bottom-8 {
+  bottom: 2rem;
+}
+
+.-bottom-0 {
+  bottom: -0px;
+}
+
+.-bottom-5 {
+  bottom: -1.25rem;
+}
+
 .-right-\[134px\] {
   right: -134px;
 }
@@ -1222,6 +1238,10 @@ video {
 
 .mt-10 {
   margin-top: 2.5rem;
+}
+
+.mt-12 {
+  margin-top: 3rem;
 }
 
 .mt-14 {
@@ -1617,6 +1637,10 @@ video {
   width: 1.75rem;
 }
 
+.w-7\/12 {
+  width: 58.333333%;
+}
+
 .w-72 {
   width: 18rem;
 }
@@ -1711,6 +1735,10 @@ video {
 
 .w-\[420px\] {
   width: 420px;
+}
+
+.w-\[470px\] {
+  width: 470px;
 }
 
 .w-\[65px\] {
@@ -2024,6 +2052,12 @@ video {
 .scale-\[1\.7\] {
   --tw-scale-x: 1.7;
   --tw-scale-y: 1.7;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.scale-\[2\.5\] {
+  --tw-scale-x: 2.5;
+  --tw-scale-y: 2.5;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
@@ -2684,6 +2718,10 @@ video {
 
 .p-2\.5 {
   padding: 0.625rem;
+}
+
+.p-20 {
+  padding: 5rem;
 }
 
 .p-3 {
@@ -4375,6 +4413,10 @@ html {
     margin-top: 18rem;
   }
 
+  .md\:mt-10 {
+    margin-top: 2.5rem;
+  }
+
   .md\:block {
     display: block;
   }
@@ -4411,10 +4453,6 @@ html {
     height: 18rem;
   }
 
-  .md\:h-8 {
-    height: 2rem;
-  }
-
   .md\:h-80 {
     height: 20rem;
   }
@@ -4432,6 +4470,10 @@ html {
     height: fit-content;
   }
 
+  .md\:h-8 {
+    height: 2rem;
+  }
+
   .md\:w-1\/2 {
     width: 50%;
   }
@@ -4440,20 +4482,33 @@ html {
     width: 33.333333%;
   }
 
-  .md\:w-12 {
-    width: 3rem;
-  }
-
-  .md\:w-16 {
-    width: 4rem;
-  }
-
   .md\:w-2\/3 {
     width: 66.666667%;
   }
 
   .md\:w-2\/5 {
     width: 40%;
+  }
+
+  .md\:w-\[45\%\] {
+    width: 45%;
+  }
+
+  .md\:w-fit {
+    width: -moz-fit-content;
+    width: fit-content;
+  }
+
+  .md\:w-full {
+    width: 100%;
+  }
+
+  .md\:w-12 {
+    width: 3rem;
+  }
+
+  .md\:w-16 {
+    width: 4rem;
   }
 
   .md\:w-24 {
@@ -4472,21 +4527,8 @@ html {
     width: 360px;
   }
 
-  .md\:w-\[45\%\] {
-    width: 45%;
-  }
-
   .md\:w-\[470px\] {
     width: 470px;
-  }
-
-  .md\:w-fit {
-    width: -moz-fit-content;
-    width: fit-content;
-  }
-
-  .md\:w-full {
-    width: 100%;
   }
 
   .md\:flex-shrink-0 {
