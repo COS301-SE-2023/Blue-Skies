@@ -79,6 +79,11 @@ public class ReportsRepository
                 Console.WriteLine(".NET: report is null error");
                 return new List<Reports>();
             }
+            //else if 404 not found
+            else if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return new List<Reports>();
+            }
             else
             {
                 Console.WriteLine(".NET: Database Connection Error in function GetAllReports");
