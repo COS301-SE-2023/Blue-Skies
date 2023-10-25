@@ -122,15 +122,9 @@
     private ModalPopup modalPopup { get; set; } = new ModalPopup();
     public LocationDataModel? currentLocationData = new LocationDataModel();
     public int solarScore = 0;
-    private float concurrentRuntime;
-    private float daylight;
-    float runningHoursPercentage = 0;
-    private int selectedApplianceQuantity = 0;
-    private string imageName = "";
     private bool receivedReports = false;
     private bool currentLocationDataReceived = false;
     private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-    public double chargingLimitPercentage = 0.0;
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
         new TabItemModel("Appliances", true),

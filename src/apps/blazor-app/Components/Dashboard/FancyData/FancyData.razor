@@ -216,7 +216,6 @@
     }
 
     public void init(){
-        Console.WriteLine("Fetching Fancy Data in Facy Data");
         satteliteImageSrc = "";
         monthlyFluxMap = new string[12];
         annualFluxData = null;
@@ -238,7 +237,7 @@
         }
     }
 
-    private Task GetSatteliteImageData()
+    private async Task GetSatteliteImageData()
     {
         if (currentLocationData != null && (cancellationTokenSource == null ||
         cancellationTokenSource.Token.IsCancellationRequested == false))
@@ -248,9 +247,26 @@
                 satteliteImageData = currentLocationData.satteliteImageData;
                 SetAllVariables();
                 _ = GetMaskData();
+            } else {
+                LocationDataModel? result;
+                if (cancellationTokenSource == null)
+                {
+                    result = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData);
+                }
+                else
+                {
+                    result = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
+                }
+                if (result != null)
+                {
+                    currentLocationData = result;
+                }
+                Console.WriteLine("Done retrieving Satellite Image Data");
+                satteliteImageData = currentLocationData.satteliteImageData;
+                SetAllVariables();
+                _ = GetMaskData();
             }
         }
-        return Task.CompletedTask;
     }
 
     private async Task GetMaskData()
