@@ -269,8 +269,12 @@
                     selectedSystem = 3;
                 } else {
                     systems.RemoveAt(i);
+
                 }
+
             }
+
+
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
@@ -285,6 +289,10 @@
             {
                 systems.RemoveAt(i);
             }
+            
+        }
+        if(systems.Count < 4)
+        {
             SystemModel system = new SystemModel();
             system.systemId = -1;
             system.systemSize = "Custom";
@@ -295,7 +303,7 @@
             system.solarInput = -1;
             systems.Add(system);
         }
-
+        
         Console.WriteLine("Selected System" + selectedSystem);
 
         @* Get custom Appliances *@

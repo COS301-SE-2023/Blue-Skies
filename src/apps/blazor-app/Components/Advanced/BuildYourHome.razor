@@ -658,6 +658,7 @@
         if (currentReport!.homeSize != null)
         {
             homeSize = currentReport.homeSize;
+           
         }
         if (systems.Count > 0)
         {
@@ -1116,7 +1117,12 @@
             await ProtectedSessionStore.DeleteAsync("calculationName");
         }
         Console.WriteLine("Update Calculation, new name: " + calculationName);
-        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances))
+        if (selectedSystem == 3)
+        {
+            systems[3].systemId = await systemClass.CreateSystem(systems[3]);
+            Console.WriteLine("Custom System ID: " + systems[3].systemId);
+        }
+        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances, systems[selectedSystem].systemId, homeSize))
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
             NavigationManager.NavigateTo("/dashboard");
