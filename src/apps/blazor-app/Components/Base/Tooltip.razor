@@ -1,5 +1,5 @@
 @inject IJSRuntime JSRuntime
-<div class='absolute mx-auto fade-active tooltip transition-all duration-300 delay-500 rounded-xl shadow-lg px-3 py-2 bg-primary-900 text-primary-100 @directionClass'>
+<div style="transform: translateX(@translateX%);" class='absolute mx-auto fade-active tooltip transition-all duration-300 delay-500 rounded-xl shadow-lg px-3 py-2 bg-primary-900 text-primary-100 @directionClass'>
     <div style="left: @pointer%;" class='absolute bg-primary-900 z-40 @(direction == "top" ? "-bottom-1" : direction == "left" ? "-right-1" : direction == "bottom" ? "-top-1" : direction == "right" ? "-left-1" : "") @(direction == "left" || direction == "right" ? "top-1/2 -translate-y-1/2" : "") transition-all duration-75 rotate-45  w-3 h-3'></div>
     @ChildContent
 </div>
@@ -10,6 +10,8 @@
     public string? direction { get; set; } = "top";
     [Parameter]
     public int? pointer { get; set; } = 25;
+    [Parameter]
+    public int? translateX { get; set; } = 0;
     public string? directionClass { get; set; } = "";
 
     protected override void OnParametersSet()
