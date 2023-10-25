@@ -117,7 +117,19 @@
                                 <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                                     css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
                             </div>
+                            @if(changingMonthlyImage == false)
+                            {
                                 <Image ImageName="@monthlyFluxMap[@currentImageIndex]" alt="sattelite Image" css="w-3/4 mx-auto md:w-full" />
+                            }else
+                            {
+                                <div role="status" class="animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center w-3/4 aspect-square items-center justify-center bg-gray-300">
+                                    <svg class="w-20 h-20 text-gray-200 aria-hidden=" true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                        viewBox="0 0 20 18">
+                                        <path
+                                            d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                                    </svg>
+                                </div>
+                            }
                             <div class="my-auto" @onclick="IncreamentMonthImage">
                                 <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                                     css="h-12 w-12 transition-all duration-300 rounded-lg p-2 hover:bg-primary-200 hover:cursor-pointer" />
@@ -208,6 +220,8 @@
     private bool solarPanelsDataReceived = false;
     private bool monthlyFluxDataReceived = false;
     private bool annualFluxDataReceived = false;
+
+    private bool changingMonthlyImage = false;
 
 
     protected override void OnParametersSet()
@@ -391,6 +405,7 @@
 
     private void IncreamentMonthImage()
     {
+        changingMonthlyImage = true;
         if (currentImageIndex < monthlyFluxMap!.Length - 1)
         {
             currentImageIndex++;
@@ -399,9 +414,11 @@
         {
             currentImageIndex = 0;
         }
+        changingMonthlyImage = false;
     }
     private void DecrementMonthImage()
     {
+        changingMonthlyImage = true;
         if (currentImageIndex > 0)
         {
             currentImageIndex--;
@@ -410,5 +427,6 @@
         {
             currentImageIndex = monthlyFluxMap!.Length - 1;
         }
+        changingMonthlyImage = false;
     }
 }
