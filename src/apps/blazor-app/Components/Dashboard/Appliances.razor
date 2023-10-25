@@ -222,17 +222,27 @@
         </div>
         @* Battery Utilisation *@
         <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-center align-middle items-center">
+            @if(appliancesLoaded) {
+
             <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
             <div class="flex flex-col gap-2 justify-center items-center w-full">
-                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">
+                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">  
                     @{
                         var percentage = chargingLimitPercentage + "%";
                     }
                     <div style="height: @percentage" class='w-full transition-all rounded-lg @(chargingLimitPercentage > 0 && chargingLimitPercentage < 25 ? "bg-red-accent-500" : chargingLimitPercentage > 25 && chargingLimitPercentage < 50 ? "bg-yellow-accent-500" : chargingLimitPercentage > 50 && chargingLimitPercentage < 75 ? "bg-primary-500" : "bg-primary-800") z-20'></div>
-                        <p class='z-30 absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
+                    <p class='z-30 absolute bottom-2 left-1/2 -translate-x-1/2 @(chargingLimitPercentage > 75 ? "text-primary-400" : chargingLimitPercentage < 25 ? "text-primary-100" : "text-primary-900") font-bold text-md'>@chargingLimitPercentage<span class='@(chargingLimitPercentage > 75 ? "text-primary-300" : chargingLimitPercentage < 25 ? "text-primary-300" :"text-primary-700")'>%</span></p>
                     <div class="w-16 h-4 z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
                 </div>
             </div>
+            } else {
+            <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
+            <div class="flex flex-col gap-2 justify-center items-center w-full">
+                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg"> 
+                <div class="w-16 h-4 z-10 bg-gray-300 rounded-md absolute -top-2 left-1/2 -translate-x-1/2"></div>
+                </div>
+            </div>
+            }
         </div>
         <div class="md:block w-full justify-center align-middle items-center my-auto md:pl-32">
             @{
@@ -264,7 +274,7 @@
                     }
                 }
             }
-            @if (!imageName.Equals(""))
+            @if (!imageName.Equals("") && appliancesLoaded)
             {
                 <Image ImageName=@imageName alt="House" css="scale-90 h-fit my-auto w-fit mx-auto" />
             } else {
@@ -315,7 +325,8 @@
     public List<SystemModel> systems { get; set; } = new List<SystemModel>();
     [Parameter]
     public string? selectedAppliance { get; set; } = "";
-    Dictionary<String, List<ApplianceModel>> allAppliances = new Dictionary<String, List<ApplianceModel>>();
+    [Parameter]
+    public Dictionary<String, List<ApplianceModel>> allAppliances { get; set; } = new Dictionary<String, List<ApplianceModel>>();
     private bool appliancesLoaded = false;
     private int appliancesPage = 0;
     private int applianceNumberOfPage = 0;
@@ -329,19 +340,16 @@
     private double chargingLimitPercentage = 0;
     private string imageName = "";
     private List<ReportAllApplianceModel> reportAllAppliance = new List<ReportAllApplianceModel>();
+    
 
-    protected override async void OnParametersSet() {
-        await init();
-    }
-
-    public async Task init() {
+    protected override async void OnParametersSet() { 
         await updateAppliances();
-        CalculateBatteryUtilisation();
     }
 
     public async Task updateAppliances()
     {
         appliancesLoaded = false;
+        StateHasChanged();
         reportAllAppliance.Clear();
         if (reports.Count > 0)
         {
@@ -366,10 +374,11 @@
             {
                 runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
                 concurrentRuntimePercentage = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
+                appliancesLoaded = true;
             }   
-            appliancesLoaded = true;
             StateHasChanged();
         }
+
     }
 
     private void CalculateBatteryUtilisation()
@@ -437,10 +446,11 @@
         applianceAnimation = "appliance-slide-in-left";
         StateHasChanged();
     }
-    
-    public void switchReport(){
+
+    public void SwitchReport(){
         appliancesLoaded = false;
         selectedAppliance = "";
         imageName = "";
+        StateHasChanged();
     }
 }
