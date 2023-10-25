@@ -878,28 +878,52 @@ public class RooftopDataHandler
 
 public class SystemsDataHandler
 {
-    public float CalculateRunningHours(int numBatteries, double batteryStorage, List<ApplianceModel> appliances)
-    {
-        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
-
-        if (sumOfAppliances == 0)
+    public float CalculateApplianceHourlyPowerUsage(List<ApplianceModel> appliances, ApplianceModel? appliance = null) {
+        float sumOfAppliances = 0f;
+        foreach (var app in appliances)
         {
-            return 100;
+            if (app.quantity > 0)
+            {
+                if(app.durationUsed > 1) {
+                    sumOfAppliances += app.quantity * app.powerUsage;
+                } else {
+                    sumOfAppliances += app.quantity * app.powerUsage * (float)app.durationUsed;
+                }
+            }
         }
-
-        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
-
-        float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
-        float nonDaylightHours = 12;
-        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
-
-        if(runningHoursPercentage > 825) {
-            runningHoursPercentage = 825;
+        if (appliance != null)
+        {
+            if(appliance.durationUsed > 1) {
+                sumOfAppliances += appliance.powerUsage;
+            } else {
+                sumOfAppliances += appliance.powerUsage * (float)appliance.durationUsed;
+            }
         }
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+        return sumOfAppliances;
+    }
 
-        return runningHoursPercentage;
+    public float CalculateApplianceHourlyPowerUsage(List<ReportAllApplianceModel> appliances, ApplianceModel? appliance = null) {
+        float sumOfAppliances = 0f;
+        foreach (var app in appliances)
+        {
+            if (app.numberOfAppliances > 0)
+            {
+                if(app.durationUsed > 1) {
+                    sumOfAppliances += app.numberOfAppliances * app.powerUsage;
+                } else {
+                    sumOfAppliances += app.numberOfAppliances * app.powerUsage * (float)app.durationUsed;
+                }
+            }
+        }
+        if (appliance != null)
+        {
+            if(appliance.durationUsed > 1) {
+                sumOfAppliances += appliance.powerUsage;
+            } else {
+                sumOfAppliances += appliance.powerUsage * (float)appliance.durationUsed;
+            }
+        }
+        return sumOfAppliances;
     }
 
     public float CalculateApplianceDailyPowerUsage(
@@ -943,6 +967,76 @@ public class SystemsDataHandler
         }
 
         return sumOfAppliances;
+    }
+
+    public float CalculateConcurrentRunningHours(
+        int numBatteries,
+        double batteryStorage,
+        List<ReportAllApplianceModel> appliances,
+        ApplianceModel? appliance = null
+    )
+    {
+        float sumOfAppliances = CalculateApplianceHourlyPowerUsage(appliances, appliance);
+
+        if (sumOfAppliances == 0)
+        {
+            return 100;
+        }
+
+        float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateConcurrentRunningHours(
+        int numBatteries,
+        double batteryStorage,
+        List<ApplianceModel> appliances,
+        ApplianceModel? appliance = null
+    )
+    {
+        float sumOfAppliances = CalculateApplianceHourlyPowerUsage(appliances, appliance);
+
+        if (sumOfAppliances == 0)
+        {
+            return 100;
+        }
+
+        float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateRunningHours(int numBatteries, double batteryStorage, List<ApplianceModel> appliances)
+    {
+        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
+
+        if (sumOfAppliances == 0)
+        {
+            return 100;
+        }
+
+        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
+
+        float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+
+        return runningHoursPercentage;
     }
 
     public float CalculateRunningHours(int numBatteries, double batteryStorage, List<ReportAllApplianceModel> appliances)

@@ -615,6 +615,7 @@
     };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
+    float concurrentRuntime = 0f;
     float daylight = 12f;
     DaylightChart daylightChart = new DaylightChart();
     private bool showCustomSystem = false;
@@ -915,6 +916,7 @@
 
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+        concurrentRuntime = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
     }
 
     /// <summary>
