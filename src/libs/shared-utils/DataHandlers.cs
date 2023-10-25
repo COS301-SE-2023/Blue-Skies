@@ -980,7 +980,7 @@ public class SystemsDataHandler
 
         if (sumOfAppliances == 0)
         {
-            return 100;
+            return 825; //Equates to 99 hours
         }
 
         float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
@@ -1003,7 +1003,7 @@ public class SystemsDataHandler
 
         if (sumOfAppliances == 0)
         {
-            return 100;
+            return 825; //Equates to 99 hours
         }
 
         float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
@@ -1021,7 +1021,7 @@ public class SystemsDataHandler
 
         if (sumOfAppliances == 0)
         {
-            return 100;
+            return 825; //Equates to 99 hours
         }
 
         Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
@@ -1045,7 +1045,7 @@ public class SystemsDataHandler
 
         if (sumOfAppliances == 0)
         {
-            return 100;
+            return 825; //Equates to 99 hours
         }
 
         Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
