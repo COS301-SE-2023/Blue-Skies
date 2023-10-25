@@ -1525,6 +1525,18 @@ video {
   max-height: 24rem;
 }
 
+.max-h-32 {
+  max-height: 8rem;
+}
+
+.max-h-6 {
+  max-height: 1.5rem;
+}
+
+.max-h-60 {
+  max-height: 15rem;
+}
+
 .w-1\/2 {
   width: 50%;
 }
@@ -4570,6 +4582,18 @@ html {
 
   .md\:w-full {
     width: 100%;
+  }
+
+  .md\:w-24 {
+    width: 6rem;
+  }
+
+  .md\:w-\[360px\] {
+    width: 360px;
+  }
+
+  .md\:w-\[470px\] {
+    width: 470px;
   }
 
   .md\:flex-shrink-0 {

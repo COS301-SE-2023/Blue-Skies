@@ -221,7 +221,7 @@
         <div class="flex justify-between gap-4 w-full scale-75">
             @if (systems.Count > 0)
             {
-                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
+                <div class="flex flex-col w-full -mt-28 justify-center items-center gap-4">
                     <div class="mb-2 w-full flex flex-col">
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
@@ -255,25 +255,35 @@
                 <BatterySkeleton />
             }
         </div>
-        <div class="has-tooltip">
+        <div class="has-tooltip -mt-8">
             <Tooltip pointer="48" direction="left" translateX="-105">
                 <p>@tooltipService.GetTooltip("running hours on batteries")</p>
             </Tooltip>
             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
         </div>
-        <div class="flex relative flex-col justify-center w-full has-tooltip">
             <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
+        <div class="flex relative flex-row justify-center w-full has-tooltip">
+            <div class="flex flex-row w-full justify-center items-center gap-1">
                 @if(float.IsInfinity(dlh) || dlh == 99) {
                     string hexColor = calculationDataHandler.GetColorGradient(99);
-                    @* ToDo: Implement the hexColor Here too *@
-                    
+                    <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
                     <p class="text-5xl text-primary-900 font-semibold">99+</p>
                 } else {
-                    string hexColor = calculationDataHandler.GetColorGradient(99);
-                    @* ToDo: Implement the hexColor Here too *@
-
+                    string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                    <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                }
+                <p class="text-5xl text-gray-400 font-bold">h</p>
+            </div>
+            <div class="flex flex-row w-full justify-center items-center gap-1">
+                @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
+                    string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
+                    <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
+                    <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                } else {
+                    string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                    <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
+                    <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
                 }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
             </div>
