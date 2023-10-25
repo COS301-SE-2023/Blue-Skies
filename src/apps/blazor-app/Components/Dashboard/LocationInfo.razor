@@ -198,19 +198,12 @@
     public int solarScore { get; set; }
     [Parameter]
     public bool displayNewData { get; set; }
-    public int selectedSystem { get; set; }
+    [Parameter]
+    public int selectedSystem { get; set; } = 0;
     private bool displayImage = false;
 
     protected override void OnParametersSet()
     {
-        for (int i = 0; i < systems!.Count; i++)
-        {
-            if (reports![selectedReport].systemId == systems[i].systemId)
-            {
-                selectedSystem = i;
-            }
-        }
-
         if (currentLocationData != null)
         {
             if (currentLocationData.satteliteImageData != null)
