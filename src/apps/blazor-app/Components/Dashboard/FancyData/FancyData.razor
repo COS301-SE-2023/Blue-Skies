@@ -14,22 +14,12 @@
 }
 
     <div class="w-full">
-        @if (currentPage == "dashboard") {
-            <Heading>
-                <Header>
-                    <h1 class="text-xl">Advanced Calculations</h1>
-                </Header>
-                <Subscript>
-                    <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
-                </Subscript>
-            </Heading>
-        } else {
+        
             <Heading css="mb-8 mt-16 max-w-3xl mx-auto">
                 <Superscript><h1 class="text-center">Fancy Data and</h1></Superscript >
                 <Header><h1 class="text-center">Advanced Calculations</h1></Header>
-                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure."</p></Subscript>
+                <Subscript><p class="text-center">More information about your location. The flux map shows the your roof's sunlight exposure.</p></Subscript>
             </Heading>
-        }
 
         <div class="w-full md:flex justify-center items-center md:px-4 md:gap-2">
             @if (annualFluxDataReceived)
