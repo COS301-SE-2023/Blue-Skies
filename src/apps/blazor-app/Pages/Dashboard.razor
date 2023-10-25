@@ -595,34 +595,41 @@
 
     public async Task SwitchReport()
     {
-        chargingLimitPercentage = 0.0;
-        currentLocationData = new LocationDataModel();
-        Console.WriteLine("-----------------------------------------------------------");
-        Console.WriteLine("Switching Report");
-        cancellationTokenSource.Cancel();
-        cancellationTokenSource = new CancellationTokenSource();
-        appliancesLoaded = false;
-        imageName = "";
-        selectedAppliance = "";
-        await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
-        await SetSelectedSystem();
-        
-        int numTries = 0;
-        currentLocationData = null;
-        while(currentLocationData == null && numTries < 10) {
-            currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
-            numTries++;
-            await Task.Delay(1000);
-        }
-
-        if (currentLocationData != null)
+        if(reports.Count > 0)
         {
-            await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
-            await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
-            solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
+            chargingLimitPercentage = 0.0;
+            currentLocationData = new LocationDataModel();
+            Console.WriteLine("-----------------------------------------------------------");
+            Console.WriteLine("Switching Report");
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource = new CancellationTokenSource();
+            appliancesLoaded = false;
+            imageName = "";
+            selectedAppliance = "";
+            await ProtectedSessionStore.SetAsync("currentReport", reports[selectedReport]);
+            await SetSelectedSystem();
+            
+            int numTries = 0;
+            currentLocationData = null;
+            while(currentLocationData == null && numTries < 10) {
+                currentLocationData = await locationDataClass.GetInitialLocationData(reports[selectedReport].latitude, reports[selectedReport].longitude, null, cancellationTokenSource.Token);
+                numTries++;
+                await Task.Delay(1000);
+            }
+
+            if (currentLocationData != null)
+            {
+                await ProtectedSessionStore.SetAsync("latitude", currentLocationData.latitude);
+                await ProtectedSessionStore.SetAsync("longitude", currentLocationData.longitude);
+                solarScore = solarCalculator.getSolarScore(currentLocationData.solarPanelsData);
+            }
+            await updateAppliances();
+            _ = GetSatteliteImage();
         }
-        await updateAppliances();
-        _ = GetSatteliteImage();
+        else
+        {
+            Console.WriteLine("Cannot switch reports when reports is empty");
+        }
     }
 
     private void Dispose()
