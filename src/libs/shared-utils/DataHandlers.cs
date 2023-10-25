@@ -1266,8 +1266,7 @@ public class CalculationDataHandler
             blueValue = middleBottomB;
         } 
         else if (hours < (range / 2))
-        {
-            Console.WriteLine("Here 1");
+        {       
             float t = (hours - (range / 4)) / ((range / 2) - (range / 4)); 
             redValue = (byte)((t * middleBottomR) + (1 - t) * bottomR); // Decreasing red component
             greenValue = (byte)(t * middleBottomG + (1 - t) * bottomG); // Increasing green component
@@ -1275,7 +1274,6 @@ public class CalculationDataHandler
         }
         else
         {
-            Console.WriteLine("Here 2");
             float t = (hours - (range * 2 / 3)) / (range - (range * 2 / 3));
             redValue = (byte)(t * topR + (1 - t) * middleTopR); // Decreasing red component
             greenValue = (byte)(t * topG + (1 - t) * middleTopG); // Increasing green component

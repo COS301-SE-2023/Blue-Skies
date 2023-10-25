@@ -200,9 +200,9 @@
                     <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
                     <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                     @{
-                        if (float.IsInfinity(dlh))
+                        if (float.IsInfinity(dlh) || dlh == 99)
                         {
-                            <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                            <p class="text-5xl text-primary-900 font-semibold">99+</p>
                         }
                         else
                         {
@@ -372,8 +372,8 @@
             CalculateBatteryUtilisation();
             if (system != null && reportAllAppliance != null)
             {
-                runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, system.batterySize * 1000, reportAllAppliance);
-                concurrentRuntimePercentage = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
+                runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, (system.batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
+                concurrentRuntimePercentage = systemsDataHandler.CalculateConcurrentRunningHours(system.numberOfBatteries, (system.batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
                 appliancesLoaded = true;
             }   
             StateHasChanged();
