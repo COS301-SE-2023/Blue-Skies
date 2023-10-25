@@ -1062,7 +1062,6 @@ public class SystemsDataHandler
     }
 }
 
-
 public class CalculationDataHandler
 {
     SharedUtils.reportApplianceClass reportApplianceClass = new SharedUtils.reportApplianceClass();
@@ -1229,5 +1228,61 @@ public class CalculationDataHandler
         }
 
         return allAppliances;
+    }
+
+    public string GetColorGradient(float hours, float range = 12)
+    { 
+        // middle top : 46,90,155 
+        // middle bottom: 255,193,8 
+        // top 31, 56, 100 
+        // bottom 241,70,36)
+
+        byte topR = 31, topG = 56, topB = 100; //Top
+        byte middleTopR = 46, middleTopG = 90, middleTopB = 155; //Top middle
+        byte middleBottomR = 255, middleBottomG = 193, middleBottomB = 8; // Bottom middle
+        byte bottomR = 241, bottomG = 70, bottomB = 0; // Bottom
+        
+        byte redValue, greenValue, blueValue = 0;
+
+        if (hours <= range / 4)
+        {
+            redValue = bottomR;
+            greenValue = bottomG;
+            blueValue = bottomB;
+        }
+        else if (hours >= range)
+        {
+            redValue = topR;
+            greenValue = topG;
+            blueValue = topB;
+        } 
+        else if(hours < (range * 2 / 3) && hours >= (range / 2)) {
+            /* float t = (hours - (range / 2)) / ((range * 2 / 3 - (range / 2)));
+            redValue = (byte)(t * middleTopR + (1 - t) * middleBottomR); // Decreasing red component
+            greenValue = (byte)(t * middleTopG + (1 - t) * middleBottomG); // Increasing green component
+            blueValue = (byte)(t * middleTopB + (1 - t) * middleBottomB); // Increasing blue component */
+            redValue = middleBottomR;
+            greenValue = middleBottomG;
+            blueValue = middleBottomB;
+        } 
+        else if (hours < (range / 2))
+        {
+            Console.WriteLine("Here 1");
+            float t = (hours - (range / 4)) / ((range / 2) - (range / 4)); 
+            redValue = (byte)((t * middleBottomR) + (1 - t) * bottomR); // Decreasing red component
+            greenValue = (byte)(t * middleBottomG + (1 - t) * bottomG); // Increasing green component
+            blueValue = (byte)(t * middleBottomB + (1 - t) * bottomB); // Increasing blue component
+        }
+        else
+        {
+            Console.WriteLine("Here 2");
+            float t = (hours - (range * 2 / 3)) / (range - (range * 2 / 3));
+            redValue = (byte)(t * topR + (1 - t) * middleTopR); // Decreasing red component
+            greenValue = (byte)(t * topG + (1 - t) * middleTopG); // Increasing green component
+            blueValue = (byte)(t * topB + (1 - t) * middleTopB); // Increasing blue component
+        }
+
+        var color = Color.FromRgb(redValue, greenValue, blueValue);
+        return "#" + color.ToHex();
     }
 }
