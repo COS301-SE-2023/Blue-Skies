@@ -264,8 +264,8 @@
             </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                @if(float.IsInfinity(dlh) || dlh == 12) {
-                    <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                @if(float.IsInfinity(dlh) || dlh == 12 || dlh == 99) {
+                    <p class="text-5xl text-primary-900 font-semibold">99+</p>
                 } else {
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                 }
@@ -407,9 +407,9 @@
                 <DaylightChart hours="@dlh" daylightHours="@daylight" />
                 <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                         @{
-                            if (float.IsInfinity(dlh) || dlh == 12)
+                            if (float.IsInfinity(dlh) || dlh == 12 || dlh == 99)
                             {
-                                <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                                <p class="text-5xl text-primary-900 font-semibold">99+</p>
                             }
                             else
                             {
@@ -890,10 +890,9 @@
     }
 
     private void SetGraphicValues(){
-        var appliancePowerUsage = systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 1000.0;
+        var usableHours = solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true);
+        var appliancePowerUsage = (systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 1000.0) / (24 / usableHours);
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-        usableHours = Math.Round(usableHours, 2);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
         if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
         {
@@ -908,7 +907,13 @@
         }
         chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
 
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        if(chargingLimitPercentage > 100) {
+            chargingLimitPercentage = 100;
+        } else if (chargingLimitPercentage < 0) {
+            chargingLimitPercentage = 0;
+        }
+
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
     }
 
