@@ -717,7 +717,7 @@
 
     public void CustomSystemSelected()
     {
-        if (selectedSystem < 3)
+        if (systems[3].inverterOutput < 0)
         {
             systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
             systems[3].batterySize = systems[selectedSystem].batterySize;
