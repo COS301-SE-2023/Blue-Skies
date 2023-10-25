@@ -265,8 +265,14 @@
             <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                 @if(float.IsInfinity(dlh) || dlh == 99) {
-                    <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                    string hexColor = calculationDataHandler.GetColorGradient(99);
+                    @* ToDo: Implement the hexColor Here too *@
+                    
+                    <p class="text-5xl bg-[@hexColor] font-semibold">99+</p>
                 } else {
+                    string hexColor = calculationDataHandler.GetColorGradient(99);
+                    @* ToDo: Implement the hexColor Here too *@
+
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                 }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
@@ -409,10 +415,16 @@
                         @{
                             if (float.IsInfinity(dlh) || dlh == 99)
                             {
+                                string hexColor = calculationDataHandler.GetColorGradient(99);
+                                @* ToDo: Implement the hexColor Here too *@
+
                                 <p class="text-5xl text-primary-900 font-semibold">99+</p>
                             }
                             else
                             {
+                                string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                                @* ToDo: Implement the hexColor Here too *@
+
                                 <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                             }
                         }
