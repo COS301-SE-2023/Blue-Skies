@@ -652,7 +652,7 @@
         if (system != null && reportAllAppliance != null)
         {
             runningHoursPercentage = systemsDataHandler.CalculateRunningHours(system.numberOfBatteries, (system.batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
-            concurrentRuntime = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
+            concurrentRuntime = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), reportAllAppliance);
         }
         else
         {
