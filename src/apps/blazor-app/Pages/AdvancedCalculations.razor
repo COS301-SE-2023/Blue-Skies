@@ -273,6 +273,16 @@
                 }
 
             }
+            if(selectedSystem != 3)
+            {
+                for(int i = 0; i < systems.Count; i++)
+                {
+                    if (currentReport.systemId == systems[i].systemId)
+                    {
+                        selectedSystem = i;
+                    } 
+                }
+            }
 
 
         } else {

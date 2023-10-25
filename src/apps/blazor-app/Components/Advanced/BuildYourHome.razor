@@ -660,6 +660,14 @@
             homeSize = currentReport.homeSize;
            
         }
+        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
+        bool edit = editing.Value;
+        if(edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            ReportModel tempReport = rep.Value!;
+            homeSize = tempReport.homeSize;
+        }
         if (systems.Count > 0)
         {
             SetGraphicValues();
