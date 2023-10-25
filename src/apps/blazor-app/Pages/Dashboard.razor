@@ -201,7 +201,7 @@
     }
 
     private async Task GetSatteliteImage() {
-        if(currentLocationData != null && currentLocationData.satteliteImageData == null) {
+        if(currentLocationData != null) {
             currentLocationData = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
             StateHasChanged();
         }
