@@ -338,7 +338,11 @@ private async void IncrementAppliancePage(){
             {
                 IncrementAppliance(defaultAppliance);
                 StateHasChanged();
-            } else {
+            } 
+            
+            @*
+            Impossible state I believe, however I am keeping this here just in case
+             else {
                 appliances.Add(new ApplianceModel
                 {
                     name = "Default",
@@ -348,9 +352,15 @@ private async void IncrementAppliancePage(){
                     powerUsage = power
                 });
                 StateHasChanged();
-            }
+            } *@
         } else {
             ApplianceModel? newModelGroup = appliances.FirstOrDefault(appliance => appliance.type == type && appliance.name == name && appliance.powerUsage == power);
+            double duration = 0;
+            if(defaultAppliance != null)
+            {
+                duration = defaultAppliance.durationUsed;
+            }
+
             if(newModelGroup != null) {
                 IncrementAppliance(newModelGroup);
                 StateHasChanged();
@@ -360,7 +370,7 @@ private async void IncrementAppliancePage(){
                     name = name,
                     type = type,
                     quantity = 1,
-                    durationUsed = 0,
+                    durationUsed = duration,
                     powerUsage = power
                 });
                 StateHasChanged();
