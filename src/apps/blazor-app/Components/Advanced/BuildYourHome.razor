@@ -262,7 +262,7 @@
             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
         </div>
         <div class="flex relative flex-col justify-center w-full has-tooltip">
-            <DaylightChart hours="@dlh" daylightHours="@daylight" />
+            <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                 @if(float.IsInfinity(dlh) || dlh == 12 || dlh == 99) {
                     <p class="text-5xl text-primary-900 font-semibold">99+</p>
@@ -916,7 +916,8 @@
 
         runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-        concurrentRuntime = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
+        var concurrentRuntimePercentage = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
+        concurrentRuntime = (float)Math.Round((24 - daylight) * (concurrentRuntimePercentage / 100), 2);
     }
 
     /// <summary>

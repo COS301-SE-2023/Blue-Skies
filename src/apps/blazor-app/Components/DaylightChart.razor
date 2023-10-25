@@ -9,8 +9,6 @@
     [Parameter]
     public float daylightHours { get; set; } = 12;
     [Parameter]
-    public bool fullDay { get; set; } = false;
-    [Parameter]
     public float? concurrent { get; set; }
     protected override void OnParametersSet()
     {
@@ -56,7 +54,7 @@
                         Mode = InteractionMode.Index,
                         Intersect = false
                     },
-                    CutoutPercentage = 80
+                    CutoutPercentage = 70
                 },
             };
     }
@@ -70,17 +68,12 @@
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
 
-        foreach (string label in new[] { "Runnable Hours", "Remaining" })
+        foreach (string label in new[] { "Runnable Hours", "Remaining"})
         {
             pieConfig.Data.Labels.Add(label);
         }
-        float remaining = 0;
-        if (fullDay)
-        {
-            remaining = 24 - hours;
-        } else {
-            remaining = (24 - daylightHours) - hours;
-        }
+        float remaining = (24 - daylightHours) - hours;
+
 
         if(remaining < 0)
         {
@@ -92,7 +85,12 @@
             BackgroundColor = GetColorGradient(hours),
         };
         if (concurrent != null) {
-            PieDataset<float> pieDataset2 = new PieDataset<float>(new[] { hours - 6, remaining })
+            float concurrentRemaining = (24 - daylightHours) - (float) concurrent;
+            if(concurrentRemaining < 0)
+            {
+                concurrentRemaining = 0;
+            }
+            PieDataset<float> pieDataset2 = new PieDataset<float>(new[] { (float) concurrent, concurrentRemaining })
             {
                 BackgroundColor = GetColorGradient(12 - hours),
             };
