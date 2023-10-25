@@ -255,13 +255,13 @@
                 <BatterySkeleton />
             }
         </div>
-        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
+        <div class="has-tooltip">
+            <Tooltip pointer="48" direction="left" translateX="-105">
+                <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+            </Tooltip>
+            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
+        </div>
         <div class="flex relative flex-col justify-center w-full has-tooltip">
-            <div>
-                <Tooltip pointer="48">
-                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                </Tooltip>
-            </div>
             <DaylightChart hours="@dlh" daylightHours="@daylight" />
             <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
                 @if(float.IsInfinity(dlh) || dlh == 12 || dlh == 99) {
