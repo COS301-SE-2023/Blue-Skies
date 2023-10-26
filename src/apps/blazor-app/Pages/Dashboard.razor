@@ -8,12 +8,14 @@
 @using ApplianceEnergyConsumption
 @using BlazorApp.Models;
 @using BlazorApp.Components.Advanced
+@using BlazorApp.Components.Advanced.Skeletons
 @inject BlazorApp.Data.ReportManager reportManager
 @inject ProtectedLocalStorage ProtectedLocalStore
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TooltipService tooltipService
+
 
 <PageTitle>Dashboard - Blue Skies</PageTitle>
 <div class="fade-in-active px-1 md:px-5">
@@ -32,7 +34,16 @@
             {
                     <LocationInfo css="mt-8" reports="reports" selectedReport="selectedReport" currentLocationData="@currentLocationData" systems="systems" selectedSystem="selectedSystem" solarScore="solarScore" displayNewData="@currentLocationDataReceived"/>
                     <div class="md:w-2/5 w-4/5 mt-10">
-                        <Tabs @bind-Items="tabs" ></Tabs>
+                        @if (currentLocationDataReceived){
+                            <Tabs @bind-Items="tabs" ></Tabs>
+                        } else {
+                            <div class="w-full">
+                                <div role="status" class="animate-pulse justify-center w-full max-w-2xl mx-auto -mt-6">
+                                    <div class="h-9 bg-gray-200 rounded-lg mt-4"></div>
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        }
                     </div>
                     <div class="w-full mt-10">
                         @if(tabs[0].active) {
