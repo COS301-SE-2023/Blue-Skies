@@ -4,20 +4,15 @@
 @inject IJSRuntime JSRuntime
 
 
-<div class="border-primary-500 transition-all duration-200 border-1 p-1 md:p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
+<div class="border-primary-500 transition-all duration-200 border-1 px-2 py-4 md:p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
     <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
-        <Header><h1 class="text-center">Customise your Appliances</h1></Header>
-        <Subscript><p class="text-center max-w-4xl">After adding appliances above, specify models and power usage below. For unlisted appliances, input custom power usage.
-
-
-
-
-</p></Subscript>
+        <Header><h1 class="text-center text-3xl md:text-4xl">Customise your Appliances</h1></Header>
+        <Subscript><p class="text-center mx-auto w-3/4 md:w-full max-w-4xl">After adding appliances above, specify models and power usage below. For unlisted appliances, input custom power usage.</p></Subscript>
     </Heading>
 
     <div class='flex rounded-2xl max-w-7xl relative gap-8 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
-        <div class="my-auto -ml-5 h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+        <div class="my-auto -ml-10 md:ml-0 h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
             <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                 css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
         </div>
@@ -60,7 +55,7 @@
                 }
             }
         </div>
-        <div class="my-auto -mr-5 h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+        <div class="my-auto -mr-10 md:ml-0 h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
             <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                 css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
         </div>
@@ -68,14 +63,14 @@
 
     @if (selectedAppliance != "" && appliances != null && appliances.Where(x => x.type == selectedAppliance)?.LastOrDefault()?.quantity != 0) {
 
-        <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-14 rounded-2xl">
+        <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-2 md:p-4 -mt-14 rounded-2xl">
             @* Add variant button *@
-            <div class="flex mt-2 gap-4 mb-5">
-                    <div class="w-2/3 my-auto">
+            <div class="flex flex-col md:flex-row mt-2 gap-4 mb-5">
+                    <div class="w-full mt-2 md:mt-0 md:w-2/3 px-3 md:px-0 my-auto">
                         <label class="text-gray-400 my-auto">Search for your appliance:</label>
                         <SelectVariant @bind-value="value" @bind-powerUsage="powerUsage" type="@selectedAppliance" customAppliances="@customAppliances" />
                     </div>
-                <div class="my-auto translate-y-2"  @onclick='@(() => AddVariant(value!, selectedAppliance, powerUsage ))'>
+                <div class="my-auto px-4 md:px-0 translate-y-2"  @onclick='@(() => AddVariant(value!, selectedAppliance, powerUsage ))'>
                     <Button style="pill">
                             <p>Add Variant</p>
                     </Button>
@@ -88,7 +83,7 @@
                 {
                     string durationUniqueName = "duration" + item.name + item.type + item.GetHashCode();
                     string powerUniqueName = "power" + item.name + item.type + item.GetHashCode();
-                    <div class="flex gap-4">
+                    <div class="flex flex-col md:flex-row justify-center items-center gap-4">
                         <div class="flex w-fit justify-center gap-4">
                             <div class="transition-all w-full my-auto duration-300 hover:-translate-y-1 hover:cursor-pointer" @onclick="@(() => DecrementAppliance(item))">
                                 <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,18 +106,20 @@
                             <input name="applianceName" id="applianceName" type="text" @bind="@item.name" class="w-full h-fit my-auto rounded-md -translate-y-2 p-3">
                         </div>
 
-                        <div class="w-1/4">
-                            <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration of Usage:</label>
-                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0" max="24" name="applianceDuration" id="@durationUniqueName" @bind="@item.durationUsed" type="number" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
-                                <span class="text-gray-400 text-end w-full p-3 rounded-md">hrs</span>
+                        <div class="flex w-full gap-1">
+                            <div class="w-fit">
+                                <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
+                                <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                    <input min="0"  name="@item.name" id="@powerUniqueName" type="number" value="@item.powerUsage" @onchange="@(e => UpdateAppliancePower(item, e))" class="w-20 h-fit my-auto rounded-md p-3 ">
+                                    <span class="text-gray-400 text-end w-full p-3 rounded-md">W/h</span>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <label class="-translate-y-2 text-gray-400 mb-2" for="appliancePower">Power Usage:</label>
-                            <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
-                                <input min="0"  name="@item.name" id="@powerUniqueName" type="number" value="@item.powerUsage" @onchange="@(e => UpdateAppliancePower(item, e))" class="w-fit h-fit my-auto rounded-md p-3 ">
-                                <span class="text-gray-400 text-end w-full p-3 rounded-md">W/h</span>
+                            <div class="w-fit ">
+                                <label class="-translat e-y-2 text-gray-400 mb-2" for="applianceDuration">Usage Duration:</label>
+                                <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
+                                    <input min="0" max="24" name="applianceDuration" id="@durationUniqueName" @bind="@item.durationUsed" type="number" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-20 h-fit my-auto rounded-md p-3 ">
+                                    <span class="text-gray-400 text-end w-full p-3 rounded-md">hrs</span>
+                                </div>
                             </div>
                         </div>
                     </div>
