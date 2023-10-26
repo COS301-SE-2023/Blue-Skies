@@ -38,7 +38,7 @@ Users can then use our advanced calculation tool where they can customise the ca
 
 <a href="https://youtu.be/a4ot1eemGFk">Full Demo recording</a><br>
 <a href="https://www.canva.com/design/DAFyMY6PfOM/zEjeHdoBG8bhclJEp1lJWw/edit?utm_content=DAFyMY6PfOM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton">Slideshow</a><br>
-<a href="https://youtu.be/ptEBvn3Ju6Q">Video Advert</a><br>
+<a href="https://youtu.be/KqEmTsj7cFk">Video Advert</a><br>
 <a href="https://www.blueskies-solar.co.za/">Deployed Website</a> - Tutorial available under 'Help' button<br>
 <a href="https://github.com/COS301-SE-2023/Blue-Skies/blob/main/docs/other/Technical%20Installation%20Manual.pdf">Technical Installation Manual</a><br>
 To contribute to this project email us at: debuggersanonymous2023@gmail.com
