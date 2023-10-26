@@ -73,7 +73,7 @@
             @if(tabs[0].active) {
                 <div class="fade-in-active px-2">
                     <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
-                    <div class="px-4 md:px-10 w-full mt-10 md:mt-0">
+                    <div class="px-1 md:px-10 w-full mt-10 md:mt-0">
                         <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                     </div>
                 </div>

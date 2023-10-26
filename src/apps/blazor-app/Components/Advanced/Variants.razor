@@ -16,7 +16,7 @@
             <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                 css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
         </div>
-        <div class="flex justify-center w-1/2 @applianceAnimation">
+        <div class="flex justify-center w-1/3 @applianceAnimation">
             @if (appliances != null)
             {
                 @* call and await async function *@
@@ -44,7 +44,7 @@
                                         selectedAppliance = selectedAppliances[j + appliancesPage*noOfAppliancesInView].type!;
                                     }
                                     ApplianceModel? appl = selectedAppliances[j + appliancesPage*noOfAppliancesInView];
-                                    <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") scale-75 md:scale-100 p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
+                                    <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") scale-90 md:scale-100 p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
                                         <Appliance fade="@appl.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appl.type + ".svg")" name="@appl.type" count="@appl.quantity" />
                                     </div>
                                 i++;
@@ -115,7 +115,7 @@
                                 </div>
                             </div>
                             <div class="w-fit ">
-                                <label class="-translat e-y-2 text-gray-400 mb-2" for="applianceDuration">Usage Duration:</label>
+                                <label class="-translate-y-2 text-gray-400 mb-2" for="applianceDuration">Duration Usage:</label>
                                 <div class="bg-white pl-3 w-fit flex h-fit my-auto rounded-md -translate-y-2">
                                     <input min="0" max="24" name="applianceDuration" id="@durationUniqueName" @bind="@item.durationUsed" type="number" @oninput="@(e => UpdateApplianceDuration(item, e))" class="w-20 h-fit my-auto rounded-md p-3 ">
                                     <span class="text-gray-400 text-end w-full p-3 rounded-md">hrs</span>
@@ -179,7 +179,7 @@
 async Task SetNoOfAppliancesInView()
 {
     bool isMobile = await IsMobileViewport();
-    noOfAppliancesInView = isMobile ? 3 : 5;
+    noOfAppliancesInView = isMobile ? 2 : 5;
 }
 
 
