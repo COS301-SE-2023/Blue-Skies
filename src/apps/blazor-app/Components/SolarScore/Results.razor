@@ -165,25 +165,25 @@
                             <div class="flex flex-col w-full justify-center items-center gap-10">
                                 <div class="flex flex-row gap-2 items-center mt-4">
                                     @{
+                                        string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                                    }
+                                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                                    <div class="flex flex-row gap-1 mr-5 has-tooltip">
+                                        <Tooltip pointer="45">
+                                            <p>@tooltipService.GetTooltip("simultaneous running hours")</p>
+                                        </Tooltip>
+                                        <p class='text-green-600" text-3xl  font-semibold'>@concurrentRuntime</p>
+                                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                                    </div>
+                                    @{
                                         string hexColor = calculationDataHandler.GetColorGradient(dlh);
                                     }
                                     <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
-                                    <div class="flex flex-row gap-1 mr-5 has-tooltip">
+                                    <div class="flex flex-row gap-1  has-tooltip">
                                         <Tooltip pointer="45" direction="top">
                                             <p>@tooltipService.GetTooltip("running hours on batteries")</p>
                                         </Tooltip>
                                         <p class='text-green-600" text-3xl  font-semibold'>@dlh</p>
-                                        <p class="text-3xl text-gray-400 font-bold">h</p>
-                                    </div>
-                                    @{
-                                        string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
-                                    }
-                                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
-                                    <div class="flex flex-row gap-1 has-tooltip">
-                                        <Tooltip pointer="45">
-                                            <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                                        </Tooltip>
-                                        <p class='text-green-600" text-3xl  font-semibold'>@concurrentRuntime</p>
                                         <p class="text-3xl text-gray-400 font-bold">h</p>
                                     </div>
                                 </div>

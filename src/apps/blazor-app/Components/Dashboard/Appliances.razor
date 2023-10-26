@@ -3,6 +3,7 @@
 @using BlazorApp.Components.Base
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject BlazorApp.Data.ToastService toastService
+@inject BlazorApp.Data.TooltipService tooltipService
 
 <Card>
     @if (appliancesLoaded)
@@ -203,27 +204,33 @@
             <div class="flex flex-row justify-center w-full has-tooltip">
                 @if (appliancesLoaded)
                 {
-                    <div class="flex flex-row justify-center items-center gap-1 mr-16">
-                        @if(float.IsInfinity(dlh) || dlh == 99) {
-                            string hexColor = calculationDataHandler.GetColorGradient(99);
-                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
+                    <div class="flex flex-row justify-center items-center gap-1 has-tooltip mr-16">
+                        <Tooltip pointer="45" direction="top">
+                            <p class="max-w-sm">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                        </Tooltip>
+                        @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
                             <p class="text-5xl text-primary-900 font-semibold">99+</p>
                         } else {
-                            string hexColor = calculationDataHandler.GetColorGradient(dlh);
-                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                            <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
                         }
                         <p class="text-5xl text-gray-400 font-bold">h</p>
                     </div>
                     <div class="flex flex-row justify-center items-center gap-1">
-                        @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
-                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
-                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
+                        <Tooltip pointer="45" direction="top">
+                            <p class="max-w-sm">@tooltipService.GetTooltip("running hours on batteries has-tooltip")</p>
+                        </Tooltip>
+                        @if(float.IsInfinity(dlh) || dlh == 99) {
+                            string hexColor = calculationDataHandler.GetColorGradient(99);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
                             <p class="text-5xl text-primary-900 font-semibold">99+</p>
                         } else {
-                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
-                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
+                            string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
+                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                         }
                         <p class="text-5xl text-gray-400 font-bold">h</p>
                     </div>
