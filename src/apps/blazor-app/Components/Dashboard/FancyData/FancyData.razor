@@ -23,10 +23,10 @@
 
             <Heading css="md:hidden mb-8 text-center md:text-left">
                 <Header>
-                    <h1 class="text-3xl md:2xl">Appliances</h1>
+                    <h1 class="text-3xl md:2xl">Fancy Data</h1>
                 </Header>
                 <Subscript>
-                    <p>What appliances do you want to run on solar power?</p>
+                    <p>More information about your location. The flux map shows the your roof's sunlight exposure.</p>
                 </Subscript>
             </Heading>
 
@@ -68,7 +68,7 @@
                             }
 
                             <div class="flex w-full gap-4 has-tooltip">
-                                <Tooltip>
+                                        <Tooltip  translateY="-110" pointer="45">
                                     <p>@tooltipService.SetCustomTooltip("Rooftop area")</p>
                                 </Tooltip>
                                 <Image ImageName="Home.svg" alt="Home Icon" css="w-5 h-5 md:w-8 md:h-8" />
@@ -76,7 +76,7 @@
                             </div>
 
                             <div class="flex w-full gap-4 has-tooltip">
-                                <Tooltip>
+                                        <Tooltip  translateY="-110" pointer="45">
                                     <p>@tooltipService.SetCustomTooltip("Max solar panels that will fit")</p>
                                 </Tooltip>
                                 <Image ImageName="SolarPanels.svg" alt="Solar Panels Icon" css="w-5 h-5 md:w-8 md:h-8" />
@@ -84,7 +84,7 @@
                             </div>
 
                             <div class="flex w-full gap-4 has-tooltip">
-                                <Tooltip>
+                                        <Tooltip  translateY="-110" pointer="45">
                                     <p>@tooltipService.SetCustomTooltip("Area of the roof, suitable for solar panels")</p>
                                 </Tooltip>
                                 <Image ImageName="Area.svg" alt="Area Icon" css="w-5 h-5 md:w-8 md:h-8" />
@@ -92,7 +92,7 @@
                             </div>
 
                             <div class="flex w-full gap-4 has-tooltip">
-                                <Tooltip>
+                                        <Tooltip  translateY="-110" pointer="45">
                                     <p>@tooltipService.SetCustomTooltip("Total usable sunlight times per day")</p>
                                 </Tooltip>
                                 <Image ImageName="Sun-outline.svg" alt="Sun Icon" css="w-5 h-5 md:w-8 md:h-8" />
@@ -161,7 +161,7 @@
 
         <div class="md:flex w-full justify-center gap-5 px-4 items-center mt-32">
             <div class="md:w-2/3">
-                <h1 class="text-center text-primary-800 font-semibold text-xl">Sun path over the horizon</h1>
+                <h1 class="text-center text-primarcy-800 font-semibold text-xl">Sun path over the horizon</h1>
                     <p class="text-gray-500 mt-3 mb-4 text-center">This is a graph showing the path of the sun as it travels
                      over the address during different times of the year.
                      The red dot in the center represents the address you typed in.</p>
@@ -188,7 +188,6 @@
                     <div class="w-5 h-5 border border-primary-200 rounded-lg bg-orange-accent-600 my-auto"></div>
                     <p class="text-base text-primary-800 my-auto">Sun - Summer Solstice</p>
                 </div>
-
         </Card>
     </div>
 </div>

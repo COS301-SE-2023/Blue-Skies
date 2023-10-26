@@ -145,6 +145,7 @@
             tempX[i] = xValues[i];
             tempY[i] = yValues[i];
         }
+
         for (int i = 0; i < xValues.Length; i++)
         {
             if (i < xValues.Length / 2)
@@ -199,13 +200,24 @@
             if(xValues[i] == 0) {
                 label = "N : " + label;
             } else if (xValues[i] == 90) {
-                label = "E : " + label;
+                label = "W : " + label;
             } else if (xValues[i] == 180 || xValues[i] == -180) {
                 label = "S : " + label;
             } else if (xValues[i] == -90) {
-                label = "W : " + label;
+                label = "E : " + label;
             }
             lineConfig.Data.Labels.Add(label);
+        }
+
+        @* Switch y values  *@
+        tempY = new double[yValues.Length];
+        for (int i = 0; i < yValues.Length; i++)
+        {
+            tempY[i] = yValues[i];
+        }
+        for (int i = 0; i < yValues.Length; i++)
+        {
+            yValues[i] = tempY[yValues.Length - 1 - i];
         }
 
         IDataset<double> elevationDataset = new LineDataset<double>(yValues)
@@ -227,6 +239,7 @@
 
         @* Set the max YAxes to 1.25 the max value of the highest elevation point *@
         double maxY = Math.Max(yValues.Max(), 80) * 1.25;
+
 
         lineConfig.Options.Scales = new Scales
         {

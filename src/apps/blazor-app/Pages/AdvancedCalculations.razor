@@ -72,7 +72,7 @@
         <div class="w-full">
             @if(tabs[0].active) {
                 <div class="fade-in-active px-2">
-                    <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
+                    <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" calculationName="calculationName"/>
                     <div class="px-1 md:px-10 w-full mt-10 md:mt-0">
                         <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                     </div>
@@ -152,7 +152,7 @@
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
     private int selectedSystem = 0;
-    private string calculationName {get; set;} = "";
+    private string calculationName = "";
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private List<TabItemModel> tabs = new List<TabItemModel>
     {
@@ -247,6 +247,7 @@
         {
             var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
             currentReport = rep.Value!;
+            calculationName = currentReport.reportName!;
             List<ApplianceModel>? tempAppliances = await calculationDataHandler.GetReportAllAppliancesByReport(currentReport.reportId);
                 
             if(tempAppliances != null) {
@@ -329,9 +330,11 @@
 
     public void SaveCalculation()
     {
-        tabs[0].active = true;
-        tabs[1].active = false;
-        tabs[2].active = false;
+        if(tabs[0].active == false) {
+            tabs[0].active = true;
+            tabs[1].active = false;
+            tabs[2].active = false;
+        }
         ModalPopup.Show();
     }
     public async void CallSaveCalculation()

@@ -29,26 +29,25 @@
     }
 
     <div class="p-2 md:p-10 justify-start flex flex-col rounded-3xl w-full">
-        <div class="grid grid-cols-2 md:flex gap-4 justify-center">
-            
+        <div class="flex w-full">
         @{
             @* call and await async function *@
-                Task.Run(async () => await SetNoOfAppliancesInView());
+            Task.Run(async () => await SetNoOfAppliancesInView());
             @* Loop over allAppliances *@
             if (appliancesLoaded)
             {
-                <div class='flex rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                <div class='flex rounded-2xl relative gap-10 scale-90 w-full flex-shrink-0 mx-auto justify-center items-center'>
+                    <div class="my-auto -ml-5 md:-mr-0 h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
                         <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                             css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                     </div>
-                    <div class="flex justify-center w-1/2 @applianceAnimation">
+                    <div class="flex justify-center items-center w-1/2 @applianceAnimation">
                         @{
                             applianceNumberOfPage = (int)Math.Ceiling((double)allAppliances.Count / noOfAppliancesInView);
                         }
                         @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < allAppliances.Count; j++)
                         {
-                            KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*5);
+                            KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*noOfAppliancesInView);
                             string iconName = app.Key + ".svg";
                             int count = 0;
                             List<ApplianceModel> tempAppliances = app.Value;
@@ -61,7 +60,7 @@
                             </div>   
                         }
                     </div>
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+                    <div class="my-auto -mr-5 md:mr-0 h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
                         <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                             css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                     </div>
@@ -125,12 +124,11 @@
                 </div>
             }
         } 
-        
     }
     </div>
     <div class="flex flex-col md:flex-row w-full mt-5">
         <div class="w-full flex flex-col gap-4 justify-start items-center">
-            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
+            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
             @if (runningHoursPercentage != 0)
             {
                 dlh = 0;
@@ -192,7 +190,10 @@
 
             <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
             <div class="flex flex-col gap-2 justify-center items-center w-full">
-                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">  
+                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg has-tooltip">
+                    <Tooltip pointer="20" translateY="-420">
+                        <p class="md:w-72">@tooltipService.GetTooltip("battery utilisation")</p>
+                    </Tooltip>  
                     @{
                         var percentage = chargingLimitPercentage + "%";
                     }
@@ -403,7 +404,8 @@
         }
     }
 
-    private async void IncrementAppliancePage(){
+  private async void IncrementAppliancePage(){
+        Console.WriteLine("Incrementing: " + appliancesPage + " " + applianceNumberOfPage + " " + noOfAppliancesInView);
         applianceAnimation = "appliance-slide-out-left";
         StateHasChanged();
         await Task.Delay(100);
@@ -416,6 +418,7 @@
         StateHasChanged();
     }
     private async void DecrementAppliancePage(){
+        Console.WriteLine("Decrementing: " + appliancesPage + " " + applianceNumberOfPage + " " + noOfAppliancesInView);
         applianceAnimation = "appliance-slide-out-right";
         StateHasChanged();
         await Task.Delay(100);
