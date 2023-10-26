@@ -221,7 +221,7 @@
         <div class="flex justify-between gap-4 w-full scale-75">
             @if (systems.Count > 0)
             {
-                <div class="flex flex-col w-full -mt-28 justify-center items-center gap-4">
+                <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <div class="mb-2 w-full flex flex-col">
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
@@ -265,7 +265,7 @@
         <div class="flex flex-row justify-center w-full">
             <div class="flex flex-row w-full justify-center items-center gap-1 has-tooltip">
                 <Tooltip pointer="45" direction="top">
-                    <p>@tooltipService.GetTooltip("simultaneous running hours")</p>
+                    <p class="md:w-48">@tooltipService.GetTooltip("simultaneous running hours")</p>
                 </Tooltip>
                 @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
                     string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
@@ -280,7 +280,7 @@
             </div>
             <div class="flex flex-row w-full justify-center items-center gap-1 has-tooltip">
                 <Tooltip pointer="45" direction="top">
-                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                    <p class="md:w-48">@tooltipService.GetTooltip("running hours on batteries")</p>
                 </Tooltip>
                 @if(float.IsInfinity(dlh) || dlh == 99) {
                     string hexColor = calculationDataHandler.GetColorGradient(99);

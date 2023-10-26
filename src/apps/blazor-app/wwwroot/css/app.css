@@ -1292,6 +1292,10 @@ video {
   margin-right: 4rem;
 }
 
+.-mt-24 {
+  margin-top: -6rem;
+}
+
 .block {
   display: block;
 }
@@ -4354,6 +4358,10 @@ html {
     top: 0.75rem;
   }
 
+  .md\:m-48 {
+    margin: 12rem;
+  }
+
   .md\:mx-auto {
     margin-left: auto;
     margin-right: auto;
@@ -4499,6 +4507,14 @@ html {
 
   .md\:w-full {
     width: 100%;
+  }
+
+  .md\:w-40 {
+    width: 10rem;
+  }
+
+  .md\:w-48 {
+    width: 12rem;
   }
 
   .md\:flex-shrink-0 {

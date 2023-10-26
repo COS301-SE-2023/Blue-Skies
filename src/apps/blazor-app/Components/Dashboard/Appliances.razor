@@ -206,7 +206,7 @@
                 {
                     <div class="flex flex-row justify-center items-center gap-1 has-tooltip mr-16">
                         <Tooltip pointer="45" direction="top">
-                            <p class="max-w-sm">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                            <p class="md:m-48">@tooltipService.GetTooltip("simultaneous running hours")</p>
                         </Tooltip>
                         @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
                             string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
@@ -221,7 +221,7 @@
                     </div>
                     <div class="flex flex-row justify-center items-center gap-1">
                         <Tooltip pointer="45" direction="top">
-                            <p class="max-w-sm">@tooltipService.GetTooltip("running hours on batteries has-tooltip")</p>
+                            <p class="md:m-48">@tooltipService.GetTooltip("running hours on batteries has-tooltip")</p>
                         </Tooltip>
                         @if(float.IsInfinity(dlh) || dlh == 99) {
                             string hexColor = calculationDataHandler.GetColorGradient(99);

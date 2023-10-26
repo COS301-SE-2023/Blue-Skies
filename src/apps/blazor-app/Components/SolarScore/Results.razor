@@ -170,7 +170,7 @@
                                     <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
                                     <div class="flex flex-row gap-1 mr-5 has-tooltip">
                                         <Tooltip pointer="45">
-                                            <p>@tooltipService.GetTooltip("simultaneous running hours")</p>
+                                            <p class="md:w-48">@tooltipService.GetTooltip("simultaneous running hours")</p>
                                         </Tooltip>
                                         <p class='text-green-600" text-3xl  font-semibold'>@concurrentRuntime</p>
                                         <p class="text-3xl text-gray-400 font-bold">h</p>
@@ -181,7 +181,7 @@
                                     <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
                                     <div class="flex flex-row gap-1  has-tooltip">
                                         <Tooltip pointer="45" direction="top">
-                                            <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+                                            <p class="md:w-48">@tooltipService.GetTooltip("running hours on batteries")</p>
                                         </Tooltip>
                                         <p class='text-green-600" text-3xl  font-semibold'>@dlh</p>
                                         <p class="text-3xl text-gray-400 font-bold">h</p>
