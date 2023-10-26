@@ -1024,17 +1024,13 @@ public class SystemsDataHandler
             return 825; //Equates to 99 hours
         }
 
-        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
-
         float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
 
         if(runningHoursPercentage > 825) {
             runningHoursPercentage = 825;
         }
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
 
         return runningHoursPercentage;
     }
@@ -1048,15 +1044,12 @@ public class SystemsDataHandler
             return 825; //Equates to 99 hours
         }
 
-        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
-
         float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
         if(runningHoursPercentage > 825) {
             runningHoursPercentage = 825;
         }
-        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
 
         return runningHoursPercentage;
     }

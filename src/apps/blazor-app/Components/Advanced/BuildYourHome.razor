@@ -11,6 +11,7 @@
 @inject BlazorApp.Data.ApplianceService applianceService
 @inject BlazorApp.Data.TooltipService tooltipService
 @using System.Timers
+@using System.Text.RegularExpressions;
 @implements IDisposable
 
 
@@ -567,7 +568,7 @@
         </div>
 </ModalPopup>  
 
-<ModalPopup @ref="ModalPopup" Title="Save your calculation?">
+<ModalPopup @ref="NameModalPopup" Title="Save your calculation?">
     @if (edit)
     {
             <p>Rename this calculation?</p>
@@ -594,7 +595,7 @@
                     </Button>
                 </div>
         }
-            <div @onclick="ModalPopup.Dismiss">
+            <div @onclick="NameModalPopup.Dismiss">
                 <Button style="outline">
                     <p>Cancel</p>
                 </Button>
@@ -628,7 +629,7 @@
     public LocationDataModel? currentLocationData { get; set; }
     private List<ReportModel> reports = new List<ReportModel>();
     private int userId = -1;
-    public ModalPopup ModalPopup { get; set; } = new ModalPopup();
+    public ModalPopup NameModalPopup { get; set; } = new ModalPopup();
     private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
     [Parameter]
     public string? calculationName { get; set; }
@@ -1119,61 +1120,76 @@
 
     public async void SaveCalculation()
     {
+        NameModalPopup.Dismiss();
+        StateHasChanged();
         Console.WriteLine("Saving Calculation");
-        ModalPopup.Dismiss();
         var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
         if (calcName.Value != null)
         {
-            calculationName = calcName.Value;
-            await ProtectedSessionStore.DeleteAsync("calculationName");
-        }
-        if (selectedSystem == 3)
-        {
-            systems[3].systemId = await systemClass.CreateSystem(systems[3]);
-            Console.WriteLine("Custom System ID: " + systems[3].systemId);
-        }
-        int reportId = -1;
-        if(appliances != null) {
-            reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, appliances);
-        }
-        if (reportId != -1)
-        {
-            toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
-            await ProtectedSessionStore.SetAsync("createdReport", reportId);
-            await ProtectedSessionStore.SetAsync("currentReport", reportId);
-            NavigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
-            toastService.ShowToast("Error", "Report failed to save.", "error");
-        }
+            Match m = Regex.Match(calcName.Value, @"^[a-zA-Z0-9 ]+$", RegexOptions.IgnoreCase);
 
+            if(m.Success) {
+                calculationName = calcName.Value;
+                await ProtectedSessionStore.DeleteAsync("calculationName");
+                if (selectedSystem == 3)
+                {
+                    systems[3].systemId = await systemClass.CreateSystem(systems[3]);
+                    Console.WriteLine("Custom System ID: " + systems[3].systemId);
+                }
+                int reportId = -1;
+                if(appliances != null) {
+                    reportId = await calculationDataHandler.SaveCalculation(calculationName!, userId, homeSize, currentReport!.latitude, currentReport.longitude, systems[selectedSystem].systemId, appliances);
+                }
+                if (reportId != -1)
+                {
+                    toastService.ShowToast("Saved Calculation", "Report successfuly saved.", "success");
+                    await ProtectedSessionStore.SetAsync("createdReport", reportId);
+                    await ProtectedSessionStore.SetAsync("currentReport", reportId);
+                    NavigationManager.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    toastService.ShowToast("Error", "Report failed to save.", "error");
+                }
+            } else {
+                toastService.ShowToast("Error", "Please enter a valid name for your calculation.", "error");
+            }
+        }
     }
 
     public async Task UpdateCalculation()
     {
+        NameModalPopup.Dismiss();
+        StateHasChanged();
+        Console.WriteLine("Updating Calculation");
         var calcName = await ProtectedSessionStore.GetAsync<string>("calculationName");
         if (calcName.Value != null)
         {
-            calculationName = calcName.Value;
-            await ProtectedSessionStore.DeleteAsync("calculationName");
+            Match m = Regex.Match(calcName.Value, @"^[a-zA-Z0-9 ]+$", RegexOptions.IgnoreCase);
+
+            if(m.Success) {
+                calculationName = calcName.Value;
+                await ProtectedSessionStore.DeleteAsync("calculationName");
+                Console.WriteLine("Update Calculation, new name: " + calculationName);
+                if (selectedSystem == 3)
+                {
+                    systems[3].systemId = await systemClass.CreateSystem(systems[3]);
+                    Console.WriteLine("Custom System ID: " + systems[3].systemId);
+                }
+                if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances, systems[selectedSystem].systemId, homeSize))
+                {
+                    toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
+                    NavigationManager.NavigateTo("/dashboard");
+                }
+                else
+                {
+                    toastService.ShowToast("Error", "Report failed to update.", "error");
+                }
+                NavigationManager.NavigateTo("/dashboard");
+            } else {
+                toastService.ShowToast("Error", "Please enter a valid name for your calculation.", "error");
+            }
         }
-        Console.WriteLine("Update Calculation, new name: " + calculationName);
-        if (selectedSystem == 3)
-        {
-            systems[3].systemId = await systemClass.CreateSystem(systems[3]);
-            Console.WriteLine("Custom System ID: " + systems[3].systemId);
-        }
-        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances, systems[selectedSystem].systemId, homeSize))
-        {
-            toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
-            NavigationManager.NavigateTo("/dashboard");
-        }
-        else
-        {
-            toastService.ShowToast("Error", "Report failed to update.", "error");
-        }
-        NavigationManager.NavigateTo("/dashboard");
     }
 
     private async void IncrementAppliancePage(){
