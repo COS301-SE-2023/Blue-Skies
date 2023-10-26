@@ -1,9 +1,11 @@
 @using ApplianceEnergyConsumption
 @using BlazorApp.Components
 @using BlazorApp.Components.Base
+@using BlazorApp.Components.Dashboard.SkeletonLoaders
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject BlazorApp.Data.ToastService toastService
 @inject BlazorApp.Data.TooltipService tooltipService
+@inject IJSRuntime JSRuntime
 
 <Card>
     @if (appliancesLoaded)
@@ -26,7 +28,7 @@
     </div> 
     }
 
-    <div class="p-10  justify-start flex flex-col rounded-3xl w-full">
+    <div class="p-2 md:p-10 justify-start flex flex-col rounded-3xl w-full">
         <div class="grid grid-cols-2 md:flex gap-4 justify-center">
             
         @{
@@ -41,9 +43,9 @@
                     </div>
                     <div class="flex justify-center w-1/2 @applianceAnimation">
                         @{
-                            applianceNumberOfPage = (int)Math.Ceiling((double)allAppliances.Count / 5);
+                            applianceNumberOfPage = (int)Math.Ceiling((double)allAppliances.Count / noOfAppliancesInView);
                         }
-                        @for (int j = 0; j < 5 && j + appliancesPage*5 < allAppliances.Count; j++)
+                        @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < allAppliances.Count; j++)
                         {
                             KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*5);
                             string iconName = app.Key + ".svg";
@@ -69,61 +71,7 @@
             }
             else
             {
-                    <div class="justify-center">
-                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse mt-4">
-                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                        </svg>
-                    </div>
-                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                        <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <div class="justify-center">
-                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse mt-4">
-                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                        </svg>
-                    </div>
-                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                        <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <div class="justify-center">
-                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse mt-4">
-                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                        </svg>
-                    </div>
-                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                        <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <div class="justify-center">
-                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse mt-4">
-                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                        </svg>
-                    </div>
-                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                        <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-                <div class="justify-center">
-                    <div class="flex bg-gray-100 shadow-md rounded-3xl mx-auto p-3 w-[80px] h-[80px] animate-pulse mt-4">
-                        <svg class="w-14 h-14 text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
-                        </svg>
-                    </div>
-                    <div role="status" class="max-w-sm animate-pulse mt-3">
-                        <div class="h-2 bg-gray-200 rounded-full w-[100px] mb-2.5"></div>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
+                <ApplianceLoader />
             }
             
         }
@@ -135,8 +83,8 @@
             if (tempAppliances is not null)
             {
                 double dU = Math.Round(tempAppliances[0].durationUsed, 3);
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg bg-primary-100 p-2 -mt-6">
-                    <table class="w-full text-sm text-left text-gray-500 ">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg -mx-5  bg-primary-100 p-2 -mt-6">
+                    <table class="w-full overflow-x-auto text-sm text-left text-gray-500 ">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
@@ -179,7 +127,7 @@
         
     }
     </div>
-    <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
+    <div class="flex flex-col md:flex-row w-full mt-5">
         <div class="w-full flex flex-col gap-4 justify-start items-center">
             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
             @if (runningHoursPercentage != 0)
@@ -211,13 +159,13 @@
                         @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
                             string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
                             <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                            <p class="text-3xl md:text-5xl text-primary-900 font-semibold">99+</p>
                         } else {
                             string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
                             <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
+                            <p class="text-3xl md:text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
                         }
-                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                        <p class="text-3xl md:text-5xl text-gray-400 font-bold">h</p>
                     </div>
                     <div class="flex flex-row justify-center items-center has-tooltip gap-1">
                         <Tooltip pointer="60" translateY="-110" translateX="-10">
@@ -226,24 +174,24 @@
                         @if(float.IsInfinity(dlh) || dlh == 99) {
                             string hexColor = calculationDataHandler.GetColorGradient(99);
                             <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                            <p class="text-3xl md:text-5xl text-primary-900 font-semibold">99+</p>
                         } else {
                             string hexColor = calculationDataHandler.GetColorGradient(dlh);
                             <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
-                            <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
+                            <p class="text-3xl md:text-5xl text-primary-900 font-semibold">@dlh</p>
                         }
-                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                        <p class="text-3xl md:text-5xl text-gray-400 font-bold">h</p>
                     </div>
                 } else {
                     <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                        <p class="text-5xl text-primary-900 font-semibold">0</p>
-                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                        <p class="text-3xl md:text-5xl text-primary-900 font-semibold">0</p>
+                        <p class="text-3xl md:text-5xl text-gray-400 font-bold">h</p>
                     </div>
                 }
             </div>
         </div>
         @* Battery Utilisation *@
-        <div class="mt-32 md:mt-0 flex flex-col gap-4 justify-center align-middle items-center">
+        <div class="mt-16 md:mt-0 mb-10 scale-90 md:scale-100 flex flex-col gap-4 justify-center align-middle items-center">
             @if(appliancesLoaded) {
 
             <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
@@ -312,14 +260,14 @@
         
         @if (appliancesLoaded)
         {
-            <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+            <div class="w-full mt-20 md:mt-0 flex flex-col gap-4 justify-start items-center">
                 <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
                 <div class="flex relative flex-col justify-center w-full max-w-md">
                     <ApplianceEnergyConsumption reportAllAppliance="@reportAllAppliance"/>
                 </div>
             </div> 
         } else {
-            <div class="w-full mt-32 md:mt-0 flex flex-col gap-4 justify-start items-center">
+            <div class="w-full mt-20 md:mt-0 flex flex-col gap-4 justify-start items-center">
                 <h3 class="font-medium text-lg text-primary-900 text-left">Daily Appliance Energy Consumption</h3>
                 <div class="flex relative flex-col justify-center w-full max-w-md">
                     <ApplianceEnergyConsumption/>
@@ -351,6 +299,7 @@
     public Dictionary<String, List<ApplianceModel>> allAppliances { get; set; } = new Dictionary<String, List<ApplianceModel>>();
     private bool appliancesLoaded = false;
     private int appliancesPage = 0;
+    private int noOfAppliancesInView = 5;
     private int applianceNumberOfPage = 0;
     private string applianceAnimation = "";
     private int selectedApplianceQuantity = 0;
@@ -367,6 +316,20 @@
     protected override async void OnParametersSet() { 
         await updateAppliances();
     }
+
+    async Task<bool> IsMobileViewport()
+    {
+        double innerWidth = await JSRuntime.InvokeAsync<double>("eval", "window.innerWidth");
+        return innerWidth < 768;
+    }
+
+
+    async Task SetNoOfAppliancesInView()
+    {
+        bool isMobile = await IsMobileViewport();
+        noOfAppliancesInView = isMobile ? 2 : 5;
+    }
+
 
     public async Task updateAppliances()
     {

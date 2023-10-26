@@ -20,7 +20,7 @@
     <Image ImageName="04.png" css="absolute hidden md:block top-20 lg:-top-10 -right-20 lg:-right-5" />
     @if (reports.Count > 0 || !receivedReports)
     {
-            <div class="flex flex-col justify-center items-center px-10">
+            <div class="flex flex-col justify-center items-center px-1 md:px-10">
             @{
                 if (reports.Count > selectedReport)
                 {
@@ -36,7 +36,7 @@
                     </div>
                     <div class="w-full mt-10">
                         @if(tabs[0].active) {
-                            <div class="fade-in-active px-2 mb-5">
+                            <div class="fade-in-active px-1 mb-5">
                                 <Appliances @ref="applianceComponent" selectedAppliance="@selectedAppliance" selectedReport="@selectedReport" selectedSystem="@selectedSystem" currentLocationData="@currentLocationData" reports="@reports" systems="@systems" />
                             </div>
                         }else if (tabs[1].active)
