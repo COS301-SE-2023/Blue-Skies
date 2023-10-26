@@ -222,7 +222,7 @@
                 <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <div class="mb-2 w-full flex flex-col">
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
-                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
+                            <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels" count="@systems[selectedSystem].numberOfPanels" />
                         </div>
                         <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="30" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
@@ -874,6 +874,7 @@
         selectedSystem = 3;
         selectedSystemChanged.InvokeAsync(3);
     }
+    
     public void SetPanels()
     {
         isNumericValue = true;
