@@ -181,38 +181,53 @@
     <div class="flex flex-col md:flex-row w-full mt-0 md:mt-5">
         <div class="w-full flex flex-col gap-4 justify-start items-center">
             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
-            <div class="flex relative flex-col justify-center w-full h-fit my-auto">
-                @if (runningHoursPercentage != 0)
+            @if (runningHoursPercentage != 0)
+            {
+                dlh = 0;
+                if (currentLocationData != null)
                 {
-                    dlh = 0;
-                    if (currentLocationData != null)
-                    {
-                        daylight = 12;
-                        dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
-                        concurrentRuntime = (float)Math.Round((24 - daylight) * (concurrentRuntimePercentage / 100), 2);
-                    }
-                } else {
-                    dlh = 0;
-                    daylight = 0;
+                    daylight = 12;
+                    dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+                    concurrentRuntime = (float)Math.Round((24 - daylight) * (concurrentRuntimePercentage / 100), 2);
                 }
+            } else {
+                dlh = 0;
+                daylight = 0;
+            }
+            @if (appliancesLoaded)
+            {
+                <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
+            } else {
+                    <DaylightChart hours="0" daylightHours="0" concurrent="0"/>
+            }
+            <div class="flex flex-row justify-center w-full has-tooltip">
                 @if (appliancesLoaded)
                 {
-                    <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
-                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                    @{
-                        if (float.IsInfinity(dlh) || dlh == 99)
-                        {
+                    <div class="flex flex-row justify-center items-center gap-1 mr-16">
+                        @if(float.IsInfinity(dlh) || dlh == 99) {
+                            string hexColor = calculationDataHandler.GetColorGradient(99);
+                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
                             <p class="text-5xl text-primary-900 font-semibold">99+</p>
-                        }
-                        else
-                        {
+                        } else {
+                            string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColor;"></div>
                             <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                         }
-                    }
-                    <p class="text-5xl text-gray-400 font-bold">h</p>
-                </div>
+                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                    </div>
+                    <div class="flex flex-row justify-center items-center gap-1">
+                        @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
+                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
+                            <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                        } else {
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                            <div class=" h-3 w-3 rounded-md" style="background-color: @hexColorConcurrent;"></div>
+                            <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
+                        }
+                        <p class="text-5xl text-gray-400 font-bold">h</p>
+                    </div>
                 } else {
-                    <DaylightChart hours="0" daylightHours="0" />
                     <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
                         <p class="text-5xl text-primary-900 font-semibold">0</p>
                         <p class="text-5xl text-gray-400 font-bold">h</p>
