@@ -4,21 +4,29 @@
 @inject IJSRuntime JSRuntime
 
 
-<div class="border-primary-500 transition-all duration-200 border-1 p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
+<div class="border-primary-500 transition-all duration-200 border-1 p-1 md:p-5 overflow-hidden justify-start flex flex-col rounded-3xl w-full z-20">
     <Heading css="mb-12 max-w-4xl mx-auto">
         <Superscript><h1 class="text-center">Variants</h1></Superscript >
         <Header><h1 class="text-center">Customise your Appliances</h1></Header>
-        <Subscript><p class="text-center max-w-4xl">Once appliances have been added to the calculation with the tool above - specific models of those appliances with their associated power usage can be specified below. If you cannot find your appliance in the list of appliance models below, you can specify the power usage of your appliance by selecting custom appliance</p></Subscript>
+        <Subscript><p class="text-center max-w-4xl">After adding appliances above, specify models and power usage below. For unlisted appliances, input custom power usage.
+
+
+
+
+</p></Subscript>
     </Heading>
 
-    <div class='flex rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
-        <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+    <div class='flex rounded-2xl max-w-7xl relative gap-8 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
+        <div class="my-auto -ml-5 h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
             <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                 css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
         </div>
         <div class="flex justify-center w-1/2 @applianceAnimation">
             @if (appliances != null)
             {
+                @* call and await async function *@
+                Task.Run(async () => await SetNoOfAppliancesInView());
+                
                 if(appliances.FindAll(x => x.quantity > 0 && x.type == selectedAppliance).Count == 0) {
                     selectedAppliance = "";
                 }
@@ -41,18 +49,18 @@
                                         selectedAppliance = selectedAppliances[j + appliancesPage*noOfAppliancesInView].type!;
                                     }
                                     ApplianceModel? appl = selectedAppliances[j + appliancesPage*noOfAppliancesInView];
-                                    <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
+                                    <div  class='@(selectedAppliance == appl.type ? "bg-primary-100" : "") scale-75 md:scale-100 p-3 rounded-2xl w-32 h-52' @onclick='(() => appl.type != null ? SelectAppliance(appl.type!) : SelectAppliance(""))'>
                                         <Appliance fade="@appl.fade" css="hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="@(appl.type + ".svg")" name="@appl.type" count="@appl.quantity" />
                                     </div>
                                 i++;
                             }
                 @if (applianceCount == 0)
                 {
-                    <p class="text-xl font-medium text-primary-800 text-center">No Appliances Selected</p>
+                    <p class="text-md sm:text-lg md:text-xl w-full font-medium text-primary-800 text-center">No Appliances Selected</p>
                 }
             }
         </div>
-        <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+        <div class="my-auto -mr-5 h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
             <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                 css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
         </div>
@@ -60,7 +68,7 @@
 
     @if (selectedAppliance != "" && appliances != null && appliances.Where(x => x.type == selectedAppliance)?.LastOrDefault()?.quantity != 0) {
 
-        <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-7 rounded-2xl">
+        <div class="flex w-full h-full flex-col gap-10 bg-primary-100 wipe-down p-4 -mt-14 rounded-2xl">
             @* Add variant button *@
             <div class="flex mt-2 gap-4 mb-5">
                     <div class="w-2/3 my-auto">
@@ -163,6 +171,21 @@
     {
         applianceService.UpdateAppliancesRequested += UpdateAppliances;
     }
+
+   async Task<bool> IsMobileViewport()
+{
+    double innerWidth = await JSRuntime.InvokeAsync<double>("eval", "window.innerWidth");
+    return innerWidth < 768;
+}
+
+
+async Task SetNoOfAppliancesInView()
+{
+    bool isMobile = await IsMobileViewport();
+    noOfAppliancesInView = isMobile ? 3 : 5;
+}
+
+
 
 private async void IncrementAppliancePage(){
         applianceAnimation = "appliance-slide-out-left";
