@@ -21,8 +21,8 @@
     </Heading>
 </div>
 <div class="relative flex flex-col xl:flex-row w-fit justify-center items-center mx-auto gap-4 mt-10">
-    <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-[134px] top-10 h-72 z-0 max-lg:hidden" alt="Rob" />
-    <Image ImageName="Robert_Behind_Component.png" css="absolute left-48 -top-[31px] z-10 h-10 max-lg:hidden" alt="Rob" />
+    <Image ImageName="Robert_Pulling_The_Plug.png" css="absolute -right-[134px] top-10 h-72 z-0 hidden xl:block" alt="Rob" />
+    <Image ImageName="Robert_Behind_Component.png" css="absolute xl:left-48 -top-[31px] z-10 h-10 lg:left-96" alt="Rob" />
     <div class="w-60 md:w-1/3 mx-auto">
         @if (satteliteImage == null)
         {
@@ -31,7 +31,7 @@
             <Map scale="scale-[2.6]" imageName="@satteliteImage" />
         }
     </div>
-    <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20 max-lg:hidden" alt="Rob" />
+    <Image ImageName="Robert_sitting.png" css="absolute left-96 -top-3 z-1 h-20 hidden xl:block" alt="Rob" />
     <div class="relative w-full flex mx-auto justify-center items-center flex-col px-2 md:flex-row gap-2 md:gap-5">
         @if (solarScore == -1)
         {

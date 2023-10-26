@@ -23,7 +23,7 @@
     {
     <div role="status" class="max-w-sm animate-pulse w-60 my-auto">
         <div class="h-6 bg-gray-200 rounded-full w-36"></div>
-        <div class="h-3 bg-gray-200 rounded-full w-96 mt-2"></div>
+        <div class="h-3 bg-gray-200 rounded-full xl:w-96 w-3/4 mt-2"></div>
         <span class="sr-only">Loading...</span>
     </div> 
     }
@@ -182,11 +182,6 @@
                         }
                         <p class="text-3xl md:text-5xl text-gray-400 font-bold">h</p>
                     </div>
-                } else {
-                    <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-20">
-                        <p class="text-3xl md:text-5xl text-primary-900 font-semibold">0</p>
-                        <p class="text-3xl md:text-5xl text-gray-400 font-bold">h</p>
-                    </div>
                 }
             </div>
         </div>
@@ -214,7 +209,7 @@
             </div>
             }
         </div>
-        <div class="md:block w-full justify-center align-middle items-center my-auto md:pl-32">
+        <div class="md:block w-full justify-center align-middle items-center my-auto xl:pl-32 md:pl-10">
             @{
                 if (reports.Count > selectedReport)
                 {
@@ -246,9 +241,9 @@
             }
             @if (!imageName.Equals("") && appliancesLoaded)
             {
-                <Image ImageName=@imageName alt="House" css="scale-90 h-fit my-auto w-fit mx-auto" />
+                <Image ImageName=@imageName alt="House" css="scale-90 h-fit md:my-auto w-fit mx-auto md:mt-0 mt-10" />
             } else {
-                <div class="z-10 flex items-center justify-center w-[388px] h-[330px] bg-gray-300 rounded mx-auto">
+                <div class="z-10 flex items-center justify-center xl:w-[388px] xl:h-[330px] w-56 h-56 md:mt-0 mt-10 bg-gray-300 rounded mx-auto">
                     <svg class="animate-pulse w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                         <path

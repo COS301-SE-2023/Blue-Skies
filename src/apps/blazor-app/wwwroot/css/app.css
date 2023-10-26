@@ -899,6 +899,22 @@ video {
   top: 100%;
 }
 
+.left-\[\] {
+  left: ;
+}
+
+.left-\[400px\] {
+  left: 400px;
+}
+
+.left-\[600px\] {
+  left: 600px;
+}
+
+.right-96 {
+  right: 24rem;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -1018,21 +1034,6 @@ video {
 .my-auto {
   margin-top: auto;
   margin-bottom: auto;
-}
-
-.-mx-2 {
-  margin-left: -0.5rem;
-  margin-right: -0.5rem;
-}
-
-.-mx-3 {
-  margin-left: -0.75rem;
-  margin-right: -0.75rem;
-}
-
-.-mx-4 {
-  margin-left: -1rem;
-  margin-right: -1rem;
 }
 
 .-mb-20 {
@@ -1295,6 +1296,10 @@ video {
   margin-top: 20rem;
 }
 
+.mr-10 {
+  margin-right: 2.5rem;
+}
+
 .block {
   display: block;
 }
@@ -1490,6 +1495,10 @@ video {
 
 .h-screen {
   height: 100vh;
+}
+
+.h-64 {
+  height: 16rem;
 }
 
 .max-h-96 {
@@ -2235,6 +2244,18 @@ video {
   margin-bottom: calc(2.25rem * var(--tw-space-y-reverse));
 }
 
+.space-x-8 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(2rem * var(--tw-space-x-reverse));
+  margin-left: calc(2rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-y-0 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0px * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0px * var(--tw-space-y-reverse));
+}
+
 .self-center {
   align-self: center;
 }
@@ -2806,6 +2827,10 @@ video {
 
 .pt-4 {
   padding-top: 1rem;
+}
+
+.pl-32 {
+  padding-left: 8rem;
 }
 
 .text-left {
@@ -4116,6 +4141,16 @@ html {
     margin-left: auto;
     margin-right: auto;
   }
+
+  .max-md\:hidden {
+    display: none;
+  }
+}
+
+@media not all and (min-width: 640px) {
+  .max-sm\:hidden {
+    display: none;
+  }
 }
 
 @media (min-width: 640px) {
@@ -4278,6 +4313,10 @@ html {
 }
 
 @media (min-width: 768px) {
+  .md\:visible {
+    visibility: visible;
+  }
+
   .md\:absolute {
     position: absolute;
   }
@@ -4330,9 +4369,22 @@ html {
     top: 0.75rem;
   }
 
+  .md\:left-96 {
+    left: 24rem;
+  }
+
+  .md\:left-48 {
+    left: 12rem;
+  }
+
   .md\:mx-auto {
     margin-left: auto;
     margin-right: auto;
+  }
+
+  .md\:my-auto {
+    margin-top: auto;
+    margin-bottom: auto;
   }
 
   .md\:-mt-0 {
@@ -4377,10 +4429,6 @@ html {
 
   .md\:flex {
     display: flex;
-  }
-
-  .md\:hidden {
-    display: none;
   }
 
   .md\:h-1\/2 {
@@ -4491,6 +4539,18 @@ html {
 
   .md\:w-full {
     width: 100%;
+  }
+
+  .md\:w-\[388px\] {
+    width: 388px;
+  }
+
+  .md\:w-20 {
+    width: 5rem;
+  }
+
+  .md\:w-3\/4 {
+    width: 75%;
   }
 
   .md\:flex-shrink-0 {
@@ -4612,8 +4672,8 @@ html {
     padding-left: 8rem;
   }
 
-  .md\:text-left {
-    text-align: left;
+  .md\:pl-10 {
+    padding-left: 2.5rem;
   }
 
   .md\:text-4xl {
@@ -4697,6 +4757,18 @@ html {
     top: 0px;
   }
 
+  .lg\:left-48 {
+    left: 12rem;
+  }
+
+  .lg\:right-96 {
+    right: 24rem;
+  }
+
+  .lg\:left-96 {
+    left: 24rem;
+  }
+
   .lg\:-mt-16 {
     margin-top: -4rem;
   }
@@ -4745,6 +4817,14 @@ html {
     height: 600px;
   }
 
+  .lg\:h-\[330px\] {
+    height: 330px;
+  }
+
+  .lg\:h-20 {
+    height: 5rem;
+  }
+
   .lg\:max-h-72 {
     max-height: 18rem;
   }
@@ -4776,6 +4856,14 @@ html {
 
   .lg\:w-full {
     width: 100%;
+  }
+
+  .lg\:w-\[388px\] {
+    width: 388px;
+  }
+
+  .lg\:w-20 {
+    width: 5rem;
   }
 
   .lg\:flex-1 {
@@ -4852,6 +4940,10 @@ html {
     padding-left: 7rem;
   }
 
+  .lg\:pl-32 {
+    padding-left: 8rem;
+  }
+
   .lg\:hover\:scale-110:hover {
     --tw-scale-x: 1.1;
     --tw-scale-y: 1.1;
@@ -4917,6 +5009,10 @@ html {
     top: 380px;
   }
 
+  .xl\:left-48 {
+    left: 12rem;
+  }
+
   .xl\:-mt-24 {
     margin-top: -6rem;
   }
@@ -4953,6 +5049,14 @@ html {
     height: 800px;
   }
 
+  .xl\:h-\[330px\] {
+    height: 330px;
+  }
+
+  .xl\:h-20 {
+    height: 5rem;
+  }
+
   .xl\:max-h-80 {
     max-height: 20rem;
   }
@@ -4963,6 +5067,18 @@ html {
 
   .xl\:w-\[25\%\] {
     width: 25%;
+  }
+
+  .xl\:w-\[388px\] {
+    width: 388px;
+  }
+
+  .xl\:w-96 {
+    width: 24rem;
+  }
+
+  .xl\:w-20 {
+    width: 5rem;
   }
 
   .xl\:scale-100 {
@@ -4985,6 +5101,10 @@ html {
 
   .xl\:pr-20 {
     padding-right: 5rem;
+  }
+
+  .xl\:pl-32 {
+    padding-left: 8rem;
   }
 }
 
