@@ -630,7 +630,8 @@
     private int userId = -1;
     public ModalPopup ModalPopup { get; set; } = new ModalPopup();
     private ModalPopup SystemModalPopup { get; set; } = new ModalPopup();
-    private string? calculationName { get; set; }
+    [Parameter]
+    public string? calculationName { get; set; }
     private List<ApplianceModel> applianceQuantities = new List<ApplianceModel>();
     private SharedUtils.applianceClass applianceDataClass = new SharedUtils.applianceClass();
     private List<TabItemModel> tabs = new List<TabItemModel>
