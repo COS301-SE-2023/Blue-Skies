@@ -1300,6 +1300,10 @@ video {
   margin-right: 2.5rem;
 }
 
+.-ml-5 {
+  margin-left: -1.25rem;
+}
+
 .block {
   display: block;
 }
@@ -4317,6 +4321,10 @@ html {
     visibility: visible;
   }
 
+  .md\:invisible {
+    visibility: hidden;
+  }
+
   .md\:absolute {
     position: absolute;
   }
@@ -4429,6 +4437,10 @@ html {
 
   .md\:flex {
     display: flex;
+  }
+
+  .md\:hidden {
+    display: none;
   }
 
   .md\:h-1\/2 {
@@ -4674,6 +4686,10 @@ html {
 
   .md\:pl-10 {
     padding-left: 2.5rem;
+  }
+
+  .md\:text-left {
+    text-align: left;
   }
 
   .md\:text-4xl {

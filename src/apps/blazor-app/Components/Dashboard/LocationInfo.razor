@@ -217,9 +217,9 @@
             else if (currentLocationData.satteliteImageData == null)
             {
                 currentLocationData = await locationDataClass.GetSatelliteImageData(currentLocationData.latitude, currentLocationData.longitude, currentLocationData, cancellationTokenSource.Token);
-                StateHasChanged();
                 satteliteImage = rooftopDataHandler.GetSatelliteImage(currentLocationData!.satteliteImageData!);
                 displayImage = true;
+                StateHasChanged();
             }
         }
     }
