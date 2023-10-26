@@ -29,20 +29,19 @@
     }
 
     <div class="p-2 md:p-10 justify-start flex flex-col rounded-3xl w-full">
-        <div class="grid grid-cols-2 md:flex gap-4 justify-center">
-            
+        <div class="flex w-full">
         @{
             @* call and await async function *@
-                Task.Run(async () => await SetNoOfAppliancesInView());
+            Task.Run(async () => await SetNoOfAppliancesInView());
             @* Loop over allAppliances *@
             if (appliancesLoaded)
             {
-                <div class='flex rounded-2xl max-w-7xl relative gap-20 scale-90 w-full flex-shrink-0 mx-auto justify-evenly'>
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
+                <div class='flex rounded-2xl relative gap-10 scale-90 w-full flex-shrink-0 mx-auto justify-center items-center'>
+                    <div class="my-auto -ml-5 md:-mr-0 h-fit hover:cursor-pointer" @onclick="DecrementAppliancePage">
                         <Image ImageName="Arrow-Left.svg" alt="Left Arrow"
                             css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                     </div>
-                    <div class="flex justify-center w-1/2 @applianceAnimation">
+                    <div class="flex justify-center items-center w-1/2 @applianceAnimation">
                         @{
                             applianceNumberOfPage = (int)Math.Ceiling((double)allAppliances.Count / noOfAppliancesInView);
                         }
@@ -61,7 +60,7 @@
                             </div>   
                         }
                     </div>
-                    <div class="my-auto h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
+                    <div class="my-auto -mr-5 md:mr-0 h-fit hover:cursor-pointer" @onclick="IncrementAppliancePage">
                         <Image ImageName="Arrow-Right.svg" alt="Right Arrow"
                             css="w-12 rounded-full p-2 hover:bg-slate-200 hover:cursor-pointer" />
                     </div>
@@ -405,7 +404,7 @@
         }
     }
 
-    private async void IncrementAppliancePage(){
+  private async void IncrementAppliancePage(){
         applianceAnimation = "appliance-slide-out-left";
         StateHasChanged();
         await Task.Delay(100);
