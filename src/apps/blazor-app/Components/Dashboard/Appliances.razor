@@ -130,7 +130,7 @@
     </div>
     <div class="flex flex-col md:flex-row w-full mt-5">
         <div class="w-full flex flex-col gap-4 justify-start items-center">
-            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Full Batteries</h3>
+            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
             @if (runningHoursPercentage != 0)
             {
                 dlh = 0;
@@ -192,7 +192,10 @@
 
             <h3 class="text-center whitespace-nowrap">Battery Utilization</h3>
             <div class="flex flex-col gap-2 justify-center items-center w-full">
-                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg">  
+                <div class="h-48 shadow flex-col-reverse flex w-32 p-1 bg-gray-300 relative rounded-lg has-tooltip">
+                    <Tooltip pointer="20" translateY="-420">
+                        <p class="md:w-72">@tooltipService.GetTooltip("battery utilisation")</p>
+                    </Tooltip>  
                     @{
                         var percentage = chargingLimitPercentage + "%";
                     }
