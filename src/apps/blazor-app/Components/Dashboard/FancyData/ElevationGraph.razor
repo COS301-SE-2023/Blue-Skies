@@ -2,7 +2,7 @@
 
 @namespace BlazorApp.FancyData
 
-<div>
+<div class="w-full -ml-5">
     <Chart Config="lineConfig" />
 </div>
 
@@ -53,11 +53,12 @@
                             ScaleLabel = new ScaleLabel
                             {
                                 LabelString = "Height",
-                                Display = true,
+                                Display = false,
                             },
                             Ticks = new LinearCartesianTicks
                             {
                                 BeginAtZero = true,
+                                Display = false, 
                             }
                         }
                     },
@@ -235,7 +236,17 @@
                 {
                     Ticks = new LinearCartesianTicks
                     {
-                        Max = maxY 
+                        Max = maxY ,
+                        Display = false,
+                    },
+                    GridLines = new GridLines
+                    {
+                        Display = false,
+                    }, 
+                    ScaleLabel = new ScaleLabel
+                    {
+                        LabelString = "Height",
+                        Display = false,
                     },
                 }
             }, 
