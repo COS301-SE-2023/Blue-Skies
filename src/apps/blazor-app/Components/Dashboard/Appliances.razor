@@ -47,7 +47,7 @@
                         }
                         @for (int j = 0; j < noOfAppliancesInView && j + appliancesPage*noOfAppliancesInView < allAppliances.Count; j++)
                         {
-                            KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*5);
+                            KeyValuePair<String, List<ApplianceModel>> app = allAppliances.ElementAt(j + appliancesPage*noOfAppliancesInView);
                             string iconName = app.Key + ".svg";
                             int count = 0;
                             List<ApplianceModel> tempAppliances = app.Value;
@@ -405,6 +405,7 @@
     }
 
   private async void IncrementAppliancePage(){
+        Console.WriteLine("Incrementing: " + appliancesPage + " " + applianceNumberOfPage + " " + noOfAppliancesInView);
         applianceAnimation = "appliance-slide-out-left";
         StateHasChanged();
         await Task.Delay(100);
@@ -417,6 +418,7 @@
         StateHasChanged();
     }
     private async void DecrementAppliancePage(){
+        Console.WriteLine("Decrementing: " + appliancesPage + " " + applianceNumberOfPage + " " + noOfAppliancesInView);
         applianceAnimation = "appliance-slide-out-right";
         StateHasChanged();
         await Task.Delay(100);
