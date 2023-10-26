@@ -14,7 +14,9 @@ namespace BlazorApp.Data {
             tooltips["solar score add button"] = "Add or remove appliances";
             tooltips["number of panels"] = "Affects your average energy production and how quickly you can charge your batteries while running appliances.";
             tooltips["number of batteries"] = "Affects how much energy you can store and how long you can run your appliances.";
-        }
+            tooltips["inverter size"] = "Your inverter determines how many appliances you can run at once";
+            tooltips["add appliances"] = "Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below";
+    }
 
         public string GetTooltip(string key)
         {

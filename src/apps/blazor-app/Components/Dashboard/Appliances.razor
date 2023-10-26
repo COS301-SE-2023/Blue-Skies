@@ -201,12 +201,12 @@
             } else {
                     <DaylightChart hours="0" daylightHours="0" concurrent="0"/>
             }
-            <div class="flex flex-row justify-center w-full has-tooltip">
+            <div class="flex flex-row justify-center w-full">
                 @if (appliancesLoaded)
                 {
                     <div class="flex flex-row justify-center items-center gap-1 has-tooltip mr-16">
-                        <Tooltip pointer="45" direction="top">
-                            <p class="md:m-48">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                        <Tooltip pointer="60" translateY="-110" translateX="-10">
+                            <p class="md:w-72">@tooltipService.GetTooltip("simultaneous running hours")</p>
                         </Tooltip>
                         @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
                             string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
@@ -219,9 +219,9 @@
                         }
                         <p class="text-5xl text-gray-400 font-bold">h</p>
                     </div>
-                    <div class="flex flex-row justify-center items-center gap-1">
-                        <Tooltip pointer="45" direction="top">
-                            <p class="md:m-48">@tooltipService.GetTooltip("running hours on batteries has-tooltip")</p>
+                    <div class="flex flex-row justify-center items-center has-tooltip gap-1">
+                        <Tooltip pointer="60" translateY="-110" translateX="-10">
+                            <p class="md:w-72">@tooltipService.GetTooltip("running hours on batteries")</p>
                         </Tooltip>
                         @if(float.IsInfinity(dlh) || dlh == 99) {
                             string hexColor = calculationDataHandler.GetColorGradient(99);

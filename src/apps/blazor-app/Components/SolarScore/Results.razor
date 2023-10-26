@@ -64,8 +64,8 @@
             else
             {
                 <div class="my-auto w-full flex gap-4 relative has-tooltip">
-                    <Tooltip>
-                        <p>@tooltipService.GetTooltip("solarScore")</p>
+                    <Tooltip translateY="-100" pointer="45">
+                        <p class="md:w-72">@tooltipService.GetTooltip("solarScore")</p>
                     </Tooltip>
                     <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                         <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
@@ -93,7 +93,7 @@
                             @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                         </div>
                         <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
-                                        <Tooltip>
+                                        <Tooltip translateY="100" pointer="70" direction="bottom">
                                             <p>@tooltipService.GetTooltip("potential savings")</p>
                                         </Tooltip>
                             <div class="w-full h-full flex flex-col lg:flex-row gap-2 justify-center items-center my-auto rounded-2xl">
@@ -137,7 +137,7 @@
                             <Appliance name="Stove" imageName="Stove.svg" count="numStove" />
                             <Appliance name="Geyser" imageName="Geyser.svg" count="numGeyser" />
                             <div class="flex mx-auto has-tooltip" @onclick="showModalAppliancesPopup">
-                                <Tooltip>
+                                <Tooltip translateY="-100">
                                     <p>@tooltipService.GetTooltip("solar score add button")</p>
                                 </Tooltip>
                                 <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add"
@@ -145,12 +145,12 @@
                             </div>
                         </div>
                         <div class="flex flex-col justify-center w-full">
-                            <div class="flex flex-col gap-1 has-tooltip mb-3 -mt-28">
-                                <Tooltip pointer="15">
-                                    <p>@tooltipService.GetTooltip("average energy produced")</p>
-                                </Tooltip>
+                            <div class="flex flex-col gap-1 mb-3 -mt-28">
                                 <h3 class="font-medium text-lg text-primary-900 text-center">Avg Energy Produced</h3>
-                                <div class="flex gap-1 mt-3 text-center justify-center">
+                                <div class="flex gap-1 mt-3 text-center justify-center has-tooltip">
+                                <Tooltip pointer="35" translateY="-120">
+                                    <p class="md:w-72">@tooltipService.GetTooltip("average energy produced")</p>
+                                </Tooltip>
                                     @{
                                         avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels,
                                         locationData.solarPanelsData) / 365, 2);
@@ -169,8 +169,8 @@
                                     }
                                     <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
                                     <div class="flex flex-row gap-1 mr-5 has-tooltip">
-                                        <Tooltip pointer="45">
-                                            <p class="md:w-48">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                                        <Tooltip pointer="40" translateY="-120" translateX="-40">
+                                            <p class="md:w-72">@tooltipService.GetTooltip("simultaneous running hours")</p>
                                         </Tooltip>
                                         <p class='text-green-600" text-3xl  font-semibold'>@concurrentRuntime</p>
                                         <p class="text-3xl text-gray-400 font-bold">h</p>
@@ -180,8 +180,8 @@
                                     }
                                     <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
                                     <div class="flex flex-row gap-1  has-tooltip">
-                                        <Tooltip pointer="45" direction="top">
-                                            <p class="md:w-48">@tooltipService.GetTooltip("running hours on batteries")</p>
+                                        <Tooltip pointer="40" translateY="-120" translateX="-40">
+                                            <p class="md:w-72">@tooltipService.GetTooltip("running hours on batteries")</p>
                                         </Tooltip>
                                         <p class='text-green-600" text-3xl  font-semibold'>@dlh</p>
                                         <p class="text-3xl text-gray-400 font-bold">h</p>
@@ -194,8 +194,8 @@
                     <div class="flex flex-col w-full md:w-1/2 mt-20 lg:-mt-16 justify-center items-center gap-4">
                         <div class="-mt-5 mb-5 w-full flex flex-col justify-center items-center gap-4">
                             <div class="has-tooltip">
-                                <Tooltip pointer="45">
-                                        <p>@tooltipService.GetTooltip("number of panels")</p>
+                                <Tooltip pointer="30" translateX="-10" translateY="-120">
+                                        <p class="md:w-72">@tooltipService.GetTooltip("number of panels")</p>
                                     </Tooltip>
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
@@ -206,8 +206,8 @@
                         <div class="flex gap-2 pr-2 justify-start items-start -mt-10">
                             <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
                                  <div class="has-tooltip">
-                                    <Tooltip direction="left" pointer="95">
-                                        <p>@tooltipService.GetTooltip("battery utilisation")</p>
+                                    <Tooltip pointer="98" direction="left" translateX="-105">
+                                        <p  class="md:w-72">@tooltipService.GetTooltip("battery utilisation")</p>
                                     </Tooltip>
                                     <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                             @{
@@ -231,8 +231,8 @@
                                 <p class="text-center">Battery Utilisation</p>
                             </div>
                             <div class="has-tooltip">
-                                <Tooltip pointer="45">
-                                        <p>@tooltipService.GetTooltip("number of batteries")</p>
+                                <Tooltip pointer="98" direction="left" translateX="-105">
+                                        <p class="md:w-72">@tooltipService.GetTooltip("number of batteries")</p>
                                     </Tooltip>
                                 <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
                                     count="@numOfBatteries" />
