@@ -41,7 +41,7 @@ public class ReportController : ControllerBase
     {
         try
         {
-            var data = await _reportsRepository.GetUserReports(userId);
+            List<Reports> data = await _reportsRepository.GetUserReports(userId);
             if (data == null)
             {
                 return StatusCode(404, "Report with userId: " + userId + " not found");

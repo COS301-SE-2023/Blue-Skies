@@ -73,7 +73,7 @@
             @if(tabs[0].active) {
                 <div class="fade-in-active px-2">
                     <BuildYourHome  @ref="buildYourHomeComponent" @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" />
-                    <div class="px-10 w-full">
+                    <div class="px-1 md:px-10 w-full mt-10 md:mt-0">
                         <Variants @bind-selectedSystem="selectedSystem" appliances="@appliances" systems="systems" currentLocationData="currentLocationData" currentReport="currentReport" edit="edit" customAppliances="@customAppliances"/>
                     </div>
                 </div>
@@ -148,7 +148,6 @@
     private bool edit = false;
     private List<ApplianceModel> appliances = new List<ApplianceModel>();
     private List<SystemModel> systems = new List<SystemModel>();
-    private List<ReportAllApplianceModel>? reportAllAppliance;
     private ReportModel currentReport = new ReportModel(); 
     private List<CustomApplianceModel> customAppliances = new List<CustomApplianceModel>();
     public LocationDataModel? currentLocationData { get; set; }
@@ -269,8 +268,22 @@
                     selectedSystem = 3;
                 } else {
                     systems.RemoveAt(i);
+
+                }
+
+            }
+            if(selectedSystem != 3)
+            {
+                for(int i = 0; i < systems.Count; i++)
+                {
+                    if (currentReport.systemId == systems[i].systemId)
+                    {
+                        selectedSystem = i;
+                    } 
                 }
             }
+
+
         } else {
             currentReport.latitude = latitude!;
             currentReport.longitude = longitude!;
@@ -285,6 +298,10 @@
             {
                 systems.RemoveAt(i);
             }
+            
+        }
+        if(systems.Count < 4)
+        {
             SystemModel system = new SystemModel();
             system.systemId = -1;
             system.systemSize = "Custom";
@@ -295,7 +312,7 @@
             system.solarInput = -1;
             systems.Add(system);
         }
-
+        
         Console.WriteLine("Selected System" + selectedSystem);
 
         @* Get custom Appliances *@

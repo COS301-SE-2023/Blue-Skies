@@ -9,54 +9,54 @@
     [Parameter]
     public float daylightHours { get; set; } = 12;
     [Parameter]
-    public bool fullDay { get; set; } = false;
+    public float? concurrent { get; set; }
     protected override void OnParametersSet()
     {
         UpdateDataset();
     }
 
+    DataHandlers.CalculationDataHandler calculationHandler = new DataHandlers.CalculationDataHandler();
+
     protected override void OnInitialized()
     {
         pieConfig = new PieConfig(true)
+        {
+            Options = new PieOptions
             {
-                Options = new PieOptions
+                Responsive = true,
+                AspectRatio = 3,
+                Legend = new Legend
                 {
-                    Responsive = true,
-                    AspectRatio = 3,
-                    Legend = new Legend
-                    {
-                        Display = false,
-                    },
-                    Title = new OptionsTitle
-                    {
-                        Display = false,
-                        Text = "Running Hours",
-                        FontSize = 20,
-                        Position = Position.Bottom,
-                        LineHeight = 4,
-                    },
-                    Circumference = 3,
-                    Rotation = -9.341,
-                    Animation = new ArcAnimation
-                    {
-                        AnimateRotate = true,
-                        Duration = 5,
+                    Display = false,
+                },
+                Title = new OptionsTitle
+                {
+                    Display = false,
+                    Text = "Running Hours",
+                    FontSize = 20,
+                    Position = Position.Bottom,
+                    LineHeight = 4,
+                },
+                Circumference = 3,
+                Rotation = -9.341,
+                Animation = new ArcAnimation
+                {
+                    AnimateRotate = true,
+                    Duration = 5,
 
-                    },
-                    Tooltips = new Tooltips
-                    {
-                        Enabled = true,
-                        Mode = InteractionMode.Index,
-                        Intersect = false,
-                    },
-                    Hover = new Hover
-                    {
-                        Mode = InteractionMode.Index,
-                        Intersect = false
-                    },
-                    CutoutPercentage = 80
-                }
-            };
+                },
+                Tooltips = new Tooltips
+                {
+                    Enabled = false,
+                },
+                Hover = new Hover
+                {
+                    Mode = InteractionMode.Index,
+                    Intersect = false
+                },
+                CutoutPercentage = 70
+            }
+        };
     }
     public void UpdateDataset()
     {
@@ -68,75 +68,65 @@
         pieConfig.Data.Datasets.Clear();
         pieConfig.Data.Labels.Clear();
 
-        foreach (string label in new[] { "Runnable Hours", "Remaining" })
+        foreach (string label in new[] { "Runnable Hours", "Concurrent Hours", "Remaining"})
         {
             pieConfig.Data.Labels.Add(label);
         }
-        float remaining = 0;
-        if (fullDay)
-        {
-            remaining = 24 - hours;
-        } else {
-            remaining = (24 - daylightHours) - hours;
-        }
-
+        float remaining = (24 - daylightHours) - hours;
         if(remaining < 0)
         {
             remaining = 0;
         }
 
-        PieDataset<float> pieDataset = new PieDataset<float>(new[] { hours, remaining })
-        {
-            BackgroundColor = GetColorGradient(hours),
-        };
+        if (concurrent != null) {
+            float concurrentRemaining = 4 - (float) concurrent;
+            if(concurrentRemaining < 0)
+            {
+                concurrentRemaining = 0;
+            }
 
-        if (pieConfig != null)
-        {
-            pieConfig.Data.Datasets.Add(pieDataset);
-            StateHasChanged();
+            Console.WriteLine("Other color: " + calculationHandler.GetColorGradient(hours));
+
+            string[] colors = new[] {
+                calculationHandler.GetColorGradient(hours),
+                calculationHandler.GetColorGradient((float)concurrent, 4),
+                ColorUtil.ColorHexString(156, 163, 175)
+            };
+
+            PieDataset<float?> pieDataset = new PieDataset<float?>(new float?[] {hours, null, remaining })
+            {
+                BackgroundColor = colors,
+            };
+            
+            PieDataset<float?> pieDataset2 = new PieDataset<float?> (new float?[] { null, (float) concurrent, concurrentRemaining })
+            {
+                BackgroundColor = colors,
+            };
+
+            if (pieConfig != null)
+            {
+                pieConfig.Data.Datasets.Add(pieDataset);
+                pieConfig.Data.Datasets.Add(pieDataset2);
+                StateHasChanged();
+            }
+        } else {
+
+            string[] colors = {
+                calculationHandler.GetColorGradient(hours),
+                ColorUtil.ColorHexString(156, 163, 175)
+            };
+
+            PieDataset<float?> pieDataset = new PieDataset<float?>(new float?[] {hours, null, remaining })
+            {
+                BackgroundColor = calculationHandler.GetColorGradient(hours),
+            };
+
+
+            if (pieConfig != null)
+            {
+                pieConfig.Data.Datasets.Add(pieDataset);
+                StateHasChanged();
+            }
         }
     }
-
-    private string[] GetColorGradient(float hours)
-    {
-        byte greenR = 5, greenG = 156, greenB = 148, yellowR = 255, yellowG = 193, redR = 255, redG = 0;
-
-        byte redValue, greenValue, blueValue = 0;
-
-
-        if (hours <= 3)
-        {
-            redValue = redR;
-            greenValue = redG;
-        }
-        else if (hours >= 12)
-        {
-            redValue = greenR;
-            greenValue = greenG;
-            blueValue = greenB;
-        }
-        else if (hours < 6)
-        {
-            float t = hours / 6; 
-            redValue = yellowR; 
-            greenValue = (byte)(t * yellowG);
-        }
-        else
-        {
-            float t = (hours - 6) / 6;
-            redValue = (byte)(t * greenR + (1 - t) * yellowR); // Decreasing red component
-            greenValue = (byte)(t * greenG + (1 - t) * yellowG); // Increasing green component
-            blueValue = (byte)(t * greenB); // Increasing blue component
-        }
-
-        string[] colors = {
-            ColorUtil.ColorHexString(redValue, greenValue, blueValue),
-            ColorUtil.ColorHexString(156, 163, 175)
-        };
-
-        return colors;
-    }
-
-
-
 }

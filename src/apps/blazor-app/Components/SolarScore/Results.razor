@@ -64,8 +64,8 @@
             else
             {
                 <div class="my-auto w-full flex gap-4 relative has-tooltip">
-                    <Tooltip>
-                        <p>@tooltipService.GetTooltip("solarScore")</p>
+                    <Tooltip translateY="-100" pointer="45">
+                        <p class="md:w-72">@tooltipService.GetTooltip("solarScore")</p>
                     </Tooltip>
                     <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 ">
                         <Image ImageName="Sale.svg" alt="Sale" css="scale-150" />
@@ -93,7 +93,7 @@
                             @onclick="ShowModalCalculation">Calculate with Own Bill →</p>
                         </div>
                         <div class="bg-gradient-to-r p-4 max-w-md flex gap-2 h-fit from-primary-400 to-primary-300 shadow w-full my-auto rounded-2xl has-tooltip">
-                                        <Tooltip>
+                                        <Tooltip translateY="100" pointer="70" direction="bottom">
                                             <p>@tooltipService.GetTooltip("potential savings")</p>
                                         </Tooltip>
                             <div class="w-full h-full flex flex-col lg:flex-row gap-2 justify-center items-center my-auto rounded-2xl">
@@ -114,7 +114,7 @@
                 </div>
             }
         </Card>
-        <Image ImageName="Robert_T_Pose.png" css="absolute left-40 top-[235px] z-0 h-32  hidden lg:block" alt="Rob" />
+        <Image ImageName="Robert_T_Pose.png" css="scale-75 absolute left-40 top-[235px] z-0 h-32  hidden lg:block" alt="Rob T Posing" />
 
         @* Potential System *@
         <Card css="relative border-2 scale-90 flex flex-col gap-2 xl:scale-100 border-primary-300 p-4 w-full h-fit my-auto z-10">
@@ -128,29 +128,29 @@
                     <div class="bg-gray-100 shadow-md rounded-3xl p-3 w-16 h-16">
                         <Image ImageName="Accumulator.svg" alt="Sale" css="scale-150" />
                     </div>
-                    <h1 class="text-xl text-primary-800 font-semibold mt-3">Potential Solar System with given appliances</h1>
+                    <h1 class="text-xl text-primary-800 font-semibold mt-3">Potential Solar System <br/> with given appliances</h1>
                 </div>
-                <div class="flex w-full flex-col md:flex-row gap-10 mt-4">
-                    <div class="flex w-full flex-col sm:flex-row gap-5">
+                <div class="flex w-full flex-col md:flex-row gap-10">
+                    <div class="flex w-full flex-col sm:flex-row gap-5 mt-4">
                         <div class="grid scale-90 grid-cols-2 gap-2 w-full">
                             <Appliance name="Fridge" imageName="Fridge.svg" count="numFridges" />
                             <Appliance name="Stove" imageName="Stove.svg" count="numStove" />
-                            <Appliance name="TV" imageName="TV.svg" count="numTV" />
+                            <Appliance name="Geyser" imageName="Geyser.svg" count="numGeyser" />
                             <div class="flex mx-auto has-tooltip" @onclick="showModalAppliancesPopup">
-                                <Tooltip>
+                                <Tooltip translateY="-100">
                                     <p>@tooltipService.GetTooltip("solar score add button")</p>
                                 </Tooltip>
                                 <Appliance css="transition-all duration-300 hover:-translate-y-1 hover:shadow" name="Add"
                                     imageName="AddSquare.svg" />
                             </div>
                         </div>
-                        <div class="flex flex-col justify-center w-full items-center gap-5">
-                            <div class="flex flex-col gap-1 has-tooltip">
-                                <Tooltip pointer="15">
-                                    <p>@tooltipService.GetTooltip("average energy produced")</p>
+                        <div class="flex mt-24 md:mt-24 flex-col justify-center w-full">
+                            <div class="flex flex-col gap-1 mb-3 -mt-28">
+                                <h3 class="font-medium text-lg text-primary-900 text-center">Avg Energy Produced</h3>
+                                <div class="flex gap-1 mt-3 text-center justify-center has-tooltip">
+                                <Tooltip pointer="35" translateY="-120">
+                                    <p class="md:w-72">@tooltipService.GetTooltip("average energy produced")</p>
                                 </Tooltip>
-                                <h3 class="font-medium text-lg text-primary-900 text-left">Avg Energy Produced</h3>
-                                <div class="flex gap-1 mt-3">
                                     @{
                                         avgEnergyProduction = Math.Round(solarCalculator.getAnnualKwGenerated(numOfPanels,
                                         locationData.solarPanelsData) / 365, 2);
@@ -159,28 +159,43 @@
                                     <p class="text-5xl text-gray-400 font-bold">kwh</p>
                                 </div>
                             </div>
-                            <DaylightChart hours="@dlh" daylightHours="@daylight" fullDay="false" />
-                            <div class="flex flex-col w-full justify-center items-center gap-10 -mt-24 has-tooltip">
-                                <div class="translate-y-10 w-full">
-                                    <Tooltip pointer="45">
-                                        <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                                    </Tooltip>
-                                </div>
-                                <div class="flex flex-row gap-1">
+                            <div class="mt-4">
+                                <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
+                            </div>
+                            <div class="flex flex-col w-full justify-center items-center gap-10">
+                                <div class="flex flex-row gap-2 items-center mt-4">
                                     @{
-                                        <p class='text-green-600" text-5xl  font-semibold'>@dlh</p>
+                                        string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
                                     }
-                                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                                    <div class="flex flex-row gap-1 mr-5 has-tooltip">
+                                        <Tooltip pointer="40" translateY="-120" translateX="-40">
+                                            <p class="md:w-72">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                                        </Tooltip>
+                                        <p class='text-green-600" text-3xl  font-semibold'>@concurrentRuntime</p>
+                                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                                    </div>
+                                    @{
+                                        string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                                    }
+                                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
+                                    <div class="flex flex-row gap-1  has-tooltip">
+                                        <Tooltip pointer="40" translateY="-120" translateX="-40">
+                                            <p class="md:w-72">@tooltipService.GetTooltip("running hours on batteries")</p>
+                                        </Tooltip>
+                                        <p class='text-green-600" text-3xl  font-semibold'>@dlh</p>
+                                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                                    </div>
                                 </div>
                                 <h3 class="font-medium text-lg -mt-10 text-primary-900 text-left">Running Hours on Batteries</h3>
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col w-full md:w-1/2 mt-16 lg:-mt-16 justify-center items-center gap-4">
-                        <div class="-mt-10 mb-5 w-full flex flex-col justify-center items-center gap-4">
+                    <div class="flex flex-col w-full md:w-1/2 mt-20 lg:-mt-16 justify-center items-center gap-4">
+                        <div class="-mt-5 mb-5 w-full flex flex-col justify-center items-center gap-4">
                             <div class="has-tooltip">
-                                <Tooltip pointer="45">
-                                        <p>@tooltipService.GetTooltip("number of panels")</p>
+                                <Tooltip pointer="30" translateX="-10" translateY="-120">
+                                        <p class="md:w-72">@tooltipService.GetTooltip("number of panels")</p>
                                     </Tooltip>
                                 <Appliance css="scale-90" imageName="SolarPanels.svg" name="Number of Panels"
                                     count="@numOfPanels" />
@@ -188,11 +203,11 @@
                             <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full  cursor-pointer " min="4" max="20"
                                 step="1" @bind-value="@numOfPanels" @oninput="ResetPanelTimer" />
                         </div>
-                        <div class="flex gap-2 pr-2 justify-start items-start">
+                        <div class="flex gap-2 pr-2 justify-start items-start -mt-10">
                             <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
                                  <div class="has-tooltip">
-                                    <Tooltip pointer="10">
-                                        <p>@tooltipService.GetTooltip("battery utilisation")</p>
+                                    <Tooltip pointer="98" direction="left" translateX="-105">
+                                        <p  class="md:w-72">@tooltipService.GetTooltip("battery utilisation")</p>
                                     </Tooltip>
                                     <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                             @{
@@ -216,14 +231,14 @@
                                 <p class="text-center">Battery Utilisation</p>
                             </div>
                             <div class="has-tooltip">
-                                <Tooltip pointer="45">
-                                        <p>@tooltipService.GetTooltip("number of batteries")</p>
+                                <Tooltip pointer="98" direction="left" translateX="-105">
+                                        <p class="md:w-72">@tooltipService.GetTooltip("number of batteries")</p>
                                     </Tooltip>
                                 <Appliance css="scale-90" ImageName="Batteries.svg" name="Number of Batteries"
                                     count="@numOfBatteries" />
                             </div>
                         </div>
-                        <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full cursor-pointer " min="1" max="6" step="1"
+                        <input type="range" class="accent-primary-800 scale-150 w-2/3 lg:scale-100 lg:w-full cursor-pointer -mt-5" min="1" max="6" step="1"
                         @bind-value="@numOfBatteries" @oninput="ResetBatteryTimer" />
                     </div>
 
@@ -270,6 +285,7 @@
     private SharedUtils.locationDataClass locationDataClass = new SharedUtils.locationDataClass();
     private DataHandlers.SolarDataHandler solarCalculator = new DataHandlers.SolarDataHandler();
     private DataHandlers.RooftopDataHandler rooftopDataHandler = new DataHandlers.RooftopDataHandler();
+    private DataHandlers.CalculationDataHandler calculationDataHandler = new DataHandlers.CalculationDataHandler();
     [Parameter]
     public LocationDataModel? locationData { get; set; } = null;
     ModalPopup ModalPopupLogIn { get; set; } = new ModalPopup();
@@ -281,9 +297,11 @@
     public int numOfBatteries = 3;
     public double appliancePowerUsage = 0.0;
     public int numFridges = 2;
-    public int numStove = 1;
-    public int numTV = 1;
+    public int numStove = 2;
+    public int numGeyser = 1;
     float dlh = 0f;
+    private float concurrentRuntimePercentage = 0f;
+    private float concurrentRuntime = 0f; 
     private int daylight = 12;
     private double chargingLimit = 0.0;
     private double chargingLimitPercentage = 50.0;
@@ -342,7 +360,7 @@
 
     private async void SetChargingLimit(Object? source, ElapsedEventArgs e)
     {
-         if (locationData != null)
+        if (locationData != null)
         {
             SetGraphicValues();
         }
@@ -366,14 +384,14 @@
 
     private void SetGraphicValues()
     {
-        appliancePowerUsage = ((numFridges * 250) + (numStove * 2500) + (numTV * 180)) / 1000.0;
-        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true) / 365;
+        appliancePowerUsage = ((numFridges * 500) + (numStove * 2500*4/24) + (numGeyser * 8000*2/24)) / 1000.0;
+        var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(numOfPanels, locationData!.solarPanelsData, true, 150) / 365;
         var usableHours = solarCalculator.getSunlightHours(locationData.solarPanelsData, true);
         usableHours = Math.Round(usableHours, 2);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
-        if (chargingLimit > numOfBatteries * 10)
+        if (chargingLimit > numOfBatteries * 8)
         {
-            chargingLimit = numOfBatteries * 10;
+            chargingLimit = numOfBatteries * 8;
             chargingLimitPercentage = 100;
         }
         else
@@ -385,6 +403,20 @@
         double runningHours = chargingLimit / appliancePowerUsage;
         double runningHoursPercentage = (runningHours / daylight) * 100;
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+        var concurrentRuntimePercentage = calculateConcurrentRunTimePercentage();
+        concurrentRuntime = (float)Math.Round((24 - daylight) * (concurrentRuntimePercentage / 100), 2);    
+    }
+
+    private float calculateConcurrentRunTimePercentage()
+    {
+        float powerUsedPerHour = ((numFridges * 250) + (numStove * 2500) + (numGeyser * 8000)) / 1000f;
+        float runningHours = float.Parse(chargingLimit.ToString()) / powerUsedPerHour;
+        float nonDaylightHours = 12;
+        float concurrentPercentage = (runningHours / nonDaylightHours) * 100;
+        if(concurrentPercentage > 825) {
+            concurrentPercentage = 825;
+        }
+        return concurrentPercentage;
     }
 
     private async void ShowModalCalculation()

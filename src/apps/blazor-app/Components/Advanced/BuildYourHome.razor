@@ -48,12 +48,11 @@
             <h1 class="text-blue-950 translate-y-8 font-semibold col-span-2 text-center text-3xl mb-5 ">Build your home</h1>
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
-                <div class="group">
+                <div class="group has-tooltip">
                     <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                    <div
-                        class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900">Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below</p>
-                    </div>
+                    <Tooltip pointer="55" translateY="-140" translateX="-50">
+                        <p class="w-48">@tooltipService.GetTooltip("add appliances")</p>
+                    </Tooltip>
                 </div>
             </div>
             <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
@@ -121,9 +120,9 @@
                 homeType = "-Home3.svg";
             break;
             case 3:
-                if (systems[3].inverterOutput <= 5) { 
+                if (systems[3].numberOfPanels <= 12) { 
                     homeType="-Home1.svg" ; 
-                } else if (systems[3].inverterOutput <=8) { 
+                } else if (systems[3].numberOfPanels <= 18) { 
                     homeType="-Home2.svg" ; 
                 } else {
                     homeType="-Home3.svg" ;
@@ -143,12 +142,11 @@
             <h1 class="text-blue-950 translate-y-8 font-semibold text-center text-3xl mb-5 ">Solar System</h1>
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Inverter size</h1>
-                <div class="group">
+                <div class="group has-tooltip">
                     <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                    <div
-                        class=" transform -scale-x-100 absolute hidden fade-in-active w-full -top-[70px] -translate-x-64 max-w-md group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900 transform -scale-x-100">Your inverter determines how many appliances you can run at once</p>
-                    </div>
+                    <Tooltip pointer="55" translateY="-150" translateX="-50">
+                        <p class="w-48">@tooltipService.GetTooltip("inverter size")</p>
+                    </Tooltip>
                 </div>
             </div>
             @if (systems.Count > 2)
@@ -175,7 +173,7 @@
                     <div class="flex justify-center h-24">
                     @if (showCustomSystem)
                     {
-                        if (displayCreatedCustomSystem)
+                        if (displayCreatedCustomSystem && systems[3].inverterOutput > 0)
                         {
                             var customSize = systems[3].inverterOutput + "kw";
                             <div @onclick="CreateCustomSystem"
@@ -185,9 +183,13 @@
                         }
                         else
                         {
+                            if (systems[3].inverterOutput == -1)
+                            {
+                                systems[3].inverterOutput = 5;
+                            } 
                             <div>
                                 <div class="gap-2 px-6">
-                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput"/>
+                                    <input class="text-center focus:outline-none" type="number" placeholder="Enter System Size" @bind="systems[3].inverterOutput" min="2" max="20"/>
                                 </div>
                                 <div @onclick="CreateCustomSystem" class="mx-auto pt-4 w-24">
                                     <Button style="pill" >
@@ -217,17 +219,17 @@
         <div class="flex justify-between gap-4 w-full scale-75">
             @if (systems.Count > 0)
             {
-                <div class="flex flex-col w-full -mt-16 justify-center items-center gap-4">
+                <div class="flex flex-col w-full -mt-20 justify-center items-center gap-4">
                     <div class="mb-2 w-full flex flex-col">
                         <div @onclick='@(() => CustomSystemModal("Panels"))'>
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" imageName="SolarPanels.svg" name="Number of Panels"count="@systems[selectedSystem].numberOfPanels" />
                         </div>
-                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="40" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
+                        <input type="range" class="accent-primary-800  cursor-pointer w-full mt-3" min="4" max="30" step="1" value="@systems[selectedSystem].numberOfPanels" @oninput="ResetPanelTimer" @onchange="UpdateSelectedSystem"/>
                     </div>
                     <div class="flex gap-2 pr-2 justify-start items-start">
                         <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
-                            <Tooltip pointer="50">
-                                <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                            <Tooltip direction="left" pointer="98" translateX="-68">
+                                <p class="md:w-72">@tooltipService.GetTooltip("battery utilisation")</p>
                             </Tooltip>
                             <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                 @{
@@ -243,7 +245,7 @@
                             <Appliance css="scale-90 hover:shadow transition-all duration-300 hover:-translate-y-1" ImageName="Batteries.svg" name="Number of Batteries" count="@systems[selectedSystem].numberOfBatteries" />
                         </div>
                     </div>
-                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="10" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
+                    <input type="range" class="accent-primary-800  cursor-pointer w-full " min="1" max="6" step="1" value="@systems[selectedSystem].numberOfBatteries" @oninput="ResetBatteryTimer"  @onchange="UpdateSelectedSystem"/>
                 </div>
             }
             else
@@ -251,18 +253,40 @@
                 <BatterySkeleton />
             }
         </div>
-        <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-        <div class="flex relative flex-col justify-center w-full has-tooltip">
-            <div>
-                <Tooltip pointer="48">
-                    <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+        <div class="has-tooltip -mt-8">
+            <Tooltip pointer="48" direction="left" translateX="-68">
+                <p>@tooltipService.GetTooltip("running hours on batteries")</p>
+            </Tooltip>
+            <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
+        </div>
+            <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime"/>
+        <div class="flex flex-row justify-center w-full">
+            <div class="flex flex-row w-full justify-center items-center gap-1 has-tooltip">
+                <Tooltip pointer="60" translateY="-110" translateX="-10">
+                    <p class="md:w-72">@tooltipService.GetTooltip("simultaneous running hours")</p>
                 </Tooltip>
-            </div>
-            <DaylightChart hours="@dlh" daylightHours="@daylight" />
-            <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                @if(float.IsInfinity(dlh) || dlh == 12) {
-                    <p class="text-5xl text-primary-900 font-semibold">12+</p>
+                @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
+                    string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
+                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                    <p class="text-5xl text-primary-900 font-semibold">99+</p>
                 } else {
+                    string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                    <p class="text-5xl text-primary-900 font-semibold">@concurrentRuntime</p>
+                }
+                <p class="text-5xl text-gray-400 font-bold">h</p>
+            </div>
+            <div class="flex flex-row w-full justify-center items-center gap-1 has-tooltip">
+                <Tooltip pointer="60" translateY="-110" translateX="-10">
+                    <p class="md:w-72">@tooltipService.GetTooltip("running hours on batteries")</p>
+                </Tooltip>
+                @if(float.IsInfinity(dlh) || dlh == 99) {
+                    string hexColor = calculationDataHandler.GetColorGradient(99);
+                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
+                    <p class="text-5xl text-primary-900 font-semibold">99+</p>
+                } else {
+                    string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                    <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
                     <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
                 }
                 <p class="text-5xl text-gray-400 font-bold">h</p>
@@ -282,12 +306,11 @@
             <h1 class="text-blue-950 translate-y-8 font-semibold text-center text-3xl mb-5 ">Solar System</h1>
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Inverter size</h1>
-                <div class="group">
+                <div class="group  has-tooltip">
                     <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                    <div
-                        class=" transform -scale-x-100 absolute hidden fade-in-active w-full -top-[70px] -translate-x-64 max-w-md group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900 transform -scale-x-100">Your inverter determines how many appliances you can run at once</p>
-                    </div>
+                    <Tooltip pointer="55" translateY="-150" translateX="-50">
+                        <p class="w-48">@tooltipService.GetTooltip("inverter size")</p>
+                    </Tooltip>
                 </div>
             </div>
             @if (systems.Count > 2)
@@ -366,8 +389,8 @@
                     <div class="flex flex-col gap-4 w-full justify-center items-center">
                         <div class="flex gap-2 pr-2 justify-start items-start">
                             <div class="flex flex-col gap-2 justify-center items-center w-full has-tooltip">
-                                <Tooltip pointer="50">
-                                    <p class="text-xl text-center">@tooltipService.GetTooltip("battery utilisation")</p>
+                                <Tooltip pointer="50" translateY="-150">
+                                    <p>@tooltipService.GetTooltip("battery utilisation")</p>
                                 </Tooltip>
                                 <div class="h-28 shadow flex-col-reverse flex w-20 p-1 bg-gray-300 relative  rounded-lg">
                                     @{
@@ -394,25 +417,39 @@
         </div>
         <div class="flex flex-col w-full mt-10 justify-center items-center gap-4 mb-20">
             <h3 class="font-medium text-lg text-primary-900 text-left">Running Hours on Batteries</h3>
-            <div class="flex relative flex-col justify-center w-full has-tooltip">
-                <div>
-                    <Tooltip pointer="48">
-                        <p>@tooltipService.GetTooltip("running hours on batteries")</p>
-                    </Tooltip>
-                </div>
-                <DaylightChart hours="@dlh" daylightHours="@daylight" />
-                <div class="flex w-full justify-center absolute top-1/2 left-0 items-center gap-1 mt-5">
-                        @{
-                            if (float.IsInfinity(dlh) || dlh == 12)
-                            {
-                                <p class="text-5xl text-primary-900 font-semibold">12+</p>
-                            }
-                            else
-                            {
-                                <p class="text-5xl text-primary-900 font-semibold">@dlh</p>
-                            }
+            <div class="flex relative flex-col justify-center w-full">
+                <DaylightChart hours="@dlh" daylightHours="@daylight" concurrent="concurrentRuntime" />
+                <div class="flex flex-row justify-center w-full">
+                    <div class="flex flex-row justify-center items-center mr-12 has-tooltip gap-1">
+                        <Tooltip pointer="60" translateY="-90" translateX="-10">
+                            <p class="md:w-72">@tooltipService.GetTooltip("simultaneous running hours")</p>
+                        </Tooltip>
+                        @if(float.IsInfinity(concurrentRuntime) || dlh == 99) {
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(99, 4);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                            <p class="text-3xl text-primary-900 font-semibold">99+</p>
+                        } else {
+                            string hexColorConcurrent = calculationDataHandler.GetColorGradient(concurrentRuntime, 4);
+                            <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColorConcurrent;"></div>
+                            <p class="text-3xl text-primary-900 font-semibold">@concurrentRuntime</p>
                         }
-                    <p class="text-5xl text-gray-400 font-bold">h</p>
+                        <p class="text-3xl text-gray-400 font-bold">h</p>
+                    </div>
+                    <div class="flex flex-row justify-center items-center has-tooltip gap-1">
+                           <Tooltip pointer="50" translateY="-90" translateX="-10">
+                                <p class="md:w-72">@tooltipService.GetTooltip("running hours on batteries")</p>
+                            </Tooltip>
+                            @if(float.IsInfinity(dlh) || dlh == 99) {
+                                string hexColor = calculationDataHandler.GetColorGradient(99);
+                                <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
+                                <p class="text-3xl text-primary-900 font-semibold">99+</p>
+                            } else {
+                                string hexColor = calculationDataHandler.GetColorGradient(dlh);
+                                <div class=" h-3 w-3 rounded-sm" style="background-color: @hexColor;"></div>
+                                <p class="text-3xl text-primary-900 font-semibold">@dlh</p>
+                            }
+                            <p class="text-3xl text-gray-400 font-bold">h</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -423,12 +460,11 @@
         <div class="flex mx-auto flex-col gap-4 col-span-2 items-center justify-center mb-4 -mt-8 w-full">
             <div class="flex gap-3 w-full relative justify-center">
                 <h1 class="text-base font-medium text-center mb-2  text-primary-900">Select Appliances</h1>
-                <div class="group">
+                <div class="group has-tooltip">
                     <Image ImageName="Info.svg" alt="Info" css="w-7 hover:-translate-y-1 transition-all duration-300" />
-                    <div
-                        class="absolute hidden fade-in-active w-full -top-10 translate-x-10 max-w-md  group-hover:block transition-all duration-300 ease-in-out text-sm  bg-primary-200 shadow rounded-t-2xl rounded-r-2xl p-4 group-hover:-translate-y-10 ">
-                        <p class="text-gray-900">Click on the appliances to add them to your calculation, you can add multiple of the same appliances in the variants section below</p>
-                    </div>
+                    <Tooltip pointer="55" translateY="-140" translateX="-50">
+                        <p class="w-48">@tooltipService.GetTooltip("add appliances")</p>
+                    </Tooltip>
                 </div>
             </div>
             <input class="block w-72 rounded-lg border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" type="text" placeholder="Search.." @bind-value="applianceSearch" @bind-value:event="oninput">
@@ -490,14 +526,14 @@
     @if (@customModalTitle == "Number of Solar Panels")
     {
         <p>Number of solar panels:</p>
-        <Input  @bind-InputValue="customPanels" type="number" min="4" max="40"/>
+        <Input  @bind-InputValue="customPanels" type="number" min="4" max="30"/>
         <p>Solar panel power output (W/h): </p>
         <Input  @bind-InputValue="customPanelsInput" type="number" min="100" max = "2000"/>
     }
     else
     {
         <p>Number of batteries: </p>
-        <Input  @bind-InputValue="customBatteries" type="number" min="1" max="10"/>    
+        <Input  @bind-InputValue="customBatteries" type="number" min="1" max="6"/>    
         <p>Battery Size (kW): </p>
         <Input  @bind-InputValue="customBatteriesSize" type="number" min="4" max="20"/>
     }
@@ -611,6 +647,7 @@
     };
     float runningHoursPercentage = 0f;
     float dlh = 0f;
+    float concurrentRuntime = 0f;
     float daylight = 12f;
     DaylightChart daylightChart = new DaylightChart();
     private bool showCustomSystem = false;
@@ -653,6 +690,15 @@
         if (currentReport!.homeSize != null)
         {
             homeSize = currentReport.homeSize;
+           
+        }
+        var editing = await ProtectedSessionStore.GetAsync<bool>("edit");
+        bool edit = editing.Value;
+        if(edit)
+        {
+            var rep = await ProtectedSessionStore.GetAsync<ReportModel>("currentReport");
+            ReportModel tempReport = rep.Value!;
+            homeSize = tempReport.homeSize!;
         }
         if (systems.Count > 0)
         {
@@ -713,6 +759,13 @@
 
     public void CustomSystemSelected()
     {
+        if (systems[3].inverterOutput < 0)
+        {
+            systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
+            systems[3].batterySize = systems[selectedSystem].batterySize;
+            systems[3].solarInput = systems[selectedSystem].solarInput;
+            systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
+        }
         selectedSystem = 3;
         selectedSystemChanged.InvokeAsync(selectedSystem);
         if (showCustomSystem)
@@ -763,6 +816,7 @@
 
     }
     private async void SetNumberOfBatteries(Object? source, ElapsedEventArgs e){
+        
         if (currentLocationData != null)
         {
             SetGraphicValues();
@@ -789,6 +843,9 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfPanels = systems[selectedSystem].numberOfPanels;
         }
+        selectedSystem = 3;
+        showCustomSystem = true;
+        displayCreatedCustomSystem = true;
         systems[3].numberOfPanels =  int.Parse(val!);
         panelTimer.Start();
     }
@@ -806,6 +863,9 @@
             systems[3].solarInput = systems[selectedSystem].solarInput;
             systems[3].numberOfBatteries = systems[selectedSystem].numberOfBatteries;
         }
+        selectedSystem = 3;
+        showCustomSystem = true;
+        displayCreatedCustomSystem = true;
         systems[3].numberOfBatteries =  int.Parse(val!);
         batteryTimer.Start();
     }
@@ -872,10 +932,9 @@
     }
 
     private void SetGraphicValues(){
-        var appliancePowerUsage = systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 1000.0;
+        var usableHours = solarCalculator.getSunlightHours(currentLocationData!.solarPanelsData, true);
+        var appliancePowerUsage = (systemsDataHandler.CalculateApplianceDailyPowerUsage(appliances, null) / 1000.0) / (24 / usableHours);
         var avgEnergyProduction = solarCalculator.getAnnualKwGenerated(systems[selectedSystem].numberOfPanels, currentLocationData!.solarPanelsData, true, systems[selectedSystem].solarInput) / 365;
-        var usableHours = solarCalculator.getSunlightHours(currentLocationData.solarPanelsData, true);
-        usableHours = Math.Round(usableHours, 2);
         chargingLimit = (avgEnergyProduction - appliancePowerUsage) * usableHours;
         if (chargingLimit > systems[selectedSystem].numberOfBatteries * systems[selectedSystem].batterySize)
         {
@@ -890,8 +949,16 @@
         }
         chargingLimitPercentage = Math.Round(chargingLimitPercentage, 2);
 
-        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, systems[selectedSystem].batterySize * 1000, appliances);
+        if(chargingLimitPercentage > 100) {
+            chargingLimitPercentage = 100;
+        } else if (chargingLimitPercentage < 0) {
+            chargingLimitPercentage = 0;
+        }
+
+        runningHoursPercentage = systemsDataHandler.CalculateRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
         dlh = (float)Math.Round((24 - daylight) * (runningHoursPercentage / 100), 2);
+        var concurrentRuntimePercentage = systemsDataHandler.CalculateConcurrentRunningHours(systems[selectedSystem].numberOfBatteries, (systems[selectedSystem].batterySize * 1000 * (chargingLimitPercentage/100)), appliances);
+        concurrentRuntime = (float)Math.Round((24 - daylight) * (concurrentRuntimePercentage / 100), 2);
     }
 
     /// <summary>
@@ -903,39 +970,6 @@
         SetGraphicValues();
         return selectedSystemChanged.InvokeAsync(selectedSystem);
     }
-
-    @* private void IncrementApplianceCount(ApplianceModel appliance)
-    {
-        if ((systemsDataHandler.CalculateAppliancePowerUsage(appliances, appliance) / 24) > systems[selectedSystem].inverterOutput * 1000)
-        {
-            toastService.ShowToast("Error", "The average power usage of your appliances is greater than the inverter output of your system.", "error");
-        }
-        else
-        {
-            appliance.fade = "fade-in-active";
-            appliance.quantity++;
-            UpdateApplianceStorage();
-            SetGraphicValues();
-            applianceService.UpdateAppliance(appliances);
-        }
-    } *@
-
-    @* /// <summary>
-    /// On appliance count changed, update the appliance count and calculate the running hours
-    /// </summary>
-    private void DecrementApplianceCount(ApplianceModel appliance)
-    {
-        appliance.quantity--;
-        if (appliance.quantity < 0)
-        {
-            appliance.quantity = 0;
-        }
-        SetGraphicValues();
-
-        StateHasChanged();
-        UpdateApplianceStorage();
-        applianceService.UpdateAppliance(appliances);
-    } *@
 
     private void UpdateAppliances(List<ApplianceModel> applianceGroups)
     {
@@ -1001,7 +1035,7 @@
             case "2":
                 homeSize = "Small";
                 selectedSystem = 0;
-                int[] applianceQuantities = { 1, 1, 15, 1, 0, 1, 0, 0 };
+                int[] applianceQuantities = { 1, 1, 10, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
                     if(i >= applianceQuantities.Length)
@@ -1019,7 +1053,7 @@
             case "3":
                 homeSize = "Medium";
                 selectedSystem = 1;
-                int[] applianceQuantities2 = { 1, 1, 20, 1, 1, 1, 0, 0 };
+                int[] applianceQuantities2 = { 1, 1, 15, 2, 2, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
                     if(i >= applianceQuantities2.Length)
@@ -1035,7 +1069,7 @@
             case "4":
                 homeSize = "Large";
                 selectedSystem = 2;
-                int[] applianceQuantities3 = { 2, 1, 30, 2, 2, 1, 0, 1 };
+                int[] applianceQuantities3 = { 2, 2, 20, 2, 2, 1, 1, 2, 2, 1, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 2 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
                     if(i >= applianceQuantities3.Length)
@@ -1051,7 +1085,7 @@
             default:
                 homeSize = "Small";
                 selectedSystem = 0;
-                int[] applianceQuantities4 = { 1, 1, 15, 1, 0, 1, 0, 0 };
+                int[] applianceQuantities4 =  { 1, 1, 10, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 };
                 for (int i = 0; i < appliances.Count; i++)
                 {
                     if(i >= applianceQuantities4.Length)
@@ -1123,7 +1157,12 @@
             await ProtectedSessionStore.DeleteAsync("calculationName");
         }
         Console.WriteLine("Update Calculation, new name: " + calculationName);
-        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances))
+        if (selectedSystem == 3)
+        {
+            systems[3].systemId = await systemClass.CreateSystem(systems[3]);
+            Console.WriteLine("Custom System ID: " + systems[3].systemId);
+        }
+        if (await calculationDataHandler.UpdateCalculation(currentReport!.reportId, calculationName!, appliances, systems[selectedSystem].systemId, homeSize))
         {
             toastService.ShowToast("Updated Calculation", "Report successfuly updated.", "success");
             NavigationManager.NavigateTo("/dashboard");

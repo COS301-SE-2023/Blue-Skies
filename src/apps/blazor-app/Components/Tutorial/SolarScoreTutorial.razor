@@ -17,7 +17,7 @@
             </Button>
         </div>
         <div @onclick='@(() => SelectTutorial("SolarScore"))'>
-            <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
+            <Button css='@(selectedTutorialName == "SolarScore" || selectedTutorialName == "PotentialSavings" || selectedTutorialName == "AvgProduction" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
                 <p>Results</p>
             </Button>
         </div>
@@ -42,8 +42,8 @@
             @if (showTypewriter) {
                 <p class="absolute top-10 -translate-y-4 ml-16 w-max max-w-md left-0"><Typewriter Builder="@typewriter" /></p>     
             }
-            @if(selectedTutorialName == "SolarScore" || selectedTutorialName == "UsableSunlight" ) {
-                <div @onclick='@(selectedTutorialName == "SolarScore" ? () => SelectTutorial("UsableSunlight")  : () => SelectTutorial("AvgProduction") )' class="max-w-md">
+            @if(selectedTutorialName == "SolarScore" || selectedTutorialName == "PotentialSavings" ) {
+                <div @onclick='@(selectedTutorialName == "SolarScore" ? () => SelectTutorial("PotentialSavings")  : () => SelectTutorial("AvgProduction") )' class="max-w-md">
                     <Button style="pill">
                         <p>Next</p>
                     </Button>
@@ -89,12 +89,12 @@
                 showTypewriter = true;
                 StateHasChanged();
                 break;
-            case "UsableSunlight":
+            case "PotentialSavings":
                 showTypewriter = false;
                 StateHasChanged();
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("Usable sunlight is the amount of sunlight that is not blocked by trees, buildings, and other obstructions. It is the amount of sunlight that can be used to generate solar energy.", 10);
+                    .TypeString("Potential Savings is calculated based on how much money you can save monthly by producing clean energy.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break;
@@ -112,7 +112,7 @@
                 StateHasChanged();
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("To get your solar system, simply follow these straightforward steps: Sign up, create an advanced calculation, generate a report, and get in touch with a solar provider.", 10);
+                    .TypeString("To get your solar system, simply follow these straightforward steps: Sign up, create a personalised calculation, get a report, and get in touch with a solar provider.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break;

@@ -26,11 +26,6 @@
                 <p>Advanced</p>
             </Button>
         </div>
-        <div @onclick='@(() => SelectTutorial("Rooftop"))'>
-            <Button css='@(selectedTutorialName == "Rooftop" ? "bg-primary-400 rounded-full transition-all duration-300" : "transition-all duration-300")' style="outline-light">
-                <p>Rooftop Analysis</p>
-            </Button>
-        </div>
     </div>
 
     @if(selectedTutorial) {
@@ -91,7 +86,7 @@
                 StateHasChanged();
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("The Runnable Hours indicate how long the chosen system can power the selected appliances without relying on Eskom's electricity supply.", 10);
+                    .TypeString("The Runnable Hours consists out of two metrics. The first metric indicates the time your batteries will last given simultaneous use of all your appliances. The second metric calculates the average time your batteries will last given daily usage.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break; 
@@ -121,15 +116,6 @@
                 await Task.Delay(300);
                 typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
                     .TypeString("The Fancy Data section offers additional insights, such as the average monthly solar radiation your house receives. It also provides horizon data, which helps identify any geographical obstructions that might affect your solar energy potential.", 10);
-                showTypewriter = true;
-                StateHasChanged();
-                break;
-            case "Rooftop":
-                showTypewriter = false;
-                StateHasChanged();
-                await Task.Delay(300);
-                typewriter = new TypewriterBuilder(defaultCharacterPause: 6)
-                    .TypeString("The Rooftop Analysis section furnishes you with detailed data concerning your home's rooftop.", 10);
                 showTypewriter = true;
                 StateHasChanged();
                 break;

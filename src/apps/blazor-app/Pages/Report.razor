@@ -117,9 +117,9 @@
                             <div class="flex w-fit mx-auto">
                                 <p class="text-primary-900 font-semibold">
                                     @{
-                                        if (float.IsInfinity(dlh))
+                                        if (float.IsInfinity(dlh) || dlh == 99)
                                         {
-                                            <p>12+</p>
+                                            <p>99+</p>
                                         }
                                         else
                                         {
@@ -164,7 +164,7 @@
                         <div class="grid grid-cols-2 justify-center items-center gap-2">
                             @{
                                 double squaredArea = Math.Round(wholeroofstats!.areaMeters2);
-                                double maxArraArea = Math.Round(resultLocationData.solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
+                                double maxArraArea = Math.Round(resultLocationData!.solarPanelsData!.solarPotential!.maxArrayAreaMeters2);
                                 double maxHoursSunlightPerDay =
                                 Math.Round(resultLocationData.solarPanelsData!.solarPotential!.maxSunshineHoursPerYear / 365, 2);
                             }

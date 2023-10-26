@@ -878,21 +878,52 @@ public class RooftopDataHandler
 
 public class SystemsDataHandler
 {
-    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ApplianceModel> appliances)
-    {
-        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
-
-        if (sumOfAppliances == 0)
+    public float CalculateApplianceHourlyPowerUsage(List<ApplianceModel> appliances, ApplianceModel? appliance = null) {
+        float sumOfAppliances = 0f;
+        foreach (var app in appliances)
         {
-            return 100;
+            if (app.quantity > 0)
+            {
+                if(app.durationUsed > 1) {
+                    sumOfAppliances += app.quantity * app.powerUsage;
+                } else {
+                    sumOfAppliances += app.quantity * app.powerUsage * (float)app.durationUsed;
+                }
+            }
         }
+        if (appliance != null)
+        {
+            if(appliance.durationUsed > 1) {
+                sumOfAppliances += appliance.powerUsage;
+            } else {
+                sumOfAppliances += appliance.powerUsage * (float)appliance.durationUsed;
+            }
+        }
+        return sumOfAppliances;
+    }
 
-        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
-
-        float runningHours = (numBatteries * batteryStorage) / (sumOfAppliances / 24);
-        float nonDaylightHours = 12;
-        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
-        return runningHoursPercentage;
+    public float CalculateApplianceHourlyPowerUsage(List<ReportAllApplianceModel> appliances, ApplianceModel? appliance = null) {
+        float sumOfAppliances = 0f;
+        foreach (var app in appliances)
+        {
+            if (app.numberOfAppliances > 0)
+            {
+                if(app.durationUsed > 1) {
+                    sumOfAppliances += app.numberOfAppliances * app.powerUsage;
+                } else {
+                    sumOfAppliances += app.numberOfAppliances * app.powerUsage * (float)app.durationUsed;
+                }
+            }
+        }
+        if (appliance != null)
+        {
+            if(appliance.durationUsed > 1) {
+                sumOfAppliances += appliance.powerUsage;
+            } else {
+                sumOfAppliances += appliance.powerUsage * (float)appliance.durationUsed;
+            }
+        }
+        return sumOfAppliances;
     }
 
     public float CalculateApplianceDailyPowerUsage(
@@ -916,36 +947,120 @@ public class SystemsDataHandler
         return sumOfAppliances;
     }
 
-    public float CalculateRunningHours(int numBatteries, int batteryStorage, List<ReportAllApplianceModel> appliances)
+    public float CalculateApplianceDailyPowerUsage(
+        List<ReportAllApplianceModel> appliances,
+        ApplianceModel? appliance
+    )
     {
         float sumOfAppliances = 0f;
 
-        foreach (var appliance in appliances)
+        foreach (var app in appliances)
         {
-            if (appliance.numberOfAppliances > 0)
+            if (app.numberOfAppliances > 0)
             {
-                if (appliance.powerUsage != 0)
-                    sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.powerUsage! * (float)appliance.durationUsed;
+                if (app.powerUsage != 0)
+                    sumOfAppliances += (float)(app.numberOfAppliances!) * (float)app.powerUsage! * (float)app.durationUsed;
                 else {
-                    sumOfAppliances += (float)(appliance.numberOfAppliances!) * (float)appliance.defaultPowerUsage! * (float)appliance.durationUsed;
+                    sumOfAppliances += (float)(app.numberOfAppliances!) * (float)app.defaultPowerUsage! * (float)app.durationUsed;
                 }
             }
         }
 
+        return sumOfAppliances;
+    }
+
+    public float CalculateConcurrentRunningHours(
+        int numBatteries,
+        double batteryStorage,
+        List<ReportAllApplianceModel> appliances,
+        ApplianceModel? appliance = null
+    )
+    {
+        float sumOfAppliances = CalculateApplianceHourlyPowerUsage(appliances, appliance);
+
         if (sumOfAppliances == 0)
         {
-            return 100;
+            return 825; //Equates to 99 hours
+        }
+
+        float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateConcurrentRunningHours(
+        int numBatteries,
+        double batteryStorage,
+        List<ApplianceModel> appliances,
+        ApplianceModel? appliance = null
+    )
+    {
+        float sumOfAppliances = CalculateApplianceHourlyPowerUsage(appliances, appliance);
+
+        if (sumOfAppliances == 0)
+        {
+            return 825; //Equates to 99 hours
+        }
+
+        float runningHours = (float)(numBatteries * batteryStorage) / sumOfAppliances;
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        return runningHoursPercentage;
+    }
+
+    public float CalculateRunningHours(int numBatteries, double batteryStorage, List<ApplianceModel> appliances)
+    {
+        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
+
+        if (sumOfAppliances == 0)
+        {
+            return 825; //Equates to 99 hours
         }
 
         Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
 
-        float runningHours = (numBatteries * batteryStorage) / (sumOfAppliances / 24);
+        float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
         float nonDaylightHours = 12;
         float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+
+        return runningHoursPercentage;
+    }
+
+    public float CalculateRunningHours(int numBatteries, double batteryStorage, List<ReportAllApplianceModel> appliances)
+    {
+        float sumOfAppliances = CalculateApplianceDailyPowerUsage(appliances, null);
+
+        if (sumOfAppliances == 0)
+        {
+            return 825; //Equates to 99 hours
+        }
+
+        Console.WriteLine("Sum of appliances: " + sumOfAppliances + "----------------------->>>>>>>>>");
+
+        float runningHours = (float)(numBatteries * batteryStorage) / (sumOfAppliances / 24);
+        float nonDaylightHours = 12;
+        float runningHoursPercentage = (runningHours / nonDaylightHours) * 100;
+        if(runningHoursPercentage > 825) {
+            runningHoursPercentage = 825;
+        }
+        Console.WriteLine("Running hours percentage: " + runningHoursPercentage + "----------------------->>>>>>>>>");
+
         return runningHoursPercentage;
     }
 }
-
 
 public class CalculationDataHandler
 {
@@ -1018,7 +1133,9 @@ public class CalculationDataHandler
     public async Task<bool> UpdateCalculation(
         int reportId,
         string newReportName,
-        List<ApplianceModel> appliances)
+        List<ApplianceModel> appliances,
+        int systemId,
+        string homeSize)
     {
         originalAppliances = await applianceClass.GetAllAppliances();
         List<ApplianceModel> newAppliances = GetUniqueAppliances(appliances, originalAppliances);
@@ -1029,7 +1146,7 @@ public class CalculationDataHandler
         {
             return false;
         }
-        if(await reportClass.UpdateReport(reportId, newReportName, report.userId, report.homeSize!, report.latitude, report.longitude, report.systemId) == false)
+        if(await reportClass.UpdateReport(reportId, newReportName, report.userId, homeSize, report.latitude, report.longitude, systemId) == false)
         {
             return false;
         }
@@ -1047,11 +1164,7 @@ public class CalculationDataHandler
                 );
             }
         }
-
-
-
         return true;
-
     }
 
 
@@ -1115,5 +1228,59 @@ public class CalculationDataHandler
         }
 
         return allAppliances;
+    }
+
+    public string GetColorGradient(float hours, float range = 12)
+    { 
+        // middle top : 46,90,155 
+        // middle bottom: 255,193,8 
+        // top 31, 56, 100 
+        // bottom 241,70,36)
+
+        byte topR = 31, topG = 56, topB = 100; //Top
+        byte middleTopR = 46, middleTopG = 90, middleTopB = 155; //Top middle
+        byte middleBottomR = 255, middleBottomG = 193, middleBottomB = 8; // Bottom middle
+        byte bottomR = 241, bottomG = 70, bottomB = 0; // Bottom
+        
+        byte redValue, greenValue, blueValue = 0;
+
+        if (hours <= range / 4)
+        {
+            redValue = bottomR;
+            greenValue = bottomG;
+            blueValue = bottomB;
+        }
+        else if (hours >= range)
+        {
+            redValue = topR;
+            greenValue = topG;
+            blueValue = topB;
+        } 
+        else if(hours < (range * 2 / 3) && hours >= (range / 2)) {
+            /* float t = (hours - (range / 2)) / ((range * 2 / 3 - (range / 2)));
+            redValue = (byte)(t * middleTopR + (1 - t) * middleBottomR); // Decreasing red component
+            greenValue = (byte)(t * middleTopG + (1 - t) * middleBottomG); // Increasing green component
+            blueValue = (byte)(t * middleTopB + (1 - t) * middleBottomB); // Increasing blue component */
+            redValue = middleBottomR;
+            greenValue = middleBottomG;
+            blueValue = middleBottomB;
+        } 
+        else if (hours < (range / 2))
+        {       
+            float t = (hours - (range / 4)) / ((range / 2) - (range / 4)); 
+            redValue = (byte)((t * middleBottomR) + (1 - t) * bottomR); // Decreasing red component
+            greenValue = (byte)(t * middleBottomG + (1 - t) * bottomG); // Increasing green component
+            blueValue = (byte)(t * middleBottomB + (1 - t) * bottomB); // Increasing blue component
+        }
+        else
+        {
+            float t = (hours - (range * 2 / 3)) / (range - (range * 2 / 3));
+            redValue = (byte)(t * topR + (1 - t) * middleTopR); // Decreasing red component
+            greenValue = (byte)(t * topG + (1 - t) * middleTopG); // Increasing green component
+            blueValue = (byte)(t * topB + (1 - t) * middleTopB); // Increasing blue component
+        }
+
+        var color = Color.FromRgb(redValue, greenValue, blueValue);
+        return "#" + color.ToHex();
     }
 }
