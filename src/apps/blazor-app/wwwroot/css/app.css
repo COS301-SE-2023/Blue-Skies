@@ -1295,6 +1295,14 @@ video {
   margin-top: 20rem;
 }
 
+.-ml-8 {
+  margin-left: -2rem;
+}
+
+.-ml-5 {
+  margin-left: -1.25rem;
+}
+
 .block {
   display: block;
 }

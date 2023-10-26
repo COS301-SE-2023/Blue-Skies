@@ -54,7 +54,10 @@
                                             }
                                         }
                                     }
-                                    <Card css="w-full mb-5">
+                                    <div css="w-full block md:hidden mb-5">
+                                        <FancyData @ref="fancyDataComponent" currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
+                                    </div>
+                                    <Card css="w-full hidden md:block mb-5">
                                         <FancyData @ref="fancyDataComponent" currentLocationData="currentLocationData"  numSolarPanels="@numSolarPanels" cancellationTokenSource="@cancellationTokenSource"/>
                                     </Card>
                                 }
